@@ -1,0 +1,29 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             xmlns:views="using:BasisPM.App.Views"
+             x:Class="BasisPM.App.App"
+             RequestedThemeVariant="Dark">
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://BasisPM.App/Styles/BasisTheme.axaml"/>
+    </Application.Styles>
+
+    <Application.DataTemplates>
+        <DataTemplate DataType="vm:InstallsViewModel">
+            <views:InstallsView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:PackagesViewModel">
+            <views:PackagesView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:ChangesViewModel">
+            <views:ChangesView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:UnityViewModel">
+            <views:UnityView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:SettingsViewModel">
+            <views:SettingsView />
+        </DataTemplate>
+    </Application.DataTemplates>
+</Application>

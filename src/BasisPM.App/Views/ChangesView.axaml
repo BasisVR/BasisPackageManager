@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             xmlns:models="using:BasisPM.Core.Models"
+             x:Class="BasisPM.App.Views.ChangesView"
+             x:DataType="vm:ChangesViewModel"
+             Name="Root">
+
+    <Grid Margin="40,32" RowDefinitions="Auto,Auto,*">
+
+        <Border Grid.Row="0" CornerRadius="14" Padding="32,24"
+                Background="{StaticResource BasisHeroGradient}"
+                BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                <StackPanel Grid.Column="0" Spacing="6">
+                    <TextBlock Text="LOCAL CHANGES" Classes="tagline"/>
+                    <TextBlock Text="{Binding InstallName}" Classes="h1"/>
+                    <TextBlock Text="What you have changed in the Basis source since your last commit."
+                               Classes="muted" FontSize="14"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshCommand}"/>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Margin="0,16,0,12" Classes="card" Padding="20,14"
+                IsVisible="{Binding HasInstall}">
+            <TextBlock Text="{Binding Header}" Classes="muted" TextWrapping="Wrap"/>
+        </Border>
+
+        <Grid Grid.Row="2" ColumnDefinitions="360,16,*" IsVisible="{Binding HasInstall}">
+
+            <Border Grid.Column="0" Classes="card" Padding="0">
+                <Grid RowDefinitions="Auto,*">
+                    <Border Grid.Row="0" Padding="20,14" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                        <TextBlock Text="Changed files" Classes="h3"/>
+                    </Border>
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Changes}"
+                             SelectedItem="{Binding SelectedChange}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="models:GitFileChange">
+                                <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center" Margin="8,8">
+                                    <Border Grid.Column="0" Classes="versionPill" MinWidth="64" Margin="0,0,10,0">
+                                        <TextBlock Text="{Binding KindLabel}" FontSize="10" FontWeight="Bold"
+                                                   Classes="brand" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{Binding Path}" FontSize="12"
+                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Classes="card" Padding="0">
+                <Grid RowDefinitions="Auto,*">
+                    <Border Grid.Row="0" Padding="20,14" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                        <TextBlock Text="Diff" Classes="h3"/>
+                    </Border>
+                    <ScrollViewer Grid.Row="1" Padding="16,12"
+                                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                        <SelectableTextBlock Text="{Binding DiffText}"
+                                             FontFamily="Cascadia Mono, Consolas, Menlo, monospace"
+                                             FontSize="12" Foreground="{StaticResource BasisTextMutedBrush}"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" Classes="card" Margin="0,16,0,0" IsVisible="{Binding !HasInstall}">
+            <StackPanel Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,60">
+                <TextBlock Text="No install selected" Classes="h3" HorizontalAlignment="Center"/>
+                <TextBlock Text="Pick an install on the Installs tab to see what you have changed."
+                           Classes="muted" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

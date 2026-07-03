@@ -1,0 +1,126 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             xmlns:models="using:BasisPM.Core.Models"
+             x:Class="BasisPM.App.Views.UnityView"
+             x:DataType="vm:UnityViewModel"
+             Name="Root">
+
+    <ScrollViewer>
+        <StackPanel Margin="40,32" Spacing="24">
+
+            <Border CornerRadius="14" Padding="32,28" Background="{StaticResource BasisHeroGradient}"
+                    BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Spacing="6">
+                        <TextBlock Text="UNITY EDITORS" Classes="tagline"/>
+                        <TextBlock Text="Editor versions" Classes="h1"/>
+                        <TextBlock Text="Detect installed Unity Editors and install the version Basis requires."
+                                   Classes="muted" FontSize="14"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshCommand}"/>
+                </Grid>
+            </Border>
+
+            <Border Classes="card" Padding="20,16">
+                <TextBlock Text="{Binding HubStatus}" Classes="muted"/>
+            </Border>
+
+            <Border CornerRadius="12" Padding="20,14" Background="{StaticResource BasisSurfaceHoverBrush}"
+                    BorderBrush="{StaticResource BasisBrandBrush}" BorderThickness="1"
+                    IsVisible="{Binding HasRequiredVersion}">
+                <TextBlock Text="{Binding RequiredVersionNote}" Foreground="{StaticResource BasisTextPrimaryBrush}" TextWrapping="Wrap"/>
+            </Border>
+
+            <Border Classes="card" Padding="0">
+                <Grid RowDefinitions="Auto,*">
+                    <Border Grid.Row="0" Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                        <TextBlock Text="Installed Editors" Classes="h3"/>
+                    </Border>
+                    <ItemsControl Grid.Row="1" ItemsSource="{Binding InstalledEditors}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:InstalledEditor">
+                                <Border Padding="20,14" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                                    <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                        <StackPanel Grid.Column="0" Spacing="2">
+                                            <TextBlock Text="{Binding Version}" Classes="h3"/>
+                                            <TextBlock Text="{Binding Path}" Classes="dim" FontSize="11"/>
+                                        </StackPanel>
+                                        <Button Grid.Column="1" Content="Uninstall" Classes="danger"
+                                                Command="{Binding #Root.((vm:UnityViewModel)DataContext).UninstallCommand}"
+                                                CommandParameter="{Binding}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+
+            <Border Classes="card">
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0" Text="Install a new Editor" Classes="h3"/>
+                        <Button Grid.Column="1" Content="Reload list" Command="{Binding ReloadReleasesCommand}"/>
+                    </Grid>
+                    <TextBlock Classes="muted" FontSize="12" TextWrapping="Wrap"
+                               Text="Pick a Unity 6 release. The changeset is filled in automatically from Unity's release feed."/>
+
+                    <Grid ColumnDefinitions="*,16,200" RowDefinitions="Auto">
+                        <StackPanel Grid.Column="0" Grid.Row="0" Spacing="6">
+                            <TextBlock Text="Unity 6 release" Classes="muted" FontSize="11"/>
+                            <ComboBox ItemsSource="{Binding AvailableReleases}"
+                                      SelectedItem="{Binding SelectedRelease}"
+                                      HorizontalAlignment="Stretch"
+                                      MaxDropDownHeight="320">
+                                <ComboBox.Styles>
+                                    <Style Selector="ComboBoxItem" x:DataType="vm:UnityReleaseRow">
+                                        <Setter Property="IsEnabled" Value="{Binding !IsInstalled}"/>
+                                    </Style>
+                                </ComboBox.Styles>
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="vm:UnityReleaseRow">
+                                        <StackPanel Orientation="Horizontal" Spacing="10"
+                                                    Opacity="{Binding IsInstalled, Converter={x:Static vm:Converters.InstalledOpacity}}">
+                                            <TextBlock Text="{Binding Release.Version}" FontWeight="SemiBold" MinWidth="120"/>
+                                            <TextBlock Text="{Binding Release.Stream}" Classes="muted" MinWidth="80"/>
+                                            <TextBlock Text="recommended" Foreground="{StaticResource BasisAccentBrush}"
+                                                       FontSize="11" IsVisible="{Binding Release.Recommended}"/>
+                                            <TextBlock Text="installed" Classes="dim" FontSize="11" IsVisible="{Binding IsInstalled}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Grid.Row="0" Spacing="6">
+                            <TextBlock Text="Stream filter" Classes="muted" FontSize="11"/>
+                            <ComboBox ItemsSource="{Binding StreamFilters}"
+                                      SelectedItem="{Binding StreamFilter}"
+                                      HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Spacing="4" IsVisible="{Binding SelectedRelease, Converter={x:Static vm:Converters.NotNull}}">
+                        <TextBlock Text="Changeset" Classes="muted" FontSize="11"/>
+                        <TextBlock Text="{Binding SelectedRelease.Release.ShortRevision}" Classes="dim" FontSize="12"/>
+                    </StackPanel>
+
+                    <ItemsControl ItemsSource="{Binding ModuleOptions}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:ModuleOption">
+                                <CheckBox Content="{Binding Name}" IsChecked="{Binding Selected}" Margin="0,0,16,8"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button Classes="primary" Content="Install via Unity Hub" Command="{Binding InstallCommand}" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

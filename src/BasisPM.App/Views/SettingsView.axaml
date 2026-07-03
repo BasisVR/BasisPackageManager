@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             x:Class="BasisPM.App.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="40,32" Spacing="24" MaxWidth="760" HorizontalAlignment="Left">
+
+            <Border CornerRadius="14" Padding="32,28" Background="{StaticResource BasisHeroGradient}"
+                    BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="SETTINGS" Classes="tagline"/>
+                    <TextBlock Text="Configuration" Classes="h1"/>
+                    <TextBlock Text="Clone location, catalog source and tooling paths." Classes="muted" FontSize="14"/>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <StackPanel Spacing="20">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Default clone location" Classes="h3"/>
+                        <TextBlock Text="Where new Basis clones are created by default."
+                                   Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                        <TextBox Text="{Binding ClonePath}" Watermark="C:\Users\you\BasisVR"/>
+                    </StackPanel>
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Package Catalog URL" Classes="h3"/>
+                        <TextBlock Text="JSON URL serving a Basis-compatible catalog. Leave blank to use the embedded default."
+                                   Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                        <TextBox Text="{Binding CatalogUrl}" Watermark="https://example.com/basis-catalog.json"/>
+                    </StackPanel>
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Unity Hub override" Classes="h3"/>
+                        <TextBlock Text="Path to the Unity Hub binary, if not auto-detected."
+                                   Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                        <TextBox Text="{Binding UnityHubPath}" Watermark="C:\Program Files\Unity Hub\Unity Hub.exe"/>
+                    </StackPanel>
+
+                    <CheckBox Content="Include prerelease packages in NuGet search" IsChecked="{Binding NuGetPrerelease}"/>
+
+                    <Button Classes="primary" Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="Detected tooling" Classes="h3"/>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Git" Classes="muted" FontSize="11"/>
+                        <TextBlock Text="{Binding GitDetected}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Unity Hub" Classes="muted" FontSize="11"/>
+                        <TextBlock Text="{Binding HubDetected}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Settings file" Classes="muted" FontSize="11"/>
+                        <TextBlock Text="{Binding SettingsPath}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

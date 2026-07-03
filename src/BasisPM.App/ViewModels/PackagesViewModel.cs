@@ -1,0 +1,313 @@
+using System.Collections.ObjectModel;
+using BasisPM.Core.Models;
+using BasisPM.Core.Services;
+
+namespace BasisPM.App.ViewModels;
+
+public sealed class PackagesViewModel : ObservableObject
+{
+    private readonly CatalogService _catalogService;
+    private readonly UnityProjectService _projectService;
+    private readonly NuGetService _nugetService;
+    private readonly GitHubService _githubService;
+    private readonly MainWindowViewModel _shell;
+
+    private Catalog _catalog = new();
+    private BasisInstall? _install;
+    private string _filter = "";
+    private string _githubInput = "";
+    private string _nugetQuery = "";
+    private bool _includePrerelease;
+    private bool _isBusy;
+    private bool _isSearching;
+
+    public ObservableCollection<PackageRow> Available { get; } = new();
+    public ObservableCollection<InstalledPackageRow> Installed { get; } = new();
+    public ObservableCollection<NuGetResultRow> NuGetResults { get; } = new();
+    public ObservableCollection<NuGetInstalled> InstalledNuGet { get; } = new();
+
+    public string Filter { get => _filter; set { if (SetField(ref _filter, value)) Refilter(); } }
+    public string GitHubInput { get => _githubInput; set => SetField(ref _githubInput, value); }
+    public string NuGetQuery { get => _nugetQuery; set => SetField(ref _nugetQuery, value); }
+    public bool IncludePrerelease { get => _includePrerelease; set => SetField(ref _includePrerelease, value); }
+    public bool IsBusy { get => _isBusy; set => SetField(ref _isBusy, value); }
+    public bool IsSearching { get => _isSearching; set => SetField(ref _isSearching, value); }
+
+    public string InstallName => _install?.Name ?? "No install selected";
+    public bool HasInstall => _install is not null && _install.HasUnityProject;
+
+    public RelayCommand<CatalogPackageVersion> InstallCommand { get; }
+    public RelayCommand<InstalledPackageRow> UninstallCommand { get; }
+    public RelayCommand RefreshCommand { get; }
+    public RelayCommand AddFromGitHubCommand { get; }
+    public RelayCommand SearchNuGetCommand { get; }
+    public RelayCommand<NuGetPackage> InstallNuGetCommand { get; }
+    public RelayCommand<NuGetInstalled> RemoveNuGetCommand { get; }
+
+    public PackagesViewModel(CatalogService catalogService, UnityProjectService projectService, NuGetService nugetService, MainWindowViewModel shell)
+    {
+        _catalogService = catalogService;
+        _projectService = projectService;
+        _nugetService = nugetService;
+        _githubService = new GitHubService();
+        _shell = shell;
+
+        InstallCommand = new RelayCommand<CatalogPackageVersion>(InstallCuratedAsync);
+        UninstallCommand = new RelayCommand<InstalledPackageRow>(UninstallAsync);
+        RefreshCommand = new RelayCommand(RefreshAsync);
+        AddFromGitHubCommand = new RelayCommand(AddFromGitHubAsync);
+        SearchNuGetCommand = new RelayCommand(SearchNuGetAsync);
+        InstallNuGetCommand = new RelayCommand<NuGetPackage>(InstallNuGetAsync);
+        RemoveNuGetCommand = new RelayCommand<NuGetInstalled>(RemoveNuGetAsync);
+    }
+
+    public void SetActiveInstall(BasisInstall install)
+    {
+        _install = install;
+        OnPropertyChanged(nameof(InstallName));
+        OnPropertyChanged(nameof(HasInstall));
+        RefreshInstalled();
+    }
+
+    public async Task LoadCatalogAsync(string? url)
+    {
+        IsBusy = true;
+        try
+        {
+            _catalog = await _catalogService.LoadAsync(url);
+            Refilter();
+        }
+        finally { IsBusy = false; }
+    }
+
+    private async Task RefreshAsync()
+    {
+        await LoadCatalogAsync(null);
+        if (_install is not null && _install.HasUnityProject)
+        {
+            try
+            {
+                var reloaded = await _projectService.LoadAsync(_install.UnityProjectPath);
+                _install.Manifest = reloaded.Manifest;
+            }
+            catch { }
+            RefreshInstalled();
+        }
+    }
+
+    private void Refilter()
+    {
+        Available.Clear();
+        var f = _filter?.Trim() ?? "";
+        foreach (var v in _catalogService.AllLatest(_catalog))
+        {
+            if (f.Length > 0 &&
+                !v.DisplayName.Contains(f, StringComparison.OrdinalIgnoreCase) &&
+                !v.Name.Contains(f, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var installedVersion = _install?.Manifest.Dependencies.GetValueOrDefault(v.Name);
+            Available.Add(new PackageRow(v, installedVersion));
+        }
+    }
+
+    private void RefreshInstalled()
+    {
+        Installed.Clear();
+        InstalledNuGet.Clear();
+        if (_install is null || !_install.HasUnityProject) { Refilter(); return; }
+
+        foreach (var (name, version) in _install.Manifest.Dependencies)
+        {
+            var displayName = _catalog.Packages.TryGetValue(name, out var pkg) && pkg.Versions.Count > 0
+                ? pkg.Versions.Values.First().DisplayName
+                : name;
+            var isGit = version.Contains("github.com", StringComparison.OrdinalIgnoreCase) || version.StartsWith("git", StringComparison.OrdinalIgnoreCase);
+            Installed.Add(new InstalledPackageRow(name, displayName, version, isGit));
+        }
+
+        foreach (var n in _nugetService.ReadInstalled(_install.UnityProjectPath))
+            InstalledNuGet.Add(n);
+
+        Refilter();
+    }
+
+    private async Task InstallCuratedAsync(CatalogPackageVersion? entry)
+    {
+        if (entry is null || _install is null || !_install.HasUnityProject)
+        {
+            _shell.SetStatus("Select an install with a Unity project first.", StatusKind.Error);
+            return;
+        }
+        IsBusy = true;
+        try
+        {
+            var resolver = new DependencyResolver(_catalogService);
+            var requested = new List<(string, string)> { (entry.Name, $"^{entry.Version}") };
+            foreach (var (name, range) in _install.Manifest.Dependencies)
+                requested.Add((name, range));
+
+            var result = resolver.Resolve(_catalog, requested);
+            if (!result.Ok)
+            {
+                _shell.SetStatus($"Resolve failed: {string.Join("; ", result.Missing.Concat(result.Conflicts))}", StatusKind.Error);
+                return;
+            }
+
+            foreach (var (name, ver) in result.Resolved)
+                _install.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
+
+            await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
+            _shell.SetStatus($"Installed {entry.DisplayName} into {_install.Name}.", StatusKind.Success);
+            RefreshInstalled();
+        }
+        catch (Exception ex)
+        {
+            _shell.SetStatus($"Install error: {ex.Message}", StatusKind.Error);
+        }
+        finally { IsBusy = false; }
+    }
+
+    private async Task UninstallAsync(InstalledPackageRow? row)
+    {
+        if (row is null || _install is null) return;
+        if (_install.Manifest.Dependencies.Remove(row.Name))
+        {
+            await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
+            _shell.SetStatus($"Removed {row.DisplayName}.", StatusKind.Success);
+            RefreshInstalled();
+        }
+    }
+
+    private async Task AddFromGitHubAsync()
+    {
+        if (_install is null || !_install.HasUnityProject)
+        {
+            _shell.SetStatus("Select an install with a Unity project first.", StatusKind.Error);
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(GitHubInput))
+        {
+            _shell.SetStatus("Paste a GitHub URL or owner/repo.", StatusKind.Error);
+            return;
+        }
+
+        IsBusy = true;
+        try
+        {
+            GitHubLocator loc;
+            try { loc = GitHubService.Parse(GitHubInput); }
+            catch (Exception ex)
+            {
+                _shell.SetStatus($"Invalid GitHub reference: {ex.Message}", StatusKind.Error);
+                return;
+            }
+
+            var pkg = await _githubService.FetchPackageJsonAsync(loc);
+            if (pkg is null || string.IsNullOrEmpty(pkg.Name))
+            {
+                _shell.SetStatus(
+                    $"Could not load package.json from {loc.Owner}/{loc.Repo}{(loc.Path is null ? "" : "/" + loc.Path)} — check the path and that the repo is public.",
+                    StatusKind.Error);
+                return;
+            }
+
+            var manifestUrl = GitHubService.BuildManifestUrl(loc);
+            var existed = _install.Manifest.Dependencies.ContainsKey(pkg.Name);
+            _install.Manifest.Dependencies[pkg.Name] = manifestUrl;
+            await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
+
+            _shell.SetStatus($"{(existed ? "Updated" : "Added")} {pkg.Name} from GitHub.", StatusKind.Success);
+            GitHubInput = "";
+            RefreshInstalled();
+        }
+        catch (Exception ex)
+        {
+            _shell.SetStatus($"GitHub add failed: {ex.Message}", StatusKind.Error);
+        }
+        finally { IsBusy = false; }
+    }
+
+    private async Task SearchNuGetAsync()
+    {
+        if (string.IsNullOrWhiteSpace(NuGetQuery))
+        {
+            _shell.SetStatus("Type something to search NuGet.org.", StatusKind.Error);
+            return;
+        }
+        IsSearching = true;
+        try
+        {
+            var results = await _nugetService.SearchAsync(NuGetQuery, IncludePrerelease);
+            var installedIds = new HashSet<string>(InstalledNuGet.Select(n => n.Id), StringComparer.OrdinalIgnoreCase);
+            NuGetResults.Clear();
+            foreach (var p in results)
+                NuGetResults.Add(new NuGetResultRow(p, installedIds.Contains(p.Id)));
+            if (NuGetResults.Count == 0)
+                _shell.SetStatus($"No NuGet packages matched \"{NuGetQuery}\".", StatusKind.Info);
+        }
+        catch (Exception ex)
+        {
+            _shell.SetStatus($"NuGet search failed: {ex.Message}", StatusKind.Error);
+        }
+        finally { IsSearching = false; }
+    }
+
+    private async Task InstallNuGetAsync(NuGetPackage? pkg)
+    {
+        if (pkg is null) return;
+        if (_install is null || !_install.HasUnityProject)
+        {
+            _shell.SetStatus("Select an install with a Unity project first.", StatusKind.Error);
+            return;
+        }
+        try
+        {
+            _nugetService.AddOrUpdate(_install.UnityProjectPath, pkg.Id, pkg.Version);
+            _shell.SetStatus($"Added {pkg.Id} {pkg.Version} to packages.config. Restore it in Unity with NuGetForUnity.", StatusKind.Success);
+            RefreshInstalled();
+            for (var i = 0; i < NuGetResults.Count; i++)
+                if (string.Equals(NuGetResults[i].Package.Id, pkg.Id, StringComparison.OrdinalIgnoreCase))
+                    NuGetResults[i] = new NuGetResultRow(NuGetResults[i].Package, true);
+        }
+        catch (Exception ex)
+        {
+            _shell.SetStatus($"NuGet add failed: {ex.Message}", StatusKind.Error);
+        }
+        await Task.CompletedTask;
+    }
+
+    private async Task RemoveNuGetAsync(NuGetInstalled? item)
+    {
+        if (item is null || _install is null) return;
+        if (_nugetService.Remove(_install.UnityProjectPath, item.Id))
+        {
+            _shell.SetStatus($"Removed {item.Id} from packages.config.", StatusKind.Success);
+            RefreshInstalled();
+        }
+        await Task.CompletedTask;
+    }
+}
+
+public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVersion)
+{
+    public string DisplayName => Entry.DisplayName;
+    public string Name => Entry.Name;
+    public string Version => Entry.Version;
+    public string Description => Entry.Description;
+    public bool IsInstalled => !string.IsNullOrEmpty(InstalledVersion);
+    public string ButtonLabel => IsInstalled ? "Update" : "Install";
+}
+
+public sealed record InstalledPackageRow(string Name, string DisplayName, string Version, bool IsFromGit);
+
+public sealed record NuGetResultRow(NuGetPackage Package, bool IsInstalled)
+{
+    public string Id => Package.Id;
+    public string Version => Package.Version;
+    public string Description => Package.Description;
+    public string AuthorLine => Package.AuthorLine;
+    public string DownloadsLabel => Package.DownloadsLabel;
+    public bool Verified => Package.Verified;
+    public string ButtonLabel => IsInstalled ? "Added" : "Add";
+}
