@@ -62,6 +62,22 @@
                     </StackPanel>
                 </StackPanel>
             </Border>
+
+            <Border Classes="card">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="About" Classes="h3"/>
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <TextBlock Text="Version" Classes="muted" FontSize="12" VerticalAlignment="Center"/>
+                        <Border Classes="versionPill" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding AppVersion}" FontSize="12" FontWeight="SemiBold"/>
+                        </Border>
+                    </StackPanel>
+                    <Button Content="Check for updates" Command="{Binding CheckForUpdatesCommand}"
+                            HorizontalAlignment="Left"/>
+                    <TextBlock Text="Basis Package Manager updates itself from GitHub Releases. When a new version is published an update banner appears at the top of the window — one click downloads it and restarts."
+                               Classes="dim" FontSize="12" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

@@ -23,6 +23,9 @@ mono_crash.*
 [Rr]elease/
 [Rr]eleases/
 
+# Velopack publish staging (dotnet publish -o publish). Installer output goes to Releases/ (above).
+publish/
+
 [Dd]ebug/x64/
 [Dd]ebugPublic/x64/
 [Rr]elease/x64/

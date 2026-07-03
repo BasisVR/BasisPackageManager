@@ -228,6 +228,33 @@ public sealed class PackagesViewModel : ObservableObject
         finally { IsBusy = false; }
     }
 
+    /// <summary>Adds a git (UPM) package to the active install's manifest — used by the website "Install in app" deep link.</summary>
+    public async Task AddGitPackageAsync(string? id, string? name, string? gitUrl, string? repoUrl)
+    {
+        if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(gitUrl))
+        {
+            _shell.SetStatus("Install link was missing the package id or git URL.", StatusKind.Error);
+            return;
+        }
+        if (_install is null || !_install.HasUnityProject)
+        {
+            _shell.SetStatus($"Open an install with a Unity project first, then click Install for {name ?? id} again.", StatusKind.Error);
+            return;
+        }
+        try
+        {
+            var existed = _install.Manifest.Dependencies.ContainsKey(id);
+            _install.Manifest.Dependencies[id] = gitUrl.Trim();
+            await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
+            _shell.SetStatus($"{(existed ? "Updated" : "Added")} {name ?? id} → {_install.Name}.", StatusKind.Success);
+            RefreshInstalled();
+        }
+        catch (Exception ex)
+        {
+            _shell.SetStatus($"Deep-link install failed: {ex.Message}", StatusKind.Error);
+        }
+    }
+
     private async Task SearchNuGetAsync()
     {
         if (string.IsNullOrWhiteSpace(NuGetQuery))

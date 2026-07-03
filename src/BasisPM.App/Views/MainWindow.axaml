@@ -80,7 +80,38 @@
                 </StackPanel>
             </Grid>
 
-            <ContentControl Grid.Column="1" Grid.Row="0" Content="{Binding CurrentView}"/>
+            <Grid Grid.Column="1" Grid.Row="0" RowDefinitions="Auto,*">
+                <Border Grid.Row="0"
+                        IsVisible="{Binding UpdateAvailable}"
+                        Background="{StaticResource BasisBrandGradient}"
+                        CornerRadius="12"
+                        Padding="18,12" Margin="18,16,18,0">
+                    <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="0" Spacing="8" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding UpdateBannerText}"
+                                       Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="13"
+                                       TextWrapping="Wrap" VerticalAlignment="Center"/>
+                            <ProgressBar IsVisible="{Binding IsUpdating}"
+                                         Minimum="0" Maximum="100" Value="{Binding UpdateProgress}"
+                                         ShowProgressText="True"
+                                         Foreground="#FFFFFF" Background="#33FFFFFF"
+                                         Height="16" CornerRadius="8"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10"
+                                    Margin="16,0,0,0" VerticalAlignment="Center"
+                                    IsVisible="{Binding !IsUpdating}">
+                            <Button Classes="bannerPrimary" Content="Update now"
+                                    Command="{Binding InstallUpdateCommand}"
+                                    ToolTip.Tip="Download the update and restart"/>
+                            <Button Classes="bannerGhost" Content="Later"
+                                    Command="{Binding DismissUpdateCommand}"
+                                    ToolTip.Tip="Dismiss until next launch"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
+            </Grid>
 
             <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
                     Background="#A0100F27"

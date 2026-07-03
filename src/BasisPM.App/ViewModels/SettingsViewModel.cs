@@ -26,7 +26,10 @@ public sealed class SettingsViewModel : ObservableObject
     public string GitDetected { get => _gitDetected; private set => SetField(ref _gitDetected, value); }
     public string HubDetected { get => _hubDetected; private set => SetField(ref _hubDetected, value); }
 
+    public string AppVersion => _shell.AppVersion;
+
     public RelayCommand SaveCommand { get; }
+    public RelayCommand CheckForUpdatesCommand => _shell.CheckForUpdatesCommand;
 
     public SettingsViewModel(UserSettingsService settingsService, GitService gitService, UnityHubService hubService, MainWindowViewModel shell)
     {

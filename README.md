@@ -8,6 +8,28 @@ and platforms Basis needs.
 Built with [AvaloniaUI](https://avaloniaui.net/) (.NET 9), styled to match
 [basisvr.org](https://basisvr.org/).
 
+## Download
+
+Grab the latest installer for your platform from the
+[**Releases**](https://github.com/BasisVR/BasisPackageManager/releases) page:
+
+| Platform | File | First run |
+|----------|------|-----------|
+| Windows  | `*-win-Setup.exe` | Unsigned for now, so SmartScreen may warn — choose **More info → Run anyway**. |
+| Linux    | `*.AppImage` | `chmod +x` it, then run. (Needs FUSE, which most distros ship.) |
+| macOS    | `*.pkg` (Apple Silicon) | Unsigned — **right-click → Open**, then **Open** the first time. |
+
+The app installs per-user (no admin required) and keeps itself up to date — see below.
+
+## Updating
+
+Basis Package Manager updates itself from GitHub Releases. When a newer version is
+published, an **update banner** appears at the top of the window: click **Update now**
+and it downloads the release and restarts onto it. You can also check on demand from
+**Settings → About → Check for updates**.
+
+Running from source (`dotnet run`) skips the in-app updater — update with `git pull`.
+
 ## Features
 
 - **Installs** — clone `BasisVR/Basis` (choose folder + branch), or register an existing
@@ -60,6 +82,20 @@ dotnet run --project src/BasisPM.Server   # → http://localhost:5133
 ```
 dotnet run --project src/BasisPM.App
 ```
+
+## Releasing (maintainers)
+
+Push a semver tag and CI builds + publishes installers for Windows, Linux and macOS to a
+single GitHub Release; the in-app updater promotes it to existing users automatically:
+
+```
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+See **[RELEASING.md](RELEASING.md)** for the full process, versioning, and how to set up
+code-signing certificates (Windows + macOS). Every push/PR to `main` is compile-checked by
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ## Layout
 

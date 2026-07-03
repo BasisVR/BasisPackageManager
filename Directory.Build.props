@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <Company>BasisVR</Company>
+    <Product>Basis Package Manager</Product>
+    <Authors>BasisVR</Authors>
+  </PropertyGroup>
+</Project>

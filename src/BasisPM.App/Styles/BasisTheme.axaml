@@ -297,4 +297,31 @@
         <Setter Property="CornerRadius" Value="999"/>
         <Setter Property="Padding" Value="10,3"/>
     </Style>
+
+    <!-- Buttons that sit on the brand-gradient update banner -->
+    <Style Selector="Button.bannerPrimary">
+        <Setter Property="Background" Value="#FFFFFF"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="Button.bannerPrimary /template/ ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandBrush}"/>
+    </Style>
+    <Style Selector="Button.bannerPrimary:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#F1EAF7"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandPressedBrush}"/>
+    </Style>
+
+    <Style Selector="Button.bannerGhost">
+        <Setter Property="Background" Value="#22FFFFFF"/>
+        <Setter Property="Foreground" Value="#FFFFFF"/>
+        <Setter Property="BorderBrush" Value="#55FFFFFF"/>
+    </Style>
+    <Style Selector="Button.bannerGhost /template/ ContentPresenter">
+        <Setter Property="TextElement.Foreground" Value="#FFFFFF"/>
+    </Style>
+    <Style Selector="Button.bannerGhost:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#33FFFFFF"/>
+        <Setter Property="TextElement.Foreground" Value="#FFFFFF"/>
+    </Style>
 </Styles>

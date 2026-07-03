@@ -1,5 +1,8 @@
+using Avalonia.Threading;
+using BasisPM.App.Services;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
+using Velopack;
 
 namespace BasisPM.App.ViewModels;
 
@@ -17,6 +20,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly NuGetService _nugetService = new();
     private readonly UnityHubService _hubService = new();
     private readonly UnityReleaseService _releaseService = new();
+    private readonly UpdateService _updateService = new();
 
     private NavPage _currentPage = NavPage.Installs;
     private object? _currentView;
@@ -24,11 +28,21 @@ public sealed class MainWindowViewModel : ObservableObject
     private StatusKind _statusKind = StatusKind.Info;
     private BasisInstall? _activeInstall;
 
+    private UpdateInfo? _pendingUpdate;
+    private bool _updateAvailable;
+    private string _updateBannerText = "";
+    private bool _isUpdating;
+    private int _updateProgress;
+
     public InstallsViewModel InstallsVM { get; }
     public PackagesViewModel PackagesVM { get; }
     public ChangesViewModel ChangesVM { get; }
     public UnityViewModel UnityVM { get; }
     public SettingsViewModel SettingsVM { get; }
+
+    public RelayCommand InstallUpdateCommand { get; }
+    public RelayCommand DismissUpdateCommand { get; }
+    public RelayCommand CheckForUpdatesCommand { get; }
 
     public MainWindowViewModel()
     {
@@ -38,6 +52,11 @@ public sealed class MainWindowViewModel : ObservableObject
         ChangesVM = new ChangesViewModel(_gitService, this);
         UnityVM = new UnityViewModel(_hubService, _releaseService, this);
         SettingsVM = new SettingsViewModel(_settingsService, _gitService, _hubService, this);
+
+        InstallUpdateCommand = new RelayCommand(InstallUpdateAsync);
+        DismissUpdateCommand = new RelayCommand(() => { UpdateAvailable = false; });
+        CheckForUpdatesCommand = new RelayCommand(() => CheckForUpdatesAsync(manual: true));
+
         CurrentView = InstallsVM;
     }
 
@@ -87,6 +106,13 @@ public sealed class MainWindowViewModel : ObservableObject
     }
 
     public string ActiveInstallName => _activeInstall?.Name ?? "No install selected";
+
+    public string AppVersion => _updateService.CurrentVersion;
+
+    public bool UpdateAvailable { get => _updateAvailable; private set => SetField(ref _updateAvailable, value); }
+    public string UpdateBannerText { get => _updateBannerText; private set => SetField(ref _updateBannerText, value); }
+    public bool IsUpdating { get => _isUpdating; private set => SetField(ref _isUpdating, value); }
+    public int UpdateProgress { get => _updateProgress; private set => SetField(ref _updateProgress, value); }
 
     public void SetActiveInstall(BasisInstall install)
     {
@@ -141,7 +167,83 @@ public sealed class MainWindowViewModel : ObservableObject
         await InstallsVM.LoadAsync(settings);
         await PackagesVM.LoadCatalogAsync(settings.CatalogUrl);
         PackagesVM.IncludePrerelease = settings.NuGetPrerelease;
+
+        // Handle a launch-time deep link now (active install + packages are ready) — don't wait on the slower Unity refresh.
+        if (DeepLinkDispatcher.Pending is { } pending)
+        {
+            DeepLinkDispatcher.Pending = null;
+            HandleDeepLink(pending);
+        }
+
         await UnityVM.RefreshAsync();
+
+        _ = CheckForUpdatesAsync(manual: false);
+    }
+
+    /// <summary>Handles a <c>basispm://install?…</c> link: jump to Packages and add the git package to the active install.</summary>
+    public void HandleDeepLink(string uri)
+    {
+        if (!DeepLink.TryParseInstall(uri, out var req)) return;
+        NavigateTo("packages");
+        if (string.IsNullOrWhiteSpace(req.Git))
+        {
+            SetStatus($"Install link for {req.Name ?? req.Id ?? "the package"} was missing its git URL.", StatusKind.Error);
+            return;
+        }
+        _ = PackagesVM.AddGitPackageAsync(req.Id, req.Name, req.Git, req.Repo);
+    }
+
+    public async Task CheckForUpdatesAsync(bool manual)
+    {
+        if (!_updateService.IsSupported)
+        {
+            if (manual)
+                SetStatus("Running from source — updates are handled by your build, not the in-app updater.", StatusKind.Info);
+            return;
+        }
+
+        try
+        {
+            if (manual) SetStatus("Checking for updates…");
+            var info = await _updateService.CheckAsync();
+            if (info is null)
+            {
+                _pendingUpdate = null;
+                UpdateAvailable = false;
+                if (manual) SetStatus("You're on the latest version.", StatusKind.Success);
+                return;
+            }
+
+            _pendingUpdate = info;
+            UpdateBannerText = $"Basis Package Manager {info.TargetFullRelease.Version} is available.";
+            UpdateAvailable = true;
+            if (manual) SetStatus("An update is available.", StatusKind.Success);
+        }
+        catch (Exception ex)
+        {
+            if (manual) SetStatus($"Update check failed: {ex.Message}", StatusKind.Error);
+        }
+    }
+
+    private async Task InstallUpdateAsync()
+    {
+        if (_pendingUpdate is null || IsUpdating) return;
+
+        IsUpdating = true;
+        UpdateProgress = 0;
+        SetStatus("Downloading update…");
+        try
+        {
+            // Velopack reports progress off the UI thread; marshal each tick back.
+            await _updateService.DownloadAndApplyAsync(_pendingUpdate,
+                pct => Dispatcher.UIThread.Post(() => UpdateProgress = pct));
+            // On success the process is restarted onto the new version and never returns here.
+        }
+        catch (Exception ex)
+        {
+            IsUpdating = false;
+            SetStatus($"Update failed: {ex.Message}", StatusKind.Error);
+        }
     }
 
     public void NavigateTo(string page)
