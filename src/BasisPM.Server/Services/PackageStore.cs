@@ -137,6 +137,7 @@ public sealed class PackageStore
             pkg.Source = DeriveSource(pkg.RepoUrl, pkg.GitUrl);
             pkg.Unity = sub.Unity?.Trim();
             pkg.Version = string.IsNullOrWhiteSpace(sub.Version) ? (existing?.Version ?? "1.0.0") : sub.Version.Trim();
+            pkg.Dependencies = sub.Dependencies ?? pkg.Dependencies;
             if (string.IsNullOrEmpty(pkg.Icon)) pkg.Icon = "📦";
 
             if (existing is null) _packages.Add(pkg);

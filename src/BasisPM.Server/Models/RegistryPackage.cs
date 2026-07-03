@@ -45,4 +45,5 @@ public sealed class RegistrySubmission
     [JsonPropertyName("repoUrl")] public string? RepoUrl { get; set; }
     [JsonPropertyName("unity")] public string? Unity { get; set; }
     [JsonPropertyName("version")] public string? Version { get; set; }
+    [JsonPropertyName("dependencies")] public Dictionary<string, string>? Dependencies { get; set; }
 }
