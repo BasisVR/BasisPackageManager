@@ -1,0 +1,58 @@
+name: Package submission
+description: Submit a Basis-compatible package (GitHub or GitLab) to the registry
+title: "Add package: "
+labels: ["package-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Packages are git (UPM) packages hosted on **GitHub or GitLab**. Stars, forks and
+        last-updated are pulled automatically from the repo — you don't need to provide them.
+  - type: input
+    id: id
+    attributes:
+      label: Package id
+      placeholder: com.you.mypackage
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Display name
+      placeholder: My Package
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+  - type: input
+    id: giturl
+    attributes:
+      label: Git URL (UPM)
+      description: GitHub or GitLab .git URL, optionally with ?path=Packages/com.you.x
+      placeholder: https://github.com/you/repo.git?path=Packages/com.you.x
+    validations:
+      required: true
+  - type: input
+    id: repourl
+    attributes:
+      label: Repository URL
+      placeholder: https://github.com/you/repo
+  - type: dropdown
+    id: source
+    attributes:
+      label: Source
+      options:
+        - community
+        - curated
+  - type: input
+    id: category
+    attributes:
+      label: Category
+      placeholder: Tools
+  - type: input
+    id: tags
+    attributes:
+      label: Tags (comma-separated)
+      placeholder: tools, editor

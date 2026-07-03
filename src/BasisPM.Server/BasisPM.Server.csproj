@@ -12,4 +12,8 @@
     <ProjectReference Include="..\BasisPM.Core\BasisPM.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="seed\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

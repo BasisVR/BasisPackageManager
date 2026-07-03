@@ -1,9 +1,9 @@
 # Basis Package Manager
 
 A desktop app for cloning and living with [BasisVR/Basis](https://github.com/BasisVR/Basis):
-clone the repo, add community and NuGet packages, keep the core and packages up to date,
-see exactly what you have changed in the Basis source, and install the Unity version and
-platforms Basis needs.
+clone the repo, add community packages from GitHub or GitLab, keep the core and packages up
+to date, see exactly what you have changed in the Basis source, and install the Unity version
+and platforms Basis needs.
 
 Built with [AvaloniaUI](https://avaloniaui.net/) (.NET 9), styled to match
 [basisvr.org](https://basisvr.org/).
@@ -13,15 +13,14 @@ Built with [AvaloniaUI](https://avaloniaui.net/) (.NET 9), styled to match
 - **Installs** — clone `BasisVR/Basis` (choose folder + branch), or register an existing
   clone. Each install shows its branch, commit, required Unity version, and whether it is
   behind upstream or has local changes. One-click **Update Core** runs `git pull --ff-only`.
-- **Packages** — install curated Basis packages, add any community UPM repo from GitHub,
-  or search **NuGet.org** and add packages to `Assets/packages.config`
-  (restored in Unity by [NuGetForUnity](https://github.com/GlitchEnzo/NuGetForUnity)).
+- **Packages** — install curated Basis packages, or add any community UPM package from a
+  **GitHub or GitLab** git URL. Discovery is powered by the registry (below).
 - **Local Changes** — a `git status` of your install with a per-file unified diff, so you
   can see what you have modified in the Basis source.
 - **Unity Editors** — detect installed editors and install the exact version Basis targets
   via Unity Hub, choosing the platform modules (Windows, Android, Linux, macOS, …).
-- **Settings** — default clone location, catalog URL, Unity Hub override, NuGet prerelease
-  toggle, and detected tooling paths.
+- **Settings** — default clone location, catalog URL, Unity Hub override, and detected
+  tooling paths.
 
 ## Requirements
 
@@ -31,21 +30,30 @@ Built with [AvaloniaUI](https://avaloniaui.net/) (.NET 9), styled to match
 
 ## Package registry server
 
-`src/BasisPM.Server` is an ASP.NET Core web app — a [Hangar](https://hangar.papermc.io/)-style
-package registry where the community can browse and submit Basis-compatible packages, with a
-JSON API the desktop app consumes.
+`src/BasisPM.Server` is a [Hangar](https://hangar.papermc.io/)-style package registry where the
+community can browse and submit Basis-compatible **git packages (GitHub or GitLab)**. It runs as
+an ASP.NET Core app for development, and exports a static site for hosting.
+
+Run it live:
 
 ```
 dotnet run --project src/BasisPM.Server   # → http://localhost:5133
 ```
 
-- **Browse UI** (`/`) — search, source/category filters, and package cards with install
-  instructions, styled to match the desktop app.
-- **API** — `GET /api/packages` (search/filter/sort), `/api/packages/{id}`, `/api/categories`,
-  `POST /api/packages` (submit), and `GET /api/catalog`.
-- `GET /api/catalog` is **format-compatible with the desktop app's catalog** — point
-  Settings → *Package Catalog URL* at `http://<host>/api/catalog` and the app's Packages tab
-  serves from the registry. Package data lives in `App_Data/registry.json` (seeded from code).
+- **Browse UI** — search, source/category filters, and package cards with copy-paste install
+  instructions, styled like the desktop app.
+- **Real data, never faked** — stars / forks / last-updated are pulled from the GitHub and
+  GitLab APIs at build time. Curation lives in `src/BasisPM.Server/seed/packages.json`
+  (PR-editable); the "Submit a package" button opens a pre-filled GitHub issue.
+- **Static export** for any static host (e.g. GitHub Pages):
+
+  ```
+  dotnet run --project src/BasisPM.Server -- generate ./dist
+  ```
+
+  writes `index.html` + `packages.json` + `catalog.json` with the real stats baked in.
+- `catalog.json` is **format-compatible with the desktop app** — point Settings →
+  *Package Catalog URL* at `…/catalog.json` and the app's Packages tab serves from the registry.
 
 ## Run
 
@@ -56,6 +64,6 @@ dotnet run --project src/BasisPM.App
 ## Layout
 
 - `src/BasisPM.App` — Avalonia UI (MVVM: `ViewModels/`, `Views/`, `Styles/`)
-- `src/BasisPM.Core` — services and models (`GitService`, `NuGetService`,
-  `UnityHubService`, `BasisInstallService`, catalog + manifest handling)
-- `src/BasisPM.Server` — ASP.NET Core package registry (browse UI + JSON API)
+- `src/BasisPM.Core` — services and models (`GitService`, `UnityHubService`,
+  `BasisInstallService`, catalog + manifest handling)
+- `src/BasisPM.Server` — package registry: browse UI + JSON API + static-site generator

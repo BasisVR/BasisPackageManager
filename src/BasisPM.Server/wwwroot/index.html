@@ -193,8 +193,8 @@
       <div class="count" id="count"></div>
       <select class="sort" id="sort">
         <option value="popular">Sort: Popular</option>
-        <option value="downloads">Most downloads</option>
         <option value="stars">Most stars</option>
+        <option value="forks">Most forks</option>
         <option value="updated">Recently updated</option>
         <option value="name">Name (A–Z)</option>
       </select>
@@ -216,9 +216,12 @@
 
 <script>
 const state = { search:"", source:"all", category:"all", sort:"popular" };
-let ALL = [];
+const REPO = "BasisVR/BasisPackageManager";
+let RAW = [];   // full package list, loaded once
+let ALL = [];   // current filtered + sorted view
 
 const esc = s => (s??"").toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hostOf = p => { const u = (p.repoUrl||p.gitUrl||'').toLowerCase(); return u.includes('gitlab')?'GitLab':u.includes('github')?'GitHub':''; };
 const fmtNum = n => n>=1e9 ? (n/1e9).toFixed(1).replace(/\.0$/,'')+'B'
   : n>=1e6 ? (n/1e6).toFixed(1).replace(/\.0$/,'')+'M'
   : n>=1e3 ? (n/1e3).toFixed(1).replace(/\.0$/,'')+'K' : ''+n;
@@ -232,32 +235,45 @@ async function copy(text,btn){
   catch{ toast('Copy failed','err'); }
 }
 
-async function load(){
-  const p = new URLSearchParams();
-  if(state.search) p.set('search',state.search);
-  if(state.source!=='all') p.set('source',state.source);
-  if(state.category!=='all') p.set('category',state.category);
-  p.set('sort',state.sort);
-  const res = await fetch('/api/packages?'+p.toString());
-  ALL = await res.json();
+async function fetchAll(){
+  const res = await fetch('packages.json',{cache:'no-cache'});
+  RAW = await res.json();
+}
+
+function load(){   // client-side filter + sort over the full list (static-host friendly)
+  let q = RAW.slice();
+  const s = state.search.trim().toLowerCase();
+  if(s) q = q.filter(p =>
+    p.name.toLowerCase().includes(s) || p.id.toLowerCase().includes(s) ||
+    (p.description||'').toLowerCase().includes(s) || (p.author||'').toLowerCase().includes(s) ||
+    (p.tags||[]).some(t=>t.toLowerCase().includes(s)));
+  if(state.source!=='all') q = q.filter(p=>p.source===state.source);
+  if(state.category!=='all') q = q.filter(p=>p.category.toLowerCase()===state.category.toLowerCase());
+  const by = {
+    forks:(a,b)=>b.forks-a.forks, stars:(a,b)=>b.stars-a.stars,
+    updated:(a,b)=>(b.updated||'').localeCompare(a.updated||''),
+    name:(a,b)=>a.name.localeCompare(b.name),
+    popular:(a,b)=>(b.stars-a.stars)||(b.forks-a.forks),
+  };
+  q.sort(by[state.sort]||by.popular);
+  ALL = q;
   renderGrid();
 }
 
-async function buildFilters(){
-  const all = await (await fetch('/api/packages')).json();
+function buildFilters(){
+  const all = RAW;
   const bySource = s => all.filter(p=>p.source===s).length;
   const sources = [
     {key:'all',label:'All packages',count:all.length,dot:'all'},
     {key:'curated',label:'Curated',count:bySource('curated'),dot:'curated'},
     {key:'community',label:'Community',count:bySource('community'),dot:'community'},
-    {key:'nuget',label:'NuGet',count:bySource('nuget'),dot:'nuget'},
   ];
   document.getElementById('sourceChips').innerHTML = sources.map(s=>
     `<div class="chip ${s.key===state.source?'active':''}" data-source="${s.key}">
        <span style="display:flex;align-items:center;gap:9px"><span class="dot ${s.dot}"></span>${esc(s.label)}</span>
        <span class="count">${s.count}</span></div>`).join('');
 
-  const cats = await (await fetch('/api/categories')).json();
+  const cats = [...new Set(all.map(p=>p.category))].sort((a,b)=>a.localeCompare(b));
   const catList = ['all',...cats];
   document.getElementById('categoryChips').innerHTML = catList.map(c=>{
     const n = c==='all' ? all.length : all.filter(p=>p.category.toLowerCase()===c.toLowerCase()).length;
@@ -284,14 +300,14 @@ function renderGrid(){
         <div class="avatar">${esc(p.icon||'📦')}</div>
         <div style="min-width:0">
           <h3>${esc(p.name)} <span class="badge ${esc(p.source)}">${esc(p.source)}</span></h3>
-          <div class="by">by ${esc(p.author)}</div>
+          <div class="by">by ${esc(p.author)}${hostOf(p)?' · '+hostOf(p):''}</div>
         </div>
       </div>
       <p class="desc">${esc(p.description)}</p>
       <div class="tags">${(p.tags||[]).slice(0,4).map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
       <div class="card-foot">
         <span class="stat">⭐ ${fmtNum(p.stars)}</span>
-        <span class="stat">⬇ ${fmtNum(p.downloads)}</span>
+        <span class="stat">⑂ ${fmtNum(p.forks)}</span>
         <span class="stat">v${esc(p.version)}</span>
         <button class="btn sm primary">Install</button>
       </div>
@@ -300,23 +316,11 @@ function renderGrid(){
 }
 
 function installMethods(p){
-  if(p.source==='nuget'){
-    const cfg = `<package id="${esc(p.nugetId||p.id)}" version="${esc(p.version)}" />`;
-    return `
-      <div class="install-method">
-        <h5><span class="method-num">1</span> In the Basis Package Manager</h5>
-        <p class="desc" style="-webkit-line-clamp:3">Open <b>Packages → NuGet</b>, search <b>${esc(p.nugetId||p.id)}</b>, and click Add. It is written to <code>Assets/packages.config</code> and restored by NuGetForUnity.</p>
-      </div>
-      <div class="install-method">
-        <h5><span class="method-num">2</span> Or add to packages.config manually</h5>
-        <div class="code-wrap"><pre class="code">${esc(cfg)}</pre><button class="btn sm copy" data-copy="${esc(cfg)}">Copy</button></div>
-      </div>`;
-  }
   const dep = `"${esc(p.id)}": "${esc(p.gitUrl||'')}"`;
   return `
     <div class="install-method">
       <h5><span class="method-num">1</span> In the Basis Package Manager</h5>
-      <p class="desc" style="-webkit-line-clamp:3">Open <b>Packages → Add community package from GitHub</b> and paste:</p>
+      <p class="desc" style="-webkit-line-clamp:3">Open <b>Packages → Add from Git URL</b> (GitHub or GitLab) and paste:</p>
       <div class="code-wrap"><pre class="code">${esc(p.repoUrl||p.gitUrl||'')}</pre><button class="btn sm copy" data-copy="${esc(p.repoUrl||p.gitUrl||'')}">Copy</button></div>
     </div>
     <div class="install-method">
@@ -326,7 +330,8 @@ function installMethods(p){
 }
 
 async function openDetail(id){
-  const p = ALL.find(x=>x.id===id) || await (await fetch('/api/packages/'+encodeURIComponent(id))).json();
+  const p = ALL.find(x=>x.id===id) || RAW.find(x=>x.id===id);
+  if(!p) return;
   const deps = p.dependencies ? Object.entries(p.dependencies).map(([k,v])=>`${esc(k)} ${esc(v)}`).join(', ') : '';
   const m = document.getElementById('modal');
   m.innerHTML = `<div class="modal" onclick="event.stopPropagation()">
@@ -335,14 +340,14 @@ async function openDetail(id){
       <div class="avatar">${esc(p.icon||'📦')}</div>
       <div style="min-width:0">
         <h2>${esc(p.name)} <span class="badge ${esc(p.source)}">${esc(p.source)}</span></h2>
-        <div class="by">by ${p.authorUrl?`<a href="${esc(p.authorUrl)}" target="_blank" rel="noopener" style="color:var(--secondary);text-decoration:underline">${esc(p.author)}</a>`:esc(p.author)} · ${esc(p.category)}</div>
+        <div class="by">by ${p.authorUrl?`<a href="${esc(p.authorUrl)}" target="_blank" rel="noopener" style="color:var(--secondary);text-decoration:underline">${esc(p.author)}</a>`:esc(p.author)} · ${esc(p.category)}${hostOf(p)?' · '+hostOf(p):''}</div>
       </div>
     </div>
     <div class="modal-body">
       <p style="margin:0;color:var(--muted)">${esc(p.description)}</p>
       <div class="stats-row">
         <span>⭐ <b>${fmtNum(p.stars)}</b> stars</span>
-        <span>⬇ <b>${fmtNum(p.downloads)}</b> downloads</span>
+        <span>⑂ <b>${fmtNum(p.forks)}</b> forks</span>
         <span><b>v${esc(p.version)}</b></span>
         ${p.unity?`<span>Unity <b>${esc(p.unity)}</b></span>`:''}
         <span>Updated <b>${esc(p.updated)}</b></span>
@@ -380,14 +385,11 @@ function openSubmit(){
         </div>
         <div class="field-row">
           <label class="field"><span>Source</span>
-            <select name="source"><option value="community">community (UPM/GitHub)</option><option value="nuget">nuget</option><option value="curated">curated</option></select></label>
+            <select name="source"><option value="community">community</option><option value="curated">curated</option></select></label>
           <label class="field"><span>Version</span><input name="version" placeholder="1.0.0"></label>
         </div>
-        <label class="field"><span>Git URL (UPM) — or NuGet id below</span><input name="gitUrl" placeholder="https://github.com/you/repo.git?path=Packages/com.you.x"></label>
-        <div class="field-row">
-          <label class="field"><span>NuGet id</span><input name="nugetId" placeholder="Some.Nuget.Package"></label>
-          <label class="field"><span>Repository URL</span><input name="repoUrl" placeholder="https://github.com/you/repo"></label>
-        </div>
+        <label class="field"><span>Git URL (UPM) *</span><input name="gitUrl" placeholder="https://github.com/you/repo.git?path=Packages/com.you.x   or   https://gitlab.com/…" required></label>
+        <label class="field"><span>Repository URL</span><input name="repoUrl" placeholder="https://github.com/you/repo  or  https://gitlab.com/you/repo"></label>
         <label class="field"><span>Tags (comma-separated)</span><input name="tags" placeholder="tools, editor"></label>
         <button class="btn primary" type="submit" style="width:100%;justify-content:center">Submit package</button>
       </form>
@@ -398,18 +400,26 @@ function openSubmit(){
   document.getElementById('submitForm').onsubmit = submitPackage;
 }
 
-async function submitPackage(e){
+function submitPackage(e){
   e.preventDefault();
-  const f = e.target; const g = n => f.elements[n].value.trim();
-  const body = {
-    id:g('id'), name:g('name'), description:g('description'), author:g('author'),
-    category:g('category'), source:g('source'), version:g('version'),
-    gitUrl:g('gitUrl')||null, nugetId:g('nugetId')||null, repoUrl:g('repoUrl')||null,
-    tags: g('tags') ? g('tags').split(',').map(t=>t.trim()).filter(Boolean) : []
+  const f = e.target; const g = n => (f.elements[n]?.value||'').trim();
+  const pkg = {
+    id:g('id'), name:g('name'), description:g('description'),
+    author:g('author')||'Community', category:g('category')||'Misc',
+    tags: g('tags') ? g('tags').split(',').map(t=>t.trim()).filter(Boolean) : [],
+    source:g('source')||'community', gitUrl:g('gitUrl')||null, repoUrl:g('repoUrl')||null,
+    unity:g('unity')||null, version:g('version')||'1.0.0',
+    downloads:0, stars:0, icon:'📦', updated:new Date().toISOString().slice(0,10)
   };
-  const res = await fetch('/api/packages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  if(res.ok){ closeModals(); toast('Package submitted 🎉','ok'); await buildFilters(); await load(); }
-  else{ const err = await res.json().catch(()=>({error:'Submit failed'})); toast(err.error||'Submit failed','err'); }
+  if(!pkg.id||!pkg.name){ toast('Package id and name are required','err'); return; }
+  if(!pkg.gitUrl){ toast('A Git URL (GitHub or GitLab) is required','err'); return; }
+  const body = "### Package submission\n\nAdd this entry to `src/BasisPM.Server/seed/packages.json`:\n\n```json\n"
+    + JSON.stringify(pkg,null,2) + "\n```\n";
+  const url = `https://github.com/${REPO}/issues/new?labels=package-submission&title=`
+    + encodeURIComponent(`Add package: ${pkg.name}`) + `&body=` + encodeURIComponent(body);
+  window.open(url,'_blank','noopener');
+  closeModals();
+  toast('Opening a GitHub issue to submit…','ok');
 }
 
 function closeModals(){ document.getElementById('modal').classList.add('hidden'); document.getElementById('submitModal').classList.add('hidden'); }
@@ -423,7 +433,7 @@ let searchTimer;
 document.getElementById('search').oninput = e=>{ clearTimeout(searchTimer); state.search=e.target.value; searchTimer=setTimeout(load,180); };
 document.getElementById('sort').onchange = e=>{ state.sort=e.target.value; load(); };
 
-(async function init(){ await buildFilters(); await load(); })();
+(async function init(){ await fetchAll(); buildFilters(); load(); })();
 </script>
 </body>
 </html>
