@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace BasisPM.Core.Models;
 
 /// <summary>
-/// A shareable "modpack": a Basis version plus a set of packages. Built in the app, curated into
+/// A shareable bundle: a Basis version plus a set of packages. Built in the app, curated into
 /// the registry (seed/bundles.json), browsed/searched on the website, and installed back via the
 /// <c>basispm://bundle?id=…</c> deep link. Used by both the app and the server.
 /// </summary>

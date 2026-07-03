@@ -363,7 +363,7 @@ public sealed class PackagesViewModel : ObservableObject
         }
     }
 
-    // ===== Bundles (modpacks) =====
+    // ===== Bundles =====
 
     /// <summary>Builds a bundle from the current project's Basis + added packages and opens a GitHub issue to submit it.</summary>
     private async Task CreateBundleAsync()

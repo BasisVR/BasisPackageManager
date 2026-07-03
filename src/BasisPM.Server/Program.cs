@@ -129,7 +129,7 @@ static async Task GenerateStaticSiteAsync(string outDir)
     File.WriteAllText(Path.Combine(outDir, "packages.json"), JsonSerializer.Serialize(packages, opts));
     File.WriteAllText(Path.Combine(outDir, "catalog.json"), JsonSerializer.Serialize(PackageStore.BuildCatalog(packages), opts));
 
-    // Curated bundles (modpacks) — copied through as-is for the website's Bundles view + install-back.
+    // Curated bundles — copied through as-is for the website's Bundles view + install-back.
     var bundleSeed = ResolveUp(baseDir, Path.Combine("seed", "bundles.json"));
     var bundles = BundleStore.LoadSeed(bundleSeed);
     File.WriteAllText(Path.Combine(outDir, "bundles.json"), JsonSerializer.Serialize(bundles, opts));

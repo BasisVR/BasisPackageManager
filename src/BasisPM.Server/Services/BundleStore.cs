@@ -4,7 +4,7 @@ using BasisPM.Core.Models;
 namespace BasisPM.Server.Services;
 
 /// <summary>
-/// Loads curated bundles from seed/bundles.json (committed, PR-editable) — the modpack equivalent
+/// Loads curated bundles from seed/bundles.json (committed, PR-editable) — the bundle equivalent
 /// of <see cref="PackageStore"/>. Bundles are submitted from the app as GitHub issues and merged
 /// into the seed, so there's no runtime write path.
 /// </summary>
