@@ -23,4 +23,8 @@ public sealed class UserSettings
     // The Local Changes tab is hidden until the user opts in.
     [JsonPropertyName("showLocalChanges")]
     public bool ShowLocalChanges { get; set; }
+
+    // Whether we've already offered a desktop shortcut on first run (so we only ask once).
+    [JsonPropertyName("askedDesktopShortcut")]
+    public bool AskedDesktopShortcut { get; set; }
 }

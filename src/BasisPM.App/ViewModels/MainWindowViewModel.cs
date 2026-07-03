@@ -189,6 +189,31 @@ public sealed class MainWindowViewModel : ObservableObject
         await UnityVM.RefreshAsync();
 
         _ = CheckForUpdatesAsync(manual: false);
+        _ = MaybePromptDesktopShortcutAsync();
+    }
+
+    /// <summary>On the first run of an installed build, offer to add a desktop shortcut (asked once).</summary>
+    private async Task MaybePromptDesktopShortcutAsync()
+    {
+        if (!_updateService.IsSupported || !OperatingSystem.IsWindows()) return;
+        try
+        {
+            var settings = await _settingsService.LoadAsync();
+            if (settings.AskedDesktopShortcut) return;
+            settings.AskedDesktopShortcut = true;
+            await _settingsService.SaveAsync(settings); // ask once, even if they decline
+
+            var yes = await Dialogs.ConfirmAsync("Desktop shortcut",
+                "Add a desktop shortcut for Basis Package Manager? You can always find it from the Start menu.");
+            if (!yes) return;
+
+            _updateService.CreateDesktopShortcut();
+            SetStatus("Desktop shortcut created.", StatusKind.Success);
+        }
+        catch (Exception ex)
+        {
+            SetStatus($"Couldn't create the desktop shortcut: {ex.Message}", StatusKind.Error);
+        }
     }
 
     /// <summary>Handles a <c>basispm://install?…</c> link: choose a target install and add the git package to it.</summary>

@@ -1,5 +1,6 @@
 using System.Reflection;
 using Velopack;
+using Velopack.Locators;
 using Velopack.Sources;
 
 namespace BasisPM.App.Services;
@@ -43,6 +44,16 @@ public sealed class UpdateService
     {
         await _mgr.DownloadUpdatesAsync(info, progress, ct).ConfigureAwait(false);
         _mgr.ApplyUpdatesAndRestart(info.TargetFullRelease);
+    }
+
+    /// <summary>Creates a Desktop shortcut for the installed app (Windows + Velopack-installed only).</summary>
+    public void CreateDesktopShortcut()
+    {
+        if (!OperatingSystem.IsWindows() || !_mgr.IsInstalled || !VelopackLocator.IsCurrentSet) return;
+#pragma warning disable CS0618 // Shortcuts is auto-managed for Desktop/StartMenuRoot; we add a Desktop icon on demand.
+        new Velopack.Windows.Shortcuts(VelopackLocator.Current)
+            .CreateShortcutForThisExe(Velopack.Windows.ShortcutLocation.Desktop);
+#pragma warning restore CS0618
     }
 
     private static string AssemblyVersion()

@@ -26,4 +26,12 @@ public static class Dialogs
         if (owner is null) return null;
         return await new InstallPickerWindow(title, installs).ShowDialog<BasisInstall?>(owner);
     }
+
+    /// <summary>A yes/no prompt; returns true only if the user chose Yes.</summary>
+    public static async Task<bool> ConfirmAsync(string title, string message)
+    {
+        var owner = Owner;
+        if (owner is null) return false;
+        return await new ConfirmWindow(title, message).ShowDialog<bool>(owner);
+    }
 }
