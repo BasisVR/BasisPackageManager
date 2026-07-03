@@ -1,5 +1,9 @@
 # Basis Package Manager
 
+> ⚠️ **Work in progress — not ready for release.** This is an early preview under active
+> development. Expect bugs, breaking changes, and missing features. Not recommended for general
+> use yet — try it at your own risk.
+
 A desktop app for cloning and living with [BasisVR/Basis](https://github.com/BasisVR/Basis):
 clone the repo, add community packages from GitHub or GitLab, keep the core and packages up
 to date, see exactly what you have changed in the Basis source, and install the Unity version
