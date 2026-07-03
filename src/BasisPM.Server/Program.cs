@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BasisPM.Core.Services;
 using BasisPM.Server.Models;
 using BasisPM.Server.Services;
 
@@ -15,7 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 var dataDir = Path.Combine(builder.Environment.ContentRootPath, "App_Data");
 var seedPath = Path.Combine(builder.Environment.ContentRootPath, "seed", "packages.json");
-builder.Services.AddSingleton(new PackageStore(dataDir, seedPath));
+var store = new PackageStore(dataDir, seedPath);
+store.ResolveImages(Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "icons"));
+builder.Services.AddSingleton(store);
 
 var app = builder.Build();
 
@@ -72,20 +75,40 @@ static async Task GenerateStaticSiteAsync(string outDir)
 
     // Bake real stars / forks / last-updated from GitHub/GitLab into the static bundle.
     var stats = new RepoStatsService(Environment.GetEnvironmentVariable("GITHUB_TOKEN"));
+    var github = new GitHubService();
     foreach (var p in packages)
     {
         var s = await stats.FetchAsync(p.RepoUrl ?? p.GitUrl);
-        if (s is null) { Console.WriteLine($"  · {p.Id}: no stats (offline / private?)"); continue; }
-        p.Stars = s.Stars;
-        p.Forks = s.Forks;
-        if (!string.IsNullOrWhiteSpace(s.Updated))
-            p.Updated = s.Updated.Length >= 10 ? s.Updated[..10] : s.Updated!;
-        if (string.IsNullOrWhiteSpace(p.Description) && !string.IsNullOrWhiteSpace(s.Description))
-            p.Description = s.Description!;
-        Console.WriteLine($"  · {p.Id}: {s.Stars} stars, {s.Forks} forks");
+
+        // Version: the package.json version (authoritative for UPM); otherwise keep the seed value.
+        var ver = await FetchUpmVersionAsync(github, p.GitUrl ?? p.RepoUrl);
+        if (!string.IsNullOrWhiteSpace(ver)) p.Version = ver!;
+
+        if (s is not null)
+        {
+            p.Stars = s.Stars;
+            p.Forks = s.Forks;
+            if (!string.IsNullOrWhiteSpace(s.Updated))
+                p.Updated = s.Updated.Length >= 10 ? s.Updated[..10] : s.Updated!;
+            if (string.IsNullOrWhiteSpace(p.Description) && !string.IsNullOrWhiteSpace(s.Description))
+                p.Description = s.Description!;
+        }
+        Console.WriteLine($"  · {p.Id}: {p.Stars} stars, {p.Forks} forks, v{p.Version}");
     }
 
     Directory.CreateDirectory(outDir);
+
+    // Self-hosted package images: copy wwwroot/icons → <out>/icons and point each package at its file.
+    var iconsDir = Path.Combine(Path.GetDirectoryName(indexPath!)!, "icons");
+    if (Directory.Exists(iconsDir))
+    {
+        var destIcons = Path.Combine(outDir, "icons");
+        Directory.CreateDirectory(destIcons);
+        foreach (var f in Directory.EnumerateFiles(iconsDir))
+            File.Copy(f, Path.Combine(destIcons, Path.GetFileName(f)), overwrite: true);
+        PackageStore.ResolveImages(packages, iconsDir);
+    }
+
     var opts = new JsonSerializerOptions
     {
         WriteIndented = true,
@@ -97,6 +120,18 @@ static async Task GenerateStaticSiteAsync(string outDir)
     File.Copy(indexPath, Path.Combine(outDir, "index.html"), overwrite: true);
 
     Console.WriteLine($"Generated static registry ({packages.Count} packages) → {Path.GetFullPath(outDir)}");
+}
+
+static async Task<string?> FetchUpmVersionAsync(GitHubService github, string? gitOrRepoUrl)
+{
+    if (string.IsNullOrWhiteSpace(gitOrRepoUrl)) return null;
+    try
+    {
+        var loc = GitHubService.Parse(gitOrRepoUrl);
+        var pkg = await github.FetchPackageJsonAsync(loc);
+        return string.IsNullOrWhiteSpace(pkg?.Version) ? null : pkg!.Version;
+    }
+    catch { return null; }
 }
 
 static string? ResolveUp(string start, string relative)

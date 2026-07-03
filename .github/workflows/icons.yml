@@ -1,0 +1,44 @@
+name: Normalize package icons
+
+# When a package image is added/changed under the registry's icons folder, resize it to a
+# sensible size (max 256px, aspect preserved) and strip metadata, then commit the result.
+# Contributors just drop any square-ish PNG named <package-id>.png — this makes it "a good size".
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'src/BasisPM.Server/wwwroot/icons/**' ]
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resize to 256px and strip metadata
+        shell: bash
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick >/dev/null
+          IM="$(command -v magick || command -v convert)"
+          shopt -s nullglob nocaseglob
+          changed=0
+          for f in src/BasisPM.Server/wwwroot/icons/*.{png,jpg,jpeg,webp,gif}; do
+            before=$(md5sum "$f" | cut -d' ' -f1)
+            # -resize '256x256>' only shrinks if larger; -strip drops EXIF/ICC (privacy + size).
+            "$IM" "$f" -strip -resize '256x256>' "$f"
+            after=$(md5sum "$f" | cut -d' ' -f1)
+            if [ "$before" != "$after" ]; then echo "· normalized $f"; changed=1; fi
+          done
+          echo "CHANGED=$changed" >> "$GITHUB_ENV"
+
+      - name: Commit normalized icons
+        if: env.CHANGED == '1'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/BasisPM.Server/wwwroot/icons
+          git commit -m "Normalize package icons to 256px [skip ci]"
+          git push

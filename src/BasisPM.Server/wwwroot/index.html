@@ -8,6 +8,8 @@
   <meta name="theme-color" content="#ef1237" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#100f27" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark" />
+  <!-- Package images are self-hosted; restrict where any image can load from. -->
+  <meta http-equiv="Content-Security-Policy" content="img-src 'self' https://raw.githubusercontent.com data:;">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.bunny.net" />
@@ -66,7 +68,12 @@
               <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
             </svg>
           </a>
-          <button id="submitBtn" class="ml-6 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-brand to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow hover:shadow-lg">Submit a package</button>
+          <a href="https://github.com/BasisVR/BasisPackageManager/releases" target="_blank"
+             class="ml-6 inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white/70 px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:border-brand hover:text-brand dark:border-white/10 dark:bg-white/10 dark:text-white">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            Get the Package Manager
+          </a>
+          <button id="submitBtn" class="ml-3 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-brand to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow hover:shadow-lg">Submit a package</button>
         </div>
       </div>
     </div>
@@ -78,8 +85,9 @@
         <span class="bg-gradient-to-r from-brand to-purple-600 bg-clip-text text-transparent">Find packages for Basis</span>
       </h1>
       <p class="mt-4 text-base text-gray-600 dark:text-gray-300">
-        Community and curated packages that work with BasisVR — hosted on GitHub or GitLab, installed straight from the
-        <a href="https://github.com/BasisVR/BasisPackageManager" target="_blank" class="text-brand hover:underline">Basis Package Manager</a>.
+        Community and curated add-ons for Basis. Clone the Basis project with the
+        <a href="https://github.com/BasisVR/BasisPackageManager" target="_blank" class="text-brand hover:underline">Basis Package Manager</a>,
+        then install these — hosted on GitHub or GitLab.
       </p>
       <div class="mt-6 flex items-center gap-3 rounded-2xl border border-gray-200 bg-white/70 px-4 shadow-sm backdrop-blur focus-within:ring-2 focus-within:ring-brand dark:border-white/10 dark:bg-white/5">
         <svg class="h-5 w-5 shrink-0 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
@@ -134,11 +142,30 @@ let RAW = [], ALL = [];
 
 const esc = s => (s??"").toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hostOf = p => { const u=(p.repoUrl||p.gitUrl||'').toLowerCase(); return u.includes('gitlab')?'GitLab':u.includes('github')?'GitHub':''; };
+// curated = hosted under the Basis org (github.com/BasisVR/…); anything else is community.
+const deriveSource = (repoUrl, gitUrl) => { const m=(repoUrl||gitUrl||'').toLowerCase().match(/github\.com[/:]+([^/?#]+)/); return (m && m[1]==='basisvr') ? 'curated' : 'community'; };
+async function fetchLatestVersion(repoUrl, gitUrl){
+  const src = gitUrl || repoUrl || '';
+  const m = src.match(/github\.com[/:]+([^/?#]+)\/([^/?#.]+)/i);
+  if(!m) return null;
+  const pm = src.match(/[?&]path=([^&#]+)/);
+  const path = pm ? decodeURIComponent(pm[1]).replace(/^\/+|\/+$/g,'') + '/' : '';
+  try{
+    const res = await fetch(`https://raw.githubusercontent.com/${m[1]}/${m[2]}/HEAD/${path}package.json`);
+    if(!res.ok) return null;
+    const j = await res.json();
+    return j.version || null;
+  }catch{ return null; }
+}
 const fmtNum = n => n>=1e9?(n/1e9).toFixed(1).replace(/\.0$/,'')+'B':n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,'')+'M':n>=1e3?(n/1e3).toFixed(1).replace(/\.0$/,'')+'K':''+n;
 const badgeCls = s => s==='curated' ? 'bg-brand/15 text-brand ring-1 ring-brand/30'
   : s==='community' ? 'bg-purple-500/15 text-purple-600 dark:text-purple-400 ring-1 ring-purple-500/30'
   : 'bg-gray-500/15 text-gray-500 ring-1 ring-gray-500/20';
 const dotCls = k => k==='curated'?'bg-brand':k==='community'?'bg-purple-500':'bg-gray-400';
+// Package image is a self-hosted path (icons/<id>.png) or null → fall back to the emoji icon.
+const imgOrIcon = p => p.image
+  ? `<img src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" class="h-full w-full object-cover" onerror="this.replaceWith(document.createTextNode('📦'))">`
+  : esc(p.icon||'📦');
 
 function toast(msg, kind){
   const t=document.getElementById('toast');
@@ -212,7 +239,7 @@ function renderGrid(){
   grid.innerHTML = ALL.map(p=>`
     <div data-id="${esc(p.id)}" class="group flex cursor-pointer flex-col rounded-2xl border border-gray-200 bg-white/70 p-5 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand/20 dark:border-white/10 dark:bg-white/5">
       <div class="flex items-start gap-3">
-        <div class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${esc(p.icon||'📦')}</div>
+        <div class="inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 text-xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${imgOrIcon(p)}</div>
         <div class="min-w-0">
           <h3 class="flex flex-wrap items-center gap-2 font-semibold">${esc(p.name)}
             <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${badgeCls(p.source)}">${esc(p.source)}</span></h3>
@@ -257,7 +284,7 @@ function openDetail(id){
   const stat = 'text-gray-600 dark:text-gray-300';
   m.innerHTML = `<div class="w-full max-w-2xl max-h-[85vh] overflow-auto rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-basisbg" onclick="event.stopPropagation()">
     <div class="flex items-start gap-4 border-b border-gray-200 p-6 dark:border-white/10">
-      <div class="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gray-100 text-3xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${esc(p.icon||'📦')}</div>
+      <div class="inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 text-3xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${imgOrIcon(p)}</div>
       <div class="min-w-0 flex-1">
         <h2 class="flex flex-wrap items-center gap-2 text-xl font-bold">${esc(p.name)} <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${badgeCls(p.source)}">${esc(p.source)}</span></h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">by ${p.authorUrl?`<a href="${esc(p.authorUrl)}" target="_blank" class="underline hover:text-brand">${esc(p.author)}</a>`:esc(p.author)} · ${esc(p.category)}${hostOf(p)?' · '+hostOf(p):''}</p>
@@ -275,16 +302,14 @@ function openDetail(id){
       </div>
       ${p.dependencies?`<div><p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Dependencies</p><div class="flex flex-wrap gap-1.5">${Object.entries(p.dependencies).map(([k,v])=>`<span class="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600 dark:bg-white/5 dark:text-gray-300">${esc(k)} ${esc(v)}</span>`).join('')}</div></div>`:''}
       <div>
-        <div class="mb-3 flex items-center justify-between gap-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">How to install</p>
-          <a href="basispm://install?id=${encodeURIComponent(p.id)}&name=${encodeURIComponent(p.name)}&git=${encodeURIComponent(p.gitUrl||'')}&repo=${encodeURIComponent(p.repoUrl||'')}"
-             class="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand to-purple-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow hover:shadow-lg"
-             title="Opens the Basis Package Manager app and adds this package. Requires the app installed.">
-            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-            Install in app
-          </a>
-        </div>
-        <p class="mb-2 text-xs text-gray-400">Have the desktop app? <b>Install in app</b> adds it to your active project. Otherwise use one of the methods below.</p>
+        <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">How to install</p>
+        <a href="basispm://install?id=${encodeURIComponent(p.id)}&name=${encodeURIComponent(p.name)}&git=${encodeURIComponent(p.gitUrl||'')}&repo=${encodeURIComponent(p.repoUrl||'')}"
+           class="mb-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand to-purple-600 px-5 py-4 text-base font-semibold text-white shadow hover:shadow-lg"
+           title="Opens the Basis Package Manager app and adds this package to your active project. Requires the app installed.">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          Install in the Basis Package Manager
+        </a>
+        <p class="mb-3 text-center text-xs text-gray-400">Requires the desktop app. Prefer to do it by hand? Use one of these:</p>
         <div class="space-y-3">${installMethods(p)}</div>
       </div>
       <div class="flex flex-wrap gap-2">
@@ -318,8 +343,9 @@ function openSubmit(){
         <label class="${field}"><span class="${label}">Category</span><input name="category" class="${input}" placeholder="Tools"></label>
       </div>
       <div class="grid gap-4 sm:grid-cols-2">
-        <label class="${field}"><span class="${label}">Source</span><select name="source" class="${input}"><option value="community">community</option><option value="curated">curated</option></select></label>
-        <label class="${field}"><span class="${label}">Version</span><input name="version" class="${input}" placeholder="1.0.0"></label>
+        <label class="${field}"><span class="${label}">Source (auto)</span>
+          <div class="${input} flex items-center justify-between"><span id="srcAuto" class="font-semibold">community</span><span id="srcHint" class="text-xs text-gray-400">hosted elsewhere</span></div></label>
+        <label class="${field}"><span class="${label}">Version <span id="verHint" class="text-xs text-gray-400"></span></span><input name="version" class="${input}" placeholder="auto-detected from releases"></label>
       </div>
       <label class="${field}"><span class="${label}">Git URL (UPM) *</span><input name="gitUrl" required class="${input}" placeholder="https://github.com/you/repo.git?path=Packages/com.you.x  or  https://gitlab.com/…"></label>
       <label class="${field}"><span class="${label}">Repository URL</span><input name="repoUrl" class="${input}" placeholder="https://github.com/you/repo  or  https://gitlab.com/you/repo"></label>
@@ -328,7 +354,27 @@ function openSubmit(){
     </form>
   </div>`;
   m.classList.remove('hidden');
-  document.getElementById('submitForm').onsubmit = submitPackage;
+  const f = document.getElementById('submitForm');
+  f.onsubmit = submitPackage;
+  let verTimer;
+  const updateAuto = () => {
+    const repo = f.elements.repoUrl.value, git = f.elements.gitUrl.value;
+    const s = deriveSource(repo, git);
+    document.getElementById('srcAuto').textContent = s;
+    document.getElementById('srcHint').textContent = s==='curated' ? 'under github.com/BasisVR' : 'hosted elsewhere';
+    clearTimeout(verTimer);
+    verTimer = setTimeout(async () => {
+      if (!repo && !git) { document.getElementById('verHint').textContent=''; return; }
+      document.getElementById('verHint').textContent = '(checking package.json…)';
+      const v = await fetchLatestVersion(repo, git);
+      document.getElementById('verHint').textContent = v ? '(from package.json)' : '(not detected)';
+      if (v && !f.elements.version.dataset.touched) f.elements.version.value = v;
+    }, 500);
+  };
+  f.elements.gitUrl.oninput = updateAuto;
+  f.elements.repoUrl.oninput = updateAuto;
+  f.elements.version.oninput = () => { f.elements.version.dataset.touched = '1'; };
+  updateAuto();
 }
 
 function submitPackage(e){
@@ -338,7 +384,7 @@ function submitPackage(e){
     id:g('id'), name:g('name'), description:g('description'),
     author:g('author')||'Community', category:g('category')||'Misc',
     tags: g('tags') ? g('tags').split(',').map(t=>t.trim()).filter(Boolean) : [],
-    source:g('source')||'community', gitUrl:g('gitUrl')||null, repoUrl:g('repoUrl')||null,
+    source:deriveSource(g('repoUrl'), g('gitUrl')), gitUrl:g('gitUrl')||null, repoUrl:g('repoUrl')||null,
     unity:g('unity')||null, version:g('version')||'1.0.0'
   };
   if(!pkg.id||!pkg.name){ toast('Package id and name are required','err'); return; }

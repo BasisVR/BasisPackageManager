@@ -92,7 +92,13 @@
                 <Border Classes="card" Padding="0">
                     <StackPanel>
                         <Border Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                            <TextBlock Text="Installed" Classes="h3"/>
+                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                                <TextBlock Grid.Column="0" Text="Installed" Classes="h3" VerticalAlignment="Center"/>
+                                <ComboBox Grid.Column="2" MinWidth="150"
+                                          ItemsSource="{Binding InstalledOwners}"
+                                          SelectedItem="{Binding SelectedInstalledOwner}"
+                                          ToolTip.Tip="Filter installed packages by owner (from the package id)"/>
+                            </Grid>
                         </Border>
                         <ItemsControl ItemsSource="{Binding Installed}">
                             <ItemsControl.ItemTemplate>

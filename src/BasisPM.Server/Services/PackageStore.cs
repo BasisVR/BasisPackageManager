@@ -43,11 +43,26 @@ public sealed class PackageStore
             try
             {
                 var list = Read(seedPath);
-                if (list is { Count: > 0 }) return list;
+                if (list is { Count: > 0 })
+                {
+                    foreach (var p in list) p.Source = DeriveSource(p.RepoUrl, p.GitUrl);
+                    return list;
+                }
             }
             catch { }
         }
         return new List<RegistryPackage>();
+    }
+
+    /// <summary>Curated = hosted under github.com/BasisVR; anything else is community.</summary>
+    public static string DeriveSource(string? repoUrl, string? gitUrl)
+    {
+        var u = (repoUrl ?? gitUrl ?? "").ToLowerInvariant();
+        var idx = u.IndexOf("github.com", StringComparison.Ordinal);
+        if (idx < 0) return "community";
+        var owner = u[(idx + "github.com".Length)..].TrimStart('/', ':')
+            .Split('/', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        return string.Equals(owner, "basisvr", StringComparison.OrdinalIgnoreCase) ? "curated" : "community";
     }
 
     public IReadOnlyList<RegistryPackage> All()
@@ -117,9 +132,9 @@ public sealed class PackageStore
             pkg.AuthorUrl = sub.AuthorUrl;
             pkg.Category = string.IsNullOrWhiteSpace(sub.Category) ? "Misc" : sub.Category.Trim();
             pkg.Tags = sub.Tags ?? pkg.Tags;
-            pkg.Source = string.IsNullOrWhiteSpace(sub.Source) ? "community" : sub.Source.Trim().ToLowerInvariant();
             pkg.GitUrl = sub.GitUrl?.Trim();
             pkg.RepoUrl = sub.RepoUrl?.Trim();
+            pkg.Source = DeriveSource(pkg.RepoUrl, pkg.GitUrl);
             pkg.Unity = sub.Unity?.Trim();
             pkg.Version = string.IsNullOrWhiteSpace(sub.Version) ? (existing?.Version ?? "1.0.0") : sub.Version.Trim();
             if (string.IsNullOrEmpty(pkg.Icon)) pkg.Icon = "📦";
@@ -154,12 +169,48 @@ public sealed class PackageStore
                         Url = p.GitUrl,
                         Dependencies = p.Dependencies,
                         Author = new CatalogAuthor { Name = p.Author, Url = p.AuthorUrl },
+                        Image = p.Image,
                     },
                 },
             };
         }
         return catalog;
     }
+
+    private static readonly string[] ImageExts = { ".png", ".webp", ".jpg", ".jpeg", ".gif" };
+
+    /// <summary>
+    /// Sets each package's <see cref="RegistryPackage.Image"/> from a committed file
+    /// <c>{iconsDir}/{id}.{ext}</c>, or null when none exists. Images are self-hosted only:
+    /// this is authoritative and ignores any image value from the seed, so nothing submitted
+    /// can point the UI at a remote URL.
+    /// </summary>
+    public static void ResolveImages(IEnumerable<RegistryPackage> packages, string iconsDir)
+    {
+        var haveDir = Directory.Exists(iconsDir);
+        foreach (var p in packages)
+        {
+            p.Image = null;
+            if (!haveDir || !IsSafeId(p.Id)) continue;
+            foreach (var ext in ImageExts)
+            {
+                if (File.Exists(Path.Combine(iconsDir, p.Id + ext)))
+                {
+                    p.Image = "icons/" + p.Id + ext;
+                    break;
+                }
+            }
+        }
+    }
+
+    public void ResolveImages(string iconsDir)
+    {
+        lock (_gate) ResolveImages(_packages, iconsDir);
+    }
+
+    // Package ids only (e.g. com.foo.bar) — blocks path traversal when building the icon filename.
+    private static bool IsSafeId(string id) =>
+        !string.IsNullOrEmpty(id) && id.All(c => char.IsLetterOrDigit(c) || c is '.' or '_' or '-');
 
     private static List<RegistryPackage>? Read(string path) =>
         JsonSerializer.Deserialize<List<RegistryPackage>>(File.ReadAllText(path), FileOpts);

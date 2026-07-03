@@ -121,6 +121,10 @@
                                     <Button Content="Open"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenFolderCommand}"
                                             CommandParameter="{Binding}"/>
+                                    <Button Content="Backup" IsVisible="{Binding HasUnityProject}"
+                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).BackupCommand}"
+                                            CommandParameter="{Binding}"
+                                            ToolTip.Tip="Zip Assets, Packages and ProjectSettings (not the Library cache)"/>
                                     <Button Content="Remove" Classes="danger"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).RemoveCommand}"
                                             CommandParameter="{Binding}"/>

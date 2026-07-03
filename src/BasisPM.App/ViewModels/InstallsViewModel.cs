@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using BasisPM.App.Views;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
 
@@ -45,6 +46,7 @@ public sealed class InstallsViewModel : ObservableObject
     public RelayCommand<InstallRow> ViewChangesCommand { get; }
     public RelayCommand<InstallRow> RemoveCommand { get; }
     public RelayCommand<InstallRow> SetActiveCommand { get; }
+    public RelayCommand<InstallRow> BackupCommand { get; }
 
     public InstallsViewModel(UserSettingsService settingsService, BasisInstallService installService, GitService git, MainWindowViewModel shell)
     {
@@ -64,6 +66,7 @@ public sealed class InstallsViewModel : ObservableObject
         ViewChangesCommand = new RelayCommand<InstallRow>(r => Activate(r, "changes"));
         RemoveCommand = new RelayCommand<InstallRow>(RemoveAsync);
         SetActiveCommand = new RelayCommand<InstallRow>(r => Activate(r, null));
+        BackupCommand = new RelayCommand<InstallRow>(BackupAsync);
     }
 
     public async Task LoadAsync(UserSettings settings)
@@ -258,6 +261,10 @@ public sealed class InstallsViewModel : ObservableObject
             _shell.SetStatus($"{row.Name} is not a git repository.", StatusKind.Error);
             return;
         }
+
+        if (!await PromptBackupAsync(row, "Update Core runs 'git pull', which can change files in your Basis project."))
+            return;
+
         row.IsBusy = true;
         _shell.SetStatus($"Updating {row.Name} (git pull)…");
         try
@@ -282,6 +289,51 @@ public sealed class InstallsViewModel : ObservableObject
         }
         finally { row.IsBusy = false; }
     }
+
+    private async Task BackupAsync(InstallRow? row)
+    {
+        if (row is null) return;
+        if (!BackupService.LooksLikeUnityProject(row.UnityProjectPath))
+        {
+            _shell.SetStatus($"{row.Name} has no Unity project to back up.", StatusKind.Error);
+            return;
+        }
+        row.IsBusy = true;
+        _shell.SetStatus($"Backing up {row.Name}…");
+        try
+        {
+            var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+            var zip = await BackupService.CreateBackupAsync(row.UnityProjectPath, DefaultBackupDir(row), stamp,
+                msg => Dispatcher.UIThread.Post(() => _shell.SetStatus(msg)));
+            _shell.SetStatus($"Backed up {row.Name} → {zip}", StatusKind.Success);
+        }
+        catch (Exception ex)
+        {
+            _shell.SetStatus($"Backup failed: {ex.Message}", StatusKind.Error);
+        }
+        finally { row.IsBusy = false; }
+    }
+
+    /// <summary>
+    /// Offers a backup before a project-mutating action. Returns false only if the user cancels;
+    /// true means proceed (having optionally taken a backup first).
+    /// </summary>
+    private async Task<bool> PromptBackupAsync(InstallRow row, string action)
+    {
+        if (!row.HasUnityProject) return true; // nothing to back up
+        var window = GetMainWindow();
+        if (window is null) return true;
+
+        var message = $"{action}\n\nBack up {row.Name} first? This zips Assets, Packages and " +
+                      "ProjectSettings (not the Library cache) into a BasisBackups folder next to your install.";
+        var choice = await new BackupPromptDialog(message).ShowDialog<BackupChoice>(window);
+        if (choice == BackupChoice.Cancel) return false;
+        if (choice == BackupChoice.Backup) await BackupAsync(row);
+        return true;
+    }
+
+    private static string DefaultBackupDir(InstallRow row) =>
+        Path.Combine(Path.GetDirectoryName(row.RepoRoot) ?? row.RepoRoot, "BasisBackups");
 
     private async Task AddExistingAsync()
     {

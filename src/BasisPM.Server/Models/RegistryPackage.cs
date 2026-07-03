@@ -24,6 +24,9 @@ public sealed class RegistryPackage
     [JsonPropertyName("stars")] public int Stars { get; set; }
     [JsonPropertyName("forks")] public int Forks { get; set; }
     [JsonPropertyName("icon")] public string Icon { get; set; } = "📦";
+    // Optional promo image. Self-hosted only: a path under the site's icons/ folder
+    // (e.g. "icons/com.basis.sdk.png"), never an arbitrary remote URL. Emoji Icon is the fallback.
+    [JsonPropertyName("image")] public string? Image { get; set; }
     [JsonPropertyName("updated")] public string Updated { get; set; } = "";
     [JsonPropertyName("dependencies")] public Dictionary<string, string>? Dependencies { get; set; }
 }

@@ -16,13 +16,19 @@ public sealed class PackagesViewModel : ObservableObject
     private string _filter = "";
     private string _githubInput = "";
     private bool _isBusy;
+    private string _installedOwner = AllOwnersLabel;
+    private readonly List<InstalledPackageRow> _allInstalled = new();
+
+    private const string AllOwnersLabel = "All owners";
 
     public ObservableCollection<PackageRow> Available { get; } = new();
     public ObservableCollection<InstalledPackageRow> Installed { get; } = new();
+    public ObservableCollection<string> InstalledOwners { get; } = new();
 
     public string Filter { get => _filter; set { if (SetField(ref _filter, value)) Refilter(); } }
     public string GitHubInput { get => _githubInput; set => SetField(ref _githubInput, value); }
     public bool IsBusy { get => _isBusy; set => SetField(ref _isBusy, value); }
+    public string SelectedInstalledOwner { get => _installedOwner; set { if (SetField(ref _installedOwner, value)) ApplyInstalledFilter(); } }
 
     public string InstallName => _install?.Name ?? "No install selected";
     public bool HasInstall => _install is not null && _install.HasUnityProject;
@@ -97,8 +103,9 @@ public sealed class PackagesViewModel : ObservableObject
 
     private void RefreshInstalled()
     {
+        _allInstalled.Clear();
         Installed.Clear();
-        if (_install is null || !_install.HasUnityProject) { Refilter(); return; }
+        if (_install is null || !_install.HasUnityProject) { RebuildInstalledOwners(); Refilter(); return; }
 
         foreach (var (name, version) in _install.Manifest.Dependencies)
         {
@@ -106,10 +113,48 @@ public sealed class PackagesViewModel : ObservableObject
                 ? pkg.Versions.Values.First().DisplayName
                 : name;
             var isGit = version.Contains("github.com", StringComparison.OrdinalIgnoreCase) || version.StartsWith("git", StringComparison.OrdinalIgnoreCase);
-            Installed.Add(new InstalledPackageRow(name, displayName, version, isGit));
+            _allInstalled.Add(new InstalledPackageRow(name, displayName, version, isGit));
         }
 
+        RebuildInstalledOwners();
+        ApplyInstalledFilter();
         Refilter();
+    }
+
+    /// <summary>Vendor/owner from a reverse-DNS package id: com.unity.2d.sprite → "Unity".</summary>
+    private static string OwnerOf(string id)
+    {
+        var parts = (id ?? "").Split('.', StringSplitOptions.RemoveEmptyEntries);
+        var owner = parts.Length >= 2 ? parts[1] : parts.FirstOrDefault() ?? "";
+        if (owner.Length == 0) return "Other";
+        return char.ToUpperInvariant(owner[0]) + owner[1..];
+    }
+
+    private void RebuildInstalledOwners()
+    {
+        var current = _installedOwner;
+        var owners = _allInstalled.Select(r => OwnerOf(r.Name))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(o => o, StringComparer.OrdinalIgnoreCase).ToList();
+
+        InstalledOwners.Clear();
+        InstalledOwners.Add(AllOwnersLabel);
+        foreach (var o in owners) InstalledOwners.Add(o);
+
+        // Keep the current pick if it still exists, otherwise fall back to "All owners".
+        _installedOwner = InstalledOwners.Contains(current) ? current : AllOwnersLabel;
+        OnPropertyChanged(nameof(SelectedInstalledOwner));
+    }
+
+    private void ApplyInstalledFilter()
+    {
+        Installed.Clear();
+        var all = string.Equals(_installedOwner, AllOwnersLabel, StringComparison.Ordinal);
+        foreach (var r in _allInstalled)
+        {
+            if (all || string.Equals(OwnerOf(r.Name), _installedOwner, StringComparison.OrdinalIgnoreCase))
+                Installed.Add(r);
+        }
     }
 
     private async Task InstallCuratedAsync(CatalogPackageVersion? entry)

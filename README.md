@@ -80,6 +80,13 @@ dotnet run --project src/BasisPM.Server   # → http://localhost:5133
   writes `index.html` + `packages.json` + `catalog.json` with the real stats baked in.
 - `catalog.json` is **format-compatible with the desktop app** — point Settings →
   *Package Catalog URL* at `…/catalog.json` and the app's Packages tab serves from the registry.
+- **Package images** — give a package a promo image on its card (like
+  [Hangar](https://hangar.papermc.io/)) by dropping a square PNG **named after the package id**
+  into `src/BasisPM.Server/wwwroot/icons/` and opening a PR — e.g. `icons/com.you.mypackage.png`.
+  Nothing else to edit. Images are **self-hosted only** (never a remote URL, so there's no SSRF or
+  tracking surface); a package with no image falls back to its emoji `icon`. On merge, CI
+  ([`icons.yml`](.github/workflows/icons.yml)) auto-resizes to ≤256px and strips metadata so any
+  reasonable image becomes a good size. PNG with transparency, ~256–512px square, looks best.
 
 ## Run
 

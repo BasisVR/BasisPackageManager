@@ -26,6 +26,8 @@ public sealed class CatalogPackageVersion
     [JsonPropertyName("dependencies")] public Dictionary<string, string>? Dependencies { get; set; }
     [JsonPropertyName("url")] public string? Url { get; set; }
     [JsonPropertyName("author")] public CatalogAuthor? Author { get; set; }
+    // Optional self-hosted promo image URL (served from the registry's icons/ folder).
+    [JsonPropertyName("image")] public string? Image { get; set; }
 }
 
 public sealed class CatalogAuthor
