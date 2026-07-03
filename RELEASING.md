@@ -46,17 +46,28 @@ Linux (AppImage) needs no signing for this purpose.
 
 > **Heads up:** the cheapest cloud option, Microsoft's
 > [Azure Trusted Signing](https://azure.microsoft.com/products/artifact-signing) (~$10/mo),
-> is **only available to the US, Canada and EU/UK — not Australia**. The two options below are
-> internationally available and sign in GitHub Actions **without a USB hardware token**.
+> is **only available to the US, Canada and EU/UK — not Australia**.
 
-Since June 2023 ordinary OV certificates must live on a hardware token or a cloud HSM, so pick a
-provider whose cloud service exposes the cert to `signtool`:
+> **No cert is "pay once, forever"** — from March 2026 all code-signing certs expire within ~15
+> months, so paid certs renew on roughly that cycle. The free option below avoids the cost entirely.
 
-**[Certum](https://www.certum.eu/en/code-signing-certificates/) — cheapest (~€69 first year, ~€29
-renewal).** A European CA trusted by Microsoft. Its **Open Source Developer** cert suits BasisVR
-(MIT), and its SimplySign cloud presents the cert to `signtool` as a virtual smart card (no token).
-It's OV, so SmartScreen reputation builds over the first downloads rather than instantly. Best if
-you sign from your workstation or run Certum's SimplySign proxy on the runner.
+Since Basis is open source, the best route is free:
+
+**[SignPath Foundation](https://signpath.org/) — free for open source (recommended for BasisVR).**
+As an MIT project Basis qualifies for SignPath's free OV code-signing program. The private key lives
+on their HSM (you never handle it) and signing runs in CI — no monthly or annual fee. The only
+requirement is that all maintainers enable MFA on GitHub and SignPath. Apply with your repo and
+download URLs at [signpath.org](https://signpath.org/). It signs via their platform rather than
+`signtool`, so it needs a couple of extra CI steps around `vpk pack` (I can wire those).
+
+If you'd rather buy a cert directly, both of these are cloud-based and sign via `signtool` with no
+USB token:
+
+**[Certum](https://www.certum.eu/en/code-signing-certificates/) — cheapest paid (~€69 first year, ~€29
+renewal).** A European CA trusted by Microsoft. Its **Open Source Developer** cert suits BasisVR, and
+its SimplySign cloud presents the cert to `signtool` as a virtual smart card. It's OV, so SmartScreen
+reputation builds over the first downloads rather than instantly. Best if you sign from your
+workstation or run Certum's SimplySign proxy on the runner.
 
 **[SSL.com eSigner](https://www.ssl.com/how-to/cloud-code-signing-integration-with-github-actions/)
 — cleanest for CI (~US$249/yr EV, cheaper OV).** Purpose-built for pipelines: an official GitHub
@@ -112,10 +123,11 @@ app needs are in [`build/entitlements.plist`](build/entitlements.plist).
 
 | Platform | What | Cost |
 |----------|------|------|
-| Windows  | Certum (cheapest) — or SSL.com eSigner (CI-native) | ~€69/yr — or ~US$249/yr |
-| macOS    | Apple Developer Program | US$99/yr |
+| Windows  | **SignPath Foundation (open source)** | **free** |
+|          | or Certum / SSL.com eSigner | ~€69/yr / ~US$249/yr |
+| macOS    | Apple Developer Program (annual — no one-time or lifetime option) | US$99/yr |
 | Linux    | — | free |
 
-Windows-only signing is a fine place to start — Certum's open-source cert is inexpensive and
-covers the most users. macOS signing is independent; add it whenever you want Mac users to skip
-the Gatekeeper prompt.
+For BasisVR the cheapest path by far is **SignPath (free) for Windows** and simply shipping macOS
+unsigned to start (Mac users right-click → Open the first time). Add Apple's $99/yr only once Mac
+matters enough to remove that prompt.
