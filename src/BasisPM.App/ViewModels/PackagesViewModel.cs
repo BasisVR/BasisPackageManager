@@ -192,6 +192,24 @@ public sealed class PackagesViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Recursively adds the registry-catalog dependencies of <paramref name="requested"/> to the
+    /// manifest as git deps, skipping anything already present. Dependencies not in the catalog
+    /// (e.g. com.unity.*) are left for Unity's Package Manager to resolve. Returns the count added.
+    /// </summary>
+    private int AddCatalogDependencies(BasisInstall target, IEnumerable<(string Name, string Range)> requested)
+    {
+        var result = new DependencyResolver(_catalogService).Resolve(_catalog, requested);
+        var added = 0;
+        foreach (var (name, ver) in result.Resolved)
+        {
+            if (target.Manifest.Dependencies.ContainsKey(name)) continue;
+            target.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
+            added++;
+        }
+        return added;
+    }
+
     private async Task InstallCuratedAsync(CatalogPackageVersion? entry)
     {
         if (entry is null || _install is null || !_install.HasUnityProject)
@@ -210,12 +228,14 @@ public sealed class PackagesViewModel : ObservableObject
                 requested.Add((name, range));
 
             var result = resolver.Resolve(_catalog, requested);
-            if (!result.Ok)
+            if (result.Conflicts.Count > 0)
             {
-                _shell.SetStatus($"Resolve failed: {string.Join("; ", result.Missing.Concat(result.Conflicts))}", StatusKind.Error);
+                _shell.SetStatus($"Dependency conflict: {string.Join("; ", result.Conflicts)}", StatusKind.Error);
                 return;
             }
 
+            // Add the package plus every registry dependency; anything not in the catalog
+            // (e.g. com.unity.*) is left for Unity's Package Manager to resolve at import.
             foreach (var (name, ver) in result.Resolved)
                 target.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
 
@@ -278,9 +298,14 @@ public sealed class PackagesViewModel : ObservableObject
             var manifestUrl = GitHubService.BuildManifestUrl(loc);
             var existed = target.Manifest.Dependencies.ContainsKey(pkg.Name);
             target.Manifest.Dependencies[pkg.Name] = manifestUrl;
+            // Pull in the package's registry dependencies too (Unity resolves com.unity.* itself).
+            var deps = pkg.Dependencies is { Count: > 0 }
+                ? AddCatalogDependencies(target, pkg.Dependencies.Select(d => (d.Key, d.Value)))
+                : 0;
             await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
-            _shell.SetStatus($"{(existed ? "Updated" : "Added")} {pkg.Name} from GitHub.", StatusKind.Success);
+            var depNote = deps > 0 ? $" (+{deps} dependency package{(deps == 1 ? "" : "s")})" : "";
+            _shell.SetStatus($"{(existed ? "Updated" : "Added")} {pkg.Name}{depNote} from GitHub.", StatusKind.Success);
             GitHubInput = "";
             RefreshInstalled();
         }
@@ -308,8 +333,11 @@ public sealed class PackagesViewModel : ObservableObject
         {
             var existed = _install.Manifest.Dependencies.ContainsKey(id);
             _install.Manifest.Dependencies[id] = gitUrl.Trim();
+            // If the package is in the registry, add its Basis-ecosystem dependencies too.
+            var deps = AddCatalogDependencies(_install, new[] { (id!, "*") });
             await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
-            _shell.SetStatus($"{(existed ? "Updated" : "Added")} {name ?? id} → {_install.Name}.", StatusKind.Success);
+            var depNote = deps > 0 ? $" (+{deps} dependency package{(deps == 1 ? "" : "s")})" : "";
+            _shell.SetStatus($"{(existed ? "Updated" : "Added")} {name ?? id}{depNote} → {_install.Name}.", StatusKind.Success);
             RefreshInstalled();
         }
         catch (Exception ex)
