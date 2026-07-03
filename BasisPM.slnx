@@ -2,5 +2,6 @@
   <Folder Name="/src/">
     <Project Path="src/BasisPM.App/BasisPM.App.csproj" />
     <Project Path="src/BasisPM.Core/BasisPM.Core.csproj" />
+    <Project Path="src/BasisPM.Server/BasisPM.Server.csproj" />
   </Folder>
 </Solution>

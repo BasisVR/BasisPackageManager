@@ -29,6 +29,24 @@ Built with [AvaloniaUI](https://avaloniaui.net/) (.NET 9), styled to match
 - [Git](https://git-scm.com/) on your `PATH` (used for clone / pull / status / diff)
 - [Unity Hub](https://unity.com/download) for editor installs
 
+## Package registry server
+
+`src/BasisPM.Server` is an ASP.NET Core web app — a [Hangar](https://hangar.papermc.io/)-style
+package registry where the community can browse and submit Basis-compatible packages, with a
+JSON API the desktop app consumes.
+
+```
+dotnet run --project src/BasisPM.Server   # → http://localhost:5133
+```
+
+- **Browse UI** (`/`) — search, source/category filters, and package cards with install
+  instructions, styled to match the desktop app.
+- **API** — `GET /api/packages` (search/filter/sort), `/api/packages/{id}`, `/api/categories`,
+  `POST /api/packages` (submit), and `GET /api/catalog`.
+- `GET /api/catalog` is **format-compatible with the desktop app's catalog** — point
+  Settings → *Package Catalog URL* at `http://<host>/api/catalog` and the app's Packages tab
+  serves from the registry. Package data lives in `App_Data/registry.json` (seeded from code).
+
 ## Run
 
 ```
@@ -40,3 +58,4 @@ dotnet run --project src/BasisPM.App
 - `src/BasisPM.App` — Avalonia UI (MVVM: `ViewModels/`, `Views/`, `Styles/`)
 - `src/BasisPM.Core` — services and models (`GitService`, `NuGetService`,
   `UnityHubService`, `BasisInstallService`, catalog + manifest handling)
+- `src/BasisPM.Server` — ASP.NET Core package registry (browse UI + JSON API)

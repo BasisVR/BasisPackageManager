@@ -427,3 +427,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# BasisPM server runtime data (seeded from code)
+**/App_Data/
