@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:BasisPM.App.ViewModels"
+             xmlns:models="using:BasisPM.Core.Models"
              x:Class="BasisPM.App.Views.PackagesView"
              x:DataType="vm:PackagesViewModel"
              Name="Root">
@@ -14,11 +15,27 @@
                 <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                     <StackPanel Grid.Column="0" Spacing="6">
                         <TextBlock Text="PACKAGES" Classes="tagline"/>
-                        <TextBlock Text="{Binding InstallName}" Classes="h1"/>
-                        <TextBlock Text="Install packages from the Basis registry, or add any community UPM package from a git URL."
+                        <TextBlock Text="Packages" Classes="h1"/>
+                        <TextBlock Text="Pick a project, then install packages from the Basis registry or add any community UPM package by git URL."
                                    Classes="muted" FontSize="14"/>
                     </StackPanel>
-                    <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshCommand}"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                        <StackPanel Spacing="4" IsVisible="{Binding HasInstalls}">
+                            <TextBlock Text="Project" Classes="muted" FontSize="11"/>
+                            <ComboBox MinWidth="200" MaxDropDownHeight="360"
+                                      ItemsSource="{Binding InstallOptions}" SelectedItem="{Binding SelectedInstall}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="models:BasisInstall">
+                                        <StackPanel Spacing="-1">
+                                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding UnityVersion, StringFormat='Unity {0}'}" Classes="dim" FontSize="10"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <Button Content="Refresh" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom"/>
+                    </StackPanel>
                 </Grid>
             </Border>
 

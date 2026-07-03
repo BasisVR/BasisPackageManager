@@ -106,10 +106,15 @@ public sealed class InstallsViewModel : ObservableObject
         }
     }
 
+    // Keeps the Packages tab's project dropdown in step with the installs list (Unity projects only).
+    private void SyncPackageProjects() =>
+        _shell.PackagesVM.SetInstallOptions(Installs.Where(r => r.Install.HasUnityProject).Select(r => r.Install).ToList());
+
     private InstallRow AddRow(BasisInstall install, bool activate)
     {
         var row = new InstallRow(install);
         Installs.Add(row);
+        SyncPackageProjects();
         _ = RefreshGitInfoAsync(row, fetch: false);
         if (activate) Activate(row, null);
         return row;
@@ -406,6 +411,7 @@ public sealed class InstallsViewModel : ObservableObject
     {
         if (row is null) return;
         Installs.Remove(row);
+        SyncPackageProjects();
         if (_activeRow == row)
         {
             _activeRow = null;

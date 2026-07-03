@@ -18,20 +18,37 @@ public sealed class PackagesViewModel : ObservableObject
     private bool _isBusy;
     private string _installedOwner = AllOwnersLabel;
     private readonly List<InstalledPackageRow> _allInstalled = new();
+    private BasisInstall? _selectedInstall;
+    private bool _syncingSelection;
 
     private const string AllOwnersLabel = "All owners";
 
     public ObservableCollection<PackageRow> Available { get; } = new();
     public ObservableCollection<InstalledPackageRow> Installed { get; } = new();
     public ObservableCollection<string> InstalledOwners { get; } = new();
+    public ObservableCollection<BasisInstall> InstallOptions { get; } = new();
 
     public string Filter { get => _filter; set { if (SetField(ref _filter, value)) Refilter(); } }
     public string GitHubInput { get => _githubInput; set => SetField(ref _githubInput, value); }
     public bool IsBusy { get => _isBusy; set => SetField(ref _isBusy, value); }
     public string SelectedInstalledOwner { get => _installedOwner; set { if (SetField(ref _installedOwner, value)) ApplyInstalledFilter(); } }
 
+    public BasisInstall? SelectedInstall
+    {
+        get => _selectedInstall;
+        set
+        {
+            if (!SetField(ref _selectedInstall, value)) return;
+            // Picking a project from the dropdown makes it the working context.
+            if (!_syncingSelection && value is not null &&
+                !string.Equals(value.RepoRoot, _install?.RepoRoot, StringComparison.OrdinalIgnoreCase))
+                _shell.SetActiveInstall(value);
+        }
+    }
+
     public string InstallName => _install?.DisplayName ?? "No install selected";
     public bool HasInstall => _install is not null && _install.HasUnityProject;
+    public bool HasInstalls => InstallOptions.Count > 0;
 
     public RelayCommand<CatalogPackageVersion> InstallCommand { get; }
     public RelayCommand<InstalledPackageRow> UninstallCommand { get; }
@@ -54,9 +71,27 @@ public sealed class PackagesViewModel : ObservableObject
     public void SetActiveInstall(BasisInstall install)
     {
         _install = install;
+        _syncingSelection = true;
+        _selectedInstall = InstallOptions.FirstOrDefault(i => string.Equals(i.RepoRoot, install.RepoRoot, StringComparison.OrdinalIgnoreCase)) ?? install;
+        OnPropertyChanged(nameof(SelectedInstall));
+        _syncingSelection = false;
         OnPropertyChanged(nameof(InstallName));
         OnPropertyChanged(nameof(HasInstall));
         RefreshInstalled();
+    }
+
+    /// <summary>Projects listed in the Packages project selector; keeps the current pick if still present.</summary>
+    public void SetInstallOptions(IReadOnlyList<BasisInstall> installs)
+    {
+        _syncingSelection = true;
+        InstallOptions.Clear();
+        foreach (var i in installs) InstallOptions.Add(i);
+        _selectedInstall = _install is null
+            ? null
+            : InstallOptions.FirstOrDefault(i => string.Equals(i.RepoRoot, _install.RepoRoot, StringComparison.OrdinalIgnoreCase));
+        OnPropertyChanged(nameof(SelectedInstall));
+        OnPropertyChanged(nameof(HasInstalls));
+        _syncingSelection = false;
     }
 
     public async Task LoadCatalogAsync(string? url)
@@ -159,12 +194,12 @@ public sealed class PackagesViewModel : ObservableObject
 
     private async Task InstallCuratedAsync(CatalogPackageVersion? entry)
     {
-        if (entry is null) return;
-
-        // Ask which project to add it to (auto-picks when there's only one).
-        var target = await _shell.ChooseInstallTargetAsync(entry.DisplayName);
-        if (target is null) return;
-        _shell.SetActiveInstall(target);
+        if (entry is null || _install is null || !_install.HasUnityProject)
+        {
+            _shell.SetStatus("Choose a project first.", StatusKind.Error);
+            return;
+        }
+        var target = _install;
 
         IsBusy = true;
         try
@@ -185,7 +220,7 @@ public sealed class PackagesViewModel : ObservableObject
                 target.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
 
             await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
-            _shell.SetStatus($"Installed {entry.DisplayName} into {target.Name}.", StatusKind.Success);
+            _shell.SetStatus($"Installed {entry.DisplayName} into {target.DisplayName}.", StatusKind.Success);
             RefreshInstalled();
         }
         catch (Exception ex)
@@ -208,11 +243,17 @@ public sealed class PackagesViewModel : ObservableObject
 
     private async Task AddFromGitHubAsync()
     {
+        if (_install is null || !_install.HasUnityProject)
+        {
+            _shell.SetStatus("Choose a project first.", StatusKind.Error);
+            return;
+        }
         if (string.IsNullOrWhiteSpace(GitHubInput))
         {
             _shell.SetStatus("Paste a GitHub URL or owner/repo.", StatusKind.Error);
             return;
         }
+        var target = _install;
 
         IsBusy = true;
         try
@@ -233,11 +274,6 @@ public sealed class PackagesViewModel : ObservableObject
                     StatusKind.Error);
                 return;
             }
-
-            // Ask which project to add it to (auto-picks when there's only one).
-            var target = await _shell.ChooseInstallTargetAsync(pkg.Name);
-            if (target is null) return;
-            _shell.SetActiveInstall(target);
 
             var manifestUrl = GitHubService.BuildManifestUrl(loc);
             var existed = target.Manifest.Dependencies.ContainsKey(pkg.Name);

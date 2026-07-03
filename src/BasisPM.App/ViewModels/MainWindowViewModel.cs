@@ -226,7 +226,7 @@ public sealed class MainWindowViewModel : ObservableObject
             SetStatus($"Clone or add a Basis install first, then install {label}.", StatusKind.Error);
             return null;
         }
-        if (targets.Count == 1) return targets[0];
+        // Always show the picker so you explicitly choose the project (even with a single install).
         return await Dialogs.PickInstallAsync($"Add “{label}” to which project?", targets);
     }
 
