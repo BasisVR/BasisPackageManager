@@ -1,0 +1,164 @@
+name: Release
+
+# Push a semver tag to build installers for every platform and publish them
+# (plus the Velopack update manifest) to a single GitHub Release:
+#
+#   git tag v0.1.0 && git push origin v0.1.0
+#
+# Code signing is optional and auto-detected: releases are unsigned until the signing
+# secrets are configured, then the next tag signs automatically. See RELEASING.md.
+on:
+  push:
+    tags: [ 'v*' ]
+
+permissions:
+  contents: write   # create the GitHub Release
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      # Serialise so the three OS jobs merge into one release without racing on its creation.
+      max-parallel: 1
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            mainExe: BasisPM.App.exe
+          - os: ubuntu-latest
+            rid: linux-x64
+            mainExe: BasisPM.App
+          - os: macos-latest
+            rid: osx-arm64
+            mainExe: BasisPM.App
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Resolve version from tag
+        shell: bash
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+
+      - name: Detect signing config
+        shell: bash
+        env:
+          WIN_SIGN: ${{ secrets.WINDOWS_SIGN_PARAMS }}
+          MAC_CERT: ${{ secrets.MAC_CERTIFICATE_BASE64 }}
+          APPLE_ID_SECRET: ${{ secrets.APPLE_ID }}
+        run: |
+          if [ -n "$WIN_SIGN" ]; then
+            echo "SIGN_WINDOWS=true" >> "$GITHUB_ENV"
+          else
+            echo "SIGN_WINDOWS=false" >> "$GITHUB_ENV"
+          fi
+          if [ -n "$MAC_CERT" ] && [ -n "$APPLE_ID_SECRET" ]; then
+            echo "SIGN_MACOS=true" >> "$GITHUB_ENV"
+          else
+            echo "SIGN_MACOS=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Install Velopack CLI
+        shell: bash
+        run: |
+          dotnet tool install -g vpk --version 1.2.0
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
+      - name: Publish (self-contained)
+        shell: bash
+        run: >
+          dotnet publish src/BasisPM.App/BasisPM.App.csproj
+          -c Release -r ${{ matrix.rid }} --self-contained true
+          -o publish -p:Version=$VERSION
+
+      - name: Download previous release (enables delta updates)
+        shell: bash
+        run: |
+          vpk download github --repoUrl "https://github.com/${{ github.repository }}" \
+            --token "${{ secrets.GITHUB_TOKEN }}" || true
+
+      # --- macOS code signing (Apple Developer ID + notarization) — only when secrets are set ---
+      - name: Import Apple certificates (macOS)
+        if: ${{ matrix.os == 'macos-latest' && env.SIGN_MACOS == 'true' }}
+        shell: bash
+        env:
+          APP_CERT_B64: ${{ secrets.MAC_CERTIFICATE_BASE64 }}
+          INSTALLER_CERT_B64: ${{ secrets.MAC_INSTALLER_CERTIFICATE_BASE64 }}
+          CERT_PW: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
+          KC_PW: ${{ secrets.MAC_KEYCHAIN_PASSWORD }}
+        run: |
+          KC="$RUNNER_TEMP/signing.keychain-db"
+          security create-keychain -p "$KC_PW" "$KC"
+          security set-keychain-settings -lut 21600 "$KC"
+          security unlock-keychain -p "$KC_PW" "$KC"
+          echo "$APP_CERT_B64" | base64 --decode > "$RUNNER_TEMP/app.p12"
+          security import "$RUNNER_TEMP/app.p12" -k "$KC" -P "$CERT_PW" -T /usr/bin/codesign
+          if [ -n "$INSTALLER_CERT_B64" ]; then
+            echo "$INSTALLER_CERT_B64" | base64 --decode > "$RUNNER_TEMP/installer.p12"
+            security import "$RUNNER_TEMP/installer.p12" -k "$KC" -P "$CERT_PW" -T /usr/bin/productbuild
+          fi
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KC_PW" "$KC"
+          security list-keychains -d user -s "$KC" login.keychain-db
+
+      - name: Store notarization credentials (macOS)
+        if: ${{ matrix.os == 'macos-latest' && env.SIGN_MACOS == 'true' }}
+        shell: bash
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          xcrun notarytool store-credentials velopack-notary \
+            --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD"
+
+      # --- Pack (per-OS; signs only when the matching signing config above is present) ---
+      # Windows signing: add your provider's cert-setup step (SSL.com eSigner action, or Certum
+      # SimplySign) before this step and set the WINDOWS_SIGN_PARAMS secret — see RELEASING.md.
+      - name: Pack (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: bash
+        env:
+          WINDOWS_SIGN_PARAMS: ${{ secrets.WINDOWS_SIGN_PARAMS }}
+        run: |
+          SIGN=()
+          if [ "$SIGN_WINDOWS" = "true" ]; then SIGN=(--signParams "$WINDOWS_SIGN_PARAMS"); fi
+          vpk pack -u BasisPackageManager -v "$VERSION" -p publish -e BasisPM.App.exe \
+            --packTitle "Basis Package Manager" "${SIGN[@]}"
+
+      - name: Pack (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        shell: bash
+        run: |
+          vpk pack -u BasisPackageManager -v "$VERSION" -p publish -e BasisPM.App \
+            --packTitle "Basis Package Manager"
+
+      - name: Pack (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        shell: bash
+        env:
+          MAC_APP_IDENTITY: ${{ secrets.MAC_APP_IDENTITY }}
+          MAC_INSTALLER_IDENTITY: ${{ secrets.MAC_INSTALLER_IDENTITY }}
+        run: |
+          SIGN=()
+          if [ "$SIGN_MACOS" = "true" ]; then
+            SIGN=(--signAppIdentity "$MAC_APP_IDENTITY" \
+                  --signInstallIdentity "$MAC_INSTALLER_IDENTITY" \
+                  --notaryProfile velopack-notary \
+                  --signEntitlements build/entitlements.plist)
+          fi
+          vpk pack -u BasisPackageManager -v "$VERSION" -p publish -e BasisPM.App \
+            --packTitle "Basis Package Manager" "${SIGN[@]}"
+
+      - name: Upload to GitHub Release
+        shell: bash
+        run: >
+          vpk upload github
+          --repoUrl "https://github.com/${{ github.repository }}"
+          --publish
+          --releaseName "Basis Package Manager $VERSION"
+          --tag "${{ github.ref_name }}"
+          --merge
+          --token "${{ secrets.GITHUB_TOKEN }}"
