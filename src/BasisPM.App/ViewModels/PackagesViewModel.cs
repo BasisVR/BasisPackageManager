@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using BasisPM.Core;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
 
@@ -210,6 +211,14 @@ public sealed class PackagesViewModel : ObservableObject
         return added;
     }
 
+    // A manifest value like "1.2.3" / "^1.0" is a version range; a git URL or "file:.." is not.
+    private static bool IsSemverRange(string? range)
+    {
+        if (string.IsNullOrWhiteSpace(range)) return false;
+        try { SemVerRange.Parse(range); return true; }
+        catch { return false; }
+    }
+
     private async Task InstallCuratedAsync(CatalogPackageVersion? entry)
     {
         if (entry is null || _install is null || !_install.HasUnityProject)
@@ -225,7 +234,8 @@ public sealed class PackagesViewModel : ObservableObject
             var resolver = new DependencyResolver(_catalogService);
             var requested = new List<(string, string)> { (entry.Name, $"^{entry.Version}") };
             foreach (var (name, range) in target.Manifest.Dependencies)
-                requested.Add((name, range));
+                if (IsSemverRange(range))   // skip git-URL / file: deps — they aren't version-resolvable
+                    requested.Add((name, range));
 
             var result = resolver.Resolve(_catalog, requested);
             if (result.Conflicts.Count > 0)
