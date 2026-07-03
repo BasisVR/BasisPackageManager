@@ -27,9 +27,9 @@
 
                     <StackPanel Spacing="6">
                         <TextBlock Text="Package Catalog URL" Classes="h3"/>
-                        <TextBlock Text="JSON URL serving a Basis-compatible catalog. Leave blank to use the embedded default."
+                        <TextBlock Text="JSON URL serving a Basis-compatible catalog. Leave blank to use the Basis package registry (basisvr.org/packages)."
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>
-                        <TextBox Text="{Binding CatalogUrl}" Watermark="https://example.com/basis-catalog.json"/>
+                        <TextBox Text="{Binding CatalogUrl}" Watermark="https://basisvr.org/packages/catalog.json"/>
                     </StackPanel>
 
                     <StackPanel Spacing="6">
@@ -38,8 +38,6 @@
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                         <TextBox Text="{Binding UnityHubPath}" Watermark="C:\Program Files\Unity Hub\Unity Hub.exe"/>
                     </StackPanel>
-
-                    <CheckBox Content="Include prerelease packages in NuGet search" IsChecked="{Binding NuGetPrerelease}"/>
 
                     <Button Classes="primary" Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Left"/>
                 </StackPanel>

@@ -18,18 +18,19 @@ public sealed class CatalogService
         _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
     }
 
+    /// <summary>The Basis package registry (basisvr.org/packages) — used when no catalog URL is configured.</summary>
+    public const string DefaultCatalogUrl = "https://basisvr.org/packages/catalog.json";
+
     public async Task<Catalog> LoadAsync(string? url, CancellationToken ct = default)
     {
-        if (!string.IsNullOrWhiteSpace(url))
+        var effective = string.IsNullOrWhiteSpace(url) ? DefaultCatalogUrl : url;
+        try
         {
-            try
-            {
-                var remote = await _http.GetFromJsonAsync<Catalog>(url, JsonOpts, ct).ConfigureAwait(false);
-                if (remote is not null) return remote;
-            }
-            catch
-            {
-            }
+            var remote = await _http.GetFromJsonAsync<Catalog>(effective, JsonOpts, ct).ConfigureAwait(false);
+            if (remote is not null) return remote;
+        }
+        catch
+        {
         }
 
         return LoadEmbedded();

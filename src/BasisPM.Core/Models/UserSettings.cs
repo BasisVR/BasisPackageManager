@@ -15,7 +15,4 @@ public sealed class UserSettings
 
     [JsonPropertyName("unityHubPath")]
     public string? UnityHubPath { get; set; }
-
-    [JsonPropertyName("nugetPrerelease")]
-    public bool NuGetPrerelease { get; set; }
 }

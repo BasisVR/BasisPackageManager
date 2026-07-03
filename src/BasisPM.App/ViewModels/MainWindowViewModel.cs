@@ -17,7 +17,6 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly GitService _gitService = new();
     private readonly BasisInstallService _installService;
     private readonly CatalogService _catalogService = new();
-    private readonly NuGetService _nugetService = new();
     private readonly UnityHubService _hubService = new();
     private readonly UnityReleaseService _releaseService = new();
     private readonly UpdateService _updateService = new();
@@ -48,7 +47,7 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         _installService = new BasisInstallService(_projectService, _gitService);
         InstallsVM = new InstallsViewModel(_settingsService, _installService, _gitService, this);
-        PackagesVM = new PackagesViewModel(_catalogService, _projectService, _nugetService, this);
+        PackagesVM = new PackagesViewModel(_catalogService, _projectService, this);
         ChangesVM = new ChangesViewModel(_gitService, this);
         UnityVM = new UnityViewModel(_hubService, _releaseService, this);
         SettingsVM = new SettingsViewModel(_settingsService, _gitService, _hubService, this);
@@ -166,7 +165,6 @@ public sealed class MainWindowViewModel : ObservableObject
         SettingsVM.Apply(settings);
         await InstallsVM.LoadAsync(settings);
         await PackagesVM.LoadCatalogAsync(settings.CatalogUrl);
-        PackagesVM.IncludePrerelease = settings.NuGetPrerelease;
 
         // Handle a launch-time deep link now (active install + packages are ready) — don't wait on the slower Unity refresh.
         if (DeepLinkDispatcher.Pending is { } pending)
