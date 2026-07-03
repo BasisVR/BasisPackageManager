@@ -5,7 +5,7 @@ using BasisPM.Server.Models;
 using BasisPM.Server.Services;
 
 // Static-site generator mode: `dotnet run --project src/BasisPM.Server -- generate <outDir>`
-// Emits index.html + packages.json + catalog.json for GitHub Pages (no server required).
+// Emits index.html + packages.json + catalog.json + bundles.json for GitHub Pages (no server required).
 if (args.Length >= 1 && args[0].Equals("generate", StringComparison.OrdinalIgnoreCase))
 {
     await GenerateStaticSiteAsync(args.Length >= 2 ? args[1] : "dist");
@@ -20,6 +20,9 @@ var store = new PackageStore(dataDir, seedPath);
 store.ResolveImages(Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "icons"));
 builder.Services.AddSingleton(store);
 
+var bundleSeed = Path.Combine(builder.Environment.ContentRootPath, "seed", "bundles.json");
+builder.Services.AddSingleton(new BundleStore(bundleSeed));
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
@@ -29,6 +32,7 @@ app.UseStaticFiles();
 // so the browse UI works identically whether hosted live or as static files.
 app.MapGet("/packages.json", (PackageStore store) => Results.Ok(store.All()));
 app.MapGet("/catalog.json", (PackageStore store) => Results.Ok(store.ToCatalog()));
+app.MapGet("/bundles.json", (BundleStore bundles) => Results.Ok(bundles.All()));
 
 var api = app.MapGroup("/api");
 
@@ -45,6 +49,13 @@ api.MapGet("/categories", (PackageStore store) => Results.Ok(store.Categories())
 
 // Core.Catalog-compatible feed consumed by the desktop Basis Package Manager (Settings → Catalog URL).
 api.MapGet("/catalog", (PackageStore store) => Results.Ok(store.ToCatalog()));
+
+api.MapGet("/bundles", (BundleStore bundles) => Results.Ok(bundles.All()));
+api.MapGet("/bundles/{id}", (BundleStore bundles, string id) =>
+{
+    var b = bundles.Get(id);
+    return b is null ? Results.NotFound() : Results.Ok(b);
+});
 
 api.MapPost("/packages", (PackageStore store, RegistrySubmission sub) =>
 {
@@ -117,9 +128,15 @@ static async Task GenerateStaticSiteAsync(string outDir)
 
     File.WriteAllText(Path.Combine(outDir, "packages.json"), JsonSerializer.Serialize(packages, opts));
     File.WriteAllText(Path.Combine(outDir, "catalog.json"), JsonSerializer.Serialize(PackageStore.BuildCatalog(packages), opts));
+
+    // Curated bundles (modpacks) — copied through as-is for the website's Bundles view + install-back.
+    var bundleSeed = ResolveUp(baseDir, Path.Combine("seed", "bundles.json"));
+    var bundles = BundleStore.LoadSeed(bundleSeed);
+    File.WriteAllText(Path.Combine(outDir, "bundles.json"), JsonSerializer.Serialize(bundles, opts));
+
     File.Copy(indexPath, Path.Combine(outDir, "index.html"), overwrite: true);
 
-    Console.WriteLine($"Generated static registry ({packages.Count} packages) → {Path.GetFullPath(outDir)}");
+    Console.WriteLine($"Generated static registry ({packages.Count} packages, {bundles.Count} bundles) → {Path.GetFullPath(outDir)}");
 }
 
 static async Task<string?> FetchUpmVersionAsync(GitHubService github, string? gitOrRepoUrl)

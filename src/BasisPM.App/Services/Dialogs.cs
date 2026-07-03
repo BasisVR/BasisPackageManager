@@ -34,4 +34,12 @@ public static class Dialogs
         if (owner is null) return false;
         return await new ConfirmWindow(title, message).ShowDialog<bool>(owner);
     }
+
+    /// <summary>Shows the create-bundle dialog; returns the draft, or null if cancelled.</summary>
+    public static async Task<BundleDraft?> CreateBundleAsync(string suggestedName, string basisLine, IReadOnlyList<BundlePackage> candidates)
+    {
+        var owner = Owner;
+        if (owner is null) return null;
+        return await new CreateBundleWindow(suggestedName, basisLine, candidates).ShowDialog<BundleDraft?>(owner);
+    }
 }

@@ -17,6 +17,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly GitService _gitService = new();
     private readonly BasisInstallService _installService;
     private readonly CatalogService _catalogService = new();
+    private readonly BundleService _bundleService = new();
     private readonly UnityHubService _hubService = new();
     private readonly UnityReleaseService _releaseService = new();
     private readonly UpdateService _updateService = new();
@@ -26,6 +27,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private string _statusMessage = "Ready";
     private StatusKind _statusKind = StatusKind.Info;
     private BasisInstall? _activeInstall;
+    private string? _catalogUrl;
 
     private UpdateInfo? _pendingUpdate;
     private bool _updateAvailable;
@@ -174,6 +176,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public async Task InitializeAsync()
     {
         var settings = await _settingsService.LoadAsync();
+        _catalogUrl = settings.CatalogUrl;
         SettingsVM.Apply(settings);
         ShowChangesTab = settings.ShowLocalChanges;
         await InstallsVM.LoadAsync(settings);
@@ -221,6 +224,11 @@ public sealed class MainWindowViewModel : ObservableObject
 
     private async Task HandleDeepLinkAsync(string uri)
     {
+        if (DeepLink.TryParseBundle(uri, out var bundleId))
+        {
+            await HandleBundleLinkAsync(bundleId!);
+            return;
+        }
         if (!DeepLink.TryParseInstall(uri, out var req)) return;
         NavigateTo("packages");
 
@@ -236,6 +244,26 @@ public sealed class MainWindowViewModel : ObservableObject
 
         SetActiveInstall(target);
         await PackagesVM.AddGitPackageAsync(req.Id, req.Name, req.Git, req.Repo);
+    }
+
+    /// <summary>Handles a <c>basispm://bundle?id=…</c> link: fetch the bundle and add all its packages to a chosen install.</summary>
+    private async Task HandleBundleLinkAsync(string bundleId)
+    {
+        NavigateTo("packages");
+        SetStatus("Loading bundle…");
+        var bundles = await _bundleService.LoadAsync(_catalogUrl);
+        var bundle = bundles.FirstOrDefault(b => string.Equals(b.Id, bundleId, StringComparison.OrdinalIgnoreCase));
+        if (bundle is null)
+        {
+            SetStatus($"Couldn't find bundle “{bundleId}” in the registry.", StatusKind.Error);
+            return;
+        }
+
+        var target = await ChooseInstallTargetAsync($"{bundle.Name} ({bundle.Packages.Count} packages)");
+        if (target is null) return;
+
+        SetActiveInstall(target);
+        await PackagesVM.AddBundleAsync(bundle, target);
     }
 
     /// <summary>

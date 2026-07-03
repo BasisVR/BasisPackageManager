@@ -1,4 +1,9 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using BasisPM.App.Services;
+using BasisPM.App.Views;
 using BasisPM.Core;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
@@ -55,6 +60,7 @@ public sealed class PackagesViewModel : ObservableObject
     public RelayCommand<InstalledPackageRow> UninstallCommand { get; }
     public RelayCommand RefreshCommand { get; }
     public RelayCommand AddFromGitHubCommand { get; }
+    public RelayCommand CreateBundleCommand { get; }
 
     public PackagesViewModel(CatalogService catalogService, UnityProjectService projectService, MainWindowViewModel shell)
     {
@@ -67,6 +73,7 @@ public sealed class PackagesViewModel : ObservableObject
         UninstallCommand = new RelayCommand<InstalledPackageRow>(UninstallAsync);
         RefreshCommand = new RelayCommand(RefreshAsync);
         AddFromGitHubCommand = new RelayCommand(AddFromGitHubAsync);
+        CreateBundleCommand = new RelayCommand(CreateBundleAsync);
     }
 
     public void SetActiveInstall(BasisInstall install)
@@ -354,6 +361,115 @@ public sealed class PackagesViewModel : ObservableObject
         {
             _shell.SetStatus($"Deep-link install failed: {ex.Message}", StatusKind.Error);
         }
+    }
+
+    // ===== Bundles (modpacks) =====
+
+    /// <summary>Builds a bundle from the current project's Basis + added packages and opens a GitHub issue to submit it.</summary>
+    private async Task CreateBundleAsync()
+    {
+        if (_install is null || !_install.HasUnityProject)
+        {
+            _shell.SetStatus("Choose a project first.", StatusKind.Error);
+            return;
+        }
+        var target = _install;
+
+        // Basis version comes from the install's git status (already fetched for the Installs list).
+        var row = _shell.InstallsVM.Installs.FirstOrDefault(r => string.Equals(r.RepoRoot, target.RepoRoot, StringComparison.OrdinalIgnoreCase));
+        var branch = string.IsNullOrWhiteSpace(row?.Branch) ? null : row!.Branch;
+        var commit = string.IsNullOrWhiteSpace(row?.Commit) ? null : row!.Commit;
+
+        // Candidates = packages added on top of vanilla Basis: git deps + anything not com.unity.*.
+        var candidates = new List<BundlePackage>();
+        foreach (var (id, val) in target.Manifest.Dependencies)
+        {
+            var isVersion = IsSemverRange(val);
+            if (isVersion && id.StartsWith("com.unity", StringComparison.OrdinalIgnoreCase)) continue;
+            candidates.Add(new BundlePackage
+            {
+                Id = id,
+                GitUrl = isVersion ? null : val,
+                Version = isVersion ? val : null,
+            });
+        }
+        if (candidates.Count == 0)
+        {
+            _shell.SetStatus("This project has no add-on packages to bundle yet.", StatusKind.Info);
+            return;
+        }
+
+        var basisLine = $"Basis: {(row?.BranchCommit is { Length: > 0 } bc ? bc : "unknown")}  ·  Unity {target.UnityVersion}";
+        var draft = await Dialogs.CreateBundleAsync(target.DisplayName, basisLine,
+            candidates.OrderByDescending(c => c.GitUrl != null).ThenBy(c => c.Id, StringComparer.OrdinalIgnoreCase).ToList());
+        if (draft is null) return;
+
+        var bundle = new Bundle
+        {
+            Id = Slugify(draft.Name),
+            Name = draft.Name,
+            Description = draft.Description,
+            Author = Environment.UserName,
+            BasisBranch = branch,
+            BasisCommit = commit,
+            Unity = target.UnityVersion,
+            Icon = "🧩",
+            Packages = draft.Packages,
+        };
+
+        var json = JsonSerializer.Serialize(bundle, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        });
+        var body = "### Bundle submission\n\nAdd this entry to `src/BasisPM.Server/seed/bundles.json`:\n\n```json\n" + json + "\n```\n";
+        var url = "https://github.com/BasisVR/BasisPackageManager/issues/new?labels=bundle-submission"
+                + "&title=" + Uri.EscapeDataString("Add bundle: " + draft.Name)
+                + "&body=" + Uri.EscapeDataString(body);
+        OpenUrl(url);
+        _shell.SetStatus($"Opening a GitHub issue to submit “{draft.Name}” ({draft.Packages.Count} packages)…", StatusKind.Success);
+    }
+
+    /// <summary>Adds every package in a bundle to the target project's manifest (used by the bundle deep link).</summary>
+    public async Task AddBundleAsync(Bundle bundle, BasisInstall target)
+    {
+        IsBusy = true;
+        try
+        {
+            foreach (var p in bundle.Packages)
+            {
+                if (string.IsNullOrWhiteSpace(p.Id)) continue;
+                if (!string.IsNullOrWhiteSpace(p.GitUrl))
+                    target.Manifest.Dependencies[p.Id] = p.GitUrl!.Trim();
+                // Resolve the package + its registry dependencies from the catalog…
+                AddCatalogDependencies(target, new[] { (p.Id, string.IsNullOrWhiteSpace(p.Version) ? "*" : p.Version!) });
+                // …otherwise fall back to the declared version so Unity's registry can resolve it.
+                if (!target.Manifest.Dependencies.ContainsKey(p.Id) && !string.IsNullOrWhiteSpace(p.Version))
+                    target.Manifest.Dependencies[p.Id] = p.Version!.Trim();
+            }
+            await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
+            _shell.SetStatus($"Added bundle “{bundle.Name}” ({bundle.Packages.Count} package(s)) → {target.DisplayName}.", StatusKind.Success);
+            RefreshInstalled();
+        }
+        catch (Exception ex)
+        {
+            _shell.SetStatus($"Bundle install failed: {ex.Message}", StatusKind.Error);
+        }
+        finally { IsBusy = false; }
+    }
+
+    private static string Slugify(string s)
+    {
+        var slug = new string(s.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-').ToArray());
+        while (slug.Contains("--")) slug = slug.Replace("--", "-");
+        slug = slug.Trim('-');
+        return slug.Length == 0 ? "bundle" : slug;
+    }
+
+    private static void OpenUrl(string url)
+    {
+        try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }
+        catch { }
     }
 }
 

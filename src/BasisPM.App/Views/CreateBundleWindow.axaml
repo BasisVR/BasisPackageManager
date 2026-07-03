@@ -1,0 +1,53 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:BasisPM.App.Views"
+        x:Class="BasisPM.App.Views.CreateBundleWindow"
+        Title="Create bundle"
+        Width="520" Height="640"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <DockPanel Margin="26,24">
+        <StackPanel DockPanel.Dock="Top" Spacing="12">
+            <TextBlock Text="Create a bundle" Classes="h3"/>
+            <TextBlock Text="Share your Basis + packages as an installable bundle. It opens a GitHub issue to submit."
+                       Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+            <StackPanel Spacing="4">
+                <TextBlock Text="Name" Classes="muted" FontSize="11"/>
+                <TextBox x:Name="NameBox"/>
+            </StackPanel>
+            <StackPanel Spacing="4">
+                <TextBlock Text="Description" Classes="muted" FontSize="11"/>
+                <TextBox x:Name="DescBox" AcceptsReturn="True" Height="58" TextWrapping="Wrap"/>
+            </StackPanel>
+            <TextBlock x:Name="BasisLine" Classes="dim" FontSize="11"/>
+            <TextBlock Text="Packages to include" Classes="muted" FontSize="11" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Spacing="10" Margin="0,14,0,0">
+            <TextBlock x:Name="ErrorText" Foreground="#FFE06B6B" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                <Button Content="Cancel" Click="OnCancel"/>
+                <Button Classes="primary" Content="Create submission" Click="OnCreate"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Border Classes="card" Padding="0" Margin="0,8,0,0">
+            <ScrollViewer>
+                <ItemsControl x:Name="PackageList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="local:PackagePick">
+                            <Border Padding="14,8" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                                <CheckBox IsChecked="{Binding Include}">
+                                    <StackPanel Spacing="-1">
+                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding Subtitle}" Classes="dim" FontSize="10"/>
+                                    </StackPanel>
+                                </CheckBox>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+    </DockPanel>
+</Window>

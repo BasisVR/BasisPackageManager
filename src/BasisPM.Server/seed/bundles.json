@@ -1,0 +1,20 @@
+[
+  {
+    "id": "basis-starter",
+    "name": "Basis Starter Pack",
+    "description": "A minimal starting point — Basis plus the community Pool Table world asset. A demo bundle.",
+    "author": "BasisVR",
+    "authorUrl": "https://github.com/BasisVR",
+    "basisBranch": "main",
+    "unity": "6000.0",
+    "icon": "🧩",
+    "tags": [ "starter", "example", "worlds" ],
+    "packages": [
+      {
+        "id": "com.basis.pooltable",
+        "name": "Basis Ported Pooltable",
+        "gitUrl": "https://github.com/dooly123/MS-BASISSA-Billiards.git"
+      }
+    ]
+  }
+]

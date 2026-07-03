@@ -34,6 +34,7 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </StackPanel>
+                        <Button Content="Create bundle" Command="{Binding CreateBundleCommand}" VerticalAlignment="Bottom" IsVisible="{Binding HasInstall}"/>
                         <Button Content="Refresh" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom"/>
                     </StackPanel>
                 </Grid>
