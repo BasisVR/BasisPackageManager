@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="BasisPM.App.Views.AliasPromptWindow"
+        Title="Name this install"
+        Width="460" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <StackPanel Margin="26" Spacing="14">
+        <TextBlock x:Name="TitleText" Text="Name this install" Classes="h3"/>
+        <TextBlock x:Name="PathText" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
+        <StackPanel Spacing="6">
+            <TextBlock Text="Display name" Classes="muted" FontSize="11"/>
+            <TextBox x:Name="Input" Watermark="e.g. My Basis project"/>
+        </StackPanel>
+        <TextBlock Text="A friendly name shown across the app for this clone." Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button Content="Cancel" Click="OnCancel"/>
+            <Button Classes="primary" Content="Save" Click="OnOk"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

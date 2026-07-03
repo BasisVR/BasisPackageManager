@@ -13,6 +13,7 @@ public sealed class SettingsViewModel : ObservableObject
     private string _clonePath = "";
     private string _catalogUrl = "";
     private string _unityHubPath = "";
+    private bool _showLocalChanges;
     private string _settingsPath = "";
     private string _gitDetected = "";
     private string _hubDetected = "";
@@ -20,6 +21,7 @@ public sealed class SettingsViewModel : ObservableObject
     public string ClonePath { get => _clonePath; set => SetField(ref _clonePath, value); }
     public string CatalogUrl { get => _catalogUrl; set => SetField(ref _catalogUrl, value); }
     public string UnityHubPath { get => _unityHubPath; set => SetField(ref _unityHubPath, value); }
+    public bool ShowLocalChanges { get => _showLocalChanges; set => SetField(ref _showLocalChanges, value); }
     public string SettingsPath { get => _settingsPath; private set => SetField(ref _settingsPath, value); }
     public string GitDetected { get => _gitDetected; private set => SetField(ref _gitDetected, value); }
     public string HubDetected { get => _hubDetected; private set => SetField(ref _hubDetected, value); }
@@ -45,6 +47,7 @@ public sealed class SettingsViewModel : ObservableObject
         ClonePath = settings.ClonePath ?? "";
         CatalogUrl = settings.CatalogUrl;
         UnityHubPath = settings.UnityHubPath ?? "";
+        ShowLocalChanges = settings.ShowLocalChanges;
         RefreshDetected();
     }
 
@@ -62,9 +65,11 @@ public sealed class SettingsViewModel : ObservableObject
         settings.ClonePath = string.IsNullOrWhiteSpace(ClonePath) ? null : ClonePath.Trim();
         settings.CatalogUrl = CatalogUrl?.Trim() ?? "";
         settings.UnityHubPath = string.IsNullOrWhiteSpace(UnityHubPath) ? null : UnityHubPath.Trim();
+        settings.ShowLocalChanges = ShowLocalChanges;
         await _settingsService.SaveAsync(settings);
 
         await _shell.PackagesVM.LoadCatalogAsync(settings.CatalogUrl);
+        _shell.ShowChangesTab = settings.ShowLocalChanges;
         RefreshDetected();
         _shell.SetStatus("Settings saved.", StatusKind.Success);
     }

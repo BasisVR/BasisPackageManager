@@ -39,6 +39,9 @@
                         <TextBox Text="{Binding UnityHubPath}" Watermark="C:\Program Files\Unity Hub\Unity Hub.exe"/>
                     </StackPanel>
 
+                    <CheckBox Content="Show the Local Changes tab" IsChecked="{Binding ShowLocalChanges}"
+                              ToolTip.Tip="A git status + per-file diff of your install. Hidden by default."/>
+
                     <Button Classes="primary" Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Left"/>
                 </StackPanel>
             </Border>

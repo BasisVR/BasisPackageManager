@@ -94,6 +94,18 @@ public sealed class MainWindowViewModel : ObservableObject
     public bool IsUnity => CurrentPage == NavPage.Unity;
     public bool IsSettings => CurrentPage == NavPage.Settings;
 
+    private bool _showChangesTab;
+    public bool ShowChangesTab
+    {
+        get => _showChangesTab;
+        set
+        {
+            // If it's turned off while the user is looking at it, send them back to Installs.
+            if (SetField(ref _showChangesTab, value) && !value && CurrentPage == NavPage.Changes)
+                CurrentPage = NavPage.Installs;
+        }
+    }
+
     public BasisInstall? ActiveInstall
     {
         get => _activeInstall;
@@ -104,7 +116,7 @@ public sealed class MainWindowViewModel : ObservableObject
         }
     }
 
-    public string ActiveInstallName => _activeInstall?.Name ?? "No install selected";
+    public string ActiveInstallName => _activeInstall?.DisplayName ?? "No install selected";
 
     public string AppVersion => _updateService.CurrentVersion;
 
@@ -163,6 +175,7 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         var settings = await _settingsService.LoadAsync();
         SettingsVM.Apply(settings);
+        ShowChangesTab = settings.ShowLocalChanges;
         await InstallsVM.LoadAsync(settings);
         await PackagesVM.LoadCatalogAsync(settings.CatalogUrl);
 
@@ -178,17 +191,36 @@ public sealed class MainWindowViewModel : ObservableObject
         _ = CheckForUpdatesAsync(manual: false);
     }
 
-    /// <summary>Handles a <c>basispm://install?…</c> link: jump to Packages and add the git package to the active install.</summary>
-    public void HandleDeepLink(string uri)
+    /// <summary>Handles a <c>basispm://install?…</c> link: choose a target install and add the git package to it.</summary>
+    public void HandleDeepLink(string uri) => _ = HandleDeepLinkAsync(uri);
+
+    private async Task HandleDeepLinkAsync(string uri)
     {
         if (!DeepLink.TryParseInstall(uri, out var req)) return;
         NavigateTo("packages");
+
+        var label = req.Name ?? req.Id ?? "the package";
         if (string.IsNullOrWhiteSpace(req.Git))
         {
-            SetStatus($"Install link for {req.Name ?? req.Id ?? "the package"} was missing its git URL.", StatusKind.Error);
+            SetStatus($"Install link for {label} was missing its git URL.", StatusKind.Error);
             return;
         }
-        _ = PackagesVM.AddGitPackageAsync(req.Id, req.Name, req.Git, req.Repo);
+
+        var targets = InstallsVM.Installs.Select(r => r.Install).Where(i => i.HasUnityProject).ToList();
+        if (targets.Count == 0)
+        {
+            NavigateTo("installs");
+            SetStatus($"Clone or add a Basis install first, then install {label}.", StatusKind.Error);
+            return;
+        }
+
+        var target = targets.Count == 1
+            ? targets[0]
+            : await Dialogs.PickInstallAsync($"Install “{label}” into…", targets);
+        if (target is null) return;
+
+        SetActiveInstall(target);
+        await PackagesVM.AddGitPackageAsync(req.Id, req.Name, req.Git, req.Repo);
     }
 
     public async Task CheckForUpdatesAsync(bool manual)

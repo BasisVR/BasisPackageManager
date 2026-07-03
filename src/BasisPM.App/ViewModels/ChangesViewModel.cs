@@ -17,7 +17,7 @@ public sealed class ChangesViewModel : ObservableObject
 
     public ObservableCollection<GitFileChange> Changes { get; } = new();
 
-    public string InstallName => _install?.Name ?? "No install selected";
+    public string InstallName => _install?.DisplayName ?? "No install selected";
     public bool HasInstall => _install is not null;
     public string Header { get => _header; private set => SetField(ref _header, value); }
     public bool IsBusy { get => _isBusy; set => SetField(ref _isBusy, value); }

@@ -17,7 +17,7 @@ public sealed class BasisInstallService
         _git = git;
     }
 
-    public async Task<BasisInstall> LoadAsync(string repoRoot, CancellationToken ct = default)
+    public async Task<BasisInstall> LoadAsync(string repoRoot, string? alias = null, CancellationToken ct = default)
     {
         var detection = _projects.Detect(repoRoot);
         var unityPath = detection.IsValid && detection.ResolvedPath is not null ? detection.ResolvedPath : repoRoot;
@@ -41,6 +41,7 @@ public sealed class BasisInstallService
             RepoRoot = repoRoot,
             UnityProjectPath = unityPath,
             Name = new DirectoryInfo(repoRoot).Name,
+            Alias = string.IsNullOrWhiteSpace(alias) ? null : alias.Trim(),
             UnityVersion = version,
             IsGitRepo = _git.IsGitRepo(repoRoot),
             HasUnityProject = hasUnity,

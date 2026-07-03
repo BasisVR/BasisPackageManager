@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="using:BasisPM.Core.Models"
+        x:Class="BasisPM.App.Views.InstallPickerWindow"
+        Title="Choose an install"
+        Width="540" Height="470"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <Grid RowDefinitions="Auto,*,Auto" Margin="26">
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,14">
+            <TextBlock x:Name="TitleText" Text="Add package" Classes="h3"/>
+            <TextBlock Text="Choose which install to add this package to." Classes="dim" FontSize="12"/>
+        </StackPanel>
+        <Border Grid.Row="1" Classes="card" Padding="4">
+            <ListBox x:Name="List" Background="Transparent">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="models:BasisInstall">
+                        <StackPanel Spacing="2" Margin="10,10">
+                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding RepoRoot}" Classes="dim" FontSize="11" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="{Binding UnityVersion, StringFormat='Unity {0}'}" Classes="muted" FontSize="11"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,14,0,0">
+            <Button Content="Cancel" Click="OnCancel"/>
+            <Button Classes="primary" Content="Add here" Click="OnOk"/>
+        </StackPanel>
+    </Grid>
+</Window>

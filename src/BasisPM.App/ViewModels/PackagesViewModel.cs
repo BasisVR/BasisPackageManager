@@ -30,7 +30,7 @@ public sealed class PackagesViewModel : ObservableObject
     public bool IsBusy { get => _isBusy; set => SetField(ref _isBusy, value); }
     public string SelectedInstalledOwner { get => _installedOwner; set { if (SetField(ref _installedOwner, value)) ApplyInstalledFilter(); } }
 
-    public string InstallName => _install?.Name ?? "No install selected";
+    public string InstallName => _install?.DisplayName ?? "No install selected";
     public bool HasInstall => _install is not null && _install.HasUnityProject;
 
     public RelayCommand<CatalogPackageVersion> InstallCommand { get; }

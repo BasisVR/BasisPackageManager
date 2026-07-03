@@ -19,12 +19,13 @@
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
                         <Button Content="Add existing" Command="{Binding AddExistingCommand}"/>
+                        <Button Content="Clone Basis" Command="{Binding ToggleCloneFormCommand}"/>
                         <Button Content="Refresh" Command="{Binding RefreshCommand}"/>
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <Border Classes="card">
+            <Border Classes="card" IsVisible="{Binding ShowCloneForm}">
                 <StackPanel Spacing="14">
                     <TextBlock Text="Clone Basis" Classes="h3"/>
                     <StackPanel Orientation="Horizontal" Spacing="8">

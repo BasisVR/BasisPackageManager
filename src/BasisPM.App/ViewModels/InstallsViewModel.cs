@@ -22,6 +22,7 @@ public sealed class InstallsViewModel : ObservableObject
     private string _cloneProgress = "";
     private bool _isCloning;
     private InstallRow? _activeRow;
+    private bool _showCloneForm;
 
     public ObservableCollection<InstallRow> Installs { get; } = new();
     public ObservableCollection<BranchOption> Branches { get; } = new();
@@ -32,6 +33,7 @@ public sealed class InstallsViewModel : ObservableObject
     public string CloneProgress { get => _cloneProgress; set => SetField(ref _cloneProgress, value); }
     public bool IsCloning { get => _isCloning; set { if (SetField(ref _isCloning, value)) OnPropertyChanged(nameof(IsNotCloning)); } }
     public bool IsNotCloning => !_isCloning;
+    public bool ShowCloneForm { get => _showCloneForm; set => SetField(ref _showCloneForm, value); }
 
     public string RepoUrl => BasisInstallService.BasisRepoUrl;
 
@@ -47,6 +49,7 @@ public sealed class InstallsViewModel : ObservableObject
     public RelayCommand<InstallRow> RemoveCommand { get; }
     public RelayCommand<InstallRow> SetActiveCommand { get; }
     public RelayCommand<InstallRow> BackupCommand { get; }
+    public RelayCommand ToggleCloneFormCommand { get; }
 
     public InstallsViewModel(UserSettingsService settingsService, BasisInstallService installService, GitService git, MainWindowViewModel shell)
     {
@@ -67,6 +70,7 @@ public sealed class InstallsViewModel : ObservableObject
         RemoveCommand = new RelayCommand<InstallRow>(RemoveAsync);
         SetActiveCommand = new RelayCommand<InstallRow>(r => Activate(r, null));
         BackupCommand = new RelayCommand<InstallRow>(BackupAsync);
+        ToggleCloneFormCommand = new RelayCommand(() => { ShowCloneForm = !ShowCloneForm; });
     }
 
     public async Task LoadAsync(UserSettings settings)
@@ -82,7 +86,7 @@ public sealed class InstallsViewModel : ObservableObject
         foreach (var root in settings.Installs.ToList())
         {
             if (!Directory.Exists(root)) continue;
-            var install = await _installService.LoadAsync(root);
+            var install = await _installService.LoadAsync(root, settings.InstallAliases.GetValueOrDefault(root));
             AddRow(install, activate: false);
         }
 
@@ -238,6 +242,8 @@ public sealed class InstallsViewModel : ObservableObject
             }
 
             var install = await _installService.LoadAsync(dest);
+            var alias = await BasisPM.App.Services.Dialogs.PromptAliasAsync("Name this install", dest, install.Name);
+            install.Alias = string.IsNullOrWhiteSpace(alias) ? null : alias;
             AddRow(install, activate: true);
             await PersistAsync();
             CloneProgress = "";
@@ -272,7 +278,7 @@ public sealed class InstallsViewModel : ObservableObject
             var result = await _git.PullAsync(row.RepoRoot);
             if (result.Ok)
             {
-                var reloaded = await _installService.LoadAsync(row.RepoRoot);
+                var reloaded = await _installService.LoadAsync(row.RepoRoot, row.Install.Alias);
                 row.UpdateInstall(reloaded);
                 if (row.IsActive) _shell.SetActiveInstall(reloaded);
                 await RefreshGitInfoAsync(row, fetch: false);
@@ -354,6 +360,8 @@ public sealed class InstallsViewModel : ObservableObject
         }
 
         var install = await _installService.LoadAsync(picked);
+        var alias = await BasisPM.App.Services.Dialogs.PromptAliasAsync("Name this install", picked, install.Name);
+        install.Alias = string.IsNullOrWhiteSpace(alias) ? null : alias;
         AddRow(install, activate: true);
         await PersistAsync();
         var note = install.HasUnityProject ? "" : " (no Unity project detected under it)";
@@ -412,6 +420,9 @@ public sealed class InstallsViewModel : ObservableObject
     {
         var settings = await _settingsService.LoadAsync();
         settings.Installs = Installs.Select(r => r.RepoRoot).ToList();
+        settings.InstallAliases = Installs
+            .Where(r => !string.IsNullOrWhiteSpace(r.Install.Alias))
+            .ToDictionary(r => r.RepoRoot, r => r.Install.Alias!, StringComparer.OrdinalIgnoreCase);
         settings.ClonePath = string.IsNullOrWhiteSpace(ClonePath) ? null : ClonePath.Trim();
         await _settingsService.SaveAsync(settings);
     }
@@ -445,7 +456,8 @@ public sealed class InstallRow : ObservableObject
 
     public InstallRow(BasisInstall install) => Install = install;
 
-    public string Name => Install.Name;
+    public string Name => Install.DisplayName;
+    public string FolderName => Install.Name;
     public string RepoRoot => Install.RepoRoot;
     public string UnityProjectPath => Install.UnityProjectPath;
     public string UnityVersion => Install.UnityVersion;
