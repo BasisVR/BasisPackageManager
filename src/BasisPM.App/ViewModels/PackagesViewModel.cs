@@ -159,17 +159,19 @@ public sealed class PackagesViewModel : ObservableObject
 
     private async Task InstallCuratedAsync(CatalogPackageVersion? entry)
     {
-        if (entry is null || _install is null || !_install.HasUnityProject)
-        {
-            _shell.SetStatus("Select an install with a Unity project first.", StatusKind.Error);
-            return;
-        }
+        if (entry is null) return;
+
+        // Ask which project to add it to (auto-picks when there's only one).
+        var target = await _shell.ChooseInstallTargetAsync(entry.DisplayName);
+        if (target is null) return;
+        _shell.SetActiveInstall(target);
+
         IsBusy = true;
         try
         {
             var resolver = new DependencyResolver(_catalogService);
             var requested = new List<(string, string)> { (entry.Name, $"^{entry.Version}") };
-            foreach (var (name, range) in _install.Manifest.Dependencies)
+            foreach (var (name, range) in target.Manifest.Dependencies)
                 requested.Add((name, range));
 
             var result = resolver.Resolve(_catalog, requested);
@@ -180,10 +182,10 @@ public sealed class PackagesViewModel : ObservableObject
             }
 
             foreach (var (name, ver) in result.Resolved)
-                _install.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
+                target.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
 
-            await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
-            _shell.SetStatus($"Installed {entry.DisplayName} into {_install.Name}.", StatusKind.Success);
+            await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
+            _shell.SetStatus($"Installed {entry.DisplayName} into {target.Name}.", StatusKind.Success);
             RefreshInstalled();
         }
         catch (Exception ex)
@@ -206,11 +208,6 @@ public sealed class PackagesViewModel : ObservableObject
 
     private async Task AddFromGitHubAsync()
     {
-        if (_install is null || !_install.HasUnityProject)
-        {
-            _shell.SetStatus("Select an install with a Unity project first.", StatusKind.Error);
-            return;
-        }
         if (string.IsNullOrWhiteSpace(GitHubInput))
         {
             _shell.SetStatus("Paste a GitHub URL or owner/repo.", StatusKind.Error);
@@ -237,10 +234,15 @@ public sealed class PackagesViewModel : ObservableObject
                 return;
             }
 
+            // Ask which project to add it to (auto-picks when there's only one).
+            var target = await _shell.ChooseInstallTargetAsync(pkg.Name);
+            if (target is null) return;
+            _shell.SetActiveInstall(target);
+
             var manifestUrl = GitHubService.BuildManifestUrl(loc);
-            var existed = _install.Manifest.Dependencies.ContainsKey(pkg.Name);
-            _install.Manifest.Dependencies[pkg.Name] = manifestUrl;
-            await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
+            var existed = target.Manifest.Dependencies.ContainsKey(pkg.Name);
+            target.Manifest.Dependencies[pkg.Name] = manifestUrl;
+            await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
             _shell.SetStatus($"{(existed ? "Updated" : "Added")} {pkg.Name} from GitHub.", StatusKind.Success);
             GitHubInput = "";

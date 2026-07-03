@@ -206,21 +206,28 @@ public sealed class MainWindowViewModel : ObservableObject
             return;
         }
 
+        var target = await ChooseInstallTargetAsync(label);
+        if (target is null) return;
+
+        SetActiveInstall(target);
+        await PackagesVM.AddGitPackageAsync(req.Id, req.Name, req.Git, req.Repo);
+    }
+
+    /// <summary>
+    /// Picks which install a package should be added to: none → guide to Installs; one → use it;
+    /// several → the "add to which project?" window. Null if there's nowhere to add or the user cancels.
+    /// </summary>
+    public async Task<BasisInstall?> ChooseInstallTargetAsync(string label)
+    {
         var targets = InstallsVM.Installs.Select(r => r.Install).Where(i => i.HasUnityProject).ToList();
         if (targets.Count == 0)
         {
             NavigateTo("installs");
             SetStatus($"Clone or add a Basis install first, then install {label}.", StatusKind.Error);
-            return;
+            return null;
         }
-
-        var target = targets.Count == 1
-            ? targets[0]
-            : await Dialogs.PickInstallAsync($"Install “{label}” into…", targets);
-        if (target is null) return;
-
-        SetActiveInstall(target);
-        await PackagesVM.AddGitPackageAsync(req.Id, req.Name, req.Git, req.Repo);
+        if (targets.Count == 1) return targets[0];
+        return await Dialogs.PickInstallAsync($"Add “{label}” to which project?", targets);
     }
 
     public async Task CheckForUpdatesAsync(bool manual)

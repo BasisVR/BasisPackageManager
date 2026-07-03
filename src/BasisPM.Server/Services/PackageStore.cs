@@ -180,16 +180,17 @@ public sealed class PackageStore
     private static readonly string[] ImageExts = { ".png", ".webp", ".jpg", ".jpeg", ".gif" };
 
     /// <summary>
-    /// Sets each package's <see cref="RegistryPackage.Image"/> from a committed file
-    /// <c>{iconsDir}/{id}.{ext}</c>, or null when none exists. Images are self-hosted only:
-    /// this is authoritative and ignores any image value from the seed, so nothing submitted
-    /// can point the UI at a remote URL.
+    /// Resolves each package's <see cref="RegistryPackage.Image"/>: a raw image URL hosted in the
+    /// package's own repo (GitHub/GitLab, matching the page CSP) is kept as-is; otherwise it falls
+    /// back to a self-hosted <c>{iconsDir}/{id}.{ext}</c>, or null. Arbitrary remotes are dropped.
     /// </summary>
     public static void ResolveImages(IEnumerable<RegistryPackage> packages, string iconsDir)
     {
         var haveDir = Directory.Exists(iconsDir);
         foreach (var p in packages)
         {
+            // Kept: an image the submitter hosts in the repo they gave us.
+            if (IsRepoImageUrl(p.Image)) continue;
             p.Image = null;
             if (!haveDir || !IsSafeId(p.Id)) continue;
             foreach (var ext in ImageExts)
@@ -211,6 +212,12 @@ public sealed class PackageStore
     // Package ids only (e.g. com.foo.bar) — blocks path traversal when building the icon filename.
     private static bool IsSafeId(string id) =>
         !string.IsNullOrEmpty(id) && id.All(c => char.IsLetterOrDigit(c) || c is '.' or '_' or '-');
+
+    // A raw file URL on a host the page CSP permits — not an arbitrary remote.
+    private static bool IsRepoImageUrl(string? url) =>
+        !string.IsNullOrEmpty(url) &&
+        (url.StartsWith("https://raw.githubusercontent.com/", StringComparison.OrdinalIgnoreCase) ||
+         (url.StartsWith("https://gitlab.com/", StringComparison.OrdinalIgnoreCase) && url.Contains("/-/raw/", StringComparison.OrdinalIgnoreCase)));
 
     private static List<RegistryPackage>? Read(string path) =>
         JsonSerializer.Deserialize<List<RegistryPackage>>(File.ReadAllText(path), FileOpts);
