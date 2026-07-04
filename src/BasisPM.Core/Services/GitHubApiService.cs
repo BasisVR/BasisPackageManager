@@ -106,5 +106,24 @@ public sealed class GitHubRepo
     [JsonPropertyName("clone_url")] public string CloneUrl { get; set; } = "";
     [JsonPropertyName("default_branch")] public string? DefaultBranch { get; set; }
     [JsonPropertyName("private")] public bool Private { get; set; }
+    [JsonPropertyName("fork")] public bool Fork { get; set; }
     [JsonPropertyName("owner")] public GitHubUser? Owner { get; set; }
+    [JsonPropertyName("permissions")] public GitHubPermissions? Permissions { get; set; }
+
+    /// <summary>Whether the token can push here directly (else the PR flow forks first).</summary>
+    public bool CanPush => Permissions?.Push == true;
+}
+
+public sealed class GitHubPermissions
+{
+    [JsonPropertyName("push")] public bool Push { get; set; }
+    [JsonPropertyName("maintain")] public bool Maintain { get; set; }
+    [JsonPropertyName("admin")] public bool Admin { get; set; }
+}
+
+public sealed class GitHubPullRequest
+{
+    [JsonPropertyName("html_url")] public string HtmlUrl { get; set; } = "";
+    [JsonPropertyName("number")] public int Number { get; set; }
+    [JsonPropertyName("state")] public string? State { get; set; }
 }
