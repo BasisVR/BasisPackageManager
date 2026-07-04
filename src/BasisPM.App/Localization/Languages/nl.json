@@ -1,0 +1,1626 @@
+{
+  "code": "nl",
+  "nativeName": "Nederlands",
+  "entries": [
+    {
+      "key": "nav.changes",
+      "value": "Lokale wijzigingen"
+    },
+    {
+      "key": "nav.community",
+      "value": "Community"
+    },
+    {
+      "key": "nav.develop",
+      "value": "Ontwikkelen"
+    },
+    {
+      "key": "nav.installs",
+      "value": "Projecten"
+    },
+    {
+      "key": "nav.packages",
+      "value": "Pakketten"
+    },
+    {
+      "key": "nav.settings",
+      "value": "Instellingen"
+    },
+    {
+      "key": "nav.unity",
+      "value": "Unity-editors"
+    },
+    {
+      "key": "shell.bundle.pickerLabel",
+      "value": "{0} ({1} pakketten)"
+    },
+    {
+      "key": "shell.crash.dialogMessage",
+      "value": "Het lijkt erop dat de app de vorige keer onverwacht is afgesloten. Een vooraf ingevuld GitHub-issue openen zodat we het kunnen onderzoeken?"
+    },
+    {
+      "key": "shell.crash.dialogTitle",
+      "value": "Basis Package Manager is onverwacht afgesloten"
+    },
+    {
+      "key": "shell.deeplink.thePackage",
+      "value": "het pakket"
+    },
+    {
+      "key": "shell.desktopShortcut.dialogMessage",
+      "value": "Een bureaubladsnelkoppeling voor Basis Package Manager toevoegen? Je kunt hem altijd terugvinden in het Startmenu."
+    },
+    {
+      "key": "shell.desktopShortcut.dialogTitle",
+      "value": "Bureaubladsnelkoppeling"
+    },
+    {
+      "key": "shell.footer.license",
+      "value": "MIT-gelicentieerd"
+    },
+    {
+      "key": "shell.installPicker.prompt",
+      "value": "Aan welk project wil je “{0}” toevoegen?"
+    },
+    {
+      "key": "shell.status.bundleNotFound",
+      "value": "Bundel “{0}” niet gevonden in het register."
+    },
+    {
+      "key": "shell.status.checkingForUpdates",
+      "value": "Controleren op updates…"
+    },
+    {
+      "key": "shell.status.cloneFirst",
+      "value": "Kloon of voeg eerst een Basis-installatie toe en installeer daarna {0}."
+    },
+    {
+      "key": "shell.status.copied",
+      "value": "Status naar klembord gekopieerd."
+    },
+    {
+      "key": "shell.status.copy",
+      "value": "Kopiëren"
+    },
+    {
+      "key": "shell.status.copyFailed",
+      "value": "Kopiëren mislukt: {0}"
+    },
+    {
+      "key": "shell.status.copyTooltip",
+      "value": "Statusbericht naar klembord kopiëren"
+    },
+    {
+      "key": "shell.status.desktopShortcutCreated",
+      "value": "Bureaubladsnelkoppeling aangemaakt."
+    },
+    {
+      "key": "shell.status.desktopShortcutFailed",
+      "value": "Kon de bureaubladsnelkoppeling niet aanmaken: {0}"
+    },
+    {
+      "key": "shell.status.downloadingUpdate",
+      "value": "Update downloaden…"
+    },
+    {
+      "key": "shell.status.installLinkMissingGit",
+      "value": "De installatielink voor {0} miste de git-URL."
+    },
+    {
+      "key": "shell.status.loadingBundle",
+      "value": "Bundel laden…"
+    },
+    {
+      "key": "shell.status.noUnityProject",
+      "value": "Geen Unity-project om te openen."
+    },
+    {
+      "key": "shell.status.ok",
+      "value": "OK"
+    },
+    {
+      "key": "shell.status.okTooltip",
+      "value": "Dit bericht sluiten"
+    },
+    {
+      "key": "shell.status.openIssue",
+      "value": "Een issue openen"
+    },
+    {
+      "key": "shell.status.openIssueTooltip",
+      "value": "Een vooraf ingevuld GitHub-issue openen met deze fout en je laatste acties"
+    },
+    {
+      "key": "shell.status.openUnityFailed",
+      "value": "Kon Unity niet openen: {0}"
+    },
+    {
+      "key": "shell.status.openedInUnity",
+      "value": "{0} openen in Unity {1}."
+    },
+    {
+      "key": "shell.status.openingInUnity",
+      "value": "{0} openen in Unity…"
+    },
+    {
+      "key": "shell.status.runningFromSource",
+      "value": "Draait vanaf broncode — updates worden afgehandeld door je build, niet door de ingebouwde updater."
+    },
+    {
+      "key": "shell.status.unityNotInstalled",
+      "value": "Unity {0} is niet geïnstalleerd. Voeg het toe op het tabblad Unity-editors en probeer het opnieuw."
+    },
+    {
+      "key": "shell.status.unityNotInstalledOpenedHub",
+      "value": "Unity {0} is niet geïnstalleerd — Unity Hub is geopend zodat je het kunt toevoegen."
+    },
+    {
+      "key": "shell.status.upToDate",
+      "value": "Je hebt de nieuwste versie."
+    },
+    {
+      "key": "shell.status.updateAvailable",
+      "value": "Er is een update beschikbaar."
+    },
+    {
+      "key": "shell.status.updateCheckFailed",
+      "value": "Controleren op updates mislukt: {0}"
+    },
+    {
+      "key": "shell.status.updateFailed",
+      "value": "Update mislukt: {0}"
+    },
+    {
+      "key": "shell.update.bannerAvailable",
+      "value": "Basis Package Manager {0} is beschikbaar."
+    },
+    {
+      "key": "shell.update.later",
+      "value": "Later"
+    },
+    {
+      "key": "shell.update.laterTooltip",
+      "value": "Verbergen tot de volgende start"
+    },
+    {
+      "key": "shell.update.now",
+      "value": "Nu bijwerken"
+    },
+    {
+      "key": "shell.update.nowTooltip",
+      "value": "De update downloaden en opnieuw starten"
+    },
+    {
+      "key": "shell.version.tooltip",
+      "value": "Geïnstalleerde versie — controleer op updates in Instellingen"
+    },
+    {
+      "key": "shell.window.title",
+      "value": "Basis Package Manager"
+    },
+    {
+      "key": "shell.wordmark.name",
+      "value": "BasisVR"
+    },
+    {
+      "key": "shell.wordmark.tagline",
+      "value": "Package Manager"
+    },
+    {
+      "key": "installs.action.updateCore",
+      "value": "Core bijwerken voert 'git pull' uit, wat bestanden in je Basis-project kan wijzigen."
+    },
+    {
+      "key": "installs.badge.active",
+      "value": "ACTIEF"
+    },
+    {
+      "key": "installs.branch.default",
+      "value": "{0} (main)"
+    },
+    {
+      "key": "installs.button.addExisting",
+      "value": "Bestaande toevoegen"
+    },
+    {
+      "key": "installs.button.backup",
+      "value": "Back-up"
+    },
+    {
+      "key": "installs.button.browse",
+      "value": "Bladeren…"
+    },
+    {
+      "key": "installs.button.changes",
+      "value": "Wijzigingen"
+    },
+    {
+      "key": "installs.button.cloneBasis",
+      "value": "Basis klonen"
+    },
+    {
+      "key": "installs.button.open",
+      "value": "Openen"
+    },
+    {
+      "key": "installs.button.packages",
+      "value": "Pakketten"
+    },
+    {
+      "key": "installs.button.refresh",
+      "value": "Vernieuwen"
+    },
+    {
+      "key": "installs.button.remove",
+      "value": "Verwijderen"
+    },
+    {
+      "key": "installs.button.updateCore",
+      "value": "Core bijwerken"
+    },
+    {
+      "key": "installs.cloneForm.branchLabel",
+      "value": "Branch"
+    },
+    {
+      "key": "installs.cloneForm.cloneIntoLabel",
+      "value": "Klonen naar map"
+    },
+    {
+      "key": "installs.cloneForm.heading",
+      "value": "Basis klonen"
+    },
+    {
+      "key": "installs.cloneForm.subFolderLabel",
+      "value": "Naam submap"
+    },
+    {
+      "key": "installs.dialog.backupPrompt",
+      "value": "{0}\n\nEerst een back-up van {1} maken? Dit zipt Assets, Packages en ProjectSettings (niet de Library-cache) naar een BasisBackups-map naast je installatie."
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceBody",
+      "value": "Er is slechts {0} vrij op {1}. Basis klonen en openen in Unity kan ruim meer nodig hebben, en het klonen kan halverwege mislukken.\n\nToch hier klonen?"
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceTitle",
+      "value": "Weinig schijfruimte"
+    },
+    {
+      "key": "installs.dialog.nameThisInstall",
+      "value": "Geef deze installatie een naam"
+    },
+    {
+      "key": "installs.empty.body",
+      "value": "Gebruik Basis klonen hierboven om BasisVR/Basis op te halen, of Bestaande toevoegen om een kloon te registreren die je al hebt."
+    },
+    {
+      "key": "installs.empty.title",
+      "value": "Nog geen installaties"
+    },
+    {
+      "key": "installs.git.ahead",
+      "value": "{0} voor"
+    },
+    {
+      "key": "installs.git.behindUpstream",
+      "value": "{0} achter op upstream"
+    },
+    {
+      "key": "installs.git.checking",
+      "value": "controleren…"
+    },
+    {
+      "key": "installs.git.checkingRemote",
+      "value": "remote controleren…"
+    },
+    {
+      "key": "installs.git.error",
+      "value": "git-fout: {0}"
+    },
+    {
+      "key": "installs.git.localChanges",
+      "value": "{0} lokale wijziging{1}"
+    },
+    {
+      "key": "installs.git.noUpstream",
+      "value": "geen upstream"
+    },
+    {
+      "key": "installs.git.notGitRepo",
+      "value": "geen git-repository"
+    },
+    {
+      "key": "installs.git.upToDate",
+      "value": "up-to-date"
+    },
+    {
+      "key": "installs.hero.subtitle",
+      "value": "Kloon de BasisVR/Basis-repository en beheer daarna de pakketten, updates en lokale wijzigingen van elk project."
+    },
+    {
+      "key": "installs.hero.tagline",
+      "value": "PROJECTEN"
+    },
+    {
+      "key": "installs.hero.title",
+      "value": "Je Basis-projecten"
+    },
+    {
+      "key": "installs.picker.chooseCloneFolder",
+      "value": "Kies een map om Basis naartoe te klonen"
+    },
+    {
+      "key": "installs.picker.selectExistingClone",
+      "value": "Selecteer een bestaande Basis-kloon"
+    },
+    {
+      "key": "installs.progress.starting",
+      "value": "Klonen starten…"
+    },
+    {
+      "key": "installs.row.noUnityProject",
+      "value": "Geen Unity-project"
+    },
+    {
+      "key": "installs.row.unityVersion",
+      "value": "Unity {0}"
+    },
+    {
+      "key": "installs.space.criticalWarning",
+      "value": "Zeer weinig schijfruimte — slechts {0} vrij op {1}. Basis klonen zal waarschijnlijk mislukken; maak ruimte vrij of kies een ander station."
+    },
+    {
+      "key": "installs.space.lowWarning",
+      "value": "Weinig schijfruimte — {0} vrij op {1}. Basis plus de Unity Library kan 20 GB of meer gebruiken."
+    },
+    {
+      "key": "installs.status.added",
+      "value": "{0} toegevoegd.{1}"
+    },
+    {
+      "key": "installs.status.alreadyInList",
+      "value": "Die installatie staat al in de lijst."
+    },
+    {
+      "key": "installs.status.backedUp",
+      "value": "Back-up gemaakt {0} → {1}"
+    },
+    {
+      "key": "installs.status.backingUp",
+      "value": "Back-up maken van {0}…"
+    },
+    {
+      "key": "installs.status.backupFailed",
+      "value": "Back-up mislukt: {0}"
+    },
+    {
+      "key": "installs.status.chooseFolderFirst",
+      "value": "Kies eerst een map om naartoe te klonen."
+    },
+    {
+      "key": "installs.status.cloneCancelledLowSpace",
+      "value": "Klonen geannuleerd — weinig schijfruimte op het doelstation."
+    },
+    {
+      "key": "installs.status.cloneError",
+      "value": "Kloonfout: {0}"
+    },
+    {
+      "key": "installs.status.cloneFailed",
+      "value": "Klonen mislukt (exit {0}). {1}"
+    },
+    {
+      "key": "installs.status.clonedInto",
+      "value": "Basis gekloond naar {0}.{1}"
+    },
+    {
+      "key": "installs.status.cloningInto",
+      "value": "Basis klonen naar {0}…"
+    },
+    {
+      "key": "installs.status.destExists",
+      "value": "{0} bestaat al en is niet leeg."
+    },
+    {
+      "key": "installs.status.folderMissing",
+      "value": "Map bestaat niet meer: {0}"
+    },
+    {
+      "key": "installs.status.gitNotFound",
+      "value": "Git is niet gevonden. Installeer Git en voeg het toe aan je PATH (zie Instellingen)."
+    },
+    {
+      "key": "installs.status.noUnityDetectedNote",
+      "value": " (geen Unity-project eronder gevonden)"
+    },
+    {
+      "key": "installs.status.noUnityToBackup",
+      "value": "{0} heeft geen Unity-project om een back-up van te maken."
+    },
+    {
+      "key": "installs.status.notGitRepo",
+      "value": "{0} is geen git-repository."
+    },
+    {
+      "key": "installs.status.removed",
+      "value": "{0} uit de lijst verwijderd (bestanden op schijf behouden)."
+    },
+    {
+      "key": "installs.status.requiresUnityNote",
+      "value": " Vereist Unity {0} — open het tabblad Unity-editors om het te installeren."
+    },
+    {
+      "key": "installs.status.rowSummary",
+      "value": "{0}: {1}"
+    },
+    {
+      "key": "installs.status.updateError",
+      "value": "Updatefout: {0}"
+    },
+    {
+      "key": "installs.status.updateFailed",
+      "value": "Bijwerken mislukt voor {0}: {1}"
+    },
+    {
+      "key": "installs.status.updated",
+      "value": "{0} bijgewerkt. {1}"
+    },
+    {
+      "key": "installs.status.updating",
+      "value": "{0} bijwerken (git pull)…"
+    },
+    {
+      "key": "installs.tooltip.backup",
+      "value": "Zip Assets, Packages en ProjectSettings (niet de Library-cache)"
+    },
+    {
+      "key": "packages.badge.basisRegistry",
+      "value": "BASIS-REGISTER"
+    },
+    {
+      "key": "packages.badge.github",
+      "value": "github"
+    },
+    {
+      "key": "packages.bundle.basisLine",
+      "value": "Basis: {0}  ·  Unity {1}"
+    },
+    {
+      "key": "packages.bundle.unknownCommit",
+      "value": "onbekend"
+    },
+    {
+      "key": "packages.button.add",
+      "value": "+ Toevoegen"
+    },
+    {
+      "key": "packages.button.chooseVersion",
+      "value": "Versie kiezen…"
+    },
+    {
+      "key": "packages.button.createBundle",
+      "value": "Bundel maken"
+    },
+    {
+      "key": "packages.button.install",
+      "value": "Installeren"
+    },
+    {
+      "key": "packages.button.refresh",
+      "value": "Vernieuwen"
+    },
+    {
+      "key": "packages.button.remove",
+      "value": "Verwijderen"
+    },
+    {
+      "key": "packages.button.update",
+      "value": "Bijwerken"
+    },
+    {
+      "key": "packages.community.description",
+      "value": "Plak een GitHub-URL of owner/repo[?path=Sub/Folder][#branch]. De package.json ervan wordt als git-afhankelijkheid aan je Unity-manifest toegevoegd."
+    },
+    {
+      "key": "packages.community.watermark",
+      "value": "https://github.com/owner/repo  of  owner/repo?path=Packages/com.x#main"
+    },
+    {
+      "key": "packages.dialog.installTitle",
+      "value": "{0} installeren"
+    },
+    {
+      "key": "packages.empty.noInstallSelected",
+      "value": "Geen installatie geselecteerd"
+    },
+    {
+      "key": "packages.empty.noProjectDescription",
+      "value": "Kloon of selecteer een Basis-installatie op het tabblad Projecten om de pakketten ervan te beheren."
+    },
+    {
+      "key": "packages.empty.noProjectTitle",
+      "value": "Geen installatie met een Unity-project"
+    },
+    {
+      "key": "packages.filter.allOwners",
+      "value": "Alle eigenaren"
+    },
+    {
+      "key": "packages.filter.otherOwner",
+      "value": "Overig"
+    },
+    {
+      "key": "packages.filter.watermark",
+      "value": "Pakketten filteren..."
+    },
+    {
+      "key": "packages.header.available",
+      "value": "Beschikbaar om te installeren"
+    },
+    {
+      "key": "packages.header.community",
+      "value": "Community-pakket toevoegen vanaf GitHub"
+    },
+    {
+      "key": "packages.header.installed",
+      "value": "Geïnstalleerd"
+    },
+    {
+      "key": "packages.hero.subtitle",
+      "value": "Kies een project en installeer daarna pakketten uit het Basis-register of voeg een willekeurig UPM-community-pakket toe via een git-URL."
+    },
+    {
+      "key": "packages.hero.tagline",
+      "value": "PAKKETTEN"
+    },
+    {
+      "key": "packages.hero.title",
+      "value": "Pakketten"
+    },
+    {
+      "key": "packages.label.project",
+      "value": "Project"
+    },
+    {
+      "key": "packages.status.added",
+      "value": "Toegevoegd"
+    },
+    {
+      "key": "packages.status.addedBundle",
+      "value": "Bundel “{0}” toegevoegd ({1} pakket(ten)){2} → {3}."
+    },
+    {
+      "key": "packages.status.addedDeepLink",
+      "value": "{0} {1}{2} → {3}."
+    },
+    {
+      "key": "packages.status.addedFromGitHub",
+      "value": "{0} {1}{2} vanaf GitHub."
+    },
+    {
+      "key": "packages.status.bundleInstallFailed",
+      "value": "Bundelinstallatie mislukt: {0}"
+    },
+    {
+      "key": "packages.status.chooseProject",
+      "value": "Kies eerst een project."
+    },
+    {
+      "key": "packages.status.deepLinkFailed",
+      "value": "Deep-link-installatie mislukt: {0}"
+    },
+    {
+      "key": "packages.status.defaultBranch",
+      "value": "standaardbranch"
+    },
+    {
+      "key": "packages.status.depNote",
+      "value": " (+{0} afhankelijkheidspakket{1})"
+    },
+    {
+      "key": "packages.status.dependencyConflict",
+      "value": "Afhankelijkheidsconflict: {0}"
+    },
+    {
+      "key": "packages.status.gitHubAddFailed",
+      "value": "Toevoegen via GitHub mislukt: {0}"
+    },
+    {
+      "key": "packages.status.gitUrlParseFailed",
+      "value": "Kon de git-URL van het pakket niet verwerken."
+    },
+    {
+      "key": "packages.status.installError",
+      "value": "Installatiefout: {0}"
+    },
+    {
+      "key": "packages.status.installLinkMissing",
+      "value": "De installatielink miste de pakket-id of git-URL."
+    },
+    {
+      "key": "packages.status.installed",
+      "value": "{0} geïnstalleerd in {1}."
+    },
+    {
+      "key": "packages.status.installedVersion",
+      "value": "{0} ({1}) geïnstalleerd in {2}."
+    },
+    {
+      "key": "packages.status.invalidGitHub",
+      "value": "Ongeldige GitHub-verwijzing: {0}"
+    },
+    {
+      "key": "packages.status.loadingVersions",
+      "value": "Versies laden voor {0}…"
+    },
+    {
+      "key": "packages.status.noAddonPackages",
+      "value": "Dit project heeft nog geen add-on-pakketten om te bundelen."
+    },
+    {
+      "key": "packages.status.noVersionsFound",
+      "value": "Kon geen versies vinden voor {0}."
+    },
+    {
+      "key": "packages.status.notGitPackage",
+      "value": "{0} is geen git-pakket — geen versies om te kiezen."
+    },
+    {
+      "key": "packages.status.openInstallFirst",
+      "value": "Open eerst een installatie met een Unity-project en klik daarna opnieuw op Installeren voor {0}."
+    },
+    {
+      "key": "packages.status.openingIssue",
+      "value": "Een GitHub-issue openen om “{0}” ({1} pakketten) in te dienen…"
+    },
+    {
+      "key": "packages.status.packageJsonLoadFailed",
+      "value": "Kon package.json niet laden van {0}/{1}{2} — controleer het pad en of de repo openbaar is."
+    },
+    {
+      "key": "packages.status.pasteGitHub",
+      "value": "Plak een GitHub-URL of owner/repo."
+    },
+    {
+      "key": "packages.status.refusedUnsafeUrl",
+      "value": "Toevoegen van {0} geweigerd: de git-URL van de installatielink gebruikt een niet-ondersteund of onveilig transport."
+    },
+    {
+      "key": "packages.status.removed",
+      "value": "{0} verwijderd."
+    },
+    {
+      "key": "packages.status.skipNote",
+      "value": " ({0} overgeslagen vanwege een onveilige git-URL)"
+    },
+    {
+      "key": "packages.status.updated",
+      "value": "Bijgewerkt"
+    },
+    {
+      "key": "packages.status.versionInstallError",
+      "value": "Fout bij installeren van versie: {0}"
+    },
+    {
+      "key": "packages.tooltip.chooseVersion",
+      "value": "Kies een specifieke release, beta of de standaardbranch"
+    },
+    {
+      "key": "packages.tooltip.filterByOwner",
+      "value": "Filter geïnstalleerde pakketten op eigenaar (uit de pakket-id)"
+    },
+    {
+      "key": "unity.button.install",
+      "value": "Installeren via Unity Hub"
+    },
+    {
+      "key": "unity.button.refresh",
+      "value": "Vernieuwen"
+    },
+    {
+      "key": "unity.button.reloadList",
+      "value": "Lijst herladen"
+    },
+    {
+      "key": "unity.button.uninstall",
+      "value": "Deïnstalleren"
+    },
+    {
+      "key": "unity.header.subtitle",
+      "value": "Detecteer geïnstalleerde Unity-editors en installeer de versie die Basis vereist."
+    },
+    {
+      "key": "unity.header.tagline",
+      "value": "UNITY-EDITORS"
+    },
+    {
+      "key": "unity.header.title",
+      "value": "Editor-versies"
+    },
+    {
+      "key": "unity.install.hint",
+      "value": "Kies een Unity 6-release. De changeset wordt automatisch ingevuld vanuit Unity's release-feed."
+    },
+    {
+      "key": "unity.label.changeset",
+      "value": "Changeset"
+    },
+    {
+      "key": "unity.label.release",
+      "value": "Unity 6-release"
+    },
+    {
+      "key": "unity.label.streamFilter",
+      "value": "Streamfilter"
+    },
+    {
+      "key": "unity.section.installNew",
+      "value": "Een nieuwe editor installeren"
+    },
+    {
+      "key": "unity.section.installedEditors",
+      "value": "Geïnstalleerde editors"
+    },
+    {
+      "key": "unity.status.alreadyInstalled",
+      "value": "Unity {0} is al geïnstalleerd."
+    },
+    {
+      "key": "unity.status.error",
+      "value": "Fout: {0}"
+    },
+    {
+      "key": "unity.status.fetchReleasesFailed",
+      "value": "Kon Unity-releases niet ophalen: {0}"
+    },
+    {
+      "key": "unity.status.hubNotDetected",
+      "value": "Unity Hub niet gedetecteerd."
+    },
+    {
+      "key": "unity.status.hubPath",
+      "value": "Unity Hub: {0}"
+    },
+    {
+      "key": "unity.status.installError",
+      "value": "Installatiefout: {0}"
+    },
+    {
+      "key": "unity.status.installFailed",
+      "value": "Installatie mislukt (afsluitcode {0})."
+    },
+    {
+      "key": "unity.status.installKickedOff",
+      "value": "Installatie gestart via Unity Hub voor {0}."
+    },
+    {
+      "key": "unity.status.installing",
+      "value": "Unity {0} installeren..."
+    },
+    {
+      "key": "unity.status.noEditorsInstalled",
+      "value": " (geen editors geïnstalleerd)"
+    },
+    {
+      "key": "unity.status.pickReleaseFirst",
+      "value": "Kies eerst een Unity 6-release uit de vervolgkeuzelijst."
+    },
+    {
+      "key": "unity.status.requiredVersionNote",
+      "value": "Je Basis-installatie is gericht op Unity {0}. Installeer hieronder precies die versie voor een probleemloze opening."
+    },
+    {
+      "key": "unity.status.uninstallError",
+      "value": "Deïnstallatiefout: {0}"
+    },
+    {
+      "key": "unity.status.uninstallFailed",
+      "value": "Deïnstallatie mislukt (afsluitcode {0})."
+    },
+    {
+      "key": "unity.status.uninstalled",
+      "value": "Unity {0} gedeïnstalleerd."
+    },
+    {
+      "key": "unity.status.uninstalling",
+      "value": "Unity {0} deïnstalleren..."
+    },
+    {
+      "key": "unity.tag.installed",
+      "value": "geïnstalleerd"
+    },
+    {
+      "key": "unity.tag.recommended",
+      "value": "aanbevolen"
+    },
+    {
+      "key": "develop.auth.cliNotLoggedIn",
+      "value": "GitHub CLI gevonden maar niet ingelogd — voer “gh auth login” uit en klik daarna op Opnieuw controleren."
+    },
+    {
+      "key": "develop.auth.notSignedIn",
+      "value": "Niet ingelogd — plak hieronder een token of installeer de GitHub CLI en log in."
+    },
+    {
+      "key": "develop.auth.signedIn",
+      "value": "Ingelogd bij GitHub als {0}"
+    },
+    {
+      "key": "develop.auth.tokenLabel",
+      "value": "GitHub-token (heeft de “repo”-scope nodig)"
+    },
+    {
+      "key": "develop.auth.tokenWatermark",
+      "value": "ghp_…  of  github_pat_…"
+    },
+    {
+      "key": "develop.button.installGit",
+      "value": "Git installeren"
+    },
+    {
+      "key": "develop.button.mountToEdit",
+      "value": "Koppelen om te bewerken"
+    },
+    {
+      "key": "develop.button.openInUnity",
+      "value": "Openen in Unity"
+    },
+    {
+      "key": "develop.button.recheck",
+      "value": "Opnieuw controleren"
+    },
+    {
+      "key": "develop.button.refresh",
+      "value": "Vernieuwen"
+    },
+    {
+      "key": "develop.button.signIn",
+      "value": "Inloggen"
+    },
+    {
+      "key": "develop.button.submitPr",
+      "value": "PR indienen"
+    },
+    {
+      "key": "develop.button.swapBack",
+      "value": "Terugwisselen"
+    },
+    {
+      "key": "develop.confirm.alreadyMounted",
+      "value": "{0} is al gekoppeld op Packages/{0}.\n\nVervangen door een verse kloon? Lokale bewerkingen in die map gaan verloren."
+    },
+    {
+      "key": "develop.confirm.packageExists",
+      "value": "Packages/{0} bestaat al en is niet leeg — het kan een achtergebleven koppeling of een lokale kopie zijn.\n\nVervangen door een verse kloon? De huidige inhoud wordt verwijderd."
+    },
+    {
+      "key": "develop.confirm.packageThereTitle",
+      "value": "Pakket al aanwezig"
+    },
+    {
+      "key": "develop.empty.description",
+      "value": "Selecteer een Basis-installatie op het tabblad Projecten om de pakketten ervan te bewerken."
+    },
+    {
+      "key": "develop.empty.title",
+      "value": "Geen installatie met een Unity-project"
+    },
+    {
+      "key": "develop.git.requiredDescription",
+      "value": "Een pakket koppelen en pull requests indienen vereisen Git. Installeer het en klik daarna op Opnieuw controleren."
+    },
+    {
+      "key": "develop.git.requiredTitle",
+      "value": "Git is vereist"
+    },
+    {
+      "key": "develop.header.description",
+      "value": "Koppel een git-pakket om het in Unity te bewerken en open daarna een pull request upstream — wissel terug of behoud het als je klaar bent."
+    },
+    {
+      "key": "develop.header.tagline",
+      "value": "ONTWIKKELEN"
+    },
+    {
+      "key": "develop.install.none",
+      "value": "Geen installatie geselecteerd"
+    },
+    {
+      "key": "develop.section.gitPackages",
+      "value": "Git-pakketten"
+    },
+    {
+      "key": "develop.section.mountedForEditing",
+      "value": "Gekoppeld om te bewerken"
+    },
+    {
+      "key": "develop.section.noGitPackages",
+      "value": "Geen via git geladen pakketten in dit project."
+    },
+    {
+      "key": "develop.status.clearFailed",
+      "value": "Kon Packages/{0} niet wissen: {1}"
+    },
+    {
+      "key": "develop.status.gitRequired",
+      "value": "Git is vereist."
+    },
+    {
+      "key": "develop.status.gitRequiredMount",
+      "value": "Git is vereist om een pakket te koppelen. Installeer het en klik daarna op Opnieuw controleren."
+    },
+    {
+      "key": "develop.status.loginUnverified",
+      "value": "Kon je GitHub-login niet verifiëren."
+    },
+    {
+      "key": "develop.status.mountCancelled",
+      "value": "Koppelen geannuleerd — Packages/{0} ongewijzigd gelaten."
+    },
+    {
+      "key": "develop.status.mountError",
+      "value": "Koppelfout: {0}"
+    },
+    {
+      "key": "develop.status.mountFailed",
+      "value": "Koppelen mislukt."
+    },
+    {
+      "key": "develop.status.mounted",
+      "value": "{0} gekoppeld in Packages/ — bewerk het in Unity en dien daarna een PR in."
+    },
+    {
+      "key": "develop.status.mounting",
+      "value": "{0} koppelen…"
+    },
+    {
+      "key": "develop.status.prError",
+      "value": "PR-fout: {0}"
+    },
+    {
+      "key": "develop.status.prFailed",
+      "value": "Het indienen van de PR is mislukt."
+    },
+    {
+      "key": "develop.status.prOpened",
+      "value": "Pull request geopend{0}: {1}"
+    },
+    {
+      "key": "develop.status.signInFirst",
+      "value": "Log eerst in bij GitHub (GitHub CLI of een token)."
+    },
+    {
+      "key": "develop.status.signedInAs",
+      "value": "Ingelogd als {0}."
+    },
+    {
+      "key": "develop.status.submittingPr",
+      "value": "Een pull request indienen voor {0}…"
+    },
+    {
+      "key": "develop.status.swapBackError",
+      "value": "Fout bij terugwisselen: {0}"
+    },
+    {
+      "key": "develop.status.swapBackFailed",
+      "value": "Terugwisselen mislukt."
+    },
+    {
+      "key": "develop.status.swappedBack",
+      "value": "{0} staat weer op de git-URL."
+    },
+    {
+      "key": "develop.status.swapping",
+      "value": "{0} terugwisselen naar de git-URL…"
+    },
+    {
+      "key": "develop.status.tokenFailed",
+      "value": "Dat token authenticeerde niet — zorg dat het de “repo”-scope heeft."
+    },
+    {
+      "key": "develop.status.viaFork",
+      "value": " (via je fork)"
+    },
+    {
+      "key": "changes.button.refresh",
+      "value": "Vernieuwen"
+    },
+    {
+      "key": "changes.diff.loadError",
+      "value": "Kon diff niet laden: {0}"
+    },
+    {
+      "key": "changes.diff.title",
+      "value": "Diff"
+    },
+    {
+      "key": "changes.empty.description",
+      "value": "Kies een installatie op het tabblad Projecten om te zien wat je hebt gewijzigd."
+    },
+    {
+      "key": "changes.empty.title",
+      "value": "Geen installatie geselecteerd"
+    },
+    {
+      "key": "changes.header.clean",
+      "value": "{0} · {1} — working tree schoon"
+    },
+    {
+      "key": "changes.header.dirtyMany",
+      "value": "{0} · {1} — {2} gewijzigde bestanden"
+    },
+    {
+      "key": "changes.header.dirtyOne",
+      "value": "{0} · {1} — {2} gewijzigd bestand"
+    },
+    {
+      "key": "changes.header.gitError",
+      "value": "git-fout: {0}"
+    },
+    {
+      "key": "changes.header.notGitRepo",
+      "value": "Deze installatie is geen git-repository, dus lokale wijzigingen kunnen niet worden bijgehouden."
+    },
+    {
+      "key": "changes.hero.subtitle",
+      "value": "Wat je in de Basis-broncode hebt gewijzigd sinds je laatste commit."
+    },
+    {
+      "key": "changes.hero.tagline",
+      "value": "LOKALE WIJZIGINGEN"
+    },
+    {
+      "key": "changes.list.title",
+      "value": "Gewijzigde bestanden"
+    },
+    {
+      "key": "settings.about.checkUpdates",
+      "value": "Controleren op updates"
+    },
+    {
+      "key": "settings.about.title",
+      "value": "Over"
+    },
+    {
+      "key": "settings.about.updatesBlurb",
+      "value": "Basis Package Manager werkt zichzelf bij via GitHub Releases. Wanneer een nieuwe versie wordt gepubliceerd, verschijnt bovenaan het venster een updatebanner — één klik downloadt de update en herstart."
+    },
+    {
+      "key": "settings.about.version",
+      "value": "Versie"
+    },
+    {
+      "key": "settings.button.save",
+      "value": "Opslaan"
+    },
+    {
+      "key": "settings.catalog.description",
+      "value": "JSON-URL die een Basis-compatibele catalogus levert. Laat leeg om het Basis-pakketregister te gebruiken (basisvr.org/packages)."
+    },
+    {
+      "key": "settings.catalog.title",
+      "value": "URL pakketcatalogus"
+    },
+    {
+      "key": "settings.clone.description",
+      "value": "Waar nieuwe Basis-klonen standaard worden aangemaakt."
+    },
+    {
+      "key": "settings.clone.title",
+      "value": "Standaard kloonlocatie"
+    },
+    {
+      "key": "settings.detected.git",
+      "value": "Git"
+    },
+    {
+      "key": "settings.detected.gitNotFound",
+      "value": "Git niet gevonden op PATH — installeer het via git-scm.com."
+    },
+    {
+      "key": "settings.detected.hubNotFound",
+      "value": "Unity Hub niet gedetecteerd."
+    },
+    {
+      "key": "settings.detected.settingsFile",
+      "value": "Instellingenbestand"
+    },
+    {
+      "key": "settings.detected.title",
+      "value": "Gedetecteerde tooling"
+    },
+    {
+      "key": "settings.detected.unityHub",
+      "value": "Unity Hub"
+    },
+    {
+      "key": "settings.hero.subtitle",
+      "value": "Kloonlocatie, catalogusbron en tooling-paden."
+    },
+    {
+      "key": "settings.hero.tagline",
+      "value": "INSTELLINGEN"
+    },
+    {
+      "key": "settings.hero.title",
+      "value": "Configuratie"
+    },
+    {
+      "key": "settings.language.description",
+      "value": "Kies de taal voor de interface van Basis Package Manager. Wordt direct toegepast."
+    },
+    {
+      "key": "settings.language.title",
+      "value": "Taal"
+    },
+    {
+      "key": "settings.logs.clear",
+      "value": "Wissen"
+    },
+    {
+      "key": "settings.logs.copy",
+      "value": "Kopiëren"
+    },
+    {
+      "key": "settings.logs.description",
+      "value": "Wat de app deze sessie heeft gedaan — persoonlijke paden, gebruikersnamen en IP-adressen zijn weggelaten. Voeg dit toe bij het melden van een probleem."
+    },
+    {
+      "key": "settings.logs.openFolder",
+      "value": "Map openen"
+    },
+    {
+      "key": "settings.logs.title",
+      "value": "Activiteitenlog"
+    },
+    {
+      "key": "settings.status.saved",
+      "value": "Instellingen opgeslagen."
+    },
+    {
+      "key": "settings.toggle.developer",
+      "value": "Ontwikkelaarsmodus (toon het tabblad Ontwikkelen)"
+    },
+    {
+      "key": "settings.toggle.developer.tip",
+      "value": "Koppel git-pakketten lokaal, bewerk ze in Unity en open pull requests. Verborgen voor niet-ontwikkelaars."
+    },
+    {
+      "key": "settings.toggle.localChanges",
+      "value": "Toon het tabblad Lokale wijzigingen"
+    },
+    {
+      "key": "settings.toggle.localChanges.tip",
+      "value": "Een git-status + diff per bestand van je installatie. Standaard verborgen."
+    },
+    {
+      "key": "settings.toggle.prerelease",
+      "value": "Ontvang prerelease-updates (experimenteel — kan defect zijn)"
+    },
+    {
+      "key": "settings.toggle.prerelease.tip",
+      "value": "Ontvang vroege builds zodra ze worden gepubliceerd — frequent en soms instabiel. Uit = alleen stabiele releases. Wordt toegepast bij Opslaan."
+    },
+    {
+      "key": "settings.unityHub.description",
+      "value": "Pad naar het Unity Hub-programma, als het niet automatisch is gedetecteerd."
+    },
+    {
+      "key": "settings.unityHub.title",
+      "value": "Unity Hub-overschrijving"
+    },
+    {
+      "key": "support.button.backOpenCollective",
+      "value": "Steun op OpenCollective"
+    },
+    {
+      "key": "support.button.fullFundingPage",
+      "value": "Lees de volledige financieringspagina  ↗"
+    },
+    {
+      "key": "support.button.joinDiscord",
+      "value": "Word lid van de Discord"
+    },
+    {
+      "key": "support.button.openCollective",
+      "value": "♥   Steun via OpenCollective"
+    },
+    {
+      "key": "support.button.sponsorFeature",
+      "value": "Sponsor een functie"
+    },
+    {
+      "key": "support.community.body",
+      "value": "Individuen steunen Basis op OpenCollective — maandelijks of eenmalig. Deze middelen ondersteunen vooral fulltime onderhoud en werk aan de ontwikkelaarservaring."
+    },
+    {
+      "key": "support.community.bullets",
+      "value": "•  Maandelijkse en eenmalige opties\n•  Openbare steunerslijst en transparant grootboek"
+    },
+    {
+      "key": "support.community.title",
+      "value": "Community-donaties"
+    },
+    {
+      "key": "support.company.body",
+      "value": "Bedrijven sponsoren roadmap-items of cofinancieren functies — netwerken, avatarsystemen, tooling. Het werk komt upstream terecht en blijft standaard MIT-gelicentieerd."
+    },
+    {
+      "key": "support.company.bullets",
+      "value": "•  Gedeelde infrastructuur boven op maat gemaakte forks\n•  Duidelijke resultaten, open ontwikkeling"
+    },
+    {
+      "key": "support.company.title",
+      "value": "Samenwerkingen met bedrijven"
+    },
+    {
+      "key": "support.hero.subtitle",
+      "value": "Basis is MIT-gelicentieerd en zet makers voorop. Community-donaties en samenwerkingen met bedrijven houden een beheerder fulltime aan het werk en versnellen releases."
+    },
+    {
+      "key": "support.hero.tagline",
+      "value": "STEUN"
+    },
+    {
+      "key": "support.hero.title",
+      "value": "Financier Basis"
+    },
+    {
+      "key": "support.where.body",
+      "value": "Middelen worden samengevoegd om gedeelde problemen aan te pakken — netwerken, embodiment, tooling — waar iedereen baat bij heeft. Er is een openbaar grootboek op OpenCollective, en gesponsord werk wordt vermeld in de release-opmerkingen. Sponsors hebben geen zeggenschap over het project."
+    },
+    {
+      "key": "support.where.title",
+      "value": "Waar het geld naartoe gaat"
+    },
+    {
+      "key": "docs.button.askDiscord",
+      "value": "Vraag het op Discord"
+    },
+    {
+      "key": "docs.button.basisGithub",
+      "value": "Basis op GitHub  ↗"
+    },
+    {
+      "key": "docs.button.joinDiscord",
+      "value": "Word lid van de Discord"
+    },
+    {
+      "key": "docs.button.openDocs",
+      "value": "Open de documentatie  ↗"
+    },
+    {
+      "key": "docs.button.openDocsSite",
+      "value": "Open docs.basisvr.org  ↗"
+    },
+    {
+      "key": "docs.button.packageManagerGithub",
+      "value": "Package Manager op GitHub  ↗"
+    },
+    {
+      "key": "docs.community.body",
+      "value": "Loop je vast op iets wat de documentatie niet behandelt? De Discord is de snelste manier om hulp te krijgen van andere makers en de beheerders."
+    },
+    {
+      "key": "docs.community.title",
+      "value": "Vraag het de community"
+    },
+    {
+      "key": "docs.hero.subtitle",
+      "value": "Handleidingen, API-referentie en how-to's voor het bouwen op Basis — plus de community om te vragen als je vastloopt."
+    },
+    {
+      "key": "docs.hero.tagline",
+      "value": "DOCUMENTATIE"
+    },
+    {
+      "key": "docs.hero.title",
+      "value": "Leer Basis"
+    },
+    {
+      "key": "docs.site.body",
+      "value": "Installatie, eerste stappen, avatars, werelden, netwerken en de SDK — de volledige documentatie staat op docs.basisvr.org."
+    },
+    {
+      "key": "docs.site.title",
+      "value": "Documentatiesite"
+    },
+    {
+      "key": "docs.source.body",
+      "value": "Lees de code, meld een bug of open een pull request. Basis is MIT-gelicentieerd en wordt in de openbaarheid ontwikkeld."
+    },
+    {
+      "key": "docs.source.title",
+      "value": "Broncode en issues"
+    },
+    {
+      "key": "logs.button.clear",
+      "value": "Wissen"
+    },
+    {
+      "key": "logs.button.copy",
+      "value": "Kopiëren"
+    },
+    {
+      "key": "logs.button.openFolder",
+      "value": "Map openen"
+    },
+    {
+      "key": "logs.hero.subtitle",
+      "value": "Wat de app deze sessie heeft gedaan — persoonlijke paden, gebruikersnamen en IP-adressen zijn weggelaten. Voeg dit toe bij het melden van een probleem."
+    },
+    {
+      "key": "logs.hero.tagline",
+      "value": "LOGS"
+    },
+    {
+      "key": "logs.hero.title",
+      "value": "Activiteitenlog"
+    },
+    {
+      "key": "announcements.button.refresh",
+      "value": "Vernieuwen"
+    },
+    {
+      "key": "announcements.card.learnMore",
+      "value": "Meer informatie"
+    },
+    {
+      "key": "announcements.card.pinned",
+      "value": "VASTGEZET"
+    },
+    {
+      "key": "announcements.empty.body",
+      "value": "Kom later terug — nieuws van het Basis-team verschijnt hier."
+    },
+    {
+      "key": "announcements.empty.title",
+      "value": "Nog geen aankondigingen"
+    },
+    {
+      "key": "announcements.hero.subtitle",
+      "value": "Updates en nieuws van het Basis-team."
+    },
+    {
+      "key": "announcements.hero.tagline",
+      "value": "AANKONDIGINGEN"
+    },
+    {
+      "key": "announcements.hero.title",
+      "value": "Wat is er nieuw"
+    },
+    {
+      "key": "announcements.level.alert",
+      "value": "LET OP"
+    },
+    {
+      "key": "announcements.level.news",
+      "value": "NIEUWS"
+    },
+    {
+      "key": "announcements.level.update",
+      "value": "UPDATE"
+    },
+    {
+      "key": "announcements.status.loading",
+      "value": "Aankondigingen laden…"
+    },
+    {
+      "key": "dialog.alias.cancel",
+      "value": "Annuleren"
+    },
+    {
+      "key": "dialog.alias.displayName",
+      "value": "Weergavenaam"
+    },
+    {
+      "key": "dialog.alias.hint",
+      "value": "Een herkenbare naam die in de hele app voor deze kloon wordt getoond."
+    },
+    {
+      "key": "dialog.alias.save",
+      "value": "Opslaan"
+    },
+    {
+      "key": "dialog.alias.title",
+      "value": "Geef deze installatie een naam"
+    },
+    {
+      "key": "dialog.alias.watermark",
+      "value": "bijv. Mijn Basis-project"
+    },
+    {
+      "key": "dialog.backup.backupContinue",
+      "value": "Back-up maken en doorgaan"
+    },
+    {
+      "key": "dialog.backup.cancel",
+      "value": "Annuleren"
+    },
+    {
+      "key": "dialog.backup.continueWithout",
+      "value": "Doorgaan zonder back-up"
+    },
+    {
+      "key": "dialog.backup.heading",
+      "value": "Eerst een back-up van je project maken?"
+    },
+    {
+      "key": "dialog.backup.title",
+      "value": "Back-up van je project maken?"
+    },
+    {
+      "key": "dialog.confirm.no",
+      "value": "Nee, bedankt"
+    },
+    {
+      "key": "dialog.confirm.title",
+      "value": "Bevestigen"
+    },
+    {
+      "key": "dialog.confirm.yes",
+      "value": "Ja"
+    },
+    {
+      "key": "dialog.createBundle.cancel",
+      "value": "Annuleren"
+    },
+    {
+      "key": "dialog.createBundle.create",
+      "value": "Inzending maken"
+    },
+    {
+      "key": "dialog.createBundle.descriptionLabel",
+      "value": "Beschrijving"
+    },
+    {
+      "key": "dialog.createBundle.errorNoName",
+      "value": "Geef je bundel een naam."
+    },
+    {
+      "key": "dialog.createBundle.errorNoPackages",
+      "value": "Kies ten minste één pakket om op te nemen."
+    },
+    {
+      "key": "dialog.createBundle.heading",
+      "value": "Een bundel maken"
+    },
+    {
+      "key": "dialog.createBundle.intro",
+      "value": "Deel je Basis + pakketten als een installeerbare bundel. Het opent een GitHub-issue om in te dienen."
+    },
+    {
+      "key": "dialog.createBundle.nameLabel",
+      "value": "Naam"
+    },
+    {
+      "key": "dialog.createBundle.packagesLabel",
+      "value": "Op te nemen pakketten"
+    },
+    {
+      "key": "dialog.createBundle.title",
+      "value": "Bundel maken"
+    },
+    {
+      "key": "dialog.installPicker.addHere",
+      "value": "Hier toevoegen"
+    },
+    {
+      "key": "dialog.installPicker.cancel",
+      "value": "Annuleren"
+    },
+    {
+      "key": "dialog.installPicker.heading",
+      "value": "Pakket toevoegen"
+    },
+    {
+      "key": "dialog.installPicker.subtitle",
+      "value": "Kies aan welke installatie je dit pakket wilt toevoegen."
+    },
+    {
+      "key": "dialog.installPicker.title",
+      "value": "Kies een installatie"
+    },
+    {
+      "key": "dialog.roleWizard.developerDesc",
+      "value": "Alles hierboven, plus het tabblad Ontwikkelen — koppel pakketten lokaal, bewerk ze in Unity en open pull requests."
+    },
+    {
+      "key": "dialog.roleWizard.developerTitle",
+      "value": "🛠   Ik ben ontwikkelaar"
+    },
+    {
+      "key": "dialog.roleWizard.intro",
+      "value": "Hoe ga je Basis gebruiken? We passen aan welke tools worden getoond — je kunt dit altijd wijzigen in Instellingen."
+    },
+    {
+      "key": "dialog.roleWizard.title",
+      "value": "Welkom bij Basis Package Manager"
+    },
+    {
+      "key": "dialog.roleWizard.userDesc",
+      "value": "Kloon Basis, installeer pakketten en houd het up-to-date. Alleen het essentiële, niets meer."
+    },
+    {
+      "key": "dialog.roleWizard.userTitle",
+      "value": "🎮   Ik gebruik het framework"
+    },
+    {
+      "key": "dialog.roleWizard.welcome",
+      "value": "Welkom 👋"
+    },
+    {
+      "key": "dialog.submitPr.branchLabel",
+      "value": "Branchnaam"
+    },
+    {
+      "key": "dialog.submitPr.cancel",
+      "value": "Annuleren"
+    },
+    {
+      "key": "dialog.submitPr.contributeHint",
+      "value": "Draag je wijzigingen aan {0} terug bij aan de bijbehorende repository."
+    },
+    {
+      "key": "dialog.submitPr.defaultTitle",
+      "value": "{0} bijwerken"
+    },
+    {
+      "key": "dialog.submitPr.descriptionLabel",
+      "value": "Beschrijving"
+    },
+    {
+      "key": "dialog.submitPr.descriptionWatermark",
+      "value": "Wat heb je gewijzigd en waarom?"
+    },
+    {
+      "key": "dialog.submitPr.hint",
+      "value": "We maken deze branch aan, committen je wijzigingen, pushen (met eerst een fork als je niet direct kunt pushen) en openen de PR."
+    },
+    {
+      "key": "dialog.submitPr.openPr",
+      "value": "Pull request openen"
+    },
+    {
+      "key": "dialog.submitPr.title",
+      "value": "Een pull request indienen"
+    },
+    {
+      "key": "dialog.submitPr.titleLabel",
+      "value": "Titel"
+    },
+    {
+      "key": "dialog.submitPr.titleWatermark",
+      "value": "Het pakket bijwerken"
+    },
+    {
+      "key": "dialog.versionPicker.betaPill",
+      "value": "beta"
+    },
+    {
+      "key": "dialog.versionPicker.cancel",
+      "value": "Annuleren"
+    },
+    {
+      "key": "dialog.versionPicker.install",
+      "value": "Deze versie installeren"
+    },
+    {
+      "key": "dialog.versionPicker.showPrereleases",
+      "value": "Toon prereleases (beta's)"
+    },
+    {
+      "key": "dialog.versionPicker.subHasReleases",
+      "value": "Kies een gepubliceerde release of de nieuwste standaardbranch."
+    },
+    {
+      "key": "dialog.versionPicker.subNoReleases",
+      "value": "Geen releases gepubliceerd — tags / de standaardbranch worden getoond. Vraag de maker om releases te maken voor stabiele versies."
+    },
+    {
+      "key": "dialog.versionPicker.title",
+      "value": "Kies een versie"
+    }
+  ]
+}

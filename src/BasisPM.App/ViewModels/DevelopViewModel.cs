@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Avalonia.Threading;
+using BasisPM.App.Localization;
 using BasisPM.App.Services;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
@@ -26,7 +27,7 @@ public sealed class DevelopViewModel : ObservableObject
     public ObservableCollection<GitPackageRow> GitPackages { get; } = new();
     public ObservableCollection<MountedRow> Mounted { get; } = new();
 
-    public string InstallName => _install?.DisplayName ?? "No install selected";
+    public string InstallName => _install?.DisplayName ?? L.Tr("develop.install.none");
     public bool HasInstall => _install is not null && _install.HasUnityProject;
     public bool IsBusy { get => _isBusy; set => SetField(ref _isBusy, value); }
 
@@ -46,9 +47,9 @@ public sealed class DevelopViewModel : ObservableObject
     public bool NotAuthed => !_authOk;
     public bool ShowPatEntry => !_authOk;
     public string AuthLabel => _authOk
-        ? $"Signed in to GitHub as {_authLogin}"
-        : GhAvailable ? "GitHub CLI found but not logged in — run “gh auth login”, then Re-check."
-                      : "Not signed in — paste a token below, or install & log in with the GitHub CLI.";
+        ? L.Tr("develop.auth.signedIn", _authLogin)
+        : GhAvailable ? L.Tr("develop.auth.cliNotLoggedIn")
+                      : L.Tr("develop.auth.notSignedIn");
 
     public string PatInput { get => _patInput; set => SetField(ref _patInput, value); }
 
@@ -59,7 +60,7 @@ public sealed class DevelopViewModel : ObservableObject
     public RelayCommand<GitPackageRow> MountCommand { get; }
     public RelayCommand<MountedRow> SubmitPrCommand { get; }
     public RelayCommand<MountedRow> SwapBackCommand { get; }
-    public RelayCommand<MountedRow> OpenFolderCommand { get; }
+    public RelayCommand<MountedRow> OpenInUnityCommand { get; }
 
     public DevelopViewModel(MountService mount, ContributeService contribute, GitHubAuthService auth,
         GitHubApiService api, GitService git, MountRegistry registry, MainWindowViewModel shell)
@@ -73,7 +74,7 @@ public sealed class DevelopViewModel : ObservableObject
         MountCommand = new RelayCommand<GitPackageRow>(MountAsync);
         SubmitPrCommand = new RelayCommand<MountedRow>(SubmitPrAsync);
         SwapBackCommand = new RelayCommand<MountedRow>(SwapBackAsync);
-        OpenFolderCommand = new RelayCommand<MountedRow>(r => { if (r is not null) ExternalLink.OpenFolder(r.FolderPath); });
+        OpenInUnityCommand = new RelayCommand<MountedRow>(row => { if (_install is not null) _ = _shell.OpenProjectInUnityAsync(_install); });
     }
 
     public void SetActiveInstall(BasisInstall install)
@@ -137,14 +138,14 @@ public sealed class DevelopViewModel : ObservableObject
     {
         _auth.SetPersonalAccessToken(PatInput);
         await CheckAuthAsync();
-        if (AuthOk) { PatInput = ""; _shell.SetStatus($"Signed in as {_authLogin}.", StatusKind.Success); }
-        else _shell.SetStatus("That token didn't authenticate — make sure it has the “repo” scope.", StatusKind.Error);
+        if (AuthOk) { PatInput = ""; _shell.SetStatus(L.Tr("develop.status.signedInAs", _authLogin), StatusKind.Success); }
+        else _shell.SetStatus(L.Tr("develop.status.tokenFailed"), StatusKind.Error);
     }
 
     private async Task MountAsync(GitPackageRow? row)
     {
         if (row is null || _install is null) return;
-        if (!_git.IsAvailable) { _shell.SetStatus("Git is required to mount a package. Install it, then Re-check.", StatusKind.Error); return; }
+        if (!_git.IsAvailable) { _shell.SetStatus(L.Tr("develop.status.gitRequiredMount"), StatusKind.Error); return; }
 
         // If Packages/<id> already exists (already mounted, a leftover, or a local copy), ask before replacing it.
         var dest = Path.Combine(_install.UnityProjectPath, "Packages", row.Id);
@@ -152,26 +153,26 @@ public sealed class DevelopViewModel : ObservableObject
         {
             var mounted = _registry.Find(_install.UnityProjectPath, row.Id) is not null;
             var msg = mounted
-                ? $"{row.Id} is already mounted at Packages/{row.Id}.\n\nReplace it with a fresh clone? Any local edits in that folder will be lost."
-                : $"Packages/{row.Id} already exists and isn't empty — it may be a leftover mount or a local copy.\n\nReplace it with a fresh clone? Its current contents will be deleted.";
-            if (!await Dialogs.ConfirmAsync("Package already there", msg))
+                ? L.Tr("develop.confirm.alreadyMounted", row.Id)
+                : L.Tr("develop.confirm.packageExists", row.Id);
+            if (!await Dialogs.ConfirmAsync(L.Tr("develop.confirm.packageThereTitle"), msg))
             {
-                _shell.SetStatus($"Mount cancelled — Packages/{row.Id} left as-is.", StatusKind.Info);
+                _shell.SetStatus(L.Tr("develop.status.mountCancelled", row.Id), StatusKind.Info);
                 return;
             }
             try { TryForceDelete(dest); }
-            catch (Exception ex) { _shell.SetStatus($"Couldn't clear Packages/{row.Id}: {ex.Message}", StatusKind.Error); return; }
+            catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.clearFailed", row.Id, ex.Message), StatusKind.Error); return; }
         }
 
         IsBusy = true;
-        _shell.SetStatus($"Mounting {row.Id}…");
+        _shell.SetStatus(L.Tr("develop.status.mounting", row.Id));
         try
         {
             var result = await _mount.MountAsync(_install, row.Id, row.GitUrl, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
-            if (result.Ok) { _shell.SetStatus($"Mounted {row.Id} into Packages/ — edit it in Unity, then Submit PR.", StatusKind.Success); Refresh(); }
-            else _shell.SetStatus(result.Error ?? "Mount failed.", StatusKind.Error);
+            if (result.Ok) { _shell.SetStatus(L.Tr("develop.status.mounted", row.Id), StatusKind.Success); Refresh(); }
+            else _shell.SetStatus(result.Error ?? L.Tr("develop.status.mountFailed"), StatusKind.Error);
         }
-        catch (Exception ex) { _shell.SetStatus($"Mount error: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.mountError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
     }
 
@@ -179,43 +180,43 @@ public sealed class DevelopViewModel : ObservableObject
     {
         if (row is null || _install is null) return;
         IsBusy = true;
-        _shell.SetStatus($"Swapping {row.Id} back to its git URL…");
+        _shell.SetStatus(L.Tr("develop.status.swapping", row.Id));
         try
         {
             var result = await _mount.SwapBackAsync(_install, row.Id);
-            if (result.Ok) { _shell.SetStatus($"{row.Id} is back on its git URL.", StatusKind.Success); Refresh(); }
-            else _shell.SetStatus(result.Error ?? "Swap-back failed.", StatusKind.Error);
+            if (result.Ok) { _shell.SetStatus(L.Tr("develop.status.swappedBack", row.Id), StatusKind.Success); Refresh(); }
+            else _shell.SetStatus(result.Error ?? L.Tr("develop.status.swapBackFailed"), StatusKind.Error);
         }
-        catch (Exception ex) { _shell.SetStatus($"Swap-back error: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.swapBackError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
     }
 
     private async Task SubmitPrAsync(MountedRow? row)
     {
         if (row is null) return;
-        if (!_git.IsAvailable) { _shell.SetStatus("Git is required.", StatusKind.Error); return; }
+        if (!_git.IsAvailable) { _shell.SetStatus(L.Tr("develop.status.gitRequired"), StatusKind.Error); return; }
 
         var token = await _auth.GetTokenAsync();
-        if (string.IsNullOrEmpty(token)) { _shell.SetStatus("Sign in to GitHub first (GitHub CLI or a token).", StatusKind.Error); return; }
+        if (string.IsNullOrEmpty(token)) { _shell.SetStatus(L.Tr("develop.status.signInFirst"), StatusKind.Error); return; }
         var user = await _api.GetUserAsync(token);
-        if (user is null) { _shell.SetStatus("Couldn't verify your GitHub login.", StatusKind.Error); return; }
+        if (user is null) { _shell.SetStatus(L.Tr("develop.status.loginUnverified"), StatusKind.Error); return; }
 
         var draft = await Dialogs.SubmitPrAsync(row.Id);
         if (draft is null) return;
 
         IsBusy = true;
-        _shell.SetStatus($"Submitting a pull request for {row.Id}…");
+        _shell.SetStatus(L.Tr("develop.status.submittingPr", row.Id));
         try
         {
             var result = await _contribute.SubmitPrAsync(row.FolderPath, token, user, draft, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
             if (result.Ok)
             {
-                _shell.SetStatus($"Pull request opened{(result.Forked ? " (via your fork)" : "")}: {result.PrUrl}", StatusKind.Success);
+                _shell.SetStatus(L.Tr("develop.status.prOpened", result.Forked ? L.Tr("develop.status.viaFork") : "", result.PrUrl), StatusKind.Success);
                 if (!string.IsNullOrEmpty(result.PrUrl)) OpenUrl(result.PrUrl!);
             }
-            else _shell.SetStatus(result.Error ?? "Submitting the PR failed.", StatusKind.Error);
+            else _shell.SetStatus(result.Error ?? L.Tr("develop.status.prFailed"), StatusKind.Error);
         }
-        catch (Exception ex) { _shell.SetStatus($"PR error: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.prError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
     }
 

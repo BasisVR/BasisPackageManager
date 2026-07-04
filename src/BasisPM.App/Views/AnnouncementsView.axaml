@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:BasisPM.App.ViewModels"
+             xmlns:loc="using:BasisPM.App.Localization"
              x:Class="BasisPM.App.Views.AnnouncementsView"
              x:DataType="vm:AnnouncementsViewModel">
 
@@ -12,17 +13,17 @@
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
                 <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                     <StackPanel Grid.Column="0" Spacing="6">
-                        <TextBlock Text="ANNOUNCEMENTS" Classes="tagline"/>
-                        <TextBlock Text="What's new" Classes="h1"/>
-                        <TextBlock Text="Updates and news from the Basis team."
+                        <TextBlock Text="{loc:Tr announcements.hero.tagline}" Classes="tagline"/>
+                        <TextBlock Text="{loc:Tr announcements.hero.title}" Classes="h1"/>
+                        <TextBlock Text="{loc:Tr announcements.hero.subtitle}"
                                    Classes="muted" FontSize="14"/>
                     </StackPanel>
-                    <Button Grid.Column="1" Content="Refresh" VerticalAlignment="Center"
+                    <Button Grid.Column="1" Content="{loc:Tr announcements.button.refresh}" VerticalAlignment="Center"
                             Command="{Binding RefreshCommand}"/>
                 </Grid>
             </Border>
 
-            <TextBlock Text="Loading announcements…" Classes="dim" FontSize="12"
+            <TextBlock Text="{loc:Tr announcements.status.loading}" Classes="dim" FontSize="12"
                        IsVisible="{Binding IsLoading}"/>
 
             <ItemsControl ItemsSource="{Binding Announcements}">
@@ -41,7 +42,7 @@
                                                    FontWeight="Bold" Foreground="#FFFFFF"/>
                                     </Border>
                                     <Border Classes="versionPill" IsVisible="{Binding IsPinned}">
-                                        <TextBlock Text="PINNED" FontSize="10" FontWeight="Bold" Classes="muted"/>
+                                        <TextBlock Text="{loc:Tr announcements.card.pinned}" FontSize="10" FontWeight="Bold" Classes="muted"/>
                                     </Border>
                                     <TextBlock Text="{Binding DateDisplay}" Classes="dim" FontSize="12"
                                                VerticalAlignment="Center" IsVisible="{Binding HasDate}"/>
@@ -59,8 +60,8 @@
 
             <Border Classes="card" IsVisible="{Binding ShowEmpty}">
                 <StackPanel Spacing="8" HorizontalAlignment="Center" Margin="0,40">
-                    <TextBlock Text="No announcements yet" Classes="h3" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Check back later — news from the Basis team will show up here."
+                    <TextBlock Text="{loc:Tr announcements.empty.title}" Classes="h3" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr announcements.empty.body}"
                                Classes="muted" HorizontalAlignment="Center" TextAlignment="Center"
                                MaxWidth="480" TextWrapping="Wrap"/>
                 </StackPanel>

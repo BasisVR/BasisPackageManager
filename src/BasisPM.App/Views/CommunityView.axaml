@@ -1,0 +1,142 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             x:Class="BasisPM.App.Views.CommunityView"
+             x:DataType="vm:CommunityViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="40,32" Spacing="18">
+
+            <!-- Hero -->
+            <Border CornerRadius="14" Padding="32,28"
+                    Background="{StaticResource BasisHeroGradient}"
+                    BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="COMMUNITY" Classes="tagline"/>
+                    <TextBlock Text="News, docs &amp; support" Classes="h1"/>
+                    <TextBlock Text="What's new with Basis, where to learn it, and how to help keep it going."
+                               Classes="muted" FontSize="14" TextWrapping="Wrap" MaxWidth="660" HorizontalAlignment="Left"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
+                        <Button Classes="primary" Content="Open the docs  ↗" Command="{Binding Documentation.DocsCommand}"/>
+                        <Button Content="Join the Discord" Command="{Binding Documentation.DiscordCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Announcements ───────────────────────────────── -->
+            <Grid ColumnDefinitions="*,Auto" Margin="4,6,0,0">
+                <TextBlock Grid.Column="0" Text="Announcements" Classes="h2" VerticalAlignment="Center"/>
+                <Button Grid.Column="1" Content="Refresh" Command="{Binding Announcements.RefreshCommand}"/>
+            </Grid>
+            <TextBlock Text="Loading announcements…" Classes="dim" FontSize="12"
+                       IsVisible="{Binding Announcements.IsLoading}"/>
+            <ItemsControl ItemsSource="{Binding Announcements.Announcements}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="14"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:AnnouncementCard">
+                        <Border Classes="card">
+                            <StackPanel Spacing="10">
+                                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                    <Border CornerRadius="999" Padding="10,3" Background="{Binding LevelBrush}">
+                                        <TextBlock Text="{Binding LevelLabel}" FontSize="10"
+                                                   FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    </Border>
+                                    <Border Classes="versionPill" IsVisible="{Binding IsPinned}">
+                                        <TextBlock Text="PINNED" FontSize="10" FontWeight="Bold" Classes="muted"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding DateDisplay}" Classes="dim" FontSize="12"
+                                               VerticalAlignment="Center" IsVisible="{Binding HasDate}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Title}" Classes="h3" FontSize="17"/>
+                                <TextBlock Text="{Binding Body}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                                <Button Content="{Binding LinkText}" HorizontalAlignment="Left"
+                                        IsVisible="{Binding HasLink}"
+                                        Command="{Binding OpenLinkCommand}"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Border Classes="card" IsVisible="{Binding Announcements.ShowEmpty}">
+                <StackPanel Spacing="8" HorizontalAlignment="Center" Margin="0,24">
+                    <TextBlock Text="No announcements yet" Classes="h3" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Check back later — news from the Basis team will show up here."
+                               Classes="muted" HorizontalAlignment="Center" TextAlignment="Center"
+                               MaxWidth="480" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Documentation ───────────────────────────────── -->
+            <TextBlock Text="Documentation" Classes="h2" Margin="4,10,0,0"/>
+            <Grid ColumnDefinitions="*,*">
+                <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Documentation site" Classes="h3"/>
+                        <TextBlock Text="Installation, first steps, avatars, worlds, networking and the SDK — the full docs live at docs.basisvr.org."
+                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                        <Button Content="Open docs.basisvr.org  ↗" Command="{Binding Documentation.DocsCommand}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Ask the community" Classes="h3"/>
+                        <TextBlock Text="Stuck on something the docs don't cover? The Discord is the fastest way to get help from other creators and the maintainers."
+                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                        <Button Content="Join the Discord" Command="{Binding Documentation.DiscordCommand}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            <Border Classes="card">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Source &amp; issues" Classes="h3"/>
+                    <TextBlock Text="Read the code, file a bug or open a pull request. Basis is MIT-licensed and developed in the open."
+                               Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Button Content="Basis on GitHub  ↗" Command="{Binding Documentation.BasisRepoCommand}" HorizontalAlignment="Left"/>
+                        <Button Content="Package Manager on GitHub  ↗" Command="{Binding Documentation.PackageManagerRepoCommand}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Support ─────────────────────────────────────── -->
+            <TextBlock Text="Support Basis" Classes="h2" Margin="4,10,0,0"/>
+            <TextBlock Text="Basis is MIT-licensed and creator-first. Community donations and company collaborations keep a maintainer working full-time and speed up releases."
+                       Classes="muted" FontSize="13" TextWrapping="Wrap" MaxWidth="680" HorizontalAlignment="Left"/>
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Button Classes="primary" Content="♥   Support via OpenCollective" Command="{Binding Support.OpenCollectiveCommand}"/>
+                <Button Content="Join the Discord" Command="{Binding Support.DiscordCommand}"/>
+            </StackPanel>
+            <Grid ColumnDefinitions="*,*">
+                <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Community donations" Classes="h3"/>
+                        <TextBlock Text="Individuals back Basis on OpenCollective — monthly or one-time. These funds primarily support full-time maintenance and developer-experience work."
+                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                        <Button Content="Back on OpenCollective" Command="{Binding Support.OpenCollectiveCommand}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Company collaborations" Classes="h3"/>
+                        <TextBlock Text="Companies sponsor roadmap items or co-fund features — networking, avatar systems, tooling. Work lands upstream and stays MIT-licensed by default."
+                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                        <Button Content="Sponsor a feature" Command="{Binding Support.FundingPageCommand}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            <Border Classes="card">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Where the money goes" Classes="h3"/>
+                    <TextBlock Text="Funds are pooled to tackle shared problems — networking, embodiment, tooling — that benefit everyone. There's a public ledger on OpenCollective, and sponsored work is attributed in release notes. Sponsors don't control the project."
+                               Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                    <Button Content="Read the full funding page  ↗" Command="{Binding Support.FundingPageCommand}" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

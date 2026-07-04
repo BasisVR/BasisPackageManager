@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using BasisPM.App.Localization;
 using BasisPM.App.ViewModels;
 
 namespace BasisPM.App.Views;
@@ -25,11 +26,11 @@ public partial class MainWindow : Window
         try
         {
             await clipboard.SetTextAsync(vm.StatusMessage);
-            vm.SetStatus("Copied status to clipboard.", StatusKind.Success);
+            vm.SetStatus(L.Tr("shell.status.copied"), StatusKind.Success);
         }
         catch (Exception ex)
         {
-            vm.SetStatus($"Copy failed: {ex.Message}", StatusKind.Error);
+            vm.SetStatus(L.Tr("shell.status.copyFailed", ex.Message), StatusKind.Error);
         }
     }
 

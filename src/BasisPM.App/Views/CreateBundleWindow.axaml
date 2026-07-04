@@ -1,33 +1,34 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="using:BasisPM.App.Views"
+        xmlns:loc="using:BasisPM.App.Localization"
         x:Class="BasisPM.App.Views.CreateBundleWindow"
-        Title="Create bundle"
+        Title="{loc:Tr dialog.createBundle.title}"
         Width="520" Height="640"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BasisBackgroundBrush}">
     <DockPanel Margin="26,24">
         <StackPanel DockPanel.Dock="Top" Spacing="12">
-            <TextBlock Text="Create a bundle" Classes="h3"/>
-            <TextBlock Text="Share your Basis + packages as an installable bundle. It opens a GitHub issue to submit."
+            <TextBlock Text="{loc:Tr dialog.createBundle.heading}" Classes="h3"/>
+            <TextBlock Text="{loc:Tr dialog.createBundle.intro}"
                        Classes="muted" FontSize="12" TextWrapping="Wrap"/>
             <StackPanel Spacing="4">
-                <TextBlock Text="Name" Classes="muted" FontSize="11"/>
+                <TextBlock Text="{loc:Tr dialog.createBundle.nameLabel}" Classes="muted" FontSize="11"/>
                 <TextBox x:Name="NameBox"/>
             </StackPanel>
             <StackPanel Spacing="4">
-                <TextBlock Text="Description" Classes="muted" FontSize="11"/>
+                <TextBlock Text="{loc:Tr dialog.createBundle.descriptionLabel}" Classes="muted" FontSize="11"/>
                 <TextBox x:Name="DescBox" AcceptsReturn="True" Height="58" TextWrapping="Wrap"/>
             </StackPanel>
             <TextBlock x:Name="BasisLine" Classes="dim" FontSize="11"/>
-            <TextBlock Text="Packages to include" Classes="muted" FontSize="11" Margin="0,4,0,0"/>
+            <TextBlock Text="{loc:Tr dialog.createBundle.packagesLabel}" Classes="muted" FontSize="11" Margin="0,4,0,0"/>
         </StackPanel>
 
         <StackPanel DockPanel.Dock="Bottom" Spacing="10" Margin="0,14,0,0">
             <TextBlock x:Name="ErrorText" Foreground="#FFE06B6B" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button Content="Cancel" Click="OnCancel"/>
-                <Button Classes="primary" Content="Create submission" Click="OnCreate"/>
+                <Button Content="{loc:Tr dialog.createBundle.cancel}" Click="OnCancel"/>
+                <Button Classes="primary" Content="{loc:Tr dialog.createBundle.create}" Click="OnCreate"/>
             </StackPanel>
         </StackPanel>
 

@@ -1,0 +1,1626 @@
+{
+  "code": "hi",
+  "nativeName": "हिन्दी",
+  "entries": [
+    {
+      "key": "nav.changes",
+      "value": "स्थानीय बदलाव"
+    },
+    {
+      "key": "nav.community",
+      "value": "समुदाय"
+    },
+    {
+      "key": "nav.develop",
+      "value": "डेवलप"
+    },
+    {
+      "key": "nav.installs",
+      "value": "प्रोजेक्ट्स"
+    },
+    {
+      "key": "nav.packages",
+      "value": "पैकेज"
+    },
+    {
+      "key": "nav.settings",
+      "value": "सेटिंग्स"
+    },
+    {
+      "key": "nav.unity",
+      "value": "Unity एडिटर"
+    },
+    {
+      "key": "shell.bundle.pickerLabel",
+      "value": "{0} ({1} पैकेज)"
+    },
+    {
+      "key": "shell.crash.dialogMessage",
+      "value": "ऐसा लगता है कि पिछली बार ऐप अप्रत्याशित रूप से बंद हो गया था। क्या इसकी जाँच के लिए पहले से भरा हुआ GitHub इश्यू खोलें?"
+    },
+    {
+      "key": "shell.crash.dialogTitle",
+      "value": "Basis Package Manager अप्रत्याशित रूप से बंद हो गया"
+    },
+    {
+      "key": "shell.deeplink.thePackage",
+      "value": "यह पैकेज"
+    },
+    {
+      "key": "shell.desktopShortcut.dialogMessage",
+      "value": "Basis Package Manager के लिए एक डेस्कटॉप शॉर्टकट जोड़ें? आप इसे हमेशा Start मेनू से ढूँढ सकते हैं।"
+    },
+    {
+      "key": "shell.desktopShortcut.dialogTitle",
+      "value": "डेस्कटॉप शॉर्टकट"
+    },
+    {
+      "key": "shell.footer.license",
+      "value": "MIT लाइसेंस प्राप्त"
+    },
+    {
+      "key": "shell.installPicker.prompt",
+      "value": "“{0}” को किस प्रोजेक्ट में जोड़ें?"
+    },
+    {
+      "key": "shell.status.bundleNotFound",
+      "value": "रजिस्ट्री में बंडल “{0}” नहीं मिला।"
+    },
+    {
+      "key": "shell.status.checkingForUpdates",
+      "value": "अपडेट के लिए जाँच हो रही है…"
+    },
+    {
+      "key": "shell.status.cloneFirst",
+      "value": "पहले कोई Basis इंस्टॉल क्लोन करें या जोड़ें, फिर {0} इंस्टॉल करें।"
+    },
+    {
+      "key": "shell.status.copied",
+      "value": "स्थिति क्लिपबोर्ड पर कॉपी की गई।"
+    },
+    {
+      "key": "shell.status.copy",
+      "value": "कॉपी"
+    },
+    {
+      "key": "shell.status.copyFailed",
+      "value": "कॉपी विफल: {0}"
+    },
+    {
+      "key": "shell.status.copyTooltip",
+      "value": "स्थिति संदेश को क्लिपबोर्ड पर कॉपी करें"
+    },
+    {
+      "key": "shell.status.desktopShortcutCreated",
+      "value": "डेस्कटॉप शॉर्टकट बनाया गया।"
+    },
+    {
+      "key": "shell.status.desktopShortcutFailed",
+      "value": "डेस्कटॉप शॉर्टकट नहीं बनाया जा सका: {0}"
+    },
+    {
+      "key": "shell.status.downloadingUpdate",
+      "value": "अपडेट डाउनलोड हो रहा है…"
+    },
+    {
+      "key": "shell.status.installLinkMissingGit",
+      "value": "{0} के इंस्टॉल लिंक में उसका git URL मौजूद नहीं था।"
+    },
+    {
+      "key": "shell.status.loadingBundle",
+      "value": "बंडल लोड हो रहा है…"
+    },
+    {
+      "key": "shell.status.noUnityProject",
+      "value": "खोलने के लिए कोई Unity प्रोजेक्ट नहीं।"
+    },
+    {
+      "key": "shell.status.ok",
+      "value": "ठीक है"
+    },
+    {
+      "key": "shell.status.okTooltip",
+      "value": "इस संदेश को खारिज करें"
+    },
+    {
+      "key": "shell.status.openIssue",
+      "value": "एक इश्यू खोलें"
+    },
+    {
+      "key": "shell.status.openIssueTooltip",
+      "value": "इस त्रुटि और आपके अंतिम कार्यों के साथ पहले से भरा हुआ GitHub इश्यू खोलें"
+    },
+    {
+      "key": "shell.status.openUnityFailed",
+      "value": "Unity नहीं खोला जा सका: {0}"
+    },
+    {
+      "key": "shell.status.openedInUnity",
+      "value": "{0} को Unity {1} में खोला जा रहा है।"
+    },
+    {
+      "key": "shell.status.openingInUnity",
+      "value": "{0} को Unity में खोला जा रहा है…"
+    },
+    {
+      "key": "shell.status.runningFromSource",
+      "value": "स्रोत से चल रहा है — अपडेट आपके बिल्ड द्वारा संभाले जाते हैं, ऐप के भीतरी अपडेटर द्वारा नहीं।"
+    },
+    {
+      "key": "shell.status.unityNotInstalled",
+      "value": "Unity {0} इंस्टॉल नहीं है। इसे Unity एडिटर टैब पर जोड़ें, फिर पुनः प्रयास करें।"
+    },
+    {
+      "key": "shell.status.unityNotInstalledOpenedHub",
+      "value": "Unity {0} इंस्टॉल नहीं है — Unity Hub खोल दिया गया ताकि आप इसे जोड़ सकें।"
+    },
+    {
+      "key": "shell.status.upToDate",
+      "value": "आप नवीनतम संस्करण पर हैं।"
+    },
+    {
+      "key": "shell.status.updateAvailable",
+      "value": "एक अपडेट उपलब्ध है।"
+    },
+    {
+      "key": "shell.status.updateCheckFailed",
+      "value": "अपडेट जाँच विफल: {0}"
+    },
+    {
+      "key": "shell.status.updateFailed",
+      "value": "अपडेट विफल: {0}"
+    },
+    {
+      "key": "shell.update.bannerAvailable",
+      "value": "Basis Package Manager {0} उपलब्ध है।"
+    },
+    {
+      "key": "shell.update.later",
+      "value": "बाद में"
+    },
+    {
+      "key": "shell.update.laterTooltip",
+      "value": "अगली बार खोलने तक खारिज करें"
+    },
+    {
+      "key": "shell.update.now",
+      "value": "अभी अपडेट करें"
+    },
+    {
+      "key": "shell.update.nowTooltip",
+      "value": "अपडेट डाउनलोड करें और पुनः आरंभ करें"
+    },
+    {
+      "key": "shell.version.tooltip",
+      "value": "इंस्टॉल किया गया संस्करण — सेटिंग्स में अपडेट के लिए जाँचें"
+    },
+    {
+      "key": "shell.window.title",
+      "value": "Basis Package Manager"
+    },
+    {
+      "key": "shell.wordmark.name",
+      "value": "BasisVR"
+    },
+    {
+      "key": "shell.wordmark.tagline",
+      "value": "पैकेज प्रबंधक"
+    },
+    {
+      "key": "installs.action.updateCore",
+      "value": "कोर अपडेट करने से 'git pull' चलता है, जो आपके Basis प्रोजेक्ट की फ़ाइलें बदल सकता है।"
+    },
+    {
+      "key": "installs.badge.active",
+      "value": "सक्रिय"
+    },
+    {
+      "key": "installs.branch.default",
+      "value": "{0} (main)"
+    },
+    {
+      "key": "installs.button.addExisting",
+      "value": "मौजूदा जोड़ें"
+    },
+    {
+      "key": "installs.button.backup",
+      "value": "बैकअप"
+    },
+    {
+      "key": "installs.button.browse",
+      "value": "ब्राउज़ करें…"
+    },
+    {
+      "key": "installs.button.changes",
+      "value": "बदलाव"
+    },
+    {
+      "key": "installs.button.cloneBasis",
+      "value": "Basis क्लोन करें"
+    },
+    {
+      "key": "installs.button.open",
+      "value": "खोलें"
+    },
+    {
+      "key": "installs.button.packages",
+      "value": "पैकेज"
+    },
+    {
+      "key": "installs.button.refresh",
+      "value": "रिफ़्रेश करें"
+    },
+    {
+      "key": "installs.button.remove",
+      "value": "हटाएँ"
+    },
+    {
+      "key": "installs.button.updateCore",
+      "value": "कोर अपडेट करें"
+    },
+    {
+      "key": "installs.cloneForm.branchLabel",
+      "value": "ब्रांच"
+    },
+    {
+      "key": "installs.cloneForm.cloneIntoLabel",
+      "value": "फ़ोल्डर में क्लोन करें"
+    },
+    {
+      "key": "installs.cloneForm.heading",
+      "value": "Basis क्लोन करें"
+    },
+    {
+      "key": "installs.cloneForm.subFolderLabel",
+      "value": "उप-फ़ोल्डर नाम"
+    },
+    {
+      "key": "installs.dialog.backupPrompt",
+      "value": "{0}\n\nपहले {1} का बैकअप लें? यह Assets, Packages और ProjectSettings को (Library कैश को नहीं) आपके इंस्टॉल के बगल में एक BasisBackups फ़ोल्डर में ज़िप कर देता है।"
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceBody",
+      "value": "{1} पर केवल {0} खाली है। Basis क्लोन करने और उसे Unity में खोलने के लिए इससे कहीं अधिक की ज़रूरत हो सकती है, और क्लोन बीच में विफल हो सकता है।\n\nफिर भी यहाँ क्लोन करें?"
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceTitle",
+      "value": "डिस्क स्थान कम है"
+    },
+    {
+      "key": "installs.dialog.nameThisInstall",
+      "value": "इस इंस्टॉल को नाम दें"
+    },
+    {
+      "key": "installs.empty.body",
+      "value": "BasisVR/Basis डाउनलोड करने के लिए ऊपर ‘Basis क्लोन करें’ का उपयोग करें, या पहले से मौजूद क्लोन को पंजीकृत करने के लिए ‘मौजूदा जोड़ें’ का।"
+    },
+    {
+      "key": "installs.empty.title",
+      "value": "अभी तक कोई इंस्टॉल नहीं"
+    },
+    {
+      "key": "installs.git.ahead",
+      "value": "{0} आगे"
+    },
+    {
+      "key": "installs.git.behindUpstream",
+      "value": "अपस्ट्रीम से {0} पीछे"
+    },
+    {
+      "key": "installs.git.checking",
+      "value": "जाँच हो रही है…"
+    },
+    {
+      "key": "installs.git.checkingRemote",
+      "value": "रिमोट की जाँच हो रही है…"
+    },
+    {
+      "key": "installs.git.error",
+      "value": "git त्रुटि: {0}"
+    },
+    {
+      "key": "installs.git.localChanges",
+      "value": "{0} स्थानीय बदलाव{1}"
+    },
+    {
+      "key": "installs.git.noUpstream",
+      "value": "कोई अपस्ट्रीम नहीं"
+    },
+    {
+      "key": "installs.git.notGitRepo",
+      "value": "git रिपॉज़िटरी नहीं"
+    },
+    {
+      "key": "installs.git.upToDate",
+      "value": "अद्यतित"
+    },
+    {
+      "key": "installs.hero.subtitle",
+      "value": "BasisVR/Basis रिपॉज़िटरी क्लोन करें, फिर हर प्रोजेक्ट के पैकेज, अपडेट और स्थानीय बदलाव प्रबंधित करें।"
+    },
+    {
+      "key": "installs.hero.tagline",
+      "value": "प्रोजेक्ट्स"
+    },
+    {
+      "key": "installs.hero.title",
+      "value": "आपके Basis प्रोजेक्ट्स"
+    },
+    {
+      "key": "installs.picker.chooseCloneFolder",
+      "value": "Basis को क्लोन करने के लिए एक फ़ोल्डर चुनें"
+    },
+    {
+      "key": "installs.picker.selectExistingClone",
+      "value": "एक मौजूदा Basis क्लोन चुनें"
+    },
+    {
+      "key": "installs.progress.starting",
+      "value": "क्लोन शुरू हो रहा है…"
+    },
+    {
+      "key": "installs.row.noUnityProject",
+      "value": "कोई Unity प्रोजेक्ट नहीं"
+    },
+    {
+      "key": "installs.row.unityVersion",
+      "value": "Unity {0}"
+    },
+    {
+      "key": "installs.space.criticalWarning",
+      "value": "डिस्क स्थान बहुत कम — {1} पर केवल {0} खाली। Basis क्लोन करना संभवतः विफल होगा; स्थान खाली करें या कोई दूसरी ड्राइव चुनें।"
+    },
+    {
+      "key": "installs.space.lowWarning",
+      "value": "डिस्क स्थान कम — {1} पर {0} खाली। Basis और उसकी Unity Library मिलकर 20 GB या अधिक उपयोग कर सकते हैं।"
+    },
+    {
+      "key": "installs.status.added",
+      "value": "{0}{1} जोड़ा गया।"
+    },
+    {
+      "key": "installs.status.alreadyInList",
+      "value": "वह इंस्टॉल पहले से ही सूची में है।"
+    },
+    {
+      "key": "installs.status.backedUp",
+      "value": "{0} → {1} का बैकअप लिया गया"
+    },
+    {
+      "key": "installs.status.backingUp",
+      "value": "{0} का बैकअप लिया जा रहा है…"
+    },
+    {
+      "key": "installs.status.backupFailed",
+      "value": "बैकअप विफल: {0}"
+    },
+    {
+      "key": "installs.status.chooseFolderFirst",
+      "value": "पहले क्लोन करने के लिए एक फ़ोल्डर चुनें।"
+    },
+    {
+      "key": "installs.status.cloneCancelledLowSpace",
+      "value": "क्लोन रद्द किया गया — लक्ष्य ड्राइव पर डिस्क स्थान कम है।"
+    },
+    {
+      "key": "installs.status.cloneError",
+      "value": "क्लोन त्रुटि: {0}"
+    },
+    {
+      "key": "installs.status.cloneFailed",
+      "value": "क्लोन विफल (एग्ज़िट {0})। {1}"
+    },
+    {
+      "key": "installs.status.clonedInto",
+      "value": "Basis को {0} में क्लोन किया गया।{1}"
+    },
+    {
+      "key": "installs.status.cloningInto",
+      "value": "Basis को {0} में क्लोन किया जा रहा है…"
+    },
+    {
+      "key": "installs.status.destExists",
+      "value": "{0} पहले से मौजूद है और खाली नहीं है।"
+    },
+    {
+      "key": "installs.status.folderMissing",
+      "value": "फ़ोल्डर अब मौजूद नहीं है: {0}"
+    },
+    {
+      "key": "installs.status.gitNotFound",
+      "value": "Git नहीं मिला। Git इंस्टॉल करें और उसे अपने PATH में जोड़ें (सेटिंग्स देखें)।"
+    },
+    {
+      "key": "installs.status.noUnityDetectedNote",
+      "value": " (इसके अंतर्गत कोई Unity प्रोजेक्ट नहीं मिला)"
+    },
+    {
+      "key": "installs.status.noUnityToBackup",
+      "value": "{0} में बैकअप लेने के लिए कोई Unity प्रोजेक्ट नहीं है।"
+    },
+    {
+      "key": "installs.status.notGitRepo",
+      "value": "{0} एक git रिपॉज़िटरी नहीं है।"
+    },
+    {
+      "key": "installs.status.removed",
+      "value": "{0} को सूची से हटा दिया गया (फ़ाइलें डिस्क पर बनी रहेंगी)।"
+    },
+    {
+      "key": "installs.status.requiresUnityNote",
+      "value": " Unity {0} आवश्यक है — इसे इंस्टॉल करने के लिए Unity टैब खोलें।"
+    },
+    {
+      "key": "installs.status.rowSummary",
+      "value": "{0}: {1}"
+    },
+    {
+      "key": "installs.status.updateError",
+      "value": "अपडेट त्रुटि: {0}"
+    },
+    {
+      "key": "installs.status.updateFailed",
+      "value": "{0} के लिए अपडेट विफल: {1}"
+    },
+    {
+      "key": "installs.status.updated",
+      "value": "{0} अपडेट किया गया। {1}"
+    },
+    {
+      "key": "installs.status.updating",
+      "value": "{0} अपडेट हो रहा है (git pull)…"
+    },
+    {
+      "key": "installs.tooltip.backup",
+      "value": "Assets, Packages और ProjectSettings को ज़िप करें (Library कैश को नहीं)"
+    },
+    {
+      "key": "packages.badge.basisRegistry",
+      "value": "BASIS रजिस्ट्री"
+    },
+    {
+      "key": "packages.badge.github",
+      "value": "github"
+    },
+    {
+      "key": "packages.bundle.basisLine",
+      "value": "Basis: {0}  ·  Unity {1}"
+    },
+    {
+      "key": "packages.bundle.unknownCommit",
+      "value": "अज्ञात"
+    },
+    {
+      "key": "packages.button.add",
+      "value": "+ जोड़ें"
+    },
+    {
+      "key": "packages.button.chooseVersion",
+      "value": "संस्करण चुनें…"
+    },
+    {
+      "key": "packages.button.createBundle",
+      "value": "बंडल बनाएँ"
+    },
+    {
+      "key": "packages.button.install",
+      "value": "इंस्टॉल करें"
+    },
+    {
+      "key": "packages.button.refresh",
+      "value": "रिफ़्रेश करें"
+    },
+    {
+      "key": "packages.button.remove",
+      "value": "हटाएँ"
+    },
+    {
+      "key": "packages.button.update",
+      "value": "अपडेट करें"
+    },
+    {
+      "key": "packages.community.description",
+      "value": "एक GitHub URL, या owner/repo[?path=Sub/Folder][#branch] पेस्ट करें। इसका package.json आपके Unity मैनिफ़ेस्ट में एक git निर्भरता के रूप में जोड़ा जाता है।"
+    },
+    {
+      "key": "packages.community.watermark",
+      "value": "https://github.com/owner/repo  या  owner/repo?path=Packages/com.x#main"
+    },
+    {
+      "key": "packages.dialog.installTitle",
+      "value": "{0} इंस्टॉल करें"
+    },
+    {
+      "key": "packages.empty.noInstallSelected",
+      "value": "कोई इंस्टॉल चयनित नहीं"
+    },
+    {
+      "key": "packages.empty.noProjectDescription",
+      "value": "इसके पैकेज प्रबंधित करने के लिए प्रोजेक्ट्स टैब पर कोई Basis इंस्टॉल क्लोन करें या चुनें।"
+    },
+    {
+      "key": "packages.empty.noProjectTitle",
+      "value": "Unity प्रोजेक्ट वाला कोई इंस्टॉल नहीं"
+    },
+    {
+      "key": "packages.filter.allOwners",
+      "value": "सभी मालिक"
+    },
+    {
+      "key": "packages.filter.otherOwner",
+      "value": "अन्य"
+    },
+    {
+      "key": "packages.filter.watermark",
+      "value": "पैकेज फ़िल्टर करें..."
+    },
+    {
+      "key": "packages.header.available",
+      "value": "इंस्टॉल के लिए उपलब्ध"
+    },
+    {
+      "key": "packages.header.community",
+      "value": "GitHub से समुदाय पैकेज जोड़ें"
+    },
+    {
+      "key": "packages.header.installed",
+      "value": "इंस्टॉल किए गए"
+    },
+    {
+      "key": "packages.hero.subtitle",
+      "value": "एक प्रोजेक्ट चुनें, फिर Basis रजिस्ट्री से पैकेज इंस्टॉल करें या git URL द्वारा कोई भी समुदाय UPM पैकेज जोड़ें।"
+    },
+    {
+      "key": "packages.hero.tagline",
+      "value": "पैकेज"
+    },
+    {
+      "key": "packages.hero.title",
+      "value": "पैकेज"
+    },
+    {
+      "key": "packages.label.project",
+      "value": "प्रोजेक्ट"
+    },
+    {
+      "key": "packages.status.added",
+      "value": "जोड़ा गया"
+    },
+    {
+      "key": "packages.status.addedBundle",
+      "value": "बंडल “{0}” ({1} पैकेज){2} → {3} जोड़ा गया।"
+    },
+    {
+      "key": "packages.status.addedDeepLink",
+      "value": "{0} {1}{2} → {3}।"
+    },
+    {
+      "key": "packages.status.addedFromGitHub",
+      "value": "GitHub से {0} {1}{2}।"
+    },
+    {
+      "key": "packages.status.bundleInstallFailed",
+      "value": "बंडल इंस्टॉल विफल: {0}"
+    },
+    {
+      "key": "packages.status.chooseProject",
+      "value": "पहले एक प्रोजेक्ट चुनें।"
+    },
+    {
+      "key": "packages.status.deepLinkFailed",
+      "value": "डीप-लिंक इंस्टॉल विफल: {0}"
+    },
+    {
+      "key": "packages.status.defaultBranch",
+      "value": "डिफ़ॉल्ट ब्रांच"
+    },
+    {
+      "key": "packages.status.depNote",
+      "value": " (+{0} निर्भरता पैकेज{1})"
+    },
+    {
+      "key": "packages.status.dependencyConflict",
+      "value": "निर्भरता टकराव: {0}"
+    },
+    {
+      "key": "packages.status.gitHubAddFailed",
+      "value": "GitHub जोड़ना विफल: {0}"
+    },
+    {
+      "key": "packages.status.gitUrlParseFailed",
+      "value": "पैकेज का git URL पार्स नहीं किया जा सका।"
+    },
+    {
+      "key": "packages.status.installError",
+      "value": "इंस्टॉल त्रुटि: {0}"
+    },
+    {
+      "key": "packages.status.installLinkMissing",
+      "value": "इंस्टॉल लिंक में पैकेज id या git URL मौजूद नहीं था।"
+    },
+    {
+      "key": "packages.status.installed",
+      "value": "{0} को {1} में इंस्टॉल किया गया।"
+    },
+    {
+      "key": "packages.status.installedVersion",
+      "value": "{0} ({1}) को {2} में इंस्टॉल किया गया।"
+    },
+    {
+      "key": "packages.status.invalidGitHub",
+      "value": "अमान्य GitHub संदर्भ: {0}"
+    },
+    {
+      "key": "packages.status.loadingVersions",
+      "value": "{0} के लिए संस्करण लोड हो रहे हैं…"
+    },
+    {
+      "key": "packages.status.noAddonPackages",
+      "value": "इस प्रोजेक्ट में बंडल करने के लिए अभी तक कोई ऐड-ऑन पैकेज नहीं है।"
+    },
+    {
+      "key": "packages.status.noVersionsFound",
+      "value": "{0} के लिए कोई संस्करण नहीं मिला।"
+    },
+    {
+      "key": "packages.status.notGitPackage",
+      "value": "{0} एक git पैकेज नहीं है — चुनने के लिए कोई संस्करण नहीं।"
+    },
+    {
+      "key": "packages.status.openInstallFirst",
+      "value": "पहले Unity प्रोजेक्ट वाला कोई इंस्टॉल खोलें, फिर {0} के लिए फिर से ‘इंस्टॉल करें’ पर क्लिक करें।"
+    },
+    {
+      "key": "packages.status.openingIssue",
+      "value": "“{0}” ({1} पैकेज) सबमिट करने के लिए एक GitHub इश्यू खोला जा रहा है…"
+    },
+    {
+      "key": "packages.status.packageJsonLoadFailed",
+      "value": "{0}/{1}{2} से package.json लोड नहीं किया जा सका — पथ जाँचें और सुनिश्चित करें कि रिपॉज़िटरी सार्वजनिक है।"
+    },
+    {
+      "key": "packages.status.pasteGitHub",
+      "value": "एक GitHub URL या owner/repo पेस्ट करें।"
+    },
+    {
+      "key": "packages.status.refusedUnsafeUrl",
+      "value": "{0} जोड़ने से इनकार: इंस्टॉल लिंक का git URL एक असमर्थित या असुरक्षित ट्रांसपोर्ट उपयोग करता है।"
+    },
+    {
+      "key": "packages.status.removed",
+      "value": "{0} हटाया गया।"
+    },
+    {
+      "key": "packages.status.skipNote",
+      "value": " (असुरक्षित git URL के कारण {0} छोड़ा गया)"
+    },
+    {
+      "key": "packages.status.updated",
+      "value": "अपडेट किया गया"
+    },
+    {
+      "key": "packages.status.versionInstallError",
+      "value": "संस्करण इंस्टॉल त्रुटि: {0}"
+    },
+    {
+      "key": "packages.tooltip.chooseVersion",
+      "value": "कोई विशिष्ट रिलीज़, बीटा, या डिफ़ॉल्ट ब्रांच चुनें"
+    },
+    {
+      "key": "packages.tooltip.filterByOwner",
+      "value": "इंस्टॉल किए गए पैकेज को मालिक के आधार पर फ़िल्टर करें (पैकेज id से)"
+    },
+    {
+      "key": "unity.button.install",
+      "value": "Unity Hub के माध्यम से इंस्टॉल करें"
+    },
+    {
+      "key": "unity.button.refresh",
+      "value": "रिफ़्रेश करें"
+    },
+    {
+      "key": "unity.button.reloadList",
+      "value": "सूची फिर से लोड करें"
+    },
+    {
+      "key": "unity.button.uninstall",
+      "value": "अनइंस्टॉल करें"
+    },
+    {
+      "key": "unity.header.subtitle",
+      "value": "इंस्टॉल किए गए Unity एडिटर का पता लगाएँ और Basis के लिए आवश्यक संस्करण इंस्टॉल करें।"
+    },
+    {
+      "key": "unity.header.tagline",
+      "value": "UNITY एडिटर"
+    },
+    {
+      "key": "unity.header.title",
+      "value": "एडिटर संस्करण"
+    },
+    {
+      "key": "unity.install.hint",
+      "value": "एक Unity 6 रिलीज़ चुनें। चेंजसेट Unity के रिलीज़ फ़ीड से अपने आप भर जाता है।"
+    },
+    {
+      "key": "unity.label.changeset",
+      "value": "चेंजसेट"
+    },
+    {
+      "key": "unity.label.release",
+      "value": "Unity 6 रिलीज़"
+    },
+    {
+      "key": "unity.label.streamFilter",
+      "value": "स्ट्रीम फ़िल्टर"
+    },
+    {
+      "key": "unity.section.installNew",
+      "value": "एक नया एडिटर इंस्टॉल करें"
+    },
+    {
+      "key": "unity.section.installedEditors",
+      "value": "इंस्टॉल किए गए एडिटर"
+    },
+    {
+      "key": "unity.status.alreadyInstalled",
+      "value": "Unity {0} पहले से इंस्टॉल है।"
+    },
+    {
+      "key": "unity.status.error",
+      "value": "त्रुटि: {0}"
+    },
+    {
+      "key": "unity.status.fetchReleasesFailed",
+      "value": "Unity रिलीज़ प्राप्त नहीं की जा सकीं: {0}"
+    },
+    {
+      "key": "unity.status.hubNotDetected",
+      "value": "Unity Hub का पता नहीं चला।"
+    },
+    {
+      "key": "unity.status.hubPath",
+      "value": "Unity Hub: {0}"
+    },
+    {
+      "key": "unity.status.installError",
+      "value": "इंस्टॉल त्रुटि: {0}"
+    },
+    {
+      "key": "unity.status.installFailed",
+      "value": "इंस्टॉल विफल (एग्ज़िट कोड {0})।"
+    },
+    {
+      "key": "unity.status.installKickedOff",
+      "value": "{0} के लिए Unity Hub के माध्यम से इंस्टॉल शुरू किया गया।"
+    },
+    {
+      "key": "unity.status.installing",
+      "value": "Unity {0} इंस्टॉल हो रहा है..."
+    },
+    {
+      "key": "unity.status.noEditorsInstalled",
+      "value": " (कोई एडिटर इंस्टॉल नहीं)"
+    },
+    {
+      "key": "unity.status.pickReleaseFirst",
+      "value": "पहले ड्रॉपडाउन से एक Unity 6 रिलीज़ चुनें।"
+    },
+    {
+      "key": "unity.status.requiredVersionNote",
+      "value": "आपका Basis इंस्टॉल Unity {0} को लक्षित करता है। साफ़-सुथरे ढंग से खोलने के लिए नीचे ठीक वही संस्करण इंस्टॉल करें।"
+    },
+    {
+      "key": "unity.status.uninstallError",
+      "value": "अनइंस्टॉल त्रुटि: {0}"
+    },
+    {
+      "key": "unity.status.uninstallFailed",
+      "value": "अनइंस्टॉल विफल (एग्ज़िट कोड {0})।"
+    },
+    {
+      "key": "unity.status.uninstalled",
+      "value": "Unity {0} अनइंस्टॉल किया गया।"
+    },
+    {
+      "key": "unity.status.uninstalling",
+      "value": "Unity {0} अनइंस्टॉल हो रहा है..."
+    },
+    {
+      "key": "unity.tag.installed",
+      "value": "इंस्टॉल"
+    },
+    {
+      "key": "unity.tag.recommended",
+      "value": "अनुशंसित"
+    },
+    {
+      "key": "develop.auth.cliNotLoggedIn",
+      "value": "GitHub CLI मिला लेकिन लॉग इन नहीं — “gh auth login” चलाएँ, फिर पुनः जाँचें।"
+    },
+    {
+      "key": "develop.auth.notSignedIn",
+      "value": "साइन इन नहीं — नीचे एक टोकन पेस्ट करें, या GitHub CLI इंस्टॉल करके लॉग इन करें।"
+    },
+    {
+      "key": "develop.auth.signedIn",
+      "value": "GitHub में {0} के रूप में साइन इन किया गया"
+    },
+    {
+      "key": "develop.auth.tokenLabel",
+      "value": "GitHub टोकन (“repo” स्कोप आवश्यक)"
+    },
+    {
+      "key": "develop.auth.tokenWatermark",
+      "value": "ghp_…  या  github_pat_…"
+    },
+    {
+      "key": "develop.button.installGit",
+      "value": "Git इंस्टॉल करें"
+    },
+    {
+      "key": "develop.button.mountToEdit",
+      "value": "संपादन हेतु माउंट करें"
+    },
+    {
+      "key": "develop.button.openInUnity",
+      "value": "Unity में खोलें"
+    },
+    {
+      "key": "develop.button.recheck",
+      "value": "पुनः जाँचें"
+    },
+    {
+      "key": "develop.button.refresh",
+      "value": "रिफ़्रेश करें"
+    },
+    {
+      "key": "develop.button.signIn",
+      "value": "साइन इन करें"
+    },
+    {
+      "key": "develop.button.submitPr",
+      "value": "PR सबमिट करें"
+    },
+    {
+      "key": "develop.button.swapBack",
+      "value": "वापस स्वैप करें"
+    },
+    {
+      "key": "develop.confirm.alreadyMounted",
+      "value": "{0} पहले से Packages/{0} पर माउंट है।\n\nक्या इसे एक ताज़ा क्लोन से बदलें? उस फ़ोल्डर के किसी भी स्थानीय संपादन खो जाएँगे।"
+    },
+    {
+      "key": "develop.confirm.packageExists",
+      "value": "Packages/{0} पहले से मौजूद है और खाली नहीं है — यह कोई बचा हुआ माउंट या स्थानीय प्रति हो सकती है।\n\nक्या इसे एक ताज़ा क्लोन से बदलें? इसकी वर्तमान सामग्री हटा दी जाएगी।"
+    },
+    {
+      "key": "develop.confirm.packageThereTitle",
+      "value": "पैकेज पहले से मौजूद है"
+    },
+    {
+      "key": "develop.empty.description",
+      "value": "इसके पैकेज संपादित करने के लिए प्रोजेक्ट्स टैब पर कोई Basis इंस्टॉल चुनें।"
+    },
+    {
+      "key": "develop.empty.title",
+      "value": "Unity प्रोजेक्ट वाला कोई इंस्टॉल नहीं"
+    },
+    {
+      "key": "develop.git.requiredDescription",
+      "value": "पैकेज माउंट करने और पुल रिक्वेस्ट सबमिट करने के लिए Git आवश्यक है। इसे इंस्टॉल करें, फिर पुनः जाँचें।"
+    },
+    {
+      "key": "develop.git.requiredTitle",
+      "value": "Git आवश्यक है"
+    },
+    {
+      "key": "develop.header.description",
+      "value": "किसी git पैकेज को Unity में संपादित करने के लिए माउंट करें, फिर अपस्ट्रीम एक पुल रिक्वेस्ट खोलें — पूरा होने पर वापस स्वैप करें या उसे रखें।"
+    },
+    {
+      "key": "develop.header.tagline",
+      "value": "डेवलप"
+    },
+    {
+      "key": "develop.install.none",
+      "value": "कोई इंस्टॉल चयनित नहीं"
+    },
+    {
+      "key": "develop.section.gitPackages",
+      "value": "Git पैकेज"
+    },
+    {
+      "key": "develop.section.mountedForEditing",
+      "value": "संपादन हेतु माउंट किए गए"
+    },
+    {
+      "key": "develop.section.noGitPackages",
+      "value": "इस प्रोजेक्ट में कोई git-लोडेड पैकेज नहीं।"
+    },
+    {
+      "key": "develop.status.clearFailed",
+      "value": "Packages/{0} साफ़ नहीं किया जा सका: {1}"
+    },
+    {
+      "key": "develop.status.gitRequired",
+      "value": "Git आवश्यक है।"
+    },
+    {
+      "key": "develop.status.gitRequiredMount",
+      "value": "पैकेज माउंट करने के लिए Git आवश्यक है। इसे इंस्टॉल करें, फिर पुनः जाँचें।"
+    },
+    {
+      "key": "develop.status.loginUnverified",
+      "value": "आपका GitHub लॉगिन सत्यापित नहीं किया जा सका।"
+    },
+    {
+      "key": "develop.status.mountCancelled",
+      "value": "माउंट रद्द किया गया — Packages/{0} यथावत छोड़ दिया गया।"
+    },
+    {
+      "key": "develop.status.mountError",
+      "value": "माउंट त्रुटि: {0}"
+    },
+    {
+      "key": "develop.status.mountFailed",
+      "value": "माउंट विफल।"
+    },
+    {
+      "key": "develop.status.mounted",
+      "value": "{0} को Packages/ में माउंट किया गया — इसे Unity में संपादित करें, फिर PR सबमिट करें।"
+    },
+    {
+      "key": "develop.status.mounting",
+      "value": "{0} माउंट हो रहा है…"
+    },
+    {
+      "key": "develop.status.prError",
+      "value": "PR त्रुटि: {0}"
+    },
+    {
+      "key": "develop.status.prFailed",
+      "value": "PR सबमिट करना विफल।"
+    },
+    {
+      "key": "develop.status.prOpened",
+      "value": "पुल रिक्वेस्ट खोला गया{0}: {1}"
+    },
+    {
+      "key": "develop.status.signInFirst",
+      "value": "पहले GitHub में साइन इन करें (GitHub CLI या कोई टोकन)।"
+    },
+    {
+      "key": "develop.status.signedInAs",
+      "value": "{0} के रूप में साइन इन किया गया।"
+    },
+    {
+      "key": "develop.status.submittingPr",
+      "value": "{0} के लिए एक पुल रिक्वेस्ट सबमिट हो रहा है…"
+    },
+    {
+      "key": "develop.status.swapBackError",
+      "value": "वापस स्वैप त्रुटि: {0}"
+    },
+    {
+      "key": "develop.status.swapBackFailed",
+      "value": "वापस स्वैप विफल।"
+    },
+    {
+      "key": "develop.status.swappedBack",
+      "value": "{0} फिर से अपने git URL पर है।"
+    },
+    {
+      "key": "develop.status.swapping",
+      "value": "{0} को उसके git URL पर वापस स्वैप किया जा रहा है…"
+    },
+    {
+      "key": "develop.status.tokenFailed",
+      "value": "वह टोकन प्रमाणित नहीं हुआ — सुनिश्चित करें कि उसमें “repo” स्कोप है।"
+    },
+    {
+      "key": "develop.status.viaFork",
+      "value": " (आपके फ़ोर्क के माध्यम से)"
+    },
+    {
+      "key": "changes.button.refresh",
+      "value": "रिफ़्रेश करें"
+    },
+    {
+      "key": "changes.diff.loadError",
+      "value": "डिफ़ लोड नहीं किया जा सका: {0}"
+    },
+    {
+      "key": "changes.diff.title",
+      "value": "डिफ़"
+    },
+    {
+      "key": "changes.empty.description",
+      "value": "आपने क्या बदला है यह देखने के लिए प्रोजेक्ट्स टैब पर कोई इंस्टॉल चुनें।"
+    },
+    {
+      "key": "changes.empty.title",
+      "value": "कोई इंस्टॉल चयनित नहीं"
+    },
+    {
+      "key": "changes.header.clean",
+      "value": "{0} · {1} — वर्किंग ट्री साफ़"
+    },
+    {
+      "key": "changes.header.dirtyMany",
+      "value": "{0} · {1} — {2} बदली गई फ़ाइलें"
+    },
+    {
+      "key": "changes.header.dirtyOne",
+      "value": "{0} · {1} — {2} बदली गई फ़ाइल"
+    },
+    {
+      "key": "changes.header.gitError",
+      "value": "git त्रुटि: {0}"
+    },
+    {
+      "key": "changes.header.notGitRepo",
+      "value": "यह इंस्टॉल एक git रिपॉज़िटरी नहीं है, इसलिए स्थानीय बदलाव ट्रैक नहीं किए जा सकते।"
+    },
+    {
+      "key": "changes.hero.subtitle",
+      "value": "आपके अंतिम कमिट के बाद से आपने Basis स्रोत में क्या बदला है।"
+    },
+    {
+      "key": "changes.hero.tagline",
+      "value": "स्थानीय बदलाव"
+    },
+    {
+      "key": "changes.list.title",
+      "value": "बदली गई फ़ाइलें"
+    },
+    {
+      "key": "settings.about.checkUpdates",
+      "value": "अपडेट के लिए जाँचें"
+    },
+    {
+      "key": "settings.about.title",
+      "value": "परिचय"
+    },
+    {
+      "key": "settings.about.updatesBlurb",
+      "value": "Basis Package Manager खुद को GitHub Releases से अपडेट करता है। जब कोई नया संस्करण प्रकाशित होता है तो विंडो के शीर्ष पर एक अपडेट बैनर दिखाई देता है — एक क्लिक उसे डाउनलोड करके पुनः आरंभ कर देता है।"
+    },
+    {
+      "key": "settings.about.version",
+      "value": "संस्करण"
+    },
+    {
+      "key": "settings.button.save",
+      "value": "सहेजें"
+    },
+    {
+      "key": "settings.catalog.description",
+      "value": "एक Basis-संगत कैटलॉग प्रदान करने वाला JSON URL। Basis पैकेज रजिस्ट्री (basisvr.org/packages) उपयोग करने के लिए खाली छोड़ें।"
+    },
+    {
+      "key": "settings.catalog.title",
+      "value": "पैकेज कैटलॉग URL"
+    },
+    {
+      "key": "settings.clone.description",
+      "value": "नए Basis क्लोन डिफ़ॉल्ट रूप से कहाँ बनाए जाते हैं।"
+    },
+    {
+      "key": "settings.clone.title",
+      "value": "डिफ़ॉल्ट क्लोन स्थान"
+    },
+    {
+      "key": "settings.detected.git",
+      "value": "Git"
+    },
+    {
+      "key": "settings.detected.gitNotFound",
+      "value": "PATH पर Git नहीं मिला — इसे git-scm.com से इंस्टॉल करें।"
+    },
+    {
+      "key": "settings.detected.hubNotFound",
+      "value": "Unity Hub का पता नहीं चला।"
+    },
+    {
+      "key": "settings.detected.settingsFile",
+      "value": "सेटिंग्स फ़ाइल"
+    },
+    {
+      "key": "settings.detected.title",
+      "value": "पता लगाए गए टूल"
+    },
+    {
+      "key": "settings.detected.unityHub",
+      "value": "Unity Hub"
+    },
+    {
+      "key": "settings.hero.subtitle",
+      "value": "क्लोन स्थान, कैटलॉग स्रोत और टूल पथ।"
+    },
+    {
+      "key": "settings.hero.tagline",
+      "value": "सेटिंग्स"
+    },
+    {
+      "key": "settings.hero.title",
+      "value": "कॉन्फ़िगरेशन"
+    },
+    {
+      "key": "settings.language.description",
+      "value": "Basis Package Manager इंटरफ़ेस के लिए भाषा चुनें। तुरंत लागू होती है।"
+    },
+    {
+      "key": "settings.language.title",
+      "value": "भाषा"
+    },
+    {
+      "key": "settings.logs.clear",
+      "value": "साफ़ करें"
+    },
+    {
+      "key": "settings.logs.copy",
+      "value": "कॉपी"
+    },
+    {
+      "key": "settings.logs.description",
+      "value": "इस सत्र में ऐप ने क्या किया — व्यक्तिगत पथ, उपयोगकर्ता नाम और IP छिपा दिए गए हैं। किसी समस्या की रिपोर्ट करते समय इन्हें संलग्न करें।"
+    },
+    {
+      "key": "settings.logs.openFolder",
+      "value": "फ़ोल्डर खोलें"
+    },
+    {
+      "key": "settings.logs.title",
+      "value": "गतिविधि लॉग"
+    },
+    {
+      "key": "settings.status.saved",
+      "value": "सेटिंग्स सहेजी गईं।"
+    },
+    {
+      "key": "settings.toggle.developer",
+      "value": "डेवलपर मोड (डेवलप टैब दिखाएँ)"
+    },
+    {
+      "key": "settings.toggle.developer.tip",
+      "value": "git पैकेज को स्थानीय रूप से माउंट करें, उन्हें Unity में संपादित करें, और पुल रिक्वेस्ट खोलें। गैर-डेवलपर के लिए छिपा हुआ।"
+    },
+    {
+      "key": "settings.toggle.localChanges",
+      "value": "स्थानीय बदलाव टैब दिखाएँ"
+    },
+    {
+      "key": "settings.toggle.localChanges.tip",
+      "value": "आपके इंस्टॉल का git status + प्रति-फ़ाइल डिफ़। डिफ़ॉल्ट रूप से छिपा हुआ।"
+    },
+    {
+      "key": "settings.toggle.prerelease",
+      "value": "प्रीरिलीज़ अपडेट प्राप्त करें (प्रयोगात्मक — त्रुटिपूर्ण हो सकते हैं)"
+    },
+    {
+      "key": "settings.toggle.prerelease.tip",
+      "value": "प्रकाशित होते ही शुरुआती बिल्ड पाएँ — बार-बार और कभी-कभी अस्थिर। बंद = केवल स्थिर रिलीज़। सहेजने पर लागू होता है।"
+    },
+    {
+      "key": "settings.unityHub.description",
+      "value": "Unity Hub बाइनरी का पथ, यदि अपने आप पता न चले।"
+    },
+    {
+      "key": "settings.unityHub.title",
+      "value": "Unity Hub ओवरराइड"
+    },
+    {
+      "key": "support.button.backOpenCollective",
+      "value": "OpenCollective पर समर्थन दें"
+    },
+    {
+      "key": "support.button.fullFundingPage",
+      "value": "पूरा फंडिंग पेज पढ़ें  ↗"
+    },
+    {
+      "key": "support.button.joinDiscord",
+      "value": "Discord से जुड़ें"
+    },
+    {
+      "key": "support.button.openCollective",
+      "value": "♥   OpenCollective के माध्यम से समर्थन करें"
+    },
+    {
+      "key": "support.button.sponsorFeature",
+      "value": "किसी फ़ीचर को प्रायोजित करें"
+    },
+    {
+      "key": "support.community.body",
+      "value": "व्यक्ति OpenCollective पर Basis को समर्थन देते हैं — मासिक या एकमुश्त। ये फंड मुख्य रूप से पूर्णकालिक रखरखाव और डेवलपर-अनुभव के काम का समर्थन करते हैं।"
+    },
+    {
+      "key": "support.community.bullets",
+      "value": "•  मासिक और एकमुश्त विकल्प\n•  सार्वजनिक समर्थक दीवार और पारदर्शी बहीखाता"
+    },
+    {
+      "key": "support.community.title",
+      "value": "समुदाय दान"
+    },
+    {
+      "key": "support.company.body",
+      "value": "कंपनियाँ रोडमैप आइटम प्रायोजित करती हैं या फ़ीचर्स को सह-वित्तपोषित करती हैं — नेटवर्किंग, अवतार सिस्टम, टूलिंग। काम अपस्ट्रीम पहुँचता है और डिफ़ॉल्ट रूप से MIT-लाइसेंस प्राप्त रहता है।"
+    },
+    {
+      "key": "support.company.bullets",
+      "value": "•  विशेष फ़ोर्क के बजाय साझा अवसंरचना\n•  स्पष्ट डिलिवरेबल, खुला विकास"
+    },
+    {
+      "key": "support.company.title",
+      "value": "कंपनी सहयोग"
+    },
+    {
+      "key": "support.hero.subtitle",
+      "value": "Basis MIT-लाइसेंस प्राप्त और क्रिएटर-प्रथम है। समुदाय दान और कंपनी सहयोग एक मेंटेनर को पूर्णकालिक काम करते रहने और रिलीज़ तेज़ करने में मदद करते हैं।"
+    },
+    {
+      "key": "support.hero.tagline",
+      "value": "समर्थन"
+    },
+    {
+      "key": "support.hero.title",
+      "value": "Basis को वित्तपोषित करें"
+    },
+    {
+      "key": "support.where.body",
+      "value": "साझा समस्याओं — नेटवर्किंग, एम्बॉडिमेंट, टूलिंग — से निपटने के लिए फंड एकत्र किए जाते हैं, जिनसे सभी को लाभ होता है। OpenCollective पर एक सार्वजनिक बहीखाता है, और प्रायोजित काम का श्रेय रिलीज़ नोट्स में दिया जाता है। प्रायोजक प्रोजेक्ट को नियंत्रित नहीं करते।"
+    },
+    {
+      "key": "support.where.title",
+      "value": "पैसा कहाँ जाता है"
+    },
+    {
+      "key": "docs.button.askDiscord",
+      "value": "Discord पर पूछें"
+    },
+    {
+      "key": "docs.button.basisGithub",
+      "value": "GitHub पर Basis  ↗"
+    },
+    {
+      "key": "docs.button.joinDiscord",
+      "value": "Discord से जुड़ें"
+    },
+    {
+      "key": "docs.button.openDocs",
+      "value": "दस्तावेज़ खोलें  ↗"
+    },
+    {
+      "key": "docs.button.openDocsSite",
+      "value": "docs.basisvr.org खोलें  ↗"
+    },
+    {
+      "key": "docs.button.packageManagerGithub",
+      "value": "GitHub पर Package Manager  ↗"
+    },
+    {
+      "key": "docs.community.body",
+      "value": "किसी ऐसी चीज़ पर अटके हैं जो दस्तावेज़ में नहीं है? अन्य क्रिएटर्स और मेंटेनर्स से मदद पाने का सबसे तेज़ तरीका Discord है।"
+    },
+    {
+      "key": "docs.community.title",
+      "value": "समुदाय से पूछें"
+    },
+    {
+      "key": "docs.hero.subtitle",
+      "value": "Basis पर निर्माण के लिए गाइड, API संदर्भ और तरीके — साथ ही अटक जाने पर पूछने के लिए समुदाय।"
+    },
+    {
+      "key": "docs.hero.tagline",
+      "value": "दस्तावेज़"
+    },
+    {
+      "key": "docs.hero.title",
+      "value": "Basis सीखें"
+    },
+    {
+      "key": "docs.site.body",
+      "value": "इंस्टॉलेशन, पहले कदम, अवतार, दुनिया, नेटवर्किंग और SDK — पूरे दस्तावेज़ docs.basisvr.org पर हैं।"
+    },
+    {
+      "key": "docs.site.title",
+      "value": "दस्तावेज़ साइट"
+    },
+    {
+      "key": "docs.source.body",
+      "value": "कोड पढ़ें, कोई बग दर्ज करें या पुल रिक्वेस्ट खोलें। Basis MIT-लाइसेंस प्राप्त है और खुले में विकसित किया जाता है।"
+    },
+    {
+      "key": "docs.source.title",
+      "value": "स्रोत और इश्यू"
+    },
+    {
+      "key": "logs.button.clear",
+      "value": "साफ़ करें"
+    },
+    {
+      "key": "logs.button.copy",
+      "value": "कॉपी"
+    },
+    {
+      "key": "logs.button.openFolder",
+      "value": "फ़ोल्डर खोलें"
+    },
+    {
+      "key": "logs.hero.subtitle",
+      "value": "इस सत्र में ऐप ने क्या किया — व्यक्तिगत पथ, उपयोगकर्ता नाम और IP छिपा दिए गए हैं। किसी समस्या की रिपोर्ट करते समय इन्हें संलग्न करें।"
+    },
+    {
+      "key": "logs.hero.tagline",
+      "value": "लॉग"
+    },
+    {
+      "key": "logs.hero.title",
+      "value": "गतिविधि लॉग"
+    },
+    {
+      "key": "announcements.button.refresh",
+      "value": "रिफ़्रेश करें"
+    },
+    {
+      "key": "announcements.card.learnMore",
+      "value": "और जानें"
+    },
+    {
+      "key": "announcements.card.pinned",
+      "value": "पिन किया गया"
+    },
+    {
+      "key": "announcements.empty.body",
+      "value": "बाद में फिर देखें — Basis टीम की खबरें यहाँ दिखाई देंगी।"
+    },
+    {
+      "key": "announcements.empty.title",
+      "value": "अभी तक कोई घोषणा नहीं"
+    },
+    {
+      "key": "announcements.hero.subtitle",
+      "value": "Basis टीम से अपडेट और खबरें।"
+    },
+    {
+      "key": "announcements.hero.tagline",
+      "value": "घोषणाएँ"
+    },
+    {
+      "key": "announcements.hero.title",
+      "value": "नया क्या है"
+    },
+    {
+      "key": "announcements.level.alert",
+      "value": "ध्यान दें"
+    },
+    {
+      "key": "announcements.level.news",
+      "value": "खबरें"
+    },
+    {
+      "key": "announcements.level.update",
+      "value": "अपडेट"
+    },
+    {
+      "key": "announcements.status.loading",
+      "value": "घोषणाएँ लोड हो रही हैं…"
+    },
+    {
+      "key": "dialog.alias.cancel",
+      "value": "रद्द करें"
+    },
+    {
+      "key": "dialog.alias.displayName",
+      "value": "प्रदर्शित नाम"
+    },
+    {
+      "key": "dialog.alias.hint",
+      "value": "इस क्लोन के लिए ऐप में दिखाया जाने वाला एक सरल नाम।"
+    },
+    {
+      "key": "dialog.alias.save",
+      "value": "सहेजें"
+    },
+    {
+      "key": "dialog.alias.title",
+      "value": "इस इंस्टॉल को नाम दें"
+    },
+    {
+      "key": "dialog.alias.watermark",
+      "value": "उदा. मेरा Basis प्रोजेक्ट"
+    },
+    {
+      "key": "dialog.backup.backupContinue",
+      "value": "बैकअप लें और जारी रखें"
+    },
+    {
+      "key": "dialog.backup.cancel",
+      "value": "रद्द करें"
+    },
+    {
+      "key": "dialog.backup.continueWithout",
+      "value": "बैकअप के बिना जारी रखें"
+    },
+    {
+      "key": "dialog.backup.heading",
+      "value": "पहले अपने प्रोजेक्ट का बैकअप लें?"
+    },
+    {
+      "key": "dialog.backup.title",
+      "value": "अपने प्रोजेक्ट का बैकअप लें?"
+    },
+    {
+      "key": "dialog.confirm.no",
+      "value": "नहीं, धन्यवाद"
+    },
+    {
+      "key": "dialog.confirm.title",
+      "value": "पुष्टि करें"
+    },
+    {
+      "key": "dialog.confirm.yes",
+      "value": "हाँ"
+    },
+    {
+      "key": "dialog.createBundle.cancel",
+      "value": "रद्द करें"
+    },
+    {
+      "key": "dialog.createBundle.create",
+      "value": "सबमिशन बनाएँ"
+    },
+    {
+      "key": "dialog.createBundle.descriptionLabel",
+      "value": "विवरण"
+    },
+    {
+      "key": "dialog.createBundle.errorNoName",
+      "value": "अपने बंडल को एक नाम दें।"
+    },
+    {
+      "key": "dialog.createBundle.errorNoPackages",
+      "value": "शामिल करने के लिए कम से कम एक पैकेज चुनें।"
+    },
+    {
+      "key": "dialog.createBundle.heading",
+      "value": "एक बंडल बनाएँ"
+    },
+    {
+      "key": "dialog.createBundle.intro",
+      "value": "अपने Basis + पैकेज को एक इंस्टॉल-योग्य बंडल के रूप में साझा करें। सबमिट करने के लिए यह एक GitHub इश्यू खोलता है।"
+    },
+    {
+      "key": "dialog.createBundle.nameLabel",
+      "value": "नाम"
+    },
+    {
+      "key": "dialog.createBundle.packagesLabel",
+      "value": "शामिल करने के लिए पैकेज"
+    },
+    {
+      "key": "dialog.createBundle.title",
+      "value": "बंडल बनाएँ"
+    },
+    {
+      "key": "dialog.installPicker.addHere",
+      "value": "यहाँ जोड़ें"
+    },
+    {
+      "key": "dialog.installPicker.cancel",
+      "value": "रद्द करें"
+    },
+    {
+      "key": "dialog.installPicker.heading",
+      "value": "पैकेज जोड़ें"
+    },
+    {
+      "key": "dialog.installPicker.subtitle",
+      "value": "चुनें कि यह पैकेज किस इंस्टॉल में जोड़ना है।"
+    },
+    {
+      "key": "dialog.installPicker.title",
+      "value": "एक इंस्टॉल चुनें"
+    },
+    {
+      "key": "dialog.roleWizard.developerDesc",
+      "value": "ऊपर दी गई हर चीज़, साथ ही डेवलप टैब — पैकेज को स्थानीय रूप से माउंट करें, उन्हें Unity में संपादित करें, और पुल रिक्वेस्ट खोलें।"
+    },
+    {
+      "key": "dialog.roleWizard.developerTitle",
+      "value": "🛠   मैं एक डेवलपर हूँ"
+    },
+    {
+      "key": "dialog.roleWizard.intro",
+      "value": "आप Basis का उपयोग कैसे करेंगे? हम तय करेंगे कि कौन से टूल दिखाए जाएँ — आप इसे कभी भी सेटिंग्स में बदल सकते हैं।"
+    },
+    {
+      "key": "dialog.roleWizard.title",
+      "value": "Basis Package Manager में आपका स्वागत है"
+    },
+    {
+      "key": "dialog.roleWizard.userDesc",
+      "value": "Basis क्लोन करें, पैकेज इंस्टॉल करें, और उसे अद्यतित रखें। बस ज़रूरी चीज़ें, कुछ भी अतिरिक्त नहीं।"
+    },
+    {
+      "key": "dialog.roleWizard.userTitle",
+      "value": "🎮   मैं फ्रेमवर्क का उपयोग कर रहा हूँ"
+    },
+    {
+      "key": "dialog.roleWizard.welcome",
+      "value": "स्वागत है 👋"
+    },
+    {
+      "key": "dialog.submitPr.branchLabel",
+      "value": "ब्रांच नाम"
+    },
+    {
+      "key": "dialog.submitPr.cancel",
+      "value": "रद्द करें"
+    },
+    {
+      "key": "dialog.submitPr.contributeHint",
+      "value": "{0} में किए गए अपने बदलाव उसकी रिपॉज़िटरी में वापस योगदान करें।"
+    },
+    {
+      "key": "dialog.submitPr.defaultTitle",
+      "value": "{0} अपडेट करें"
+    },
+    {
+      "key": "dialog.submitPr.descriptionLabel",
+      "value": "विवरण"
+    },
+    {
+      "key": "dialog.submitPr.descriptionWatermark",
+      "value": "आपने क्या और क्यों बदला?"
+    },
+    {
+      "key": "dialog.submitPr.hint",
+      "value": "हम यह ब्रांच बनाते हैं, आपके बदलाव कमिट करते हैं, पुश करते हैं (यदि आप सीधे पुश नहीं कर सकते तो पहले फ़ोर्क करते हैं), और PR खोलते हैं।"
+    },
+    {
+      "key": "dialog.submitPr.openPr",
+      "value": "पुल रिक्वेस्ट खोलें"
+    },
+    {
+      "key": "dialog.submitPr.title",
+      "value": "एक पुल रिक्वेस्ट सबमिट करें"
+    },
+    {
+      "key": "dialog.submitPr.titleLabel",
+      "value": "शीर्षक"
+    },
+    {
+      "key": "dialog.submitPr.titleWatermark",
+      "value": "पैकेज अपडेट करें"
+    },
+    {
+      "key": "dialog.versionPicker.betaPill",
+      "value": "बीटा"
+    },
+    {
+      "key": "dialog.versionPicker.cancel",
+      "value": "रद्द करें"
+    },
+    {
+      "key": "dialog.versionPicker.install",
+      "value": "यह संस्करण इंस्टॉल करें"
+    },
+    {
+      "key": "dialog.versionPicker.showPrereleases",
+      "value": "प्रीरिलीज़ दिखाएँ (बीटा)"
+    },
+    {
+      "key": "dialog.versionPicker.subHasReleases",
+      "value": "कोई प्रकाशित रिलीज़, या नवीनतम डिफ़ॉल्ट ब्रांच चुनें।"
+    },
+    {
+      "key": "dialog.versionPicker.subNoReleases",
+      "value": "कोई रिलीज़ प्रकाशित नहीं — टैग / डिफ़ॉल्ट ब्रांच दिखाई जा रही हैं। स्थिर संस्करणों के लिए क्रिएटर से रिलीज़ बनाने को कहें।"
+    },
+    {
+      "key": "dialog.versionPicker.title",
+      "value": "एक संस्करण चुनें"
+    }
+  ]
+}

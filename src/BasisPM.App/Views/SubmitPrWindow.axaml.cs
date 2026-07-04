@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using BasisPM.App.Localization;
 using BasisPM.Core.Services;
 
 namespace BasisPM.App.Views;
@@ -10,8 +11,8 @@ public partial class SubmitPrWindow : Window
 
     public SubmitPrWindow(string packageId, string suggestedBranch) : this()
     {
-        SubText.Text = $"Contribute your changes to {packageId} back to its repository.";
-        TitleBox.Text = $"Update {packageId}";
+        SubText.Text = L.Tr("dialog.submitPr.contributeHint", packageId);
+        TitleBox.Text = L.Tr("dialog.submitPr.defaultTitle", packageId);
         BranchBox.Text = suggestedBranch;
         Opened += (_, _) => { TitleBox.Focus(); TitleBox.SelectAll(); };
     }

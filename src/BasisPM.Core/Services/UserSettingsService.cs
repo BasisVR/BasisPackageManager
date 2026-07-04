@@ -17,6 +17,22 @@ public sealed class UserSettingsService
             "settings.json");
     }
 
+    // Synchronous load for the one place that needs settings before the UI exists: applying the
+    // saved UI language at startup (avoids a flash of English before the async load completes).
+    public UserSettings Load()
+    {
+        if (!File.Exists(SettingsPath)) return new UserSettings();
+        try
+        {
+            using var fs = File.OpenRead(SettingsPath);
+            return JsonSerializer.Deserialize<UserSettings>(fs, JsonOpts) ?? new UserSettings();
+        }
+        catch
+        {
+            return new UserSettings();
+        }
+    }
+
     public async Task<UserSettings> LoadAsync(CancellationToken ct = default)
     {
         if (!File.Exists(SettingsPath)) return new UserSettings();

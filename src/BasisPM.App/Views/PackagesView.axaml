@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:BasisPM.App.ViewModels"
              xmlns:models="using:BasisPM.Core.Models"
+             xmlns:loc="using:BasisPM.App.Localization"
              x:Class="BasisPM.App.Views.PackagesView"
              x:DataType="vm:PackagesViewModel"
              Name="Root">
@@ -14,14 +15,14 @@
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
                 <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                     <StackPanel Grid.Column="0" Spacing="6">
-                        <TextBlock Text="PACKAGES" Classes="tagline"/>
-                        <TextBlock Text="Packages" Classes="h1"/>
-                        <TextBlock Text="Pick a project, then install packages from the Basis registry or add any community UPM package by git URL."
+                        <TextBlock Text="{loc:Tr packages.hero.tagline}" Classes="tagline"/>
+                        <TextBlock Text="{loc:Tr packages.hero.title}" Classes="h1"/>
+                        <TextBlock Text="{loc:Tr packages.hero.subtitle}"
                                    Classes="muted" FontSize="14"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                         <StackPanel Spacing="4" IsVisible="{Binding HasInstalls}">
-                            <TextBlock Text="Project" Classes="muted" FontSize="11"/>
+                            <TextBlock Text="{loc:Tr packages.label.project}" Classes="muted" FontSize="11"/>
                             <ComboBox MinWidth="200" MaxDropDownHeight="360"
                                       ItemsSource="{Binding InstallOptions}" SelectedItem="{Binding SelectedInstall}">
                                 <ComboBox.ItemTemplate>
@@ -34,16 +35,16 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </StackPanel>
-                        <Button Content="Create bundle" Command="{Binding CreateBundleCommand}" VerticalAlignment="Bottom" IsVisible="{Binding HasInstall}"/>
-                        <Button Content="Refresh" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom"/>
+                        <Button Content="{loc:Tr packages.button.createBundle}" Command="{Binding CreateBundleCommand}" VerticalAlignment="Bottom" IsVisible="{Binding HasInstall}"/>
+                        <Button Content="{loc:Tr packages.button.refresh}" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom"/>
                     </StackPanel>
                 </Grid>
             </Border>
 
             <Border Classes="card" IsVisible="{Binding !HasInstall}">
                 <StackPanel Spacing="10" HorizontalAlignment="Center" Margin="0,50">
-                    <TextBlock Text="No install with a Unity project" Classes="h3" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Clone or select a Basis install on the Installs tab to manage its packages."
+                    <TextBlock Text="{loc:Tr packages.empty.noProjectTitle}" Classes="h3" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr packages.empty.noProjectDescription}"
                                Classes="muted" HorizontalAlignment="Center"/>
                 </StackPanel>
             </Border>
@@ -55,14 +56,14 @@
                     <Grid RowDefinitions="Auto,Auto,*">
                         <Border Grid.Row="0" Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
                             <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-                                <TextBlock Grid.Column="0" Text="Available to install" Classes="h3" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="0" Text="{loc:Tr packages.header.available}" Classes="h3" VerticalAlignment="Center"/>
                                 <Border Grid.Column="1" Classes="brandBadge" HorizontalAlignment="Left" Margin="10,0,0,0">
-                                    <TextBlock Text="BASIS REGISTRY" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="{loc:Tr packages.badge.basisRegistry}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
                                 </Border>
                             </Grid>
                         </Border>
                         <Border Grid.Row="1" Padding="20,12" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                            <TextBox Watermark="Filter packages..." Text="{Binding Filter}"/>
+                            <TextBox Watermark="{loc:Tr packages.filter.watermark}" Text="{Binding Filter}"/>
                         </Border>
                         <ScrollViewer Grid.Row="2" MaxHeight="320">
                             <ItemsControl ItemsSource="{Binding Available}">
@@ -98,9 +99,9 @@
                                                     <Button Content="{Binding ButtonLabel}" Classes="primary" MinWidth="90"
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                                                             CommandParameter="{Binding Entry}"/>
-                                                    <Button Content="Choose version…" MinWidth="90" FontSize="11" Padding="10,6"
+                                                    <Button Content="{loc:Tr packages.button.chooseVersion}" MinWidth="90" FontSize="11" Padding="10,6"
                                                             IsVisible="{Binding HasGit}"
-                                                            ToolTip.Tip="Pick a specific release, beta, or the default branch"
+                                                            ToolTip.Tip="{loc:Tr packages.tooltip.chooseVersion}"
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ChooseVersionCommand}"
                                                             CommandParameter="{Binding Entry}"/>
                                                 </StackPanel>
@@ -116,13 +117,13 @@
                 <!-- Community from GitHub -->
                 <Border Classes="card" Padding="20,16">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="Add community package from GitHub" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr packages.header.community}" Classes="h3"/>
                         <TextBlock Classes="muted" FontSize="11" TextWrapping="Wrap"
-                                   Text="Paste a GitHub URL, or owner/repo[?path=Sub/Folder][#branch]. Its package.json is added to your Unity manifest as a git dependency."/>
+                                   Text="{loc:Tr packages.community.description}"/>
                         <Grid ColumnDefinitions="*,8,Auto">
                             <TextBox Grid.Column="0" Text="{Binding GitHubInput}"
-                                     Watermark="https://github.com/owner/repo  or  owner/repo?path=Packages/com.x#main"/>
-                            <Button Grid.Column="2" Classes="primary" Content="+ Add" Command="{Binding AddFromGitHubCommand}"/>
+                                     Watermark="{loc:Tr packages.community.watermark}"/>
+                            <Button Grid.Column="2" Classes="primary" Content="{loc:Tr packages.button.add}" Command="{Binding AddFromGitHubCommand}"/>
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -130,14 +131,14 @@
                 <!-- Installed (a collapsible tab, closed until opened) -->
                 <Expander IsExpanded="False" HorizontalAlignment="Stretch">
                     <Expander.Header>
-                        <TextBlock Text="Installed" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr packages.header.installed}" Classes="h3"/>
                     </Expander.Header>
                     <StackPanel Margin="0,10,0,0">
                         <Border Padding="0,0,0,10" Margin="0,0,0,4" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
                             <ComboBox HorizontalAlignment="Left" MinWidth="150"
                                       ItemsSource="{Binding InstalledOwners}"
                                       SelectedItem="{Binding SelectedInstalledOwner}"
-                                      ToolTip.Tip="Filter installed packages by owner (from the package id)"/>
+                                      ToolTip.Tip="{loc:Tr packages.tooltip.filterByOwner}"/>
                         </Border>
                         <ItemsControl ItemsSource="{Binding Installed}">
                             <ItemsControl.ItemTemplate>
@@ -148,12 +149,12 @@
                                                 <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                                                     <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"/>
                                                     <Border Classes="versionPill" IsVisible="{Binding IsFromGit}">
-                                                        <TextBlock Text="github" FontSize="10" Classes="brand" FontWeight="Bold"/>
+                                                        <TextBlock Text="{loc:Tr packages.badge.github}" FontSize="10" Classes="brand" FontWeight="Bold"/>
                                                     </Border>
                                                 </StackPanel>
                                                 <TextBlock Text="{Binding Version}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
                                             </StackPanel>
-                                            <Button Grid.Column="1" Content="Remove" Classes="danger"
+                                            <Button Grid.Column="1" Content="{loc:Tr packages.button.remove}" Classes="danger"
                                                     Command="{Binding #Root.((vm:PackagesViewModel)DataContext).UninstallCommand}"
                                                     CommandParameter="{Binding}"/>
                                         </Grid>

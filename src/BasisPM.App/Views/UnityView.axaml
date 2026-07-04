@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:BasisPM.App.ViewModels"
              xmlns:models="using:BasisPM.Core.Models"
+             xmlns:loc="using:BasisPM.App.Localization"
              x:Class="BasisPM.App.Views.UnityView"
              x:DataType="vm:UnityViewModel"
              Name="Root">
@@ -13,12 +14,12 @@
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
                 <Grid ColumnDefinitions="*,Auto">
                     <StackPanel Grid.Column="0" Spacing="6">
-                        <TextBlock Text="UNITY EDITORS" Classes="tagline"/>
-                        <TextBlock Text="Editor versions" Classes="h1"/>
-                        <TextBlock Text="Detect installed Unity Editors and install the version Basis requires."
+                        <TextBlock Text="{loc:Tr unity.header.tagline}" Classes="tagline"/>
+                        <TextBlock Text="{loc:Tr unity.header.title}" Classes="h1"/>
+                        <TextBlock Text="{loc:Tr unity.header.subtitle}"
                                    Classes="muted" FontSize="14"/>
                     </StackPanel>
-                    <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshCommand}"/>
+                    <Button Grid.Column="1" Content="{loc:Tr unity.button.refresh}" Command="{Binding RefreshCommand}"/>
                 </Grid>
             </Border>
 
@@ -35,7 +36,7 @@
             <Border Classes="card" Padding="0">
                 <Grid RowDefinitions="Auto,*">
                     <Border Grid.Row="0" Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                        <TextBlock Text="Installed Editors" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr unity.section.installedEditors}" Classes="h3"/>
                     </Border>
                     <ItemsControl Grid.Row="1" ItemsSource="{Binding InstalledEditors}">
                         <ItemsControl.ItemTemplate>
@@ -46,7 +47,7 @@
                                             <TextBlock Text="{Binding Version}" Classes="h3"/>
                                             <TextBlock Text="{Binding Path}" Classes="dim" FontSize="11"/>
                                         </StackPanel>
-                                        <Button Grid.Column="1" Content="Uninstall" Classes="danger"
+                                        <Button Grid.Column="1" Content="{loc:Tr unity.button.uninstall}" Classes="danger"
                                                 Command="{Binding #Root.((vm:UnityViewModel)DataContext).UninstallCommand}"
                                                 CommandParameter="{Binding}"/>
                                     </Grid>
@@ -60,15 +61,15 @@
             <Border Classes="card">
                 <StackPanel Spacing="14">
                     <Grid ColumnDefinitions="*,Auto">
-                        <TextBlock Grid.Column="0" Text="Install a new Editor" Classes="h3"/>
-                        <Button Grid.Column="1" Content="Reload list" Command="{Binding ReloadReleasesCommand}"/>
+                        <TextBlock Grid.Column="0" Text="{loc:Tr unity.section.installNew}" Classes="h3"/>
+                        <Button Grid.Column="1" Content="{loc:Tr unity.button.reloadList}" Command="{Binding ReloadReleasesCommand}"/>
                     </Grid>
                     <TextBlock Classes="muted" FontSize="12" TextWrapping="Wrap"
-                               Text="Pick a Unity 6 release. The changeset is filled in automatically from Unity's release feed."/>
+                               Text="{loc:Tr unity.install.hint}"/>
 
                     <Grid ColumnDefinitions="*,16,200" RowDefinitions="Auto">
                         <StackPanel Grid.Column="0" Grid.Row="0" Spacing="6">
-                            <TextBlock Text="Unity 6 release" Classes="muted" FontSize="11"/>
+                            <TextBlock Text="{loc:Tr unity.label.release}" Classes="muted" FontSize="11"/>
                             <ComboBox ItemsSource="{Binding AvailableReleases}"
                                       SelectedItem="{Binding SelectedRelease}"
                                       HorizontalAlignment="Stretch"
@@ -84,16 +85,16 @@
                                                     Opacity="{Binding IsInstalled, Converter={x:Static vm:Converters.InstalledOpacity}}">
                                             <TextBlock Text="{Binding Release.Version}" FontWeight="SemiBold" MinWidth="120"/>
                                             <TextBlock Text="{Binding Release.Stream}" Classes="muted" MinWidth="80"/>
-                                            <TextBlock Text="recommended" Foreground="{StaticResource BasisAccentBrush}"
+                                            <TextBlock Text="{loc:Tr unity.tag.recommended}" Foreground="{StaticResource BasisAccentBrush}"
                                                        FontSize="11" IsVisible="{Binding Release.Recommended}"/>
-                                            <TextBlock Text="installed" Classes="dim" FontSize="11" IsVisible="{Binding IsInstalled}"/>
+                                            <TextBlock Text="{loc:Tr unity.tag.installed}" Classes="dim" FontSize="11" IsVisible="{Binding IsInstalled}"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </StackPanel>
                         <StackPanel Grid.Column="2" Grid.Row="0" Spacing="6">
-                            <TextBlock Text="Stream filter" Classes="muted" FontSize="11"/>
+                            <TextBlock Text="{loc:Tr unity.label.streamFilter}" Classes="muted" FontSize="11"/>
                             <ComboBox ItemsSource="{Binding StreamFilters}"
                                       SelectedItem="{Binding StreamFilter}"
                                       HorizontalAlignment="Stretch"/>
@@ -101,7 +102,7 @@
                     </Grid>
 
                     <StackPanel Spacing="4" IsVisible="{Binding SelectedRelease, Converter={x:Static vm:Converters.NotNull}}">
-                        <TextBlock Text="Changeset" Classes="muted" FontSize="11"/>
+                        <TextBlock Text="{loc:Tr unity.label.changeset}" Classes="muted" FontSize="11"/>
                         <TextBlock Text="{Binding SelectedRelease.Release.ShortRevision}" Classes="dim" FontSize="12"/>
                     </StackPanel>
 
@@ -117,7 +118,7 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <Button Classes="primary" Content="Install via Unity Hub" Command="{Binding InstallCommand}" HorizontalAlignment="Left"/>
+                    <Button Classes="primary" Content="{loc:Tr unity.button.install}" Command="{Binding InstallCommand}" HorizontalAlignment="Left"/>
                 </StackPanel>
             </Border>
 

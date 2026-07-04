@@ -1,3 +1,4 @@
+using BasisPM.App.Localization;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
 
@@ -30,19 +31,36 @@ public sealed class SettingsViewModel : ObservableObject
     public string GitDetected { get => _gitDetected; private set => SetField(ref _gitDetected, value); }
     public string HubDetected { get => _hubDetected; private set => SetField(ref _hubDetected, value); }
 
+    // Language picker. Selecting a language applies and persists it immediately (live preview),
+    // independent of the Save button which covers the other settings.
+    public IReadOnlyList<LanguageInfo> Languages => Localizer.Instance.Available;
+    private LanguageInfo? _selectedLanguage;
+    public LanguageInfo? SelectedLanguage
+    {
+        get => _selectedLanguage;
+        set { if (SetField(ref _selectedLanguage, value) && value is not null) _ = ApplyLanguageAsync(value.Code); }
+    }
+
     public string AppVersion => _shell.AppVersion;
+
+    /// <summary>The activity log, shown as a section on this page (merged in from the old Logs tab).</summary>
+    public LogsViewModel Logs { get; }
 
     public RelayCommand SaveCommand { get; }
     public RelayCommand CheckForUpdatesCommand => _shell.CheckForUpdatesCommand;
 
-    public SettingsViewModel(UserSettingsService settingsService, GitService gitService, UnityHubService hubService, MainWindowViewModel shell)
+    public SettingsViewModel(UserSettingsService settingsService, GitService gitService, UnityHubService hubService, MainWindowViewModel shell, LogsViewModel logs)
     {
         _settingsService = settingsService;
         _gitService = gitService;
         _hubService = hubService;
         _shell = shell;
+        Logs = logs;
         SettingsPath = settingsService.SettingsPath;
         SaveCommand = new RelayCommand(SaveAsync);
+        _selectedLanguage = FindLanguage(Localizer.Instance.CurrentCode);
+        // Re-pull the localized "detected tooling" fallbacks when the language changes.
+        Localizer.Instance.LanguageChanged += _ => RefreshDetected();
         RefreshDetected();
     }
 
@@ -54,15 +72,29 @@ public sealed class SettingsViewModel : ObservableObject
         ShowLocalChanges = settings.ShowLocalChanges;
         DeveloperMode = settings.DeveloperMode;
         PrereleaseUpdates = settings.PrereleaseUpdates;
+        // Reflect the persisted language in the picker without re-triggering a save.
+        _selectedLanguage = FindLanguage(string.IsNullOrWhiteSpace(settings.Language) ? Localizer.Instance.CurrentCode : settings.Language!);
+        OnPropertyChanged(nameof(SelectedLanguage));
         RefreshDetected();
+    }
+
+    private static LanguageInfo? FindLanguage(string code)
+        => Localizer.Instance.Available.FirstOrDefault(l => string.Equals(l.Code, code, StringComparison.OrdinalIgnoreCase));
+
+    private async Task ApplyLanguageAsync(string code)
+    {
+        Localizer.Instance.SetLanguage(code);
+        var settings = await _settingsService.LoadAsync();
+        settings.Language = code;
+        await _settingsService.SaveAsync(settings);
     }
 
     private void RefreshDetected()
     {
         var git = _gitService.FindGit();
-        GitDetected = git ?? "Git not found on PATH — install it from git-scm.com.";
+        GitDetected = git ?? L.Tr("settings.detected.gitNotFound");
         var hub = _hubService.FindHubPath(string.IsNullOrWhiteSpace(UnityHubPath) ? null : UnityHubPath.Trim());
-        HubDetected = hub ?? "Unity Hub not detected.";
+        HubDetected = hub ?? L.Tr("settings.detected.hubNotFound");
     }
 
     private async Task SaveAsync()
@@ -81,6 +113,6 @@ public sealed class SettingsViewModel : ObservableObject
         _shell.ShowDevelopTab = settings.DeveloperMode;
         _shell.ApplyPrerelease(settings.PrereleaseUpdates);
         RefreshDetected();
-        _shell.SetStatus("Settings saved.", StatusKind.Success);
+        _shell.SetStatus(L.Tr("settings.status.saved"), StatusKind.Success);
     }
 }

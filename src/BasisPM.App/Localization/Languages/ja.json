@@ -1,0 +1,1626 @@
+{
+  "code": "ja",
+  "nativeName": "日本語",
+  "entries": [
+    {
+      "key": "nav.changes",
+      "value": "ローカルの変更"
+    },
+    {
+      "key": "nav.community",
+      "value": "コミュニティ"
+    },
+    {
+      "key": "nav.develop",
+      "value": "開発"
+    },
+    {
+      "key": "nav.installs",
+      "value": "プロジェクト"
+    },
+    {
+      "key": "nav.packages",
+      "value": "パッケージ"
+    },
+    {
+      "key": "nav.settings",
+      "value": "設定"
+    },
+    {
+      "key": "nav.unity",
+      "value": "Unity エディター"
+    },
+    {
+      "key": "shell.bundle.pickerLabel",
+      "value": "{0}（{1} パッケージ）"
+    },
+    {
+      "key": "shell.crash.dialogMessage",
+      "value": "前回アプリが予期せず終了したようです。内容を記入済みの GitHub issue を開いて報告しますか？"
+    },
+    {
+      "key": "shell.crash.dialogTitle",
+      "value": "Basis Package Manager が予期せず終了しました"
+    },
+    {
+      "key": "shell.deeplink.thePackage",
+      "value": "このパッケージ"
+    },
+    {
+      "key": "shell.desktopShortcut.dialogMessage",
+      "value": "Basis Package Manager のデスクトップショートカットを追加しますか？スタートメニューからはいつでも起動できます。"
+    },
+    {
+      "key": "shell.desktopShortcut.dialogTitle",
+      "value": "デスクトップショートカット"
+    },
+    {
+      "key": "shell.footer.license",
+      "value": "MIT ライセンス"
+    },
+    {
+      "key": "shell.installPicker.prompt",
+      "value": "“{0}” をどのプロジェクトに追加しますか？"
+    },
+    {
+      "key": "shell.status.bundleNotFound",
+      "value": "レジストリにバンドル “{0}” が見つかりませんでした。"
+    },
+    {
+      "key": "shell.status.checkingForUpdates",
+      "value": "更新を確認中…"
+    },
+    {
+      "key": "shell.status.cloneFirst",
+      "value": "先に Basis をクローンまたは追加してから、{0} をインストールしてください。"
+    },
+    {
+      "key": "shell.status.copied",
+      "value": "ステータスをクリップボードにコピーしました。"
+    },
+    {
+      "key": "shell.status.copy",
+      "value": "コピー"
+    },
+    {
+      "key": "shell.status.copyFailed",
+      "value": "コピーに失敗しました: {0}"
+    },
+    {
+      "key": "shell.status.copyTooltip",
+      "value": "ステータスメッセージをクリップボードにコピー"
+    },
+    {
+      "key": "shell.status.desktopShortcutCreated",
+      "value": "デスクトップショートカットを作成しました。"
+    },
+    {
+      "key": "shell.status.desktopShortcutFailed",
+      "value": "デスクトップショートカットを作成できませんでした: {0}"
+    },
+    {
+      "key": "shell.status.downloadingUpdate",
+      "value": "更新をダウンロード中…"
+    },
+    {
+      "key": "shell.status.installLinkMissingGit",
+      "value": "{0} のインストールリンクに git URL がありませんでした。"
+    },
+    {
+      "key": "shell.status.loadingBundle",
+      "value": "バンドルを読み込み中…"
+    },
+    {
+      "key": "shell.status.noUnityProject",
+      "value": "開く Unity プロジェクトがありません。"
+    },
+    {
+      "key": "shell.status.ok",
+      "value": "OK"
+    },
+    {
+      "key": "shell.status.okTooltip",
+      "value": "このメッセージを閉じる"
+    },
+    {
+      "key": "shell.status.openIssue",
+      "value": "issue を開く"
+    },
+    {
+      "key": "shell.status.openIssueTooltip",
+      "value": "このエラーと直前の操作を記入済みの GitHub issue を開く"
+    },
+    {
+      "key": "shell.status.openUnityFailed",
+      "value": "Unity を開けませんでした: {0}"
+    },
+    {
+      "key": "shell.status.openedInUnity",
+      "value": "{0} を Unity {1} で開いています。"
+    },
+    {
+      "key": "shell.status.openingInUnity",
+      "value": "{0} を Unity で開いています…"
+    },
+    {
+      "key": "shell.status.runningFromSource",
+      "value": "ソースから実行中 — 更新はアプリ内アップデーターではなくビルド側で管理されます。"
+    },
+    {
+      "key": "shell.status.unityNotInstalled",
+      "value": "Unity {0} はインストールされていません。「Unity エディター」タブで追加してから、もう一度お試しください。"
+    },
+    {
+      "key": "shell.status.unityNotInstalledOpenedHub",
+      "value": "Unity {0} はインストールされていません — 追加できるよう Unity Hub を開きました。"
+    },
+    {
+      "key": "shell.status.upToDate",
+      "value": "最新バージョンを使用しています。"
+    },
+    {
+      "key": "shell.status.updateAvailable",
+      "value": "更新があります。"
+    },
+    {
+      "key": "shell.status.updateCheckFailed",
+      "value": "更新の確認に失敗しました: {0}"
+    },
+    {
+      "key": "shell.status.updateFailed",
+      "value": "更新に失敗しました: {0}"
+    },
+    {
+      "key": "shell.update.bannerAvailable",
+      "value": "Basis Package Manager {0} が利用可能です。"
+    },
+    {
+      "key": "shell.update.later",
+      "value": "後で"
+    },
+    {
+      "key": "shell.update.laterTooltip",
+      "value": "次回起動まで表示しない"
+    },
+    {
+      "key": "shell.update.now",
+      "value": "今すぐ更新"
+    },
+    {
+      "key": "shell.update.nowTooltip",
+      "value": "更新をダウンロードして再起動"
+    },
+    {
+      "key": "shell.version.tooltip",
+      "value": "インストール済みバージョン — 更新は設定で確認できます"
+    },
+    {
+      "key": "shell.window.title",
+      "value": "Basis Package Manager"
+    },
+    {
+      "key": "shell.wordmark.name",
+      "value": "BasisVR"
+    },
+    {
+      "key": "shell.wordmark.tagline",
+      "value": "パッケージマネージャー"
+    },
+    {
+      "key": "installs.action.updateCore",
+      "value": "「コアを更新」は 'git pull' を実行し、Basis プロジェクト内のファイルが変更される場合があります。"
+    },
+    {
+      "key": "installs.badge.active",
+      "value": "アクティブ"
+    },
+    {
+      "key": "installs.branch.default",
+      "value": "{0}（main）"
+    },
+    {
+      "key": "installs.button.addExisting",
+      "value": "既存を追加"
+    },
+    {
+      "key": "installs.button.backup",
+      "value": "バックアップ"
+    },
+    {
+      "key": "installs.button.browse",
+      "value": "参照…"
+    },
+    {
+      "key": "installs.button.changes",
+      "value": "変更"
+    },
+    {
+      "key": "installs.button.cloneBasis",
+      "value": "Basis をクローン"
+    },
+    {
+      "key": "installs.button.open",
+      "value": "開く"
+    },
+    {
+      "key": "installs.button.packages",
+      "value": "パッケージ"
+    },
+    {
+      "key": "installs.button.refresh",
+      "value": "再読み込み"
+    },
+    {
+      "key": "installs.button.remove",
+      "value": "削除"
+    },
+    {
+      "key": "installs.button.updateCore",
+      "value": "コアを更新"
+    },
+    {
+      "key": "installs.cloneForm.branchLabel",
+      "value": "ブランチ"
+    },
+    {
+      "key": "installs.cloneForm.cloneIntoLabel",
+      "value": "クローン先フォルダー"
+    },
+    {
+      "key": "installs.cloneForm.heading",
+      "value": "Basis をクローン"
+    },
+    {
+      "key": "installs.cloneForm.subFolderLabel",
+      "value": "サブフォルダー名"
+    },
+    {
+      "key": "installs.dialog.backupPrompt",
+      "value": "{0}\n\n先に {1} をバックアップしますか？Assets、Packages、ProjectSettings（Library キャッシュは除く）を、インストール先の隣にある BasisBackups フォルダーに zip でまとめます。"
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceBody",
+      "value": "{1} の空き容量は {0} しかありません。Basis のクローンと Unity での起動にはそれを大きく上回る容量が必要になることがあり、クローンが途中で失敗する可能性があります。\n\nそれでもここにクローンしますか？"
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceTitle",
+      "value": "ディスク容量不足"
+    },
+    {
+      "key": "installs.dialog.nameThisInstall",
+      "value": "このインストールに名前を付ける"
+    },
+    {
+      "key": "installs.empty.body",
+      "value": "上の「Basis をクローン」で BasisVR/Basis を取得するか、「既存を追加」で手元のクローンを登録してください。"
+    },
+    {
+      "key": "installs.empty.title",
+      "value": "インストールがまだありません"
+    },
+    {
+      "key": "installs.git.ahead",
+      "value": "{0} 件先行"
+    },
+    {
+      "key": "installs.git.behindUpstream",
+      "value": "アップストリームより {0} 件遅れ"
+    },
+    {
+      "key": "installs.git.checking",
+      "value": "確認中…"
+    },
+    {
+      "key": "installs.git.checkingRemote",
+      "value": "リモートを確認中…"
+    },
+    {
+      "key": "installs.git.error",
+      "value": "git エラー: {0}"
+    },
+    {
+      "key": "installs.git.localChanges",
+      "value": "ローカル変更 {0} 件{1}"
+    },
+    {
+      "key": "installs.git.noUpstream",
+      "value": "アップストリームなし"
+    },
+    {
+      "key": "installs.git.notGitRepo",
+      "value": "git リポジトリではありません"
+    },
+    {
+      "key": "installs.git.upToDate",
+      "value": "最新"
+    },
+    {
+      "key": "installs.hero.subtitle",
+      "value": "BasisVR/Basis リポジトリをクローンし、各プロジェクトのパッケージ・更新・ローカル変更を管理します。"
+    },
+    {
+      "key": "installs.hero.tagline",
+      "value": "プロジェクト"
+    },
+    {
+      "key": "installs.hero.title",
+      "value": "あなたの Basis プロジェクト"
+    },
+    {
+      "key": "installs.picker.chooseCloneFolder",
+      "value": "Basis のクローン先フォルダーを選択"
+    },
+    {
+      "key": "installs.picker.selectExistingClone",
+      "value": "既存の Basis クローンを選択"
+    },
+    {
+      "key": "installs.progress.starting",
+      "value": "クローンを開始中…"
+    },
+    {
+      "key": "installs.row.noUnityProject",
+      "value": "Unity プロジェクトなし"
+    },
+    {
+      "key": "installs.row.unityVersion",
+      "value": "Unity {0}"
+    },
+    {
+      "key": "installs.space.criticalWarning",
+      "value": "ディスク容量が非常に少なくなっています — {1} の空きは {0} だけです。Basis のクローンは失敗する可能性が高いため、空き容量を確保するか別のドライブを選択してください。"
+    },
+    {
+      "key": "installs.space.lowWarning",
+      "value": "ディスク容量不足 — {1} の空きは {0} です。Basis と Unity の Library で 20 GB 以上を使用することがあります。"
+    },
+    {
+      "key": "installs.status.added",
+      "value": "{0}{1} を追加しました。"
+    },
+    {
+      "key": "installs.status.alreadyInList",
+      "value": "そのインストールはすでに一覧にあります。"
+    },
+    {
+      "key": "installs.status.backedUp",
+      "value": "{0} をバックアップしました → {1}"
+    },
+    {
+      "key": "installs.status.backingUp",
+      "value": "{0} をバックアップ中…"
+    },
+    {
+      "key": "installs.status.backupFailed",
+      "value": "バックアップに失敗しました: {0}"
+    },
+    {
+      "key": "installs.status.chooseFolderFirst",
+      "value": "先にクローン先フォルダーを選択してください。"
+    },
+    {
+      "key": "installs.status.cloneCancelledLowSpace",
+      "value": "クローンをキャンセルしました — 対象ドライブのディスク容量が不足しています。"
+    },
+    {
+      "key": "installs.status.cloneError",
+      "value": "クローンエラー: {0}"
+    },
+    {
+      "key": "installs.status.cloneFailed",
+      "value": "クローンに失敗しました（終了コード {0}）。{1}"
+    },
+    {
+      "key": "installs.status.clonedInto",
+      "value": "Basis を {0} にクローンしました。{1}"
+    },
+    {
+      "key": "installs.status.cloningInto",
+      "value": "Basis を {0} にクローン中…"
+    },
+    {
+      "key": "installs.status.destExists",
+      "value": "{0} はすでに存在し、空ではありません。"
+    },
+    {
+      "key": "installs.status.folderMissing",
+      "value": "フォルダーが存在しません: {0}"
+    },
+    {
+      "key": "installs.status.gitNotFound",
+      "value": "Git が見つかりませんでした。Git をインストールし、PATH に追加してください（設定を参照）。"
+    },
+    {
+      "key": "installs.status.noUnityDetectedNote",
+      "value": "（配下に Unity プロジェクトが見つかりませんでした）"
+    },
+    {
+      "key": "installs.status.noUnityToBackup",
+      "value": "{0} にはバックアップする Unity プロジェクトがありません。"
+    },
+    {
+      "key": "installs.status.notGitRepo",
+      "value": "{0} は git リポジトリではありません。"
+    },
+    {
+      "key": "installs.status.removed",
+      "value": "{0} を一覧から削除しました（ファイルはディスクに残ります）。"
+    },
+    {
+      "key": "installs.status.requiresUnityNote",
+      "value": " Unity {0} が必要です — 「Unity」タブを開いてインストールしてください。"
+    },
+    {
+      "key": "installs.status.rowSummary",
+      "value": "{0}: {1}"
+    },
+    {
+      "key": "installs.status.updateError",
+      "value": "更新エラー: {0}"
+    },
+    {
+      "key": "installs.status.updateFailed",
+      "value": "{0} の更新に失敗しました: {1}"
+    },
+    {
+      "key": "installs.status.updated",
+      "value": "{0} を更新しました。{1}"
+    },
+    {
+      "key": "installs.status.updating",
+      "value": "{0} を更新中（git pull）…"
+    },
+    {
+      "key": "installs.tooltip.backup",
+      "value": "Assets、Packages、ProjectSettings を zip 化（Library キャッシュは除く）"
+    },
+    {
+      "key": "packages.badge.basisRegistry",
+      "value": "BASIS レジストリ"
+    },
+    {
+      "key": "packages.badge.github",
+      "value": "github"
+    },
+    {
+      "key": "packages.bundle.basisLine",
+      "value": "Basis: {0}  ·  Unity {1}"
+    },
+    {
+      "key": "packages.bundle.unknownCommit",
+      "value": "不明"
+    },
+    {
+      "key": "packages.button.add",
+      "value": "+ 追加"
+    },
+    {
+      "key": "packages.button.chooseVersion",
+      "value": "バージョンを選択…"
+    },
+    {
+      "key": "packages.button.createBundle",
+      "value": "バンドルを作成"
+    },
+    {
+      "key": "packages.button.install",
+      "value": "インストール"
+    },
+    {
+      "key": "packages.button.refresh",
+      "value": "再読み込み"
+    },
+    {
+      "key": "packages.button.remove",
+      "value": "削除"
+    },
+    {
+      "key": "packages.button.update",
+      "value": "更新"
+    },
+    {
+      "key": "packages.community.description",
+      "value": "GitHub URL、または owner/repo[?path=Sub/Folder][#branch] を貼り付けてください。その package.json が git 依存関係として Unity のマニフェストに追加されます。"
+    },
+    {
+      "key": "packages.community.watermark",
+      "value": "https://github.com/owner/repo  または  owner/repo?path=Packages/com.x#main"
+    },
+    {
+      "key": "packages.dialog.installTitle",
+      "value": "{0} をインストール"
+    },
+    {
+      "key": "packages.empty.noInstallSelected",
+      "value": "インストールが選択されていません"
+    },
+    {
+      "key": "packages.empty.noProjectDescription",
+      "value": "「プロジェクト」タブで Basis インストールをクローンまたは選択すると、そのパッケージを管理できます。"
+    },
+    {
+      "key": "packages.empty.noProjectTitle",
+      "value": "Unity プロジェクトを含むインストールがありません"
+    },
+    {
+      "key": "packages.filter.allOwners",
+      "value": "すべての所有者"
+    },
+    {
+      "key": "packages.filter.otherOwner",
+      "value": "その他"
+    },
+    {
+      "key": "packages.filter.watermark",
+      "value": "パッケージを絞り込み..."
+    },
+    {
+      "key": "packages.header.available",
+      "value": "インストール可能"
+    },
+    {
+      "key": "packages.header.community",
+      "value": "GitHub からコミュニティパッケージを追加"
+    },
+    {
+      "key": "packages.header.installed",
+      "value": "インストール済み"
+    },
+    {
+      "key": "packages.hero.subtitle",
+      "value": "プロジェクトを選び、Basis レジストリからパッケージをインストールするか、任意のコミュニティ UPM パッケージを git URL で追加します。"
+    },
+    {
+      "key": "packages.hero.tagline",
+      "value": "パッケージ"
+    },
+    {
+      "key": "packages.hero.title",
+      "value": "パッケージ"
+    },
+    {
+      "key": "packages.label.project",
+      "value": "プロジェクト"
+    },
+    {
+      "key": "packages.status.added",
+      "value": "追加済み"
+    },
+    {
+      "key": "packages.status.addedBundle",
+      "value": "バンドル “{0}”（{1} パッケージ）{2} を追加しました → {3}。"
+    },
+    {
+      "key": "packages.status.addedDeepLink",
+      "value": "{0} {1}{2} → {3}。"
+    },
+    {
+      "key": "packages.status.addedFromGitHub",
+      "value": "{0} {1}{2} を GitHub から追加しました。"
+    },
+    {
+      "key": "packages.status.bundleInstallFailed",
+      "value": "バンドルのインストールに失敗しました: {0}"
+    },
+    {
+      "key": "packages.status.chooseProject",
+      "value": "先にプロジェクトを選択してください。"
+    },
+    {
+      "key": "packages.status.deepLinkFailed",
+      "value": "ディープリンクからのインストールに失敗しました: {0}"
+    },
+    {
+      "key": "packages.status.defaultBranch",
+      "value": "デフォルトブランチ"
+    },
+    {
+      "key": "packages.status.depNote",
+      "value": " （依存パッケージ +{0} 個{1}）"
+    },
+    {
+      "key": "packages.status.dependencyConflict",
+      "value": "依存関係の競合: {0}"
+    },
+    {
+      "key": "packages.status.gitHubAddFailed",
+      "value": "GitHub からの追加に失敗しました: {0}"
+    },
+    {
+      "key": "packages.status.gitUrlParseFailed",
+      "value": "パッケージの git URL を解析できませんでした。"
+    },
+    {
+      "key": "packages.status.installError",
+      "value": "インストールエラー: {0}"
+    },
+    {
+      "key": "packages.status.installLinkMissing",
+      "value": "インストールリンクにパッケージ ID または git URL がありませんでした。"
+    },
+    {
+      "key": "packages.status.installed",
+      "value": "{0} を {1} にインストールしました。"
+    },
+    {
+      "key": "packages.status.installedVersion",
+      "value": "{0}（{1}）を {2} にインストールしました。"
+    },
+    {
+      "key": "packages.status.invalidGitHub",
+      "value": "無効な GitHub 参照: {0}"
+    },
+    {
+      "key": "packages.status.loadingVersions",
+      "value": "{0} のバージョンを読み込み中…"
+    },
+    {
+      "key": "packages.status.noAddonPackages",
+      "value": "このプロジェクトにはバンドルできるアドオンパッケージがまだありません。"
+    },
+    {
+      "key": "packages.status.noVersionsFound",
+      "value": "{0} のバージョンが見つかりませんでした。"
+    },
+    {
+      "key": "packages.status.notGitPackage",
+      "value": "{0} は git パッケージではありません — 選択できるバージョンがありません。"
+    },
+    {
+      "key": "packages.status.openInstallFirst",
+      "value": "先に Unity プロジェクトを含むインストールを開いてから、もう一度 {0} の「インストール」をクリックしてください。"
+    },
+    {
+      "key": "packages.status.openingIssue",
+      "value": "“{0}”（{1} パッケージ）を提出するため GitHub issue を開いています…"
+    },
+    {
+      "key": "packages.status.packageJsonLoadFailed",
+      "value": "{0}/{1}{2} から package.json を読み込めませんでした — パスと、リポジトリが公開されているか確認してください。"
+    },
+    {
+      "key": "packages.status.pasteGitHub",
+      "value": "GitHub URL または owner/repo を貼り付けてください。"
+    },
+    {
+      "key": "packages.status.refusedUnsafeUrl",
+      "value": "{0} の追加を拒否しました: インストールリンクの git URL がサポート外または安全でないトランスポートを使用しています。"
+    },
+    {
+      "key": "packages.status.removed",
+      "value": "{0} を削除しました。"
+    },
+    {
+      "key": "packages.status.skipNote",
+      "value": " （安全でない git URL のため {0} 件をスキップ）"
+    },
+    {
+      "key": "packages.status.updated",
+      "value": "更新済み"
+    },
+    {
+      "key": "packages.status.versionInstallError",
+      "value": "バージョンのインストールエラー: {0}"
+    },
+    {
+      "key": "packages.tooltip.chooseVersion",
+      "value": "特定のリリース、ベータ、またはデフォルトブランチを選択"
+    },
+    {
+      "key": "packages.tooltip.filterByOwner",
+      "value": "インストール済みパッケージを所有者で絞り込み（パッケージ ID から）"
+    },
+    {
+      "key": "unity.button.install",
+      "value": "Unity Hub でインストール"
+    },
+    {
+      "key": "unity.button.refresh",
+      "value": "再読み込み"
+    },
+    {
+      "key": "unity.button.reloadList",
+      "value": "一覧を再読み込み"
+    },
+    {
+      "key": "unity.button.uninstall",
+      "value": "アンインストール"
+    },
+    {
+      "key": "unity.header.subtitle",
+      "value": "インストール済みの Unity エディターを検出し、Basis が必要とするバージョンをインストールします。"
+    },
+    {
+      "key": "unity.header.tagline",
+      "value": "UNITY エディター"
+    },
+    {
+      "key": "unity.header.title",
+      "value": "エディターのバージョン"
+    },
+    {
+      "key": "unity.install.hint",
+      "value": "Unity 6 のリリースを選択してください。チェンジセットは Unity のリリースフィードから自動的に入力されます。"
+    },
+    {
+      "key": "unity.label.changeset",
+      "value": "チェンジセット"
+    },
+    {
+      "key": "unity.label.release",
+      "value": "Unity 6 リリース"
+    },
+    {
+      "key": "unity.label.streamFilter",
+      "value": "ストリームフィルター"
+    },
+    {
+      "key": "unity.section.installNew",
+      "value": "新しいエディターをインストール"
+    },
+    {
+      "key": "unity.section.installedEditors",
+      "value": "インストール済みエディター"
+    },
+    {
+      "key": "unity.status.alreadyInstalled",
+      "value": "Unity {0} はすでにインストールされています。"
+    },
+    {
+      "key": "unity.status.error",
+      "value": "エラー: {0}"
+    },
+    {
+      "key": "unity.status.fetchReleasesFailed",
+      "value": "Unity のリリースを取得できませんでした: {0}"
+    },
+    {
+      "key": "unity.status.hubNotDetected",
+      "value": "Unity Hub が検出されませんでした。"
+    },
+    {
+      "key": "unity.status.hubPath",
+      "value": "Unity Hub: {0}"
+    },
+    {
+      "key": "unity.status.installError",
+      "value": "インストールエラー: {0}"
+    },
+    {
+      "key": "unity.status.installFailed",
+      "value": "インストールに失敗しました（終了コード {0}）。"
+    },
+    {
+      "key": "unity.status.installKickedOff",
+      "value": "{0} のインストールを Unity Hub で開始しました。"
+    },
+    {
+      "key": "unity.status.installing",
+      "value": "Unity {0} をインストール中..."
+    },
+    {
+      "key": "unity.status.noEditorsInstalled",
+      "value": " （エディターがインストールされていません）"
+    },
+    {
+      "key": "unity.status.pickReleaseFirst",
+      "value": "先にドロップダウンから Unity 6 リリースを選択してください。"
+    },
+    {
+      "key": "unity.status.requiredVersionNote",
+      "value": "この Basis インストールは Unity {0} を対象としています。問題なく開くには、下でそのバージョンをインストールしてください。"
+    },
+    {
+      "key": "unity.status.uninstallError",
+      "value": "アンインストールエラー: {0}"
+    },
+    {
+      "key": "unity.status.uninstallFailed",
+      "value": "アンインストールに失敗しました（終了コード {0}）。"
+    },
+    {
+      "key": "unity.status.uninstalled",
+      "value": "Unity {0} をアンインストールしました。"
+    },
+    {
+      "key": "unity.status.uninstalling",
+      "value": "Unity {0} をアンインストール中..."
+    },
+    {
+      "key": "unity.tag.installed",
+      "value": "インストール済み"
+    },
+    {
+      "key": "unity.tag.recommended",
+      "value": "推奨"
+    },
+    {
+      "key": "develop.auth.cliNotLoggedIn",
+      "value": "GitHub CLI は見つかりましたがログインしていません — “gh auth login” を実行してから「再確認」してください。"
+    },
+    {
+      "key": "develop.auth.notSignedIn",
+      "value": "サインインしていません — 下にトークンを貼り付けるか、GitHub CLI をインストールしてログインしてください。"
+    },
+    {
+      "key": "develop.auth.signedIn",
+      "value": "{0} として GitHub にサインイン済み"
+    },
+    {
+      "key": "develop.auth.tokenLabel",
+      "value": "GitHub トークン（“repo” スコープが必要）"
+    },
+    {
+      "key": "develop.auth.tokenWatermark",
+      "value": "ghp_…  または  github_pat_…"
+    },
+    {
+      "key": "develop.button.installGit",
+      "value": "Git をインストール"
+    },
+    {
+      "key": "develop.button.mountToEdit",
+      "value": "編集用にマウント"
+    },
+    {
+      "key": "develop.button.openInUnity",
+      "value": "Unity で開く"
+    },
+    {
+      "key": "develop.button.recheck",
+      "value": "再確認"
+    },
+    {
+      "key": "develop.button.refresh",
+      "value": "再読み込み"
+    },
+    {
+      "key": "develop.button.signIn",
+      "value": "サインイン"
+    },
+    {
+      "key": "develop.button.submitPr",
+      "value": "PR を送信"
+    },
+    {
+      "key": "develop.button.swapBack",
+      "value": "元に戻す"
+    },
+    {
+      "key": "develop.confirm.alreadyMounted",
+      "value": "{0} はすでに Packages/{0} にマウントされています。\n\n新しいクローンで置き換えますか？そのフォルダー内のローカル編集はすべて失われます。"
+    },
+    {
+      "key": "develop.confirm.packageExists",
+      "value": "Packages/{0} はすでに存在し、空ではありません — 残ったマウントかローカルコピーの可能性があります。\n\n新しいクローンで置き換えますか？現在の内容は削除されます。"
+    },
+    {
+      "key": "develop.confirm.packageThereTitle",
+      "value": "パッケージはすでに存在します"
+    },
+    {
+      "key": "develop.empty.description",
+      "value": "「プロジェクト」タブで Basis インストールを選択すると、そのパッケージを編集できます。"
+    },
+    {
+      "key": "develop.empty.title",
+      "value": "Unity プロジェクトを含むインストールがありません"
+    },
+    {
+      "key": "develop.git.requiredDescription",
+      "value": "パッケージのマウントとプルリクエストの送信には Git が必要です。インストールしてから「再確認」してください。"
+    },
+    {
+      "key": "develop.git.requiredTitle",
+      "value": "Git が必要です"
+    },
+    {
+      "key": "develop.header.description",
+      "value": "git パッケージをマウントして Unity で編集し、アップストリームにプルリクエストを送信します — 完了したら元に戻すか、そのまま保持できます。"
+    },
+    {
+      "key": "develop.header.tagline",
+      "value": "開発"
+    },
+    {
+      "key": "develop.install.none",
+      "value": "インストールが選択されていません"
+    },
+    {
+      "key": "develop.section.gitPackages",
+      "value": "Git パッケージ"
+    },
+    {
+      "key": "develop.section.mountedForEditing",
+      "value": "編集用にマウント済み"
+    },
+    {
+      "key": "develop.section.noGitPackages",
+      "value": "このプロジェクトには git から読み込まれたパッケージがありません。"
+    },
+    {
+      "key": "develop.status.clearFailed",
+      "value": "Packages/{0} をクリアできませんでした: {1}"
+    },
+    {
+      "key": "develop.status.gitRequired",
+      "value": "Git が必要です。"
+    },
+    {
+      "key": "develop.status.gitRequiredMount",
+      "value": "パッケージのマウントには Git が必要です。インストールしてから「再確認」してください。"
+    },
+    {
+      "key": "develop.status.loginUnverified",
+      "value": "GitHub ログインを確認できませんでした。"
+    },
+    {
+      "key": "develop.status.mountCancelled",
+      "value": "マウントをキャンセルしました — Packages/{0} はそのままです。"
+    },
+    {
+      "key": "develop.status.mountError",
+      "value": "マウントエラー: {0}"
+    },
+    {
+      "key": "develop.status.mountFailed",
+      "value": "マウントに失敗しました。"
+    },
+    {
+      "key": "develop.status.mounted",
+      "value": "{0} を Packages/ にマウントしました — Unity で編集してから「PR を送信」してください。"
+    },
+    {
+      "key": "develop.status.mounting",
+      "value": "{0} をマウント中…"
+    },
+    {
+      "key": "develop.status.prError",
+      "value": "PR エラー: {0}"
+    },
+    {
+      "key": "develop.status.prFailed",
+      "value": "PR の送信に失敗しました。"
+    },
+    {
+      "key": "develop.status.prOpened",
+      "value": "プルリクエストを作成しました{0}: {1}"
+    },
+    {
+      "key": "develop.status.signInFirst",
+      "value": "先に GitHub にサインインしてください（GitHub CLI またはトークン）。"
+    },
+    {
+      "key": "develop.status.signedInAs",
+      "value": "{0} としてサインインしました。"
+    },
+    {
+      "key": "develop.status.submittingPr",
+      "value": "{0} のプルリクエストを送信中…"
+    },
+    {
+      "key": "develop.status.swapBackError",
+      "value": "元に戻す際のエラー: {0}"
+    },
+    {
+      "key": "develop.status.swapBackFailed",
+      "value": "元に戻せませんでした。"
+    },
+    {
+      "key": "develop.status.swappedBack",
+      "value": "{0} を git URL に戻しました。"
+    },
+    {
+      "key": "develop.status.swapping",
+      "value": "{0} を git URL に戻しています…"
+    },
+    {
+      "key": "develop.status.tokenFailed",
+      "value": "そのトークンでは認証できませんでした — “repo” スコープが付与されているか確認してください。"
+    },
+    {
+      "key": "develop.status.viaFork",
+      "value": " （あなたのフォーク経由）"
+    },
+    {
+      "key": "changes.button.refresh",
+      "value": "再読み込み"
+    },
+    {
+      "key": "changes.diff.loadError",
+      "value": "差分を読み込めませんでした: {0}"
+    },
+    {
+      "key": "changes.diff.title",
+      "value": "差分"
+    },
+    {
+      "key": "changes.empty.description",
+      "value": "「プロジェクト」タブでインストールを選択すると、変更内容を確認できます。"
+    },
+    {
+      "key": "changes.empty.title",
+      "value": "インストールが選択されていません"
+    },
+    {
+      "key": "changes.header.clean",
+      "value": "{0} · {1} — 作業ツリーはクリーンです"
+    },
+    {
+      "key": "changes.header.dirtyMany",
+      "value": "{0} · {1} — 変更されたファイル {2} 件"
+    },
+    {
+      "key": "changes.header.dirtyOne",
+      "value": "{0} · {1} — 変更されたファイル {2} 件"
+    },
+    {
+      "key": "changes.header.gitError",
+      "value": "git エラー: {0}"
+    },
+    {
+      "key": "changes.header.notGitRepo",
+      "value": "このインストールは git リポジトリではないため、ローカル変更を追跡できません。"
+    },
+    {
+      "key": "changes.hero.subtitle",
+      "value": "前回のコミット以降に Basis のソースへ加えた変更内容です。"
+    },
+    {
+      "key": "changes.hero.tagline",
+      "value": "ローカルの変更"
+    },
+    {
+      "key": "changes.list.title",
+      "value": "変更されたファイル"
+    },
+    {
+      "key": "settings.about.checkUpdates",
+      "value": "更新を確認"
+    },
+    {
+      "key": "settings.about.title",
+      "value": "情報"
+    },
+    {
+      "key": "settings.about.updatesBlurb",
+      "value": "Basis Package Manager は GitHub Releases から自動的に更新されます。新しいバージョンが公開されると、ウィンドウ上部に更新バナーが表示され — ワンクリックでダウンロードして再起動します。"
+    },
+    {
+      "key": "settings.about.version",
+      "value": "バージョン"
+    },
+    {
+      "key": "settings.button.save",
+      "value": "保存"
+    },
+    {
+      "key": "settings.catalog.description",
+      "value": "Basis 互換のカタログを提供する JSON URL です。空欄のままにすると Basis のパッケージレジストリ（basisvr.org/packages）を使用します。"
+    },
+    {
+      "key": "settings.catalog.title",
+      "value": "パッケージカタログ URL"
+    },
+    {
+      "key": "settings.clone.description",
+      "value": "新しい Basis クローンを既定で作成する場所です。"
+    },
+    {
+      "key": "settings.clone.title",
+      "value": "既定のクローン先"
+    },
+    {
+      "key": "settings.detected.git",
+      "value": "Git"
+    },
+    {
+      "key": "settings.detected.gitNotFound",
+      "value": "PATH に Git が見つかりません — git-scm.com からインストールしてください。"
+    },
+    {
+      "key": "settings.detected.hubNotFound",
+      "value": "Unity Hub が検出されませんでした。"
+    },
+    {
+      "key": "settings.detected.settingsFile",
+      "value": "設定ファイル"
+    },
+    {
+      "key": "settings.detected.title",
+      "value": "検出されたツール"
+    },
+    {
+      "key": "settings.detected.unityHub",
+      "value": "Unity Hub"
+    },
+    {
+      "key": "settings.hero.subtitle",
+      "value": "クローン先、カタログの取得元、ツールのパス。"
+    },
+    {
+      "key": "settings.hero.tagline",
+      "value": "設定"
+    },
+    {
+      "key": "settings.hero.title",
+      "value": "構成"
+    },
+    {
+      "key": "settings.language.description",
+      "value": "Basis Package Manager のインターフェース言語を選択します。すぐに反映されます。"
+    },
+    {
+      "key": "settings.language.title",
+      "value": "言語"
+    },
+    {
+      "key": "settings.logs.clear",
+      "value": "クリア"
+    },
+    {
+      "key": "settings.logs.copy",
+      "value": "コピー"
+    },
+    {
+      "key": "settings.logs.description",
+      "value": "このセッションでアプリが行った操作 — 個人のパス、ユーザー名、IP は伏せられています。問題を報告する際はこれを添付してください。"
+    },
+    {
+      "key": "settings.logs.openFolder",
+      "value": "フォルダーを開く"
+    },
+    {
+      "key": "settings.logs.title",
+      "value": "アクティビティログ"
+    },
+    {
+      "key": "settings.status.saved",
+      "value": "設定を保存しました。"
+    },
+    {
+      "key": "settings.toggle.developer",
+      "value": "開発者モード（「開発」タブを表示）"
+    },
+    {
+      "key": "settings.toggle.developer.tip",
+      "value": "git パッケージをローカルにマウントし、Unity で編集してプルリクエストを開きます。開発者以外には非表示です。"
+    },
+    {
+      "key": "settings.toggle.localChanges",
+      "value": "「ローカルの変更」タブを表示"
+    },
+    {
+      "key": "settings.toggle.localChanges.tip",
+      "value": "インストールの git status とファイルごとの差分です。既定では非表示です。"
+    },
+    {
+      "key": "settings.toggle.prerelease",
+      "value": "プレリリース更新を受け取る（試験的 — 不具合の可能性あり）"
+    },
+    {
+      "key": "settings.toggle.prerelease.tip",
+      "value": "公開され次第、早期ビルドを入手します — 更新は頻繁で、不安定なこともあります。オフ = 安定版リリースのみ。保存時に反映されます。"
+    },
+    {
+      "key": "settings.unityHub.description",
+      "value": "自動検出されない場合の Unity Hub バイナリのパスです。"
+    },
+    {
+      "key": "settings.unityHub.title",
+      "value": "Unity Hub の指定"
+    },
+    {
+      "key": "support.button.backOpenCollective",
+      "value": "OpenCollective で支援する"
+    },
+    {
+      "key": "support.button.fullFundingPage",
+      "value": "資金支援ページ全文を読む  ↗"
+    },
+    {
+      "key": "support.button.joinDiscord",
+      "value": "Discord に参加"
+    },
+    {
+      "key": "support.button.openCollective",
+      "value": "♥   OpenCollective で支援する"
+    },
+    {
+      "key": "support.button.sponsorFeature",
+      "value": "機能をスポンサーする"
+    },
+    {
+      "key": "support.community.body",
+      "value": "個人の方は OpenCollective で Basis を支援できます — 毎月または一度きり。この資金は主にフルタイムのメンテナンスと開発者体験の向上に充てられます。"
+    },
+    {
+      "key": "support.community.bullets",
+      "value": "•  毎月・一度きりの選択肢\n•  公開のサポーター一覧と透明性のある会計"
+    },
+    {
+      "key": "support.community.title",
+      "value": "コミュニティからの寄付"
+    },
+    {
+      "key": "support.company.body",
+      "value": "企業はロードマップ項目のスポンサーや機能の共同出資が可能です — ネットワーキング、アバターシステム、ツール類など。成果はアップストリームに反映され、既定で MIT ライセンスのまま維持されます。"
+    },
+    {
+      "key": "support.company.bullets",
+      "value": "•  独自フォークより共有インフラを重視\n•  明確な成果物とオープンな開発"
+    },
+    {
+      "key": "support.company.title",
+      "value": "企業とのコラボレーション"
+    },
+    {
+      "key": "support.hero.subtitle",
+      "value": "Basis は MIT ライセンスで、クリエイターを第一に考えています。コミュニティからの寄付と企業とのコラボレーションが、メンテナーのフルタイム稼働を支え、リリースを加速します。"
+    },
+    {
+      "key": "support.hero.tagline",
+      "value": "支援"
+    },
+    {
+      "key": "support.hero.title",
+      "value": "Basis を支援する"
+    },
+    {
+      "key": "support.where.body",
+      "value": "資金はプールされ、皆に役立つ共通の課題 — ネットワーキング、身体性、ツール — に取り組むために使われます。OpenCollective に公開会計があり、スポンサー付きの作業はリリースノートに明記されます。スポンサーがプロジェクトを支配することはありません。"
+    },
+    {
+      "key": "support.where.title",
+      "value": "資金の使い道"
+    },
+    {
+      "key": "docs.button.askDiscord",
+      "value": "Discord で質問"
+    },
+    {
+      "key": "docs.button.basisGithub",
+      "value": "GitHub の Basis  ↗"
+    },
+    {
+      "key": "docs.button.joinDiscord",
+      "value": "Discord に参加"
+    },
+    {
+      "key": "docs.button.openDocs",
+      "value": "ドキュメントを開く  ↗"
+    },
+    {
+      "key": "docs.button.openDocsSite",
+      "value": "docs.basisvr.org を開く  ↗"
+    },
+    {
+      "key": "docs.button.packageManagerGithub",
+      "value": "GitHub の Package Manager  ↗"
+    },
+    {
+      "key": "docs.community.body",
+      "value": "ドキュメントに載っていないことで行き詰まっていますか？Discord が、他のクリエイターやメンテナーから助けを得る最も早い方法です。"
+    },
+    {
+      "key": "docs.community.title",
+      "value": "コミュニティに聞く"
+    },
+    {
+      "key": "docs.hero.subtitle",
+      "value": "Basis で開発するためのガイド、API リファレンス、ハウツー — さらに行き詰まったときに聞けるコミュニティ。"
+    },
+    {
+      "key": "docs.hero.tagline",
+      "value": "ドキュメント"
+    },
+    {
+      "key": "docs.hero.title",
+      "value": "Basis を学ぶ"
+    },
+    {
+      "key": "docs.site.body",
+      "value": "インストール、最初のステップ、アバター、ワールド、ネットワーキング、SDK — 完全なドキュメントは docs.basisvr.org にあります。"
+    },
+    {
+      "key": "docs.site.title",
+      "value": "ドキュメントサイト"
+    },
+    {
+      "key": "docs.source.body",
+      "value": "コードを読み、バグを報告し、プルリクエストを開きましょう。Basis は MIT ライセンスで、オープンに開発されています。"
+    },
+    {
+      "key": "docs.source.title",
+      "value": "ソースと issue"
+    },
+    {
+      "key": "logs.button.clear",
+      "value": "クリア"
+    },
+    {
+      "key": "logs.button.copy",
+      "value": "コピー"
+    },
+    {
+      "key": "logs.button.openFolder",
+      "value": "フォルダーを開く"
+    },
+    {
+      "key": "logs.hero.subtitle",
+      "value": "このセッションでアプリが行った操作 — 個人のパス、ユーザー名、IP は伏せられています。問題を報告する際はこれを添付してください。"
+    },
+    {
+      "key": "logs.hero.tagline",
+      "value": "ログ"
+    },
+    {
+      "key": "logs.hero.title",
+      "value": "アクティビティログ"
+    },
+    {
+      "key": "announcements.button.refresh",
+      "value": "再読み込み"
+    },
+    {
+      "key": "announcements.card.learnMore",
+      "value": "詳細を見る"
+    },
+    {
+      "key": "announcements.card.pinned",
+      "value": "固定"
+    },
+    {
+      "key": "announcements.empty.body",
+      "value": "また後で確認してください — Basis チームからのお知らせがここに表示されます。"
+    },
+    {
+      "key": "announcements.empty.title",
+      "value": "お知らせはまだありません"
+    },
+    {
+      "key": "announcements.hero.subtitle",
+      "value": "Basis チームからの最新情報とお知らせ。"
+    },
+    {
+      "key": "announcements.hero.tagline",
+      "value": "お知らせ"
+    },
+    {
+      "key": "announcements.hero.title",
+      "value": "新着情報"
+    },
+    {
+      "key": "announcements.level.alert",
+      "value": "注意"
+    },
+    {
+      "key": "announcements.level.news",
+      "value": "ニュース"
+    },
+    {
+      "key": "announcements.level.update",
+      "value": "アップデート"
+    },
+    {
+      "key": "announcements.status.loading",
+      "value": "お知らせを読み込み中…"
+    },
+    {
+      "key": "dialog.alias.cancel",
+      "value": "キャンセル"
+    },
+    {
+      "key": "dialog.alias.displayName",
+      "value": "表示名"
+    },
+    {
+      "key": "dialog.alias.hint",
+      "value": "このクローンについてアプリ全体で表示される分かりやすい名前です。"
+    },
+    {
+      "key": "dialog.alias.save",
+      "value": "保存"
+    },
+    {
+      "key": "dialog.alias.title",
+      "value": "このインストールに名前を付ける"
+    },
+    {
+      "key": "dialog.alias.watermark",
+      "value": "例: 私の Basis プロジェクト"
+    },
+    {
+      "key": "dialog.backup.backupContinue",
+      "value": "バックアップして続行"
+    },
+    {
+      "key": "dialog.backup.cancel",
+      "value": "キャンセル"
+    },
+    {
+      "key": "dialog.backup.continueWithout",
+      "value": "バックアップせずに続行"
+    },
+    {
+      "key": "dialog.backup.heading",
+      "value": "先にプロジェクトをバックアップしますか？"
+    },
+    {
+      "key": "dialog.backup.title",
+      "value": "プロジェクトをバックアップしますか？"
+    },
+    {
+      "key": "dialog.confirm.no",
+      "value": "いいえ、結構です"
+    },
+    {
+      "key": "dialog.confirm.title",
+      "value": "確認"
+    },
+    {
+      "key": "dialog.confirm.yes",
+      "value": "はい"
+    },
+    {
+      "key": "dialog.createBundle.cancel",
+      "value": "キャンセル"
+    },
+    {
+      "key": "dialog.createBundle.create",
+      "value": "提出物を作成"
+    },
+    {
+      "key": "dialog.createBundle.descriptionLabel",
+      "value": "説明"
+    },
+    {
+      "key": "dialog.createBundle.errorNoName",
+      "value": "バンドルに名前を付けてください。"
+    },
+    {
+      "key": "dialog.createBundle.errorNoPackages",
+      "value": "含めるパッケージを少なくとも 1 つ選択してください。"
+    },
+    {
+      "key": "dialog.createBundle.heading",
+      "value": "バンドルを作成"
+    },
+    {
+      "key": "dialog.createBundle.intro",
+      "value": "Basis とパッケージをインストール可能なバンドルとして共有します。提出のため GitHub issue を開きます。"
+    },
+    {
+      "key": "dialog.createBundle.nameLabel",
+      "value": "名前"
+    },
+    {
+      "key": "dialog.createBundle.packagesLabel",
+      "value": "含めるパッケージ"
+    },
+    {
+      "key": "dialog.createBundle.title",
+      "value": "バンドルを作成"
+    },
+    {
+      "key": "dialog.installPicker.addHere",
+      "value": "ここに追加"
+    },
+    {
+      "key": "dialog.installPicker.cancel",
+      "value": "キャンセル"
+    },
+    {
+      "key": "dialog.installPicker.heading",
+      "value": "パッケージを追加"
+    },
+    {
+      "key": "dialog.installPicker.subtitle",
+      "value": "このパッケージを追加するインストールを選択してください。"
+    },
+    {
+      "key": "dialog.installPicker.title",
+      "value": "インストールを選択"
+    },
+    {
+      "key": "dialog.roleWizard.developerDesc",
+      "value": "上記のすべてに加えて「開発」タブ — パッケージをローカルにマウントし、Unity で編集してプルリクエストを開きます。"
+    },
+    {
+      "key": "dialog.roleWizard.developerTitle",
+      "value": "🛠   開発者です"
+    },
+    {
+      "key": "dialog.roleWizard.intro",
+      "value": "Basis をどのように使いますか？表示するツールを調整します — 設定でいつでも変更できます。"
+    },
+    {
+      "key": "dialog.roleWizard.title",
+      "value": "Basis Package Manager へようこそ"
+    },
+    {
+      "key": "dialog.roleWizard.userDesc",
+      "value": "Basis をクローンし、パッケージをインストールして、最新の状態に保ちます。必要なものだけ、余計なものはありません。"
+    },
+    {
+      "key": "dialog.roleWizard.userTitle",
+      "value": "🎮   フレームワークを使います"
+    },
+    {
+      "key": "dialog.roleWizard.welcome",
+      "value": "ようこそ 👋"
+    },
+    {
+      "key": "dialog.submitPr.branchLabel",
+      "value": "ブランチ名"
+    },
+    {
+      "key": "dialog.submitPr.cancel",
+      "value": "キャンセル"
+    },
+    {
+      "key": "dialog.submitPr.contributeHint",
+      "value": "{0} への変更をそのリポジトリに還元します。"
+    },
+    {
+      "key": "dialog.submitPr.defaultTitle",
+      "value": "{0} を更新"
+    },
+    {
+      "key": "dialog.submitPr.descriptionLabel",
+      "value": "説明"
+    },
+    {
+      "key": "dialog.submitPr.descriptionWatermark",
+      "value": "何をなぜ変更しましたか？"
+    },
+    {
+      "key": "dialog.submitPr.hint",
+      "value": "このブランチを作成し、変更をコミットし、プッシュして（直接プッシュできない場合はまずフォークします）、PR を開きます。"
+    },
+    {
+      "key": "dialog.submitPr.openPr",
+      "value": "プルリクエストを開く"
+    },
+    {
+      "key": "dialog.submitPr.title",
+      "value": "プルリクエストを送信"
+    },
+    {
+      "key": "dialog.submitPr.titleLabel",
+      "value": "タイトル"
+    },
+    {
+      "key": "dialog.submitPr.titleWatermark",
+      "value": "パッケージを更新"
+    },
+    {
+      "key": "dialog.versionPicker.betaPill",
+      "value": "ベータ"
+    },
+    {
+      "key": "dialog.versionPicker.cancel",
+      "value": "キャンセル"
+    },
+    {
+      "key": "dialog.versionPicker.install",
+      "value": "このバージョンをインストール"
+    },
+    {
+      "key": "dialog.versionPicker.showPrereleases",
+      "value": "プレリリース（ベータ）を表示"
+    },
+    {
+      "key": "dialog.versionPicker.subHasReleases",
+      "value": "公開済みのリリース、または最新のデフォルトブランチを選択してください。"
+    },
+    {
+      "key": "dialog.versionPicker.subNoReleases",
+      "value": "公開されたリリースはありません — タグ／デフォルトブランチを表示しています。安定版が必要な場合は、作者にリリースの作成を依頼してください。"
+    },
+    {
+      "key": "dialog.versionPicker.title",
+      "value": "バージョンを選択"
+    }
+  ]
+}

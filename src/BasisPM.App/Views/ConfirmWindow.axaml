@@ -1,17 +1,18 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:BasisPM.App.Localization"
         x:Class="BasisPM.App.Views.ConfirmWindow"
-        Title="Confirm"
+        Title="{loc:Tr dialog.confirm.title}"
         Width="440" SizeToContent="Height"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BasisBackgroundBrush}">
     <StackPanel Margin="26,24" Spacing="18">
-        <TextBlock x:Name="TitleText" Text="Confirm" Classes="h3"/>
+        <TextBlock x:Name="TitleText" Text="{loc:Tr dialog.confirm.title}" Classes="h3"/>
         <TextBlock x:Name="MessageText" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
         <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-            <Button Content="No, thanks" Click="OnNo"/>
-            <Button Classes="primary" Content="Yes" Click="OnYes"/>
+            <Button Content="{loc:Tr dialog.confirm.no}" Click="OnNo"/>
+            <Button Classes="primary" Content="{loc:Tr dialog.confirm.yes}" Click="OnYes"/>
         </StackPanel>
     </StackPanel>
 </Window>

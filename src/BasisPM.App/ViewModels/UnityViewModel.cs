@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using BasisPM.App.Localization;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
 
@@ -61,7 +62,7 @@ public sealed class UnityViewModel : ObservableObject
     public bool HasRequiredVersion => !string.IsNullOrEmpty(_requiredVersion) && _requiredVersion != "unknown";
 
     public string RequiredVersionNote => HasRequiredVersion
-        ? $"Your Basis install targets Unity {_requiredVersion}. Install that exact version below for a clean open."
+        ? L.Tr("unity.status.requiredVersionNote", _requiredVersion)
         : "";
 
     public void SetRequiredVersion(string? version)
@@ -101,13 +102,13 @@ public sealed class UnityViewModel : ObservableObject
         try
         {
             var hub = _hubService.FindHubPath();
-            HubStatus = hub is null ? "Unity Hub not detected." : $"Unity Hub: {hub}";
+            HubStatus = hub is null ? L.Tr("unity.status.hubNotDetected") : L.Tr("unity.status.hubPath", hub);
 
             InstalledEditors.Clear();
             var list = await _hubService.ListInstalledAsync();
             foreach (var e in list) InstalledEditors.Add(e);
             if (InstalledEditors.Count == 0 && hub is not null)
-                HubStatus += " (no editors installed)";
+                HubStatus += L.Tr("unity.status.noEditorsInstalled");
 
             if (_allReleases.Count == 0)
                 await LoadReleasesAsync();
@@ -116,7 +117,7 @@ public sealed class UnityViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            HubStatus = $"Error: {ex.Message}";
+            HubStatus = L.Tr("unity.status.error", ex.Message);
         }
         finally { IsBusy = false; }
     }
@@ -137,7 +138,7 @@ public sealed class UnityViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _shell.SetStatus($"Could not fetch Unity releases: {ex.Message}", StatusKind.Error);
+            _shell.SetStatus(L.Tr("unity.status.fetchReleasesFailed", ex.Message), StatusKind.Error);
         }
         finally { IsLoadingReleases = false; }
     }
@@ -162,12 +163,12 @@ public sealed class UnityViewModel : ObservableObject
     {
         if (SelectedRelease is null)
         {
-            _shell.SetStatus("Pick a Unity 6 release from the dropdown first.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("unity.status.pickReleaseFirst"), StatusKind.Error);
             return;
         }
         if (SelectedRelease.IsInstalled)
         {
-            _shell.SetStatus($"Unity {SelectedRelease.Release.Version} is already installed.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("unity.status.alreadyInstalled", SelectedRelease.Release.Version), StatusKind.Error);
             return;
         }
 
@@ -176,17 +177,17 @@ public sealed class UnityViewModel : ObservableObject
         {
             var release = SelectedRelease.Release;
             var modules = ModuleOptions.Where(m => m.Selected).Select(m => m.Name).ToList();
-            _shell.SetStatus($"Installing Unity {release.Version}...");
+            _shell.SetStatus(L.Tr("unity.status.installing", release.Version));
             var code = await _hubService.InstallEditorAsync(release.Version, release.ShortRevision, modules);
             if (code == 0)
-                _shell.SetStatus($"Install kicked off via Unity Hub for {release.Version}.", StatusKind.Success);
+                _shell.SetStatus(L.Tr("unity.status.installKickedOff", release.Version), StatusKind.Success);
             else
-                _shell.SetStatus($"Install failed (exit code {code}).", StatusKind.Error);
+                _shell.SetStatus(L.Tr("unity.status.installFailed", code), StatusKind.Error);
             await RefreshAsync();
         }
         catch (Exception ex)
         {
-            _shell.SetStatus($"Install error: {ex.Message}", StatusKind.Error);
+            _shell.SetStatus(L.Tr("unity.status.installError", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }
@@ -197,17 +198,17 @@ public sealed class UnityViewModel : ObservableObject
         IsBusy = true;
         try
         {
-            _shell.SetStatus($"Uninstalling Unity {editor.Version}...");
+            _shell.SetStatus(L.Tr("unity.status.uninstalling", editor.Version));
             var code = await _hubService.UninstallEditorAsync(editor.Version);
             if (code == 0)
-                _shell.SetStatus($"Uninstalled Unity {editor.Version}.", StatusKind.Success);
+                _shell.SetStatus(L.Tr("unity.status.uninstalled", editor.Version), StatusKind.Success);
             else
-                _shell.SetStatus($"Uninstall failed (exit code {code}).", StatusKind.Error);
+                _shell.SetStatus(L.Tr("unity.status.uninstallFailed", code), StatusKind.Error);
             await RefreshAsync();
         }
         catch (Exception ex)
         {
-            _shell.SetStatus($"Uninstall error: {ex.Message}", StatusKind.Error);
+            _shell.SetStatus(L.Tr("unity.status.uninstallError", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }

@@ -1,22 +1,23 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:BasisPM.App.Localization"
         x:Class="BasisPM.App.Views.AliasPromptWindow"
-        Title="Name this install"
+        Title="{loc:Tr dialog.alias.title}"
         Width="460" SizeToContent="Height"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BasisBackgroundBrush}">
     <StackPanel Margin="26" Spacing="14">
-        <TextBlock x:Name="TitleText" Text="Name this install" Classes="h3"/>
+        <TextBlock x:Name="TitleText" Text="{loc:Tr dialog.alias.title}" Classes="h3"/>
         <TextBlock x:Name="PathText" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
         <StackPanel Spacing="6">
-            <TextBlock Text="Display name" Classes="muted" FontSize="11"/>
-            <TextBox x:Name="Input" Watermark="e.g. My Basis project"/>
+            <TextBlock Text="{loc:Tr dialog.alias.displayName}" Classes="muted" FontSize="11"/>
+            <TextBox x:Name="Input" Watermark="{loc:Tr dialog.alias.watermark}"/>
         </StackPanel>
-        <TextBlock Text="A friendly name shown across the app for this clone." Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+        <TextBlock Text="{loc:Tr dialog.alias.hint}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-            <Button Content="Cancel" Click="OnCancel"/>
-            <Button Classes="primary" Content="Save" Click="OnOk"/>
+            <Button Content="{loc:Tr dialog.alias.cancel}" Click="OnCancel"/>
+            <Button Classes="primary" Content="{loc:Tr dialog.alias.save}" Click="OnOk"/>
         </StackPanel>
     </StackPanel>
 </Window>

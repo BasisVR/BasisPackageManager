@@ -54,6 +54,25 @@ public sealed partial class UnityHubService
         return list;
     }
 
+    /// <summary>Launches the installed Unity editor matching <paramref name="unityVersion"/> on the project. False if that editor isn't installed.</summary>
+    public async Task<bool> OpenProjectAsync(string projectPath, string? unityVersion, string? hubOverride = null, CancellationToken ct = default)
+    {
+        var editors = await ListInstalledAsync(hubOverride, ct).ConfigureAwait(false);
+        var editor = editors.FirstOrDefault(e => string.Equals(e.Version, unityVersion, StringComparison.OrdinalIgnoreCase));
+        if (editor is null || !File.Exists(editor.Path)) return false;
+        Process.Start(new ProcessStartInfo { FileName = editor.Path, UseShellExecute = false, ArgumentList = { "-projectPath", projectPath } });
+        return true;
+    }
+
+    /// <summary>Opens the Unity Hub GUI — the fallback when the matching editor isn't installed. False if Hub isn't found.</summary>
+    public bool OpenHub(string? hubOverride = null)
+    {
+        var hub = FindHubPath(hubOverride);
+        if (hub is null) return false;
+        Process.Start(new ProcessStartInfo { FileName = hub, UseShellExecute = true });
+        return true;
+    }
+
     public async Task<int> InstallEditorAsync(string version, string changeset, IEnumerable<string>? modules, string? hubOverride = null, CancellationToken ct = default)
     {
         var hub = FindHubPath(hubOverride);

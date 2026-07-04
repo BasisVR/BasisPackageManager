@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BasisPM.App.Localization;
 using BasisPM.App.Services;
 using BasisPM.App.Views;
 using BasisPM.Core;
@@ -27,7 +28,7 @@ public sealed class PackagesViewModel : ObservableObject
     private BasisInstall? _selectedInstall;
     private bool _syncingSelection;
 
-    private const string AllOwnersLabel = "All owners";
+    private static string AllOwnersLabel => L.Tr("packages.filter.allOwners");
 
     public ObservableCollection<PackageRow> Available { get; } = new();
     public ObservableCollection<InstalledPackageRow> Installed { get; } = new();
@@ -52,7 +53,7 @@ public sealed class PackagesViewModel : ObservableObject
         }
     }
 
-    public string InstallName => _install?.DisplayName ?? "No install selected";
+    public string InstallName => _install?.DisplayName ?? L.Tr("packages.empty.noInstallSelected");
     public bool HasInstall => _install is not null && _install.HasUnityProject;
     public bool HasInstalls => InstallOptions.Count > 0;
 
@@ -171,7 +172,7 @@ public sealed class PackagesViewModel : ObservableObject
     {
         var parts = (id ?? "").Split('.', StringSplitOptions.RemoveEmptyEntries);
         var owner = parts.Length >= 2 ? parts[1] : parts.FirstOrDefault() ?? "";
-        if (owner.Length == 0) return "Other";
+        if (owner.Length == 0) return L.Tr("packages.filter.otherOwner");
         return char.ToUpperInvariant(owner[0]) + owner[1..];
     }
 
@@ -232,7 +233,7 @@ public sealed class PackagesViewModel : ObservableObject
     {
         if (entry is null || _install is null || !_install.HasUnityProject)
         {
-            _shell.SetStatus("Choose a project first.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
             return;
         }
         var target = _install;
@@ -249,7 +250,7 @@ public sealed class PackagesViewModel : ObservableObject
             var result = resolver.Resolve(_catalog, requested);
             if (result.Conflicts.Count > 0)
             {
-                _shell.SetStatus($"Dependency conflict: {string.Join("; ", result.Conflicts)}", StatusKind.Error);
+                _shell.SetStatus(L.Tr("packages.status.dependencyConflict", string.Join("; ", result.Conflicts)), StatusKind.Error);
                 return;
             }
 
@@ -266,12 +267,12 @@ public sealed class PackagesViewModel : ObservableObject
             }
 
             await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
-            _shell.SetStatus($"Installed {entry.DisplayName} into {target.DisplayName}.", StatusKind.Success);
+            _shell.SetStatus(L.Tr("packages.status.installed", entry.DisplayName, target.DisplayName), StatusKind.Success);
             RefreshInstalled();
         }
         catch (Exception ex)
         {
-            _shell.SetStatus($"Install error: {ex.Message}", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.installError", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }
@@ -290,41 +291,41 @@ public sealed class PackagesViewModel : ObservableObject
     {
         if (entry is null || _install is null || !_install.HasUnityProject)
         {
-            _shell.SetStatus("Choose a project first.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
             return;
         }
         if (string.IsNullOrWhiteSpace(entry.Url))
         {
-            _shell.SetStatus($"{entry.DisplayName} isn't a git package — no versions to choose.", StatusKind.Info);
+            _shell.SetStatus(L.Tr("packages.status.notGitPackage", entry.DisplayName), StatusKind.Info);
             return;
         }
         var target = _install;
 
         IsBusy = true;
-        _shell.SetStatus($"Loading versions for {entry.DisplayName}…");
+        _shell.SetStatus(L.Tr("packages.status.loadingVersions", entry.DisplayName));
         try
         {
             var versions = await _versionService.GetVersionsAsync(entry.Url, null);
             if (versions.Options.Count == 0)
             {
-                _shell.SetStatus($"Couldn't find any versions for {entry.DisplayName}.", StatusKind.Error);
+                _shell.SetStatus(L.Tr("packages.status.noVersionsFound", entry.DisplayName), StatusKind.Error);
                 return;
             }
 
-            var chosen = await Dialogs.PickVersionAsync($"Install {entry.DisplayName}", versions);
+            var chosen = await Dialogs.PickVersionAsync(L.Tr("packages.dialog.installTitle", entry.DisplayName), versions);
             if (chosen is null) return;
 
             var loc = UpmGitUrl.Parse(entry.Url);
-            if (loc is null) { _shell.SetStatus("Couldn't parse the package's git URL.", StatusKind.Error); return; }
+            if (loc is null) { _shell.SetStatus(L.Tr("packages.status.gitUrlParseFailed"), StatusKind.Error); return; }
 
             target.Manifest.Dependencies[entry.Name] = loc.ToManifestUrl(chosen.Ref, loc.Path);
             AddCatalogDependencies(target, new[] { (entry.Name, "*") });   // pull in its registry deps too
             await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
-            _shell.SetStatus($"Installed {entry.DisplayName} ({chosen.Ref ?? "default branch"}) into {target.DisplayName}.", StatusKind.Success);
+            _shell.SetStatus(L.Tr("packages.status.installedVersion", entry.DisplayName, chosen.Ref ?? L.Tr("packages.status.defaultBranch"), target.DisplayName), StatusKind.Success);
             RefreshInstalled();
         }
-        catch (Exception ex) { _shell.SetStatus($"Version install error: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { _shell.SetStatus(L.Tr("packages.status.versionInstallError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
     }
 
@@ -334,7 +335,7 @@ public sealed class PackagesViewModel : ObservableObject
         if (_install.Manifest.Dependencies.Remove(row.Name))
         {
             await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
-            _shell.SetStatus($"Removed {row.DisplayName}.", StatusKind.Success);
+            _shell.SetStatus(L.Tr("packages.status.removed", row.DisplayName), StatusKind.Success);
             RefreshInstalled();
         }
     }
@@ -343,12 +344,12 @@ public sealed class PackagesViewModel : ObservableObject
     {
         if (_install is null || !_install.HasUnityProject)
         {
-            _shell.SetStatus("Choose a project first.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
             return;
         }
         if (string.IsNullOrWhiteSpace(GitHubInput))
         {
-            _shell.SetStatus("Paste a GitHub URL or owner/repo.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.pasteGitHub"), StatusKind.Error);
             return;
         }
         var target = _install;
@@ -360,7 +361,7 @@ public sealed class PackagesViewModel : ObservableObject
             try { loc = GitHubService.Parse(GitHubInput); }
             catch (Exception ex)
             {
-                _shell.SetStatus($"Invalid GitHub reference: {ex.Message}", StatusKind.Error);
+                _shell.SetStatus(L.Tr("packages.status.invalidGitHub", ex.Message), StatusKind.Error);
                 return;
             }
 
@@ -368,7 +369,7 @@ public sealed class PackagesViewModel : ObservableObject
             if (pkg is null || string.IsNullOrEmpty(pkg.Name))
             {
                 _shell.SetStatus(
-                    $"Could not load package.json from {loc.Owner}/{loc.Repo}{(loc.Path is null ? "" : "/" + loc.Path)} — check the path and that the repo is public.",
+                    L.Tr("packages.status.packageJsonLoadFailed", loc.Owner, loc.Repo, loc.Path is null ? "" : "/" + loc.Path),
                     StatusKind.Error);
                 return;
             }
@@ -382,14 +383,14 @@ public sealed class PackagesViewModel : ObservableObject
                 : 0;
             await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
-            var depNote = deps > 0 ? $" (+{deps} dependency package{(deps == 1 ? "" : "s")})" : "";
-            _shell.SetStatus($"{(existed ? "Updated" : "Added")} {pkg.Name}{depNote} from GitHub.", StatusKind.Success);
+            var depNote = deps > 0 ? L.Tr("packages.status.depNote", deps, deps == 1 ? "" : "s") : "";
+            _shell.SetStatus(L.Tr("packages.status.addedFromGitHub", existed ? L.Tr("packages.status.updated") : L.Tr("packages.status.added"), pkg.Name, depNote), StatusKind.Success);
             GitHubInput = "";
             RefreshInstalled();
         }
         catch (Exception ex)
         {
-            _shell.SetStatus($"GitHub add failed: {ex.Message}", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.gitHubAddFailed", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }
@@ -399,17 +400,17 @@ public sealed class PackagesViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(gitUrl))
         {
-            _shell.SetStatus("Install link was missing the package id or git URL.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.installLinkMissing"), StatusKind.Error);
             return;
         }
         if (!GitUrlPolicy.IsSafeUrl(gitUrl))
         {
-            _shell.SetStatus($"Refused to add {name ?? id}: the install link's git URL uses an unsupported or unsafe transport.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.refusedUnsafeUrl", name ?? id), StatusKind.Error);
             return;
         }
         if (_install is null || !_install.HasUnityProject)
         {
-            _shell.SetStatus($"Open an install with a Unity project first, then click Install for {name ?? id} again.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.openInstallFirst", name ?? id), StatusKind.Error);
             return;
         }
         try
@@ -419,13 +420,13 @@ public sealed class PackagesViewModel : ObservableObject
             // If the package is in the registry, add its Basis-ecosystem dependencies too.
             var deps = AddCatalogDependencies(_install, new[] { (id!, "*") });
             await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
-            var depNote = deps > 0 ? $" (+{deps} dependency package{(deps == 1 ? "" : "s")})" : "";
-            _shell.SetStatus($"{(existed ? "Updated" : "Added")} {name ?? id}{depNote} → {_install.Name}.", StatusKind.Success);
+            var depNote = deps > 0 ? L.Tr("packages.status.depNote", deps, deps == 1 ? "" : "s") : "";
+            _shell.SetStatus(L.Tr("packages.status.addedDeepLink", existed ? L.Tr("packages.status.updated") : L.Tr("packages.status.added"), name ?? id, depNote, _install.Name), StatusKind.Success);
             RefreshInstalled();
         }
         catch (Exception ex)
         {
-            _shell.SetStatus($"Deep-link install failed: {ex.Message}", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.deepLinkFailed", ex.Message), StatusKind.Error);
         }
     }
 
@@ -436,7 +437,7 @@ public sealed class PackagesViewModel : ObservableObject
     {
         if (_install is null || !_install.HasUnityProject)
         {
-            _shell.SetStatus("Choose a project first.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
             return;
         }
         var target = _install;
@@ -461,11 +462,11 @@ public sealed class PackagesViewModel : ObservableObject
         }
         if (candidates.Count == 0)
         {
-            _shell.SetStatus("This project has no add-on packages to bundle yet.", StatusKind.Info);
+            _shell.SetStatus(L.Tr("packages.status.noAddonPackages"), StatusKind.Info);
             return;
         }
 
-        var basisLine = $"Basis: {(row?.BranchCommit is { Length: > 0 } bc ? bc : "unknown")}  ·  Unity {target.UnityVersion}";
+        var basisLine = L.Tr("packages.bundle.basisLine", row?.BranchCommit is { Length: > 0 } bc ? bc : L.Tr("packages.bundle.unknownCommit"), target.UnityVersion);
         var draft = await Dialogs.CreateBundleAsync(target.DisplayName, basisLine,
             candidates.OrderByDescending(c => c.GitUrl != null).ThenBy(c => c.Id, StringComparer.OrdinalIgnoreCase).ToList());
         if (draft is null) return;
@@ -493,7 +494,7 @@ public sealed class PackagesViewModel : ObservableObject
                 + "&title=" + Uri.EscapeDataString("Add bundle: " + draft.Name)
                 + "&body=" + Uri.EscapeDataString(body);
         OpenUrl(url);
-        _shell.SetStatus($"Opening a GitHub issue to submit “{draft.Name}” ({draft.Packages.Count} packages)…", StatusKind.Success);
+        _shell.SetStatus(L.Tr("packages.status.openingIssue", draft.Name, draft.Packages.Count), StatusKind.Success);
     }
 
     /// <summary>Adds every package in a bundle to the target project's manifest (used by the bundle deep link).</summary>
@@ -518,14 +519,14 @@ public sealed class PackagesViewModel : ObservableObject
                     target.Manifest.Dependencies[p.Id] = p.Version!.Trim();
             }
             await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
-            var skipNote = skipped > 0 ? $" ({skipped} skipped for an unsafe git URL)" : "";
-            _shell.SetStatus($"Added bundle “{bundle.Name}” ({bundle.Packages.Count} package(s)){skipNote} → {target.DisplayName}.",
+            var skipNote = skipped > 0 ? L.Tr("packages.status.skipNote", skipped) : "";
+            _shell.SetStatus(L.Tr("packages.status.addedBundle", bundle.Name, bundle.Packages.Count, skipNote, target.DisplayName),
                 skipped > 0 ? StatusKind.Info : StatusKind.Success);
             RefreshInstalled();
         }
         catch (Exception ex)
         {
-            _shell.SetStatus($"Bundle install failed: {ex.Message}", StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.bundleInstallFailed", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }
@@ -548,7 +549,7 @@ public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVe
     public string Version => Entry.Version;
     public string Description => Entry.Description;
     public bool IsInstalled => !string.IsNullOrEmpty(InstalledVersion);
-    public string ButtonLabel => IsInstalled ? "Update" : "Install";
+    public string ButtonLabel => IsInstalled ? L.Tr("packages.button.update") : L.Tr("packages.button.install");
     public string Author => Entry.Author?.Name ?? "";
     public bool HasAuthor => !string.IsNullOrWhiteSpace(Entry.Author?.Name);
     public string? Unity => Entry.Unity;

@@ -1,32 +1,33 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:BasisPM.App.Localization"
         x:Class="BasisPM.App.Views.SubmitPrWindow"
-        Title="Submit a pull request"
+        Title="{loc:Tr dialog.submitPr.title}"
         Width="500" SizeToContent="Height"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BasisBackgroundBrush}">
     <StackPanel Margin="26" Spacing="14">
-        <TextBlock Text="Submit a pull request" Classes="h3"/>
+        <TextBlock Text="{loc:Tr dialog.submitPr.title}" Classes="h3"/>
         <TextBlock x:Name="SubText" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
         <StackPanel Spacing="6">
-            <TextBlock Text="Title" Classes="muted" FontSize="11"/>
-            <TextBox x:Name="TitleBox" Watermark="Update the package"/>
+            <TextBlock Text="{loc:Tr dialog.submitPr.titleLabel}" Classes="muted" FontSize="11"/>
+            <TextBox x:Name="TitleBox" Watermark="{loc:Tr dialog.submitPr.titleWatermark}"/>
         </StackPanel>
         <StackPanel Spacing="6">
-            <TextBlock Text="Description" Classes="muted" FontSize="11"/>
+            <TextBlock Text="{loc:Tr dialog.submitPr.descriptionLabel}" Classes="muted" FontSize="11"/>
             <TextBox x:Name="BodyBox" AcceptsReturn="True" Height="96" TextWrapping="Wrap"
-                     Watermark="What did you change and why?"/>
+                     Watermark="{loc:Tr dialog.submitPr.descriptionWatermark}"/>
         </StackPanel>
         <StackPanel Spacing="6">
-            <TextBlock Text="Branch name" Classes="muted" FontSize="11"/>
+            <TextBlock Text="{loc:Tr dialog.submitPr.branchLabel}" Classes="muted" FontSize="11"/>
             <TextBox x:Name="BranchBox"/>
         </StackPanel>
-        <TextBlock Text="We create this branch, commit your changes, push (forking first if you can't push directly), and open the PR."
+        <TextBlock Text="{loc:Tr dialog.submitPr.hint}"
                    Classes="dim" FontSize="11" TextWrapping="Wrap"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-            <Button Content="Cancel" Click="OnCancel"/>
-            <Button Classes="primary" Content="Open pull request" Click="OnOk"/>
+            <Button Content="{loc:Tr dialog.submitPr.cancel}" Click="OnCancel"/>
+            <Button Classes="primary" Content="{loc:Tr dialog.submitPr.openPr}" Click="OnOk"/>
         </StackPanel>
     </StackPanel>
 </Window>

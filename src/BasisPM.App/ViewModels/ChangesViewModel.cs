@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using BasisPM.App.Localization;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
 
@@ -17,7 +18,7 @@ public sealed class ChangesViewModel : ObservableObject
 
     public ObservableCollection<GitFileChange> Changes { get; } = new();
 
-    public string InstallName => _install?.DisplayName ?? "No install selected";
+    public string InstallName => _install?.DisplayName ?? L.Tr("changes.empty.title");
     public bool HasInstall => _install is not null;
     public string Header { get => _header; private set => SetField(ref _header, value); }
     public bool IsBusy { get => _isBusy; set => SetField(ref _isBusy, value); }
@@ -67,7 +68,7 @@ public sealed class ChangesViewModel : ObservableObject
         }
         if (!_install.IsGitRepo)
         {
-            Header = "This install is not a git repository, so local changes can't be tracked.";
+            Header = L.Tr("changes.header.notGitRepo");
             OnPropertyChanged(nameof(IsClean));
             return;
         }
@@ -79,13 +80,14 @@ public sealed class ChangesViewModel : ObservableObject
             var status = await _git.GetStatusAsync(_install.RepoRoot);
             foreach (var c in status.Changes) Changes.Add(c);
             Header = status.IsClean
-                ? $"{status.Branch} · {status.ShortCommit} — working tree clean"
-                : $"{status.Branch} · {status.ShortCommit} — {status.ChangeCount} changed file{(status.ChangeCount == 1 ? "" : "s")}";
+                ? L.Tr("changes.header.clean", status.Branch, status.ShortCommit)
+                : L.Tr(status.ChangeCount == 1 ? "changes.header.dirtyOne" : "changes.header.dirtyMany",
+                       status.Branch, status.ShortCommit, status.ChangeCount);
             if (Changes.Count > 0) SelectedChange = Changes[0];
         }
         catch (Exception ex)
         {
-            Header = $"git error: {ex.Message}";
+            Header = L.Tr("changes.header.gitError", ex.Message);
         }
         finally
         {
@@ -107,7 +109,7 @@ public sealed class ChangesViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            DiffText = $"Could not load diff: {ex.Message}";
+            DiffText = L.Tr("changes.diff.loadError", ex.Message);
         }
     }
 }

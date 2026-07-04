@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:BasisPM.App.ViewModels"
              xmlns:models="using:BasisPM.Core.Models"
+             xmlns:loc="using:BasisPM.App.Localization"
              x:Class="BasisPM.App.Views.ChangesView"
              x:DataType="vm:ChangesViewModel"
              Name="Root">
@@ -13,12 +14,12 @@
                 BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
             <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                 <StackPanel Grid.Column="0" Spacing="6">
-                    <TextBlock Text="LOCAL CHANGES" Classes="tagline"/>
+                    <TextBlock Text="{loc:Tr changes.hero.tagline}" Classes="tagline"/>
                     <TextBlock Text="{Binding InstallName}" Classes="h1"/>
-                    <TextBlock Text="What you have changed in the Basis source since your last commit."
+                    <TextBlock Text="{loc:Tr changes.hero.subtitle}"
                                Classes="muted" FontSize="14"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshCommand}"/>
+                <Button Grid.Column="1" Content="{loc:Tr changes.button.refresh}" Command="{Binding RefreshCommand}"/>
             </Grid>
         </Border>
 
@@ -32,7 +33,7 @@
             <Border Grid.Column="0" Classes="card" Padding="0">
                 <Grid RowDefinitions="Auto,*">
                     <Border Grid.Row="0" Padding="20,14" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                        <TextBlock Text="Changed files" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr changes.list.title}" Classes="h3"/>
                     </Border>
                     <ListBox Grid.Row="1" ItemsSource="{Binding Changes}"
                              SelectedItem="{Binding SelectedChange}">
@@ -55,7 +56,7 @@
             <Border Grid.Column="2" Classes="card" Padding="0">
                 <Grid RowDefinitions="Auto,*">
                     <Border Grid.Row="0" Padding="20,14" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                        <TextBlock Text="Diff" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr changes.diff.title}" Classes="h3"/>
                     </Border>
                     <ScrollViewer Grid.Row="1" Padding="16,12"
                                   HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
@@ -69,8 +70,8 @@
 
         <Border Grid.Row="2" Classes="card" Margin="0,16,0,0" IsVisible="{Binding !HasInstall}">
             <StackPanel Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,60">
-                <TextBlock Text="No install selected" Classes="h3" HorizontalAlignment="Center"/>
-                <TextBlock Text="Pick an install on the Installs tab to see what you have changed."
+                <TextBlock Text="{loc:Tr changes.empty.title}" Classes="h3" HorizontalAlignment="Center"/>
+                <TextBlock Text="{loc:Tr changes.empty.description}"
                            Classes="muted" HorizontalAlignment="Center"/>
             </StackPanel>
         </Border>

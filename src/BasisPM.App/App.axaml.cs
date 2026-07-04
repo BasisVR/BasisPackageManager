@@ -3,9 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using BasisPM.App.Localization;
 using BasisPM.App.Services;
 using BasisPM.App.ViewModels;
 using BasisPM.App.Views;
+using BasisPM.Core.Services;
 
 namespace BasisPM.App;
 
@@ -17,6 +19,9 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            // Apply the saved UI language before any view is built so the first paint is localized.
+            try { Localizer.Instance.SetLanguage(new UserSettingsService().Load().Language); } catch { }
+
             var vm = new MainWindowViewModel();
             var window = new MainWindow { DataContext = vm };
             desktop.MainWindow = window;

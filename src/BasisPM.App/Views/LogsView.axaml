@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:BasisPM.App.ViewModels"
+             xmlns:loc="using:BasisPM.App.Localization"
              x:Class="BasisPM.App.Views.LogsView"
              x:DataType="vm:LogsViewModel"
              Name="Root">
@@ -9,15 +10,15 @@
                 BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
             <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                 <StackPanel Grid.Column="0" Spacing="6">
-                    <TextBlock Text="LOGS" Classes="tagline"/>
-                    <TextBlock Text="Activity log" Classes="h1"/>
-                    <TextBlock Text="What the app did this session — personal paths, usernames and IPs are redacted. Attach these when reporting a problem."
+                    <TextBlock Text="{loc:Tr logs.hero.tagline}" Classes="tagline"/>
+                    <TextBlock Text="{loc:Tr logs.hero.title}" Classes="h1"/>
+                    <TextBlock Text="{loc:Tr logs.hero.subtitle}"
                                Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Top">
-                    <Button Content="Copy" Click="OnCopy"/>
-                    <Button Content="Open folder" Command="{Binding OpenFolderCommand}"/>
-                    <Button Content="Clear" Command="{Binding ClearCommand}"/>
+                    <Button Content="{loc:Tr logs.button.copy}" Click="OnCopy"/>
+                    <Button Content="{loc:Tr logs.button.openFolder}" Command="{Binding OpenFolderCommand}"/>
+                    <Button Content="{loc:Tr logs.button.clear}" Command="{Binding ClearCommand}"/>
                 </StackPanel>
             </Grid>
         </Border>

@@ -1,9 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:BasisPM.App.ViewModels"
+        xmlns:loc="using:BasisPM.App.Localization"
         x:Class="BasisPM.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="Basis Package Manager"
+        Title="{loc:Tr shell.window.title}"
         Icon="/Assets/BasisLogo.png"
         Width="1240" Height="820"
         MinWidth="1000" MinHeight="660"
@@ -59,16 +60,16 @@
                             <Image Source="/Assets/BasisLogo.png" Stretch="UniformToFill"/>
                         </Border>
                         <StackPanel Spacing="-2">
-                            <TextBlock Text="BasisVR" FontSize="15" FontWeight="Bold"/>
-                            <TextBlock Text="Package Manager" FontSize="11" Classes="muted"/>
+                            <TextBlock Text="{loc:Tr shell.wordmark.name}" FontSize="15" FontWeight="Bold"/>
+                            <TextBlock Text="{loc:Tr shell.wordmark.tagline}" FontSize="11" Classes="muted"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Spacing="0" Margin="10,0">
-                    <Button Classes="nav" Classes.active="{Binding IsInstalls}" Tag="installs" Click="OnNavClick">Installs</Button>
+                    <Button Classes="nav" Classes.active="{Binding IsInstalls}" Tag="installs" Click="OnNavClick" Content="{loc:Tr nav.installs}"/>
                     <Grid>
-                        <Button Classes="nav" Classes.active="{Binding IsAnnouncements}" Tag="announcements" Click="OnNavClick" HorizontalAlignment="Stretch">Announcements</Button>
+                        <Button Classes="nav" Classes.active="{Binding IsCommunity}" Tag="community" Click="OnNavClick" HorizontalAlignment="Stretch" Content="{loc:Tr nav.community}"/>
                         <Border Classes="brandBadge" Padding="7,1" MinWidth="18"
                                 HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0"
                                 IsHitTestVisible="False"
@@ -78,24 +79,21 @@
                                        HorizontalAlignment="Center"/>
                         </Border>
                     </Grid>
-                    <Button Classes="nav" Classes.active="{Binding IsSupport}" Tag="support" Click="OnNavClick">Support</Button>
-                    <Button Classes="nav" Classes.active="{Binding IsDocumentation}" Tag="documentation" Click="OnNavClick">Documentation</Button>
-                    <Button Classes="nav" Classes.active="{Binding IsPackages}" Tag="packages" Click="OnNavClick">Packages</Button>
-                    <Button Classes="nav" Classes.active="{Binding IsDevelop}" Tag="develop" Click="OnNavClick" IsVisible="{Binding ShowDevelopTab}">Develop</Button>
-                    <Button Classes="nav" Classes.active="{Binding IsChanges}" Tag="changes" Click="OnNavClick" IsVisible="{Binding ShowChangesTab}">Local Changes</Button>
-                    <Button Classes="nav" Classes.active="{Binding IsUnity}" Tag="unity" Click="OnNavClick">Unity Editors</Button>
-                    <Button Classes="nav" Classes.active="{Binding IsSettings}" Tag="settings" Click="OnNavClick">Settings</Button>
-                    <Button Classes="nav" Classes.active="{Binding IsLogs}" Tag="logs" Click="OnNavClick">Logs</Button>
+                    <Button Classes="nav" Classes.active="{Binding IsPackages}" Tag="packages" Click="OnNavClick" Content="{loc:Tr nav.packages}"/>
+                    <Button Classes="nav" Classes.active="{Binding IsDevelop}" Tag="develop" Click="OnNavClick" IsVisible="{Binding ShowDevelopTab}" Content="{loc:Tr nav.develop}"/>
+                    <Button Classes="nav" Classes.active="{Binding IsChanges}" Tag="changes" Click="OnNavClick" IsVisible="{Binding ShowChangesTab}" Content="{loc:Tr nav.changes}"/>
+                    <Button Classes="nav" Classes.active="{Binding IsUnity}" Tag="unity" Click="OnNavClick" Content="{loc:Tr nav.unity}"/>
+                    <Button Classes="nav" Classes.active="{Binding IsSettings}" Tag="settings" Click="OnNavClick" Content="{loc:Tr nav.settings}"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" Margin="22,0,22,22" Spacing="6">
                     <Rectangle Height="1" Fill="{StaticResource BasisBorderBrush}" Margin="0,0,0,12"/>
                     <Border Classes="versionPill" HorizontalAlignment="Left" Margin="0,0,0,4"
-                            ToolTip.Tip="Installed version — check for updates in Settings">
+                            ToolTip.Tip="{loc:Tr shell.version.tooltip}">
                         <TextBlock Text="{Binding AppVersion, StringFormat='v{0}'}" FontSize="12" FontWeight="SemiBold" Classes="brand"/>
                     </Border>
                     <TextBlock Text="basisvr.org" Classes="dim" FontSize="11"/>
-                    <TextBlock Text="MIT licensed" Classes="dim" FontSize="11"/>
+                    <TextBlock Text="{loc:Tr shell.footer.license}" Classes="dim" FontSize="11"/>
                 </StackPanel>
             </Grid>
 
@@ -119,12 +117,12 @@
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10"
                                     Margin="16,0,0,0" VerticalAlignment="Center"
                                     IsVisible="{Binding !IsUpdating}">
-                            <Button Classes="bannerPrimary" Content="Update now"
+                            <Button Classes="bannerPrimary" Content="{loc:Tr shell.update.now}"
                                     Command="{Binding InstallUpdateCommand}"
-                                    ToolTip.Tip="Download the update and restart"/>
-                            <Button Classes="bannerGhost" Content="Later"
+                                    ToolTip.Tip="{loc:Tr shell.update.nowTooltip}"/>
+                            <Button Classes="bannerGhost" Content="{loc:Tr shell.update.later}"
                                     Command="{Binding DismissUpdateCommand}"
-                                    ToolTip.Tip="Dismiss until next launch"/>
+                                    ToolTip.Tip="{loc:Tr shell.update.laterTooltip}"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -148,16 +146,16 @@
                                VerticalAlignment="Center"/>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="12,0,0,0"
                                 IsVisible="{Binding CanCopyStatus}">
-                        <Button Content="Copy" Padding="10,4" FontSize="11"
+                        <Button Content="{loc:Tr shell.status.copy}" Padding="10,4" FontSize="11"
                                 Click="OnCopyStatusClick"
-                                ToolTip.Tip="Copy status message to clipboard"/>
-                        <Button Content="Open an issue" Padding="10,4" FontSize="11"
+                                ToolTip.Tip="{loc:Tr shell.status.copyTooltip}"/>
+                        <Button Content="{loc:Tr shell.status.openIssue}" Padding="10,4" FontSize="11"
                                 IsVisible="{Binding IsStatusError}"
                                 Command="{Binding OpenIssueCommand}"
-                                ToolTip.Tip="Open a pre-filled GitHub issue with this error and your last actions"/>
-                        <Button Content="OK" Padding="10,4" FontSize="11"
+                                ToolTip.Tip="{loc:Tr shell.status.openIssueTooltip}"/>
+                        <Button Content="{loc:Tr shell.status.ok}" Padding="10,4" FontSize="11"
                                 Click="OnDismissStatusClick"
-                                ToolTip.Tip="Dismiss this message"/>
+                                ToolTip.Tip="{loc:Tr shell.status.okTooltip}"/>
                     </StackPanel>
                 </Grid>
             </Border>

@@ -1,4 +1,5 @@
 using Avalonia.Threading;
+using BasisPM.App.Localization;
 using BasisPM.App.Services;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
@@ -6,7 +7,7 @@ using Velopack;
 
 namespace BasisPM.App.ViewModels;
 
-public enum NavPage { Installs, Packages, Changes, Unity, Settings, Support, Develop, Announcements, Documentation, Logs }
+public enum NavPage { Installs, Packages, Changes, Unity, Settings, Support, Develop, Announcements, Documentation, Logs, Community }
 
 public enum StatusKind { Info, Success, Error }
 
@@ -52,6 +53,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public AnnouncementsViewModel AnnouncementsVM { get; }
     public LogsViewModel LogsVM { get; }
     public DocumentationViewModel DocumentationVM { get; }
+    public CommunityViewModel CommunityVM { get; }
 
     public RelayCommand InstallUpdateCommand { get; }
     public RelayCommand DismissUpdateCommand { get; }
@@ -65,14 +67,16 @@ public sealed class MainWindowViewModel : ObservableObject
         PackagesVM = new PackagesViewModel(_catalogService, _projectService, this);
         ChangesVM = new ChangesViewModel(_gitService, this);
         UnityVM = new UnityViewModel(_hubService, _releaseService, this);
-        SettingsVM = new SettingsViewModel(_settingsService, _gitService, _hubService, this);
+        LogsVM = new LogsViewModel(_log);
+        // Logs live inside the Settings page (merged), so Settings gets a reference to the logs view-model.
+        SettingsVM = new SettingsViewModel(_settingsService, _gitService, _hubService, this, LogsVM);
         FundingVM = new FundingViewModel();
         var mountService = new MountService(_gitService, _projectService, _mountRegistry);
         var contributeService = new ContributeService(_gitService, _ghApi);
         DevelopVM = new DevelopViewModel(mountService, contributeService, _ghAuth, _ghApi, _gitService, _mountRegistry, this);
         AnnouncementsVM = new AnnouncementsViewModel(_announcementService);
-        LogsVM = new LogsViewModel(_log);
         DocumentationVM = new DocumentationViewModel();
+        CommunityVM = new CommunityViewModel(AnnouncementsVM, DocumentationVM, FundingVM);
 
         InstallUpdateCommand = new RelayCommand(InstallUpdateAsync);
         DismissUpdateCommand = new RelayCommand(() => { UpdateAvailable = false; });
@@ -102,7 +106,7 @@ public sealed class MainWindowViewModel : ObservableObject
                     NavPage.Develop => DevelopVM,
                     NavPage.Announcements => AnnouncementsVM,
                     NavPage.Documentation => DocumentationVM,
-                    NavPage.Logs => LogsVM,
+                    NavPage.Community => CommunityVM,
                     _ => InstallsVM,
                 };
                 OnPropertyChanged(nameof(IsInstalls));
@@ -113,11 +117,11 @@ public sealed class MainWindowViewModel : ObservableObject
                 OnPropertyChanged(nameof(IsSupport));
                 OnPropertyChanged(nameof(IsDevelop));
                 OnPropertyChanged(nameof(IsAnnouncements));
-                OnPropertyChanged(nameof(IsLogs));
                 OnPropertyChanged(nameof(IsDocumentation));
+                OnPropertyChanged(nameof(IsCommunity));
 
                 if (value == NavPage.Changes) _ = ChangesVM.RefreshAsync();
-                if (value == NavPage.Announcements) _ = MarkAnnouncementsSeenAsync();
+                if (value == NavPage.Community) _ = MarkAnnouncementsSeenAsync();
             }
         }
     }
@@ -132,8 +136,8 @@ public sealed class MainWindowViewModel : ObservableObject
     public bool IsSupport => CurrentPage == NavPage.Support;
     public bool IsDevelop => CurrentPage == NavPage.Develop;
     public bool IsAnnouncements => CurrentPage == NavPage.Announcements;
-    public bool IsLogs => CurrentPage == NavPage.Logs;
     public bool IsDocumentation => CurrentPage == NavPage.Documentation;
+    public bool IsCommunity => CurrentPage == NavPage.Community;
 
     private bool _showChangesTab;
     public bool ShowChangesTab
@@ -316,8 +320,8 @@ public sealed class MainWindowViewModel : ObservableObject
         var (detail, unclean) = CrashReporter.TryTakePending();
         if (detail is null && !unclean) return;
 
-        var yes = await Dialogs.ConfirmAsync("Basis Package Manager closed unexpectedly",
-            "It looks like the app closed unexpectedly last time. Open a pre-filled GitHub issue so we can look into it?");
+        var yes = await Dialogs.ConfirmAsync(L.Tr("shell.crash.dialogTitle"),
+            L.Tr("shell.crash.dialogMessage"));
         if (!yes) return;
 
         string body;
@@ -374,16 +378,16 @@ public sealed class MainWindowViewModel : ObservableObject
             settings.AskedDesktopShortcut = true;
             await _settingsService.SaveAsync(settings); // ask once, even if they decline
 
-            var yes = await Dialogs.ConfirmAsync("Desktop shortcut",
-                "Add a desktop shortcut for Basis Package Manager? You can always find it from the Start menu.");
+            var yes = await Dialogs.ConfirmAsync(L.Tr("shell.desktopShortcut.dialogTitle"),
+                L.Tr("shell.desktopShortcut.dialogMessage"));
             if (!yes) return;
 
             _updateService.CreateDesktopShortcut();
-            SetStatus("Desktop shortcut created.", StatusKind.Success);
+            SetStatus(L.Tr("shell.status.desktopShortcutCreated"), StatusKind.Success);
         }
         catch (Exception ex)
         {
-            SetStatus($"Couldn't create the desktop shortcut: {ex.Message}", StatusKind.Error);
+            SetStatus(L.Tr("shell.status.desktopShortcutFailed", ex.Message), StatusKind.Error);
         }
     }
 
@@ -400,10 +404,10 @@ public sealed class MainWindowViewModel : ObservableObject
         if (!DeepLink.TryParseInstall(uri, out var req)) return;
         NavigateTo("packages");
 
-        var label = req.Name ?? req.Id ?? "the package";
+        var label = req.Name ?? req.Id ?? L.Tr("shell.deeplink.thePackage");
         if (string.IsNullOrWhiteSpace(req.Git))
         {
-            SetStatus($"Install link for {label} was missing its git URL.", StatusKind.Error);
+            SetStatus(L.Tr("shell.status.installLinkMissingGit", label), StatusKind.Error);
             return;
         }
 
@@ -418,16 +422,16 @@ public sealed class MainWindowViewModel : ObservableObject
     private async Task HandleBundleLinkAsync(string bundleId)
     {
         NavigateTo("packages");
-        SetStatus("Loading bundle…");
+        SetStatus(L.Tr("shell.status.loadingBundle"));
         var bundles = await _bundleService.LoadAsync(_catalogUrl);
         var bundle = bundles.FirstOrDefault(b => string.Equals(b.Id, bundleId, StringComparison.OrdinalIgnoreCase));
         if (bundle is null)
         {
-            SetStatus($"Couldn't find bundle “{bundleId}” in the registry.", StatusKind.Error);
+            SetStatus(L.Tr("shell.status.bundleNotFound", bundleId), StatusKind.Error);
             return;
         }
 
-        var target = await ChooseInstallTargetAsync($"{bundle.Name} ({bundle.Packages.Count} packages)");
+        var target = await ChooseInstallTargetAsync(L.Tr("shell.bundle.pickerLabel", bundle.Name, bundle.Packages.Count));
         if (target is null) return;
 
         SetActiveInstall(target);
@@ -444,11 +448,11 @@ public sealed class MainWindowViewModel : ObservableObject
         if (targets.Count == 0)
         {
             NavigateTo("installs");
-            SetStatus($"Clone or add a Basis install first, then install {label}.", StatusKind.Error);
+            SetStatus(L.Tr("shell.status.cloneFirst", label), StatusKind.Error);
             return null;
         }
         // Always show the picker so you explicitly choose the project (even with a single install).
-        return await Dialogs.PickInstallAsync($"Add “{label}” to which project?", targets);
+        return await Dialogs.PickInstallAsync(L.Tr("shell.installPicker.prompt", label), targets);
     }
 
     /// <summary>Applies a change to the prerelease-channel preference and re-checks for updates.</summary>
@@ -458,35 +462,56 @@ public sealed class MainWindowViewModel : ObservableObject
         _ = CheckForUpdatesAsync(manual: false);
     }
 
+    /// <summary>Opens an install's Unity project in the matching editor (or Unity Hub if that version isn't installed).</summary>
+    public async Task OpenProjectInUnityAsync(BasisInstall install)
+    {
+        if (install is null || !install.HasUnityProject) { SetStatus(L.Tr("shell.status.noUnityProject"), StatusKind.Error); return; }
+        SetStatus(L.Tr("shell.status.openingInUnity", install.DisplayName));
+        try
+        {
+            var settings = await _settingsService.LoadAsync();
+            if (await _hubService.OpenProjectAsync(install.UnityProjectPath, install.UnityVersion, settings.UnityHubPath))
+            {
+                SetStatus(L.Tr("shell.status.openedInUnity", install.DisplayName, install.UnityVersion), StatusKind.Success);
+                return;
+            }
+            if (_hubService.OpenHub(settings.UnityHubPath))
+                SetStatus(L.Tr("shell.status.unityNotInstalledOpenedHub", install.UnityVersion), StatusKind.Error);
+            else
+                SetStatus(L.Tr("shell.status.unityNotInstalled", install.UnityVersion), StatusKind.Error);
+        }
+        catch (Exception ex) { SetStatus(L.Tr("shell.status.openUnityFailed", ex.Message), StatusKind.Error); }
+    }
+
     public async Task CheckForUpdatesAsync(bool manual)
     {
         if (!_updateService.IsSupported)
         {
             if (manual)
-                SetStatus("Running from source — updates are handled by your build, not the in-app updater.", StatusKind.Info);
+                SetStatus(L.Tr("shell.status.runningFromSource"), StatusKind.Info);
             return;
         }
 
         try
         {
-            if (manual) SetStatus("Checking for updates…");
+            if (manual) SetStatus(L.Tr("shell.status.checkingForUpdates"));
             var info = await _updateService.CheckAsync();
             if (info is null)
             {
                 _pendingUpdate = null;
                 UpdateAvailable = false;
-                if (manual) SetStatus("You're on the latest version.", StatusKind.Success);
+                if (manual) SetStatus(L.Tr("shell.status.upToDate"), StatusKind.Success);
                 return;
             }
 
             _pendingUpdate = info;
-            UpdateBannerText = $"Basis Package Manager {info.TargetFullRelease.Version} is available.";
+            UpdateBannerText = L.Tr("shell.update.bannerAvailable", info.TargetFullRelease.Version);
             UpdateAvailable = true;
-            if (manual) SetStatus("An update is available.", StatusKind.Success);
+            if (manual) SetStatus(L.Tr("shell.status.updateAvailable"), StatusKind.Success);
         }
         catch (Exception ex)
         {
-            if (manual) SetStatus($"Update check failed: {ex.Message}", StatusKind.Error);
+            if (manual) SetStatus(L.Tr("shell.status.updateCheckFailed", ex.Message), StatusKind.Error);
         }
     }
 
@@ -496,7 +521,7 @@ public sealed class MainWindowViewModel : ObservableObject
 
         IsUpdating = true;
         UpdateProgress = 0;
-        SetStatus("Downloading update…");
+        SetStatus(L.Tr("shell.status.downloadingUpdate"));
         try
         {
             // Velopack reports progress off the UI thread; marshal each tick back.
@@ -507,7 +532,7 @@ public sealed class MainWindowViewModel : ObservableObject
         catch (Exception ex)
         {
             IsUpdating = false;
-            SetStatus($"Update failed: {ex.Message}", StatusKind.Error);
+            SetStatus(L.Tr("shell.status.updateFailed", ex.Message), StatusKind.Error);
         }
     }
 
@@ -549,8 +574,8 @@ public sealed class MainWindowViewModel : ObservableObject
             "support" => NavPage.Support,
             "develop" => NavPage.Develop,
             "announcements" => NavPage.Announcements,
-            "logs" => NavPage.Logs,
             "documentation" => NavPage.Documentation,
+            "community" => NavPage.Community,
             _ => CurrentPage,
         };
     }

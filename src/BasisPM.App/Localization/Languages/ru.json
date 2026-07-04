@@ -1,0 +1,1626 @@
+{
+  "code": "ru",
+  "nativeName": "Русский",
+  "entries": [
+    {
+      "key": "nav.changes",
+      "value": "Локальные изменения"
+    },
+    {
+      "key": "nav.community",
+      "value": "Сообщество"
+    },
+    {
+      "key": "nav.develop",
+      "value": "Разработка"
+    },
+    {
+      "key": "nav.installs",
+      "value": "Проекты"
+    },
+    {
+      "key": "nav.packages",
+      "value": "Пакеты"
+    },
+    {
+      "key": "nav.settings",
+      "value": "Настройки"
+    },
+    {
+      "key": "nav.unity",
+      "value": "Редакторы Unity"
+    },
+    {
+      "key": "shell.bundle.pickerLabel",
+      "value": "{0} ({1} пакетов)"
+    },
+    {
+      "key": "shell.crash.dialogMessage",
+      "value": "Похоже, в прошлый раз приложение закрылось неожиданно. Открыть заранее заполненное обращение на GitHub, чтобы мы могли разобраться?"
+    },
+    {
+      "key": "shell.crash.dialogTitle",
+      "value": "Basis Package Manager закрылся неожиданно"
+    },
+    {
+      "key": "shell.deeplink.thePackage",
+      "value": "пакет"
+    },
+    {
+      "key": "shell.desktopShortcut.dialogMessage",
+      "value": "Добавить ярлык Basis Package Manager на рабочий стол? Его всегда можно найти в меню «Пуск»."
+    },
+    {
+      "key": "shell.desktopShortcut.dialogTitle",
+      "value": "Ярлык на рабочем столе"
+    },
+    {
+      "key": "shell.footer.license",
+      "value": "Лицензия MIT"
+    },
+    {
+      "key": "shell.installPicker.prompt",
+      "value": "В какой проект добавить “{0}”?"
+    },
+    {
+      "key": "shell.status.bundleNotFound",
+      "value": "Не удалось найти набор “{0}” в реестре."
+    },
+    {
+      "key": "shell.status.checkingForUpdates",
+      "value": "Проверка обновлений…"
+    },
+    {
+      "key": "shell.status.cloneFirst",
+      "value": "Сначала клонируйте или добавьте установку Basis, затем установите {0}."
+    },
+    {
+      "key": "shell.status.copied",
+      "value": "Статус скопирован в буфер обмена."
+    },
+    {
+      "key": "shell.status.copy",
+      "value": "Копировать"
+    },
+    {
+      "key": "shell.status.copyFailed",
+      "value": "Не удалось скопировать: {0}"
+    },
+    {
+      "key": "shell.status.copyTooltip",
+      "value": "Скопировать сообщение о статусе в буфер обмена"
+    },
+    {
+      "key": "shell.status.desktopShortcutCreated",
+      "value": "Ярлык на рабочем столе создан."
+    },
+    {
+      "key": "shell.status.desktopShortcutFailed",
+      "value": "Не удалось создать ярлык на рабочем столе: {0}"
+    },
+    {
+      "key": "shell.status.downloadingUpdate",
+      "value": "Загрузка обновления…"
+    },
+    {
+      "key": "shell.status.installLinkMissingGit",
+      "value": "В ссылке для установки {0} отсутствовал git-URL."
+    },
+    {
+      "key": "shell.status.loadingBundle",
+      "value": "Загрузка набора…"
+    },
+    {
+      "key": "shell.status.noUnityProject",
+      "value": "Нет проекта Unity для открытия."
+    },
+    {
+      "key": "shell.status.ok",
+      "value": "OK"
+    },
+    {
+      "key": "shell.status.okTooltip",
+      "value": "Закрыть это сообщение"
+    },
+    {
+      "key": "shell.status.openIssue",
+      "value": "Создать обращение"
+    },
+    {
+      "key": "shell.status.openIssueTooltip",
+      "value": "Открыть заранее заполненное обращение на GitHub с этой ошибкой и вашими последними действиями"
+    },
+    {
+      "key": "shell.status.openUnityFailed",
+      "value": "Не удалось открыть Unity: {0}"
+    },
+    {
+      "key": "shell.status.openedInUnity",
+      "value": "Открытие {0} в Unity {1}."
+    },
+    {
+      "key": "shell.status.openingInUnity",
+      "value": "Открытие {0} в Unity…"
+    },
+    {
+      "key": "shell.status.runningFromSource",
+      "value": "Запуск из исходников — обновления выполняются вашей сборкой, а не встроенным средством обновления."
+    },
+    {
+      "key": "shell.status.unityNotInstalled",
+      "value": "Unity {0} не установлен. Добавьте его на вкладке «Редакторы Unity» и повторите попытку."
+    },
+    {
+      "key": "shell.status.unityNotInstalledOpenedHub",
+      "value": "Unity {0} не установлен — открыт Unity Hub, чтобы вы могли его добавить."
+    },
+    {
+      "key": "shell.status.upToDate",
+      "value": "У вас установлена последняя версия."
+    },
+    {
+      "key": "shell.status.updateAvailable",
+      "value": "Доступно обновление."
+    },
+    {
+      "key": "shell.status.updateCheckFailed",
+      "value": "Не удалось проверить обновления: {0}"
+    },
+    {
+      "key": "shell.status.updateFailed",
+      "value": "Не удалось обновить: {0}"
+    },
+    {
+      "key": "shell.update.bannerAvailable",
+      "value": "Доступен Basis Package Manager {0}."
+    },
+    {
+      "key": "shell.update.later",
+      "value": "Позже"
+    },
+    {
+      "key": "shell.update.laterTooltip",
+      "value": "Скрыть до следующего запуска"
+    },
+    {
+      "key": "shell.update.now",
+      "value": "Обновить сейчас"
+    },
+    {
+      "key": "shell.update.nowTooltip",
+      "value": "Загрузить обновление и перезапустить"
+    },
+    {
+      "key": "shell.version.tooltip",
+      "value": "Установленная версия — проверьте обновления в настройках"
+    },
+    {
+      "key": "shell.window.title",
+      "value": "Basis Package Manager"
+    },
+    {
+      "key": "shell.wordmark.name",
+      "value": "BasisVR"
+    },
+    {
+      "key": "shell.wordmark.tagline",
+      "value": "Менеджер пакетов"
+    },
+    {
+      "key": "installs.action.updateCore",
+      "value": "«Обновить ядро» выполняет 'git pull', что может изменить файлы в вашем проекте Basis."
+    },
+    {
+      "key": "installs.badge.active",
+      "value": "АКТИВНЫЙ"
+    },
+    {
+      "key": "installs.branch.default",
+      "value": "{0} (main)"
+    },
+    {
+      "key": "installs.button.addExisting",
+      "value": "Добавить существующий"
+    },
+    {
+      "key": "installs.button.backup",
+      "value": "Резервная копия"
+    },
+    {
+      "key": "installs.button.browse",
+      "value": "Обзор…"
+    },
+    {
+      "key": "installs.button.changes",
+      "value": "Изменения"
+    },
+    {
+      "key": "installs.button.cloneBasis",
+      "value": "Клонировать Basis"
+    },
+    {
+      "key": "installs.button.open",
+      "value": "Открыть"
+    },
+    {
+      "key": "installs.button.packages",
+      "value": "Пакеты"
+    },
+    {
+      "key": "installs.button.refresh",
+      "value": "Обновить"
+    },
+    {
+      "key": "installs.button.remove",
+      "value": "Удалить"
+    },
+    {
+      "key": "installs.button.updateCore",
+      "value": "Обновить ядро"
+    },
+    {
+      "key": "installs.cloneForm.branchLabel",
+      "value": "Ветка"
+    },
+    {
+      "key": "installs.cloneForm.cloneIntoLabel",
+      "value": "Клонировать в папку"
+    },
+    {
+      "key": "installs.cloneForm.heading",
+      "value": "Клонировать Basis"
+    },
+    {
+      "key": "installs.cloneForm.subFolderLabel",
+      "value": "Имя подпапки"
+    },
+    {
+      "key": "installs.dialog.backupPrompt",
+      "value": "{0}\n\nСначала создать резервную копию {1}? Она упакует Assets, Packages и ProjectSettings (без кэша Library) в архив в папке BasisBackups рядом с вашей установкой."
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceBody",
+      "value": "На {1} свободно только {0}. Для клонирования Basis и открытия его в Unity может потребоваться значительно больше, и клонирование может прерваться на полпути.\n\nВсё равно клонировать сюда?"
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceTitle",
+      "value": "Мало места на диске"
+    },
+    {
+      "key": "installs.dialog.nameThisInstall",
+      "value": "Назовите эту установку"
+    },
+    {
+      "key": "installs.empty.body",
+      "value": "Нажмите «Клонировать Basis» выше, чтобы загрузить BasisVR/Basis, или «Добавить существующий», чтобы зарегистрировать уже имеющийся клон."
+    },
+    {
+      "key": "installs.empty.title",
+      "value": "Пока нет установок"
+    },
+    {
+      "key": "installs.git.ahead",
+      "value": "{0} впереди"
+    },
+    {
+      "key": "installs.git.behindUpstream",
+      "value": "{0} позади вышестоящей ветки"
+    },
+    {
+      "key": "installs.git.checking",
+      "value": "проверка…"
+    },
+    {
+      "key": "installs.git.checkingRemote",
+      "value": "проверка удалённого…"
+    },
+    {
+      "key": "installs.git.error",
+      "value": "ошибка git: {0}"
+    },
+    {
+      "key": "installs.git.localChanges",
+      "value": "{0} локальных изменений{1}"
+    },
+    {
+      "key": "installs.git.noUpstream",
+      "value": "нет вышестоящей ветки"
+    },
+    {
+      "key": "installs.git.notGitRepo",
+      "value": "не git-репозиторий"
+    },
+    {
+      "key": "installs.git.upToDate",
+      "value": "актуально"
+    },
+    {
+      "key": "installs.hero.subtitle",
+      "value": "Клонируйте репозиторий BasisVR/Basis, а затем управляйте пакетами, обновлениями и локальными изменениями каждого проекта."
+    },
+    {
+      "key": "installs.hero.tagline",
+      "value": "ПРОЕКТЫ"
+    },
+    {
+      "key": "installs.hero.title",
+      "value": "Ваши проекты Basis"
+    },
+    {
+      "key": "installs.picker.chooseCloneFolder",
+      "value": "Выберите папку для клонирования Basis"
+    },
+    {
+      "key": "installs.picker.selectExistingClone",
+      "value": "Выберите существующий клон Basis"
+    },
+    {
+      "key": "installs.progress.starting",
+      "value": "Запуск клонирования…"
+    },
+    {
+      "key": "installs.row.noUnityProject",
+      "value": "Нет проекта Unity"
+    },
+    {
+      "key": "installs.row.unityVersion",
+      "value": "Unity {0}"
+    },
+    {
+      "key": "installs.space.criticalWarning",
+      "value": "Очень мало места на диске — на {1} свободно только {0}. Клонирование Basis, скорее всего, не удастся; освободите место или выберите другой диск."
+    },
+    {
+      "key": "installs.space.lowWarning",
+      "value": "Мало места на диске — на {1} свободно {0}. Basis вместе с его библиотекой Unity может занять 20 ГБ и более."
+    },
+    {
+      "key": "installs.status.added",
+      "value": "Добавлено {0}{1}."
+    },
+    {
+      "key": "installs.status.alreadyInList",
+      "value": "Эта установка уже есть в списке."
+    },
+    {
+      "key": "installs.status.backedUp",
+      "value": "Создана резервная копия {0} → {1}"
+    },
+    {
+      "key": "installs.status.backingUp",
+      "value": "Создание резервной копии {0}…"
+    },
+    {
+      "key": "installs.status.backupFailed",
+      "value": "Не удалось создать резервную копию: {0}"
+    },
+    {
+      "key": "installs.status.chooseFolderFirst",
+      "value": "Сначала выберите папку для клонирования."
+    },
+    {
+      "key": "installs.status.cloneCancelledLowSpace",
+      "value": "Клонирование отменено — мало места на целевом диске."
+    },
+    {
+      "key": "installs.status.cloneError",
+      "value": "Ошибка клонирования: {0}"
+    },
+    {
+      "key": "installs.status.cloneFailed",
+      "value": "Клонирование не удалось (код выхода {0}). {1}"
+    },
+    {
+      "key": "installs.status.clonedInto",
+      "value": "Basis клонирован в {0}.{1}"
+    },
+    {
+      "key": "installs.status.cloningInto",
+      "value": "Клонирование Basis в {0}…"
+    },
+    {
+      "key": "installs.status.destExists",
+      "value": "{0} уже существует и не пуст."
+    },
+    {
+      "key": "installs.status.folderMissing",
+      "value": "Папка больше не существует: {0}"
+    },
+    {
+      "key": "installs.status.gitNotFound",
+      "value": "Git не найден. Установите Git и добавьте его в PATH (см. «Настройки»)."
+    },
+    {
+      "key": "installs.status.noUnityDetectedNote",
+      "value": " (внутри не обнаружен проект Unity)"
+    },
+    {
+      "key": "installs.status.noUnityToBackup",
+      "value": "В {0} нет проекта Unity для резервного копирования."
+    },
+    {
+      "key": "installs.status.notGitRepo",
+      "value": "{0} не является git-репозиторием."
+    },
+    {
+      "key": "installs.status.removed",
+      "value": "{0} удалён из списка (файлы остались на диске)."
+    },
+    {
+      "key": "installs.status.requiresUnityNote",
+      "value": " Требуется Unity {0} — откройте вкладку Unity, чтобы установить его."
+    },
+    {
+      "key": "installs.status.rowSummary",
+      "value": "{0}: {1}"
+    },
+    {
+      "key": "installs.status.updateError",
+      "value": "Ошибка обновления: {0}"
+    },
+    {
+      "key": "installs.status.updateFailed",
+      "value": "Не удалось обновить {0}: {1}"
+    },
+    {
+      "key": "installs.status.updated",
+      "value": "{0} обновлён. {1}"
+    },
+    {
+      "key": "installs.status.updating",
+      "value": "Обновление {0} (git pull)…"
+    },
+    {
+      "key": "installs.tooltip.backup",
+      "value": "Упаковать Assets, Packages и ProjectSettings (без кэша Library)"
+    },
+    {
+      "key": "packages.badge.basisRegistry",
+      "value": "РЕЕСТР BASIS"
+    },
+    {
+      "key": "packages.badge.github",
+      "value": "github"
+    },
+    {
+      "key": "packages.bundle.basisLine",
+      "value": "Basis: {0}  ·  Unity {1}"
+    },
+    {
+      "key": "packages.bundle.unknownCommit",
+      "value": "неизвестно"
+    },
+    {
+      "key": "packages.button.add",
+      "value": "+ Добавить"
+    },
+    {
+      "key": "packages.button.chooseVersion",
+      "value": "Выбрать версию…"
+    },
+    {
+      "key": "packages.button.createBundle",
+      "value": "Создать набор"
+    },
+    {
+      "key": "packages.button.install",
+      "value": "Установить"
+    },
+    {
+      "key": "packages.button.refresh",
+      "value": "Обновить"
+    },
+    {
+      "key": "packages.button.remove",
+      "value": "Удалить"
+    },
+    {
+      "key": "packages.button.update",
+      "value": "Обновить"
+    },
+    {
+      "key": "packages.community.description",
+      "value": "Вставьте URL GitHub или owner/repo[?path=Sub/Folder][#branch]. Его package.json будет добавлен в манифест Unity как git-зависимость."
+    },
+    {
+      "key": "packages.community.watermark",
+      "value": "https://github.com/owner/repo  или  owner/repo?path=Packages/com.x#main"
+    },
+    {
+      "key": "packages.dialog.installTitle",
+      "value": "Установить {0}"
+    },
+    {
+      "key": "packages.empty.noInstallSelected",
+      "value": "Установка не выбрана"
+    },
+    {
+      "key": "packages.empty.noProjectDescription",
+      "value": "Клонируйте или выберите установку Basis на вкладке «Проекты», чтобы управлять её пакетами."
+    },
+    {
+      "key": "packages.empty.noProjectTitle",
+      "value": "Нет установки с проектом Unity"
+    },
+    {
+      "key": "packages.filter.allOwners",
+      "value": "Все владельцы"
+    },
+    {
+      "key": "packages.filter.otherOwner",
+      "value": "Прочее"
+    },
+    {
+      "key": "packages.filter.watermark",
+      "value": "Фильтр пакетов..."
+    },
+    {
+      "key": "packages.header.available",
+      "value": "Доступно для установки"
+    },
+    {
+      "key": "packages.header.community",
+      "value": "Добавить пакет сообщества из GitHub"
+    },
+    {
+      "key": "packages.header.installed",
+      "value": "Установлено"
+    },
+    {
+      "key": "packages.hero.subtitle",
+      "value": "Выберите проект, затем установите пакеты из реестра Basis или добавьте любой UPM-пакет сообщества по git-URL."
+    },
+    {
+      "key": "packages.hero.tagline",
+      "value": "ПАКЕТЫ"
+    },
+    {
+      "key": "packages.hero.title",
+      "value": "Пакеты"
+    },
+    {
+      "key": "packages.label.project",
+      "value": "Проект"
+    },
+    {
+      "key": "packages.status.added",
+      "value": "Добавлено"
+    },
+    {
+      "key": "packages.status.addedBundle",
+      "value": "Добавлен набор “{0}” ({1} пакет(ов)){2} → {3}."
+    },
+    {
+      "key": "packages.status.addedDeepLink",
+      "value": "{0} {1}{2} → {3}."
+    },
+    {
+      "key": "packages.status.addedFromGitHub",
+      "value": "{0} {1}{2} из GitHub."
+    },
+    {
+      "key": "packages.status.bundleInstallFailed",
+      "value": "Не удалось установить набор: {0}"
+    },
+    {
+      "key": "packages.status.chooseProject",
+      "value": "Сначала выберите проект."
+    },
+    {
+      "key": "packages.status.deepLinkFailed",
+      "value": "Не удалось установить по ссылке: {0}"
+    },
+    {
+      "key": "packages.status.defaultBranch",
+      "value": "ветка по умолчанию"
+    },
+    {
+      "key": "packages.status.depNote",
+      "value": " (+{0} зависимых пакетов{1})"
+    },
+    {
+      "key": "packages.status.dependencyConflict",
+      "value": "Конфликт зависимостей: {0}"
+    },
+    {
+      "key": "packages.status.gitHubAddFailed",
+      "value": "Не удалось добавить из GitHub: {0}"
+    },
+    {
+      "key": "packages.status.gitUrlParseFailed",
+      "value": "Не удалось разобрать git-URL пакета."
+    },
+    {
+      "key": "packages.status.installError",
+      "value": "Ошибка установки: {0}"
+    },
+    {
+      "key": "packages.status.installLinkMissing",
+      "value": "В ссылке для установки отсутствовал идентификатор пакета или git-URL."
+    },
+    {
+      "key": "packages.status.installed",
+      "value": "{0} установлен в {1}."
+    },
+    {
+      "key": "packages.status.installedVersion",
+      "value": "{0} ({1}) установлен в {2}."
+    },
+    {
+      "key": "packages.status.invalidGitHub",
+      "value": "Недопустимая ссылка GitHub: {0}"
+    },
+    {
+      "key": "packages.status.loadingVersions",
+      "value": "Загрузка версий для {0}…"
+    },
+    {
+      "key": "packages.status.noAddonPackages",
+      "value": "В этом проекте пока нет дополнительных пакетов для набора."
+    },
+    {
+      "key": "packages.status.noVersionsFound",
+      "value": "Не удалось найти ни одной версии для {0}."
+    },
+    {
+      "key": "packages.status.notGitPackage",
+      "value": "{0} не является git-пакетом — нет версий для выбора."
+    },
+    {
+      "key": "packages.status.openInstallFirst",
+      "value": "Сначала откройте установку с проектом Unity, затем снова нажмите «Установить» для {0}."
+    },
+    {
+      "key": "packages.status.openingIssue",
+      "value": "Открытие обращения на GitHub для отправки “{0}” ({1} пакетов)…"
+    },
+    {
+      "key": "packages.status.packageJsonLoadFailed",
+      "value": "Не удалось загрузить package.json из {0}/{1}{2} — проверьте путь и что репозиторий публичный."
+    },
+    {
+      "key": "packages.status.pasteGitHub",
+      "value": "Вставьте URL GitHub или owner/repo."
+    },
+    {
+      "key": "packages.status.refusedUnsafeUrl",
+      "value": "Отказано в добавлении {0}: git-URL из ссылки для установки использует неподдерживаемый или небезопасный транспорт."
+    },
+    {
+      "key": "packages.status.removed",
+      "value": "{0} удалён."
+    },
+    {
+      "key": "packages.status.skipNote",
+      "value": " ({0} пропущено из-за небезопасного git-URL)"
+    },
+    {
+      "key": "packages.status.updated",
+      "value": "Обновлено"
+    },
+    {
+      "key": "packages.status.versionInstallError",
+      "value": "Ошибка установки версии: {0}"
+    },
+    {
+      "key": "packages.tooltip.chooseVersion",
+      "value": "Выберите конкретный релиз, бету или ветку по умолчанию"
+    },
+    {
+      "key": "packages.tooltip.filterByOwner",
+      "value": "Фильтровать установленные пакеты по владельцу (из идентификатора пакета)"
+    },
+    {
+      "key": "unity.button.install",
+      "value": "Установить через Unity Hub"
+    },
+    {
+      "key": "unity.button.refresh",
+      "value": "Обновить"
+    },
+    {
+      "key": "unity.button.reloadList",
+      "value": "Перезагрузить список"
+    },
+    {
+      "key": "unity.button.uninstall",
+      "value": "Удалить"
+    },
+    {
+      "key": "unity.header.subtitle",
+      "value": "Обнаружьте установленные редакторы Unity и установите версию, требуемую Basis."
+    },
+    {
+      "key": "unity.header.tagline",
+      "value": "РЕДАКТОРЫ UNITY"
+    },
+    {
+      "key": "unity.header.title",
+      "value": "Версии редактора"
+    },
+    {
+      "key": "unity.install.hint",
+      "value": "Выберите релиз Unity 6. Changeset заполняется автоматически из ленты релизов Unity."
+    },
+    {
+      "key": "unity.label.changeset",
+      "value": "Changeset"
+    },
+    {
+      "key": "unity.label.release",
+      "value": "Релиз Unity 6"
+    },
+    {
+      "key": "unity.label.streamFilter",
+      "value": "Фильтр потока"
+    },
+    {
+      "key": "unity.section.installNew",
+      "value": "Установить новый редактор"
+    },
+    {
+      "key": "unity.section.installedEditors",
+      "value": "Установленные редакторы"
+    },
+    {
+      "key": "unity.status.alreadyInstalled",
+      "value": "Unity {0} уже установлен."
+    },
+    {
+      "key": "unity.status.error",
+      "value": "Ошибка: {0}"
+    },
+    {
+      "key": "unity.status.fetchReleasesFailed",
+      "value": "Не удалось получить релизы Unity: {0}"
+    },
+    {
+      "key": "unity.status.hubNotDetected",
+      "value": "Unity Hub не обнаружен."
+    },
+    {
+      "key": "unity.status.hubPath",
+      "value": "Unity Hub: {0}"
+    },
+    {
+      "key": "unity.status.installError",
+      "value": "Ошибка установки: {0}"
+    },
+    {
+      "key": "unity.status.installFailed",
+      "value": "Установка не удалась (код выхода {0})."
+    },
+    {
+      "key": "unity.status.installKickedOff",
+      "value": "Установка {0} запущена через Unity Hub."
+    },
+    {
+      "key": "unity.status.installing",
+      "value": "Установка Unity {0}..."
+    },
+    {
+      "key": "unity.status.noEditorsInstalled",
+      "value": " (редакторы не установлены)"
+    },
+    {
+      "key": "unity.status.pickReleaseFirst",
+      "value": "Сначала выберите релиз Unity 6 из списка."
+    },
+    {
+      "key": "unity.status.requiredVersionNote",
+      "value": "Ваша установка Basis рассчитана на Unity {0}. Установите именно эту версию ниже для корректного открытия."
+    },
+    {
+      "key": "unity.status.uninstallError",
+      "value": "Ошибка удаления: {0}"
+    },
+    {
+      "key": "unity.status.uninstallFailed",
+      "value": "Удаление не удалось (код выхода {0})."
+    },
+    {
+      "key": "unity.status.uninstalled",
+      "value": "Unity {0} удалён."
+    },
+    {
+      "key": "unity.status.uninstalling",
+      "value": "Удаление Unity {0}..."
+    },
+    {
+      "key": "unity.tag.installed",
+      "value": "установлен"
+    },
+    {
+      "key": "unity.tag.recommended",
+      "value": "рекомендуется"
+    },
+    {
+      "key": "develop.auth.cliNotLoggedIn",
+      "value": "GitHub CLI найден, но вход не выполнен — выполните “gh auth login”, затем нажмите «Проверить снова»."
+    },
+    {
+      "key": "develop.auth.notSignedIn",
+      "value": "Вход не выполнен — вставьте токен ниже или установите GitHub CLI и войдите через него."
+    },
+    {
+      "key": "develop.auth.signedIn",
+      "value": "Вход в GitHub выполнен как {0}"
+    },
+    {
+      "key": "develop.auth.tokenLabel",
+      "value": "Токен GitHub (нужна область “repo”)"
+    },
+    {
+      "key": "develop.auth.tokenWatermark",
+      "value": "ghp_…  или  github_pat_…"
+    },
+    {
+      "key": "develop.button.installGit",
+      "value": "Установить Git"
+    },
+    {
+      "key": "develop.button.mountToEdit",
+      "value": "Подключить для редактирования"
+    },
+    {
+      "key": "develop.button.openInUnity",
+      "value": "Открыть в Unity"
+    },
+    {
+      "key": "develop.button.recheck",
+      "value": "Проверить снова"
+    },
+    {
+      "key": "develop.button.refresh",
+      "value": "Обновить"
+    },
+    {
+      "key": "develop.button.signIn",
+      "value": "Войти"
+    },
+    {
+      "key": "develop.button.submitPr",
+      "value": "Отправить PR"
+    },
+    {
+      "key": "develop.button.swapBack",
+      "value": "Вернуть обратно"
+    },
+    {
+      "key": "develop.confirm.alreadyMounted",
+      "value": "{0} уже подключён в Packages/{0}.\n\nЗаменить его свежим клоном? Все локальные изменения в этой папке будут потеряны."
+    },
+    {
+      "key": "develop.confirm.packageExists",
+      "value": "Packages/{0} уже существует и не пуст — возможно, это остаток подключения или локальная копия.\n\nЗаменить его свежим клоном? Его текущее содержимое будет удалено."
+    },
+    {
+      "key": "develop.confirm.packageThereTitle",
+      "value": "Пакет уже существует"
+    },
+    {
+      "key": "develop.empty.description",
+      "value": "Выберите установку Basis на вкладке «Проекты», чтобы редактировать её пакеты."
+    },
+    {
+      "key": "develop.empty.title",
+      "value": "Нет установки с проектом Unity"
+    },
+    {
+      "key": "develop.git.requiredDescription",
+      "value": "Для подключения пакета и отправки pull request нужен Git. Установите его, затем нажмите «Проверить снова»."
+    },
+    {
+      "key": "develop.git.requiredTitle",
+      "value": "Требуется Git"
+    },
+    {
+      "key": "develop.header.description",
+      "value": "Подключите git-пакет, чтобы редактировать его в Unity, затем откройте pull request в исходный репозиторий — по завершении верните обратно или оставьте."
+    },
+    {
+      "key": "develop.header.tagline",
+      "value": "РАЗРАБОТКА"
+    },
+    {
+      "key": "develop.install.none",
+      "value": "Установка не выбрана"
+    },
+    {
+      "key": "develop.section.gitPackages",
+      "value": "Git-пакеты"
+    },
+    {
+      "key": "develop.section.mountedForEditing",
+      "value": "Подключено для редактирования"
+    },
+    {
+      "key": "develop.section.noGitPackages",
+      "value": "В этом проекте нет пакетов, загруженных через git."
+    },
+    {
+      "key": "develop.status.clearFailed",
+      "value": "Не удалось очистить Packages/{0}: {1}"
+    },
+    {
+      "key": "develop.status.gitRequired",
+      "value": "Требуется Git."
+    },
+    {
+      "key": "develop.status.gitRequiredMount",
+      "value": "Для подключения пакета требуется Git. Установите его, затем нажмите «Проверить снова»."
+    },
+    {
+      "key": "develop.status.loginUnverified",
+      "value": "Не удалось подтвердить ваш вход в GitHub."
+    },
+    {
+      "key": "develop.status.mountCancelled",
+      "value": "Подключение отменено — Packages/{0} оставлен без изменений."
+    },
+    {
+      "key": "develop.status.mountError",
+      "value": "Ошибка подключения: {0}"
+    },
+    {
+      "key": "develop.status.mountFailed",
+      "value": "Не удалось подключить."
+    },
+    {
+      "key": "develop.status.mounted",
+      "value": "{0} подключён в Packages/ — отредактируйте его в Unity, затем отправьте PR."
+    },
+    {
+      "key": "develop.status.mounting",
+      "value": "Подключение {0}…"
+    },
+    {
+      "key": "develop.status.prError",
+      "value": "Ошибка PR: {0}"
+    },
+    {
+      "key": "develop.status.prFailed",
+      "value": "Не удалось отправить PR."
+    },
+    {
+      "key": "develop.status.prOpened",
+      "value": "Pull request открыт{0}: {1}"
+    },
+    {
+      "key": "develop.status.signInFirst",
+      "value": "Сначала войдите в GitHub (через GitHub CLI или токен)."
+    },
+    {
+      "key": "develop.status.signedInAs",
+      "value": "Вход выполнен как {0}."
+    },
+    {
+      "key": "develop.status.submittingPr",
+      "value": "Отправка pull request для {0}…"
+    },
+    {
+      "key": "develop.status.swapBackError",
+      "value": "Ошибка возврата: {0}"
+    },
+    {
+      "key": "develop.status.swapBackFailed",
+      "value": "Не удалось вернуть обратно."
+    },
+    {
+      "key": "develop.status.swappedBack",
+      "value": "{0} снова использует свой git-URL."
+    },
+    {
+      "key": "develop.status.swapping",
+      "value": "Возврат {0} к его git-URL…"
+    },
+    {
+      "key": "develop.status.tokenFailed",
+      "value": "Этот токен не прошёл аутентификацию — убедитесь, что у него есть область “repo”."
+    },
+    {
+      "key": "develop.status.viaFork",
+      "value": " (через ваш форк)"
+    },
+    {
+      "key": "changes.button.refresh",
+      "value": "Обновить"
+    },
+    {
+      "key": "changes.diff.loadError",
+      "value": "Не удалось загрузить diff: {0}"
+    },
+    {
+      "key": "changes.diff.title",
+      "value": "Diff"
+    },
+    {
+      "key": "changes.empty.description",
+      "value": "Выберите установку на вкладке «Проекты», чтобы увидеть, что вы изменили."
+    },
+    {
+      "key": "changes.empty.title",
+      "value": "Установка не выбрана"
+    },
+    {
+      "key": "changes.header.clean",
+      "value": "{0} · {1} — рабочий каталог чист"
+    },
+    {
+      "key": "changes.header.dirtyMany",
+      "value": "{0} · {1} — изменённых файлов: {2}"
+    },
+    {
+      "key": "changes.header.dirtyOne",
+      "value": "{0} · {1} — {2} изменённый файл"
+    },
+    {
+      "key": "changes.header.gitError",
+      "value": "ошибка git: {0}"
+    },
+    {
+      "key": "changes.header.notGitRepo",
+      "value": "Эта установка не является git-репозиторием, поэтому локальные изменения нельзя отслеживать."
+    },
+    {
+      "key": "changes.hero.subtitle",
+      "value": "Что вы изменили в исходниках Basis с момента последнего коммита."
+    },
+    {
+      "key": "changes.hero.tagline",
+      "value": "ЛОКАЛЬНЫЕ ИЗМЕНЕНИЯ"
+    },
+    {
+      "key": "changes.list.title",
+      "value": "Изменённые файлы"
+    },
+    {
+      "key": "settings.about.checkUpdates",
+      "value": "Проверить обновления"
+    },
+    {
+      "key": "settings.about.title",
+      "value": "О программе"
+    },
+    {
+      "key": "settings.about.updatesBlurb",
+      "value": "Basis Package Manager обновляется через GitHub Releases. Когда публикуется новая версия, вверху окна появляется баннер обновления — одним нажатием оно загружается и приложение перезапускается."
+    },
+    {
+      "key": "settings.about.version",
+      "value": "Версия"
+    },
+    {
+      "key": "settings.button.save",
+      "value": "Сохранить"
+    },
+    {
+      "key": "settings.catalog.description",
+      "value": "URL с JSON, отдающий совместимый с Basis каталог. Оставьте пустым, чтобы использовать реестр пакетов Basis (basisvr.org/packages)."
+    },
+    {
+      "key": "settings.catalog.title",
+      "value": "URL каталога пакетов"
+    },
+    {
+      "key": "settings.clone.description",
+      "value": "Где по умолчанию создаются новые клоны Basis."
+    },
+    {
+      "key": "settings.clone.title",
+      "value": "Расположение клонов по умолчанию"
+    },
+    {
+      "key": "settings.detected.git",
+      "value": "Git"
+    },
+    {
+      "key": "settings.detected.gitNotFound",
+      "value": "Git не найден в PATH — установите его с git-scm.com."
+    },
+    {
+      "key": "settings.detected.hubNotFound",
+      "value": "Unity Hub не обнаружен."
+    },
+    {
+      "key": "settings.detected.settingsFile",
+      "value": "Файл настроек"
+    },
+    {
+      "key": "settings.detected.title",
+      "value": "Обнаруженные инструменты"
+    },
+    {
+      "key": "settings.detected.unityHub",
+      "value": "Unity Hub"
+    },
+    {
+      "key": "settings.hero.subtitle",
+      "value": "Расположение клонов, источник каталога и пути к инструментам."
+    },
+    {
+      "key": "settings.hero.tagline",
+      "value": "НАСТРОЙКИ"
+    },
+    {
+      "key": "settings.hero.title",
+      "value": "Конфигурация"
+    },
+    {
+      "key": "settings.language.description",
+      "value": "Выберите язык интерфейса Basis Package Manager. Применяется немедленно."
+    },
+    {
+      "key": "settings.language.title",
+      "value": "Язык"
+    },
+    {
+      "key": "settings.logs.clear",
+      "value": "Очистить"
+    },
+    {
+      "key": "settings.logs.copy",
+      "value": "Копировать"
+    },
+    {
+      "key": "settings.logs.description",
+      "value": "Что приложение делало за эту сессию — личные пути, имена пользователей и IP-адреса скрыты. Прикладывайте их при сообщении о проблеме."
+    },
+    {
+      "key": "settings.logs.openFolder",
+      "value": "Открыть папку"
+    },
+    {
+      "key": "settings.logs.title",
+      "value": "Журнал активности"
+    },
+    {
+      "key": "settings.status.saved",
+      "value": "Настройки сохранены."
+    },
+    {
+      "key": "settings.toggle.developer",
+      "value": "Режим разработчика (показать вкладку «Разработка»)"
+    },
+    {
+      "key": "settings.toggle.developer.tip",
+      "value": "Подключайте git-пакеты локально, редактируйте их в Unity и открывайте pull request. Скрыто для не-разработчиков."
+    },
+    {
+      "key": "settings.toggle.localChanges",
+      "value": "Показать вкладку «Локальные изменения»"
+    },
+    {
+      "key": "settings.toggle.localChanges.tip",
+      "value": "git-статус и пофайловый diff вашей установки. Скрыто по умолчанию."
+    },
+    {
+      "key": "settings.toggle.prerelease",
+      "value": "Получать предварительные обновления (экспериментально — может не работать)"
+    },
+    {
+      "key": "settings.toggle.prerelease.tip",
+      "value": "Получайте ранние сборки сразу после публикации — часто и иногда нестабильно. Выключено = только стабильные релизы. Применяется при сохранении."
+    },
+    {
+      "key": "settings.unityHub.description",
+      "value": "Путь к исполняемому файлу Unity Hub, если он не определён автоматически."
+    },
+    {
+      "key": "settings.unityHub.title",
+      "value": "Переопределение Unity Hub"
+    },
+    {
+      "key": "support.button.backOpenCollective",
+      "value": "Поддержать на OpenCollective"
+    },
+    {
+      "key": "support.button.fullFundingPage",
+      "value": "Читать полную страницу финансирования  ↗"
+    },
+    {
+      "key": "support.button.joinDiscord",
+      "value": "Присоединиться к Discord"
+    },
+    {
+      "key": "support.button.openCollective",
+      "value": "♥   Поддержать через OpenCollective"
+    },
+    {
+      "key": "support.button.sponsorFeature",
+      "value": "Спонсировать функцию"
+    },
+    {
+      "key": "support.community.body",
+      "value": "Люди поддерживают Basis на OpenCollective — ежемесячно или разово. Эти средства в первую очередь идут на постоянное сопровождение и улучшение опыта разработчиков."
+    },
+    {
+      "key": "support.community.bullets",
+      "value": "•  Ежемесячные и разовые взносы\n•  Публичная стена спонсоров и прозрачная бухгалтерия"
+    },
+    {
+      "key": "support.community.title",
+      "value": "Пожертвования сообщества"
+    },
+    {
+      "key": "support.company.body",
+      "value": "Компании спонсируют пункты дорожной карты или совместно финансируют функции — сетевые технологии, системы аватаров, инструменты. Результаты попадают в основной репозиторий и по умолчанию остаются под лицензией MIT."
+    },
+    {
+      "key": "support.company.bullets",
+      "value": "•  Общая инфраструктура вместо отдельных форков\n•  Чёткие результаты, открытая разработка"
+    },
+    {
+      "key": "support.company.title",
+      "value": "Сотрудничество с компаниями"
+    },
+    {
+      "key": "support.hero.subtitle",
+      "value": "Basis распространяется под лицензией MIT и ставит авторов на первое место. Пожертвования сообщества и сотрудничество с компаниями позволяют сопровождающему работать полный день и ускоряют выпуск релизов."
+    },
+    {
+      "key": "support.hero.tagline",
+      "value": "ПОДДЕРЖКА"
+    },
+    {
+      "key": "support.hero.title",
+      "value": "Финансировать Basis"
+    },
+    {
+      "key": "support.where.body",
+      "value": "Средства объединяются для решения общих задач — сетевые технологии, воплощение, инструменты — которые полезны всем. На OpenCollective есть публичная бухгалтерия, а спонсируемая работа отмечается в примечаниях к релизам. Спонсоры не управляют проектом."
+    },
+    {
+      "key": "support.where.title",
+      "value": "Куда идут деньги"
+    },
+    {
+      "key": "docs.button.askDiscord",
+      "value": "Спросить в Discord"
+    },
+    {
+      "key": "docs.button.basisGithub",
+      "value": "Basis на GitHub  ↗"
+    },
+    {
+      "key": "docs.button.joinDiscord",
+      "value": "Присоединиться к Discord"
+    },
+    {
+      "key": "docs.button.openDocs",
+      "value": "Открыть документацию  ↗"
+    },
+    {
+      "key": "docs.button.openDocsSite",
+      "value": "Открыть docs.basisvr.org  ↗"
+    },
+    {
+      "key": "docs.button.packageManagerGithub",
+      "value": "Менеджер пакетов на GitHub  ↗"
+    },
+    {
+      "key": "docs.community.body",
+      "value": "Столкнулись с тем, чего нет в документации? Discord — самый быстрый способ получить помощь от других авторов и сопровождающих."
+    },
+    {
+      "key": "docs.community.title",
+      "value": "Спросить сообщество"
+    },
+    {
+      "key": "docs.hero.subtitle",
+      "value": "Руководства, справочник по API и инструкции по разработке на Basis — а также сообщество, где можно спросить, если застряли."
+    },
+    {
+      "key": "docs.hero.tagline",
+      "value": "ДОКУМЕНТАЦИЯ"
+    },
+    {
+      "key": "docs.hero.title",
+      "value": "Изучайте Basis"
+    },
+    {
+      "key": "docs.site.body",
+      "value": "Установка, первые шаги, аватары, миры, сеть и SDK — полная документация на docs.basisvr.org."
+    },
+    {
+      "key": "docs.site.title",
+      "value": "Сайт документации"
+    },
+    {
+      "key": "docs.source.body",
+      "value": "Читайте код, сообщайте об ошибках или открывайте pull request. Basis распространяется под лицензией MIT и разрабатывается открыто."
+    },
+    {
+      "key": "docs.source.title",
+      "value": "Исходный код и обращения"
+    },
+    {
+      "key": "logs.button.clear",
+      "value": "Очистить"
+    },
+    {
+      "key": "logs.button.copy",
+      "value": "Копировать"
+    },
+    {
+      "key": "logs.button.openFolder",
+      "value": "Открыть папку"
+    },
+    {
+      "key": "logs.hero.subtitle",
+      "value": "Что приложение делало за эту сессию — личные пути, имена пользователей и IP-адреса скрыты. Прикладывайте их при сообщении о проблеме."
+    },
+    {
+      "key": "logs.hero.tagline",
+      "value": "ЖУРНАЛЫ"
+    },
+    {
+      "key": "logs.hero.title",
+      "value": "Журнал активности"
+    },
+    {
+      "key": "announcements.button.refresh",
+      "value": "Обновить"
+    },
+    {
+      "key": "announcements.card.learnMore",
+      "value": "Подробнее"
+    },
+    {
+      "key": "announcements.card.pinned",
+      "value": "ЗАКРЕПЛЕНО"
+    },
+    {
+      "key": "announcements.empty.body",
+      "value": "Загляните позже — новости от команды Basis появятся здесь."
+    },
+    {
+      "key": "announcements.empty.title",
+      "value": "Пока нет объявлений"
+    },
+    {
+      "key": "announcements.hero.subtitle",
+      "value": "Обновления и новости от команды Basis."
+    },
+    {
+      "key": "announcements.hero.tagline",
+      "value": "ОБЪЯВЛЕНИЯ"
+    },
+    {
+      "key": "announcements.hero.title",
+      "value": "Что нового"
+    },
+    {
+      "key": "announcements.level.alert",
+      "value": "ВНИМАНИЕ"
+    },
+    {
+      "key": "announcements.level.news",
+      "value": "НОВОСТИ"
+    },
+    {
+      "key": "announcements.level.update",
+      "value": "ОБНОВЛЕНИЕ"
+    },
+    {
+      "key": "announcements.status.loading",
+      "value": "Загрузка объявлений…"
+    },
+    {
+      "key": "dialog.alias.cancel",
+      "value": "Отмена"
+    },
+    {
+      "key": "dialog.alias.displayName",
+      "value": "Отображаемое имя"
+    },
+    {
+      "key": "dialog.alias.hint",
+      "value": "Понятное имя, отображаемое в приложении для этого клона."
+    },
+    {
+      "key": "dialog.alias.save",
+      "value": "Сохранить"
+    },
+    {
+      "key": "dialog.alias.title",
+      "value": "Назовите эту установку"
+    },
+    {
+      "key": "dialog.alias.watermark",
+      "value": "например, Мой проект Basis"
+    },
+    {
+      "key": "dialog.backup.backupContinue",
+      "value": "Создать копию и продолжить"
+    },
+    {
+      "key": "dialog.backup.cancel",
+      "value": "Отмена"
+    },
+    {
+      "key": "dialog.backup.continueWithout",
+      "value": "Продолжить без резервной копии"
+    },
+    {
+      "key": "dialog.backup.heading",
+      "value": "Сначала создать резервную копию проекта?"
+    },
+    {
+      "key": "dialog.backup.title",
+      "value": "Создать резервную копию проекта?"
+    },
+    {
+      "key": "dialog.confirm.no",
+      "value": "Нет, спасибо"
+    },
+    {
+      "key": "dialog.confirm.title",
+      "value": "Подтверждение"
+    },
+    {
+      "key": "dialog.confirm.yes",
+      "value": "Да"
+    },
+    {
+      "key": "dialog.createBundle.cancel",
+      "value": "Отмена"
+    },
+    {
+      "key": "dialog.createBundle.create",
+      "value": "Создать заявку"
+    },
+    {
+      "key": "dialog.createBundle.descriptionLabel",
+      "value": "Описание"
+    },
+    {
+      "key": "dialog.createBundle.errorNoName",
+      "value": "Дайте набору имя."
+    },
+    {
+      "key": "dialog.createBundle.errorNoPackages",
+      "value": "Выберите хотя бы один пакет для включения."
+    },
+    {
+      "key": "dialog.createBundle.heading",
+      "value": "Создать набор"
+    },
+    {
+      "key": "dialog.createBundle.intro",
+      "value": "Поделитесь своим Basis и пакетами в виде устанавливаемого набора. Для отправки откроется обращение на GitHub."
+    },
+    {
+      "key": "dialog.createBundle.nameLabel",
+      "value": "Имя"
+    },
+    {
+      "key": "dialog.createBundle.packagesLabel",
+      "value": "Пакеты для включения"
+    },
+    {
+      "key": "dialog.createBundle.title",
+      "value": "Создать набор"
+    },
+    {
+      "key": "dialog.installPicker.addHere",
+      "value": "Добавить сюда"
+    },
+    {
+      "key": "dialog.installPicker.cancel",
+      "value": "Отмена"
+    },
+    {
+      "key": "dialog.installPicker.heading",
+      "value": "Добавить пакет"
+    },
+    {
+      "key": "dialog.installPicker.subtitle",
+      "value": "Выберите, в какую установку добавить этот пакет."
+    },
+    {
+      "key": "dialog.installPicker.title",
+      "value": "Выберите установку"
+    },
+    {
+      "key": "dialog.roleWizard.developerDesc",
+      "value": "Всё, что выше, плюс вкладка «Разработка» — подключайте пакеты локально, редактируйте их в Unity и открывайте pull request."
+    },
+    {
+      "key": "dialog.roleWizard.developerTitle",
+      "value": "🛠   Я разработчик"
+    },
+    {
+      "key": "dialog.roleWizard.intro",
+      "value": "Как вы будете использовать Basis? Мы подберём, какие инструменты показывать — это можно изменить в любое время в настройках."
+    },
+    {
+      "key": "dialog.roleWizard.title",
+      "value": "Добро пожаловать в Basis Package Manager"
+    },
+    {
+      "key": "dialog.roleWizard.userDesc",
+      "value": "Клонируйте Basis, устанавливайте пакеты и поддерживайте его в актуальном состоянии. Только самое необходимое, ничего лишнего."
+    },
+    {
+      "key": "dialog.roleWizard.userTitle",
+      "value": "🎮   Я использую фреймворк"
+    },
+    {
+      "key": "dialog.roleWizard.welcome",
+      "value": "Добро пожаловать 👋"
+    },
+    {
+      "key": "dialog.submitPr.branchLabel",
+      "value": "Имя ветки"
+    },
+    {
+      "key": "dialog.submitPr.cancel",
+      "value": "Отмена"
+    },
+    {
+      "key": "dialog.submitPr.contributeHint",
+      "value": "Отправьте свои изменения в {0} обратно в его репозиторий."
+    },
+    {
+      "key": "dialog.submitPr.defaultTitle",
+      "value": "Обновить {0}"
+    },
+    {
+      "key": "dialog.submitPr.descriptionLabel",
+      "value": "Описание"
+    },
+    {
+      "key": "dialog.submitPr.descriptionWatermark",
+      "value": "Что и почему вы изменили?"
+    },
+    {
+      "key": "dialog.submitPr.hint",
+      "value": "Мы создадим эту ветку, зафиксируем ваши изменения, отправим их (сначала создав форк, если вы не можете отправлять напрямую) и откроем PR."
+    },
+    {
+      "key": "dialog.submitPr.openPr",
+      "value": "Открыть pull request"
+    },
+    {
+      "key": "dialog.submitPr.title",
+      "value": "Отправить pull request"
+    },
+    {
+      "key": "dialog.submitPr.titleLabel",
+      "value": "Заголовок"
+    },
+    {
+      "key": "dialog.submitPr.titleWatermark",
+      "value": "Обновить пакет"
+    },
+    {
+      "key": "dialog.versionPicker.betaPill",
+      "value": "бета"
+    },
+    {
+      "key": "dialog.versionPicker.cancel",
+      "value": "Отмена"
+    },
+    {
+      "key": "dialog.versionPicker.install",
+      "value": "Установить эту версию"
+    },
+    {
+      "key": "dialog.versionPicker.showPrereleases",
+      "value": "Показать предварительные версии (беты)"
+    },
+    {
+      "key": "dialog.versionPicker.subHasReleases",
+      "value": "Выберите опубликованный релиз или последнюю ветку по умолчанию."
+    },
+    {
+      "key": "dialog.versionPicker.subNoReleases",
+      "value": "Релизы не опубликованы — показаны теги / ветка по умолчанию. Попросите автора выпускать релизы для стабильных версий."
+    },
+    {
+      "key": "dialog.versionPicker.title",
+      "value": "Выберите версию"
+    }
+  ]
+}

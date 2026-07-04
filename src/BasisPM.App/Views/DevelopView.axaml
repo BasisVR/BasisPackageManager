@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:BasisPM.App.ViewModels"
+             xmlns:loc="using:BasisPM.App.Localization"
              x:Class="BasisPM.App.Views.DevelopView"
              x:DataType="vm:DevelopViewModel"
              Name="Root">
@@ -12,19 +13,19 @@
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
                 <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                     <StackPanel Grid.Column="0" Spacing="6">
-                        <TextBlock Text="DEVELOP" Classes="tagline"/>
+                        <TextBlock Text="{loc:Tr develop.header.tagline}" Classes="tagline"/>
                         <TextBlock Text="{Binding InstallName}" Classes="h1"/>
-                        <TextBlock Text="Mount a git package to edit it in Unity, then open a pull request upstream — swap back or keep it when you're done."
+                        <TextBlock Text="{loc:Tr develop.header.description}"
                                    Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                     </StackPanel>
-                    <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshCommand}" VerticalAlignment="Top"/>
+                    <Button Grid.Column="1" Content="{loc:Tr develop.button.refresh}" Command="{Binding RefreshCommand}" VerticalAlignment="Top"/>
                 </Grid>
             </Border>
 
             <Border Classes="card" IsVisible="{Binding !HasInstall}">
                 <StackPanel Spacing="10" HorizontalAlignment="Center" Margin="0,50">
-                    <TextBlock Text="No install with a Unity project" Classes="h3" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Select a Basis install on the Installs tab to edit its packages."
+                    <TextBlock Text="{loc:Tr develop.empty.title}" Classes="h3" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr develop.empty.description}"
                                Classes="muted" HorizontalAlignment="Center"/>
                 </StackPanel>
             </Border>
@@ -34,12 +35,12 @@
                 <!-- Preflight: Git -->
                 <Border Classes="card" Padding="20,16" IsVisible="{Binding GitMissing}">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="Git is required" Classes="h3"/>
-                        <TextBlock Text="Mounting a package and submitting pull requests need Git. Install it, then Re-check."
+                        <TextBlock Text="{loc:Tr develop.git.requiredTitle}" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr develop.git.requiredDescription}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                         <StackPanel Orientation="Horizontal" Spacing="10">
-                            <Button Classes="primary" Content="Install Git" Command="{Binding InstallGitCommand}"/>
-                            <Button Content="Re-check" Command="{Binding RecheckCommand}"/>
+                            <Button Classes="primary" Content="{loc:Tr develop.button.installGit}" Command="{Binding InstallGitCommand}"/>
+                            <Button Content="{loc:Tr develop.button.recheck}" Command="{Binding RecheckCommand}"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -50,14 +51,14 @@
                         <Grid ColumnDefinitions="*,Auto">
                             <TextBlock Grid.Column="0" Text="{Binding AuthLabel}" Classes="muted" FontSize="12"
                                        VerticalAlignment="Center" TextWrapping="Wrap"/>
-                            <Button Grid.Column="1" Content="Re-check" Command="{Binding RecheckCommand}" VerticalAlignment="Top"/>
+                            <Button Grid.Column="1" Content="{loc:Tr develop.button.recheck}" Command="{Binding RecheckCommand}" VerticalAlignment="Top"/>
                         </Grid>
                         <StackPanel Spacing="6" IsVisible="{Binding ShowPatEntry}">
-                            <TextBlock Text="GitHub token (needs the “repo” scope)" Classes="muted" FontSize="11"/>
+                            <TextBlock Text="{loc:Tr develop.auth.tokenLabel}" Classes="muted" FontSize="11"/>
                             <Grid ColumnDefinitions="*,8,Auto">
                                 <TextBox Grid.Column="0" Text="{Binding PatInput}" PasswordChar="•"
-                                         Watermark="ghp_…  or  github_pat_…"/>
-                                <Button Grid.Column="2" Classes="primary" Content="Sign in" Command="{Binding ApplyPatCommand}"/>
+                                         Watermark="{loc:Tr develop.auth.tokenWatermark}"/>
+                                <Button Grid.Column="2" Classes="primary" Content="{loc:Tr develop.button.signIn}" Command="{Binding ApplyPatCommand}"/>
                             </Grid>
                         </StackPanel>
                     </StackPanel>
@@ -67,7 +68,7 @@
                 <Border Classes="card" Padding="0">
                     <StackPanel>
                         <Border Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                            <TextBlock Text="Git packages" Classes="h3"/>
+                            <TextBlock Text="{loc:Tr develop.section.gitPackages}" Classes="h3"/>
                         </Border>
                         <ItemsControl ItemsSource="{Binding GitPackages}">
                             <ItemsControl.ItemTemplate>
@@ -78,7 +79,7 @@
                                                 <TextBlock Text="{Binding Id}" FontWeight="SemiBold"/>
                                                 <TextBlock Text="{Binding Slug}" Classes="dim" FontSize="11" TextTrimming="CharacterEllipsis"/>
                                             </StackPanel>
-                                            <Button Grid.Column="1" Content="Mount to edit" Classes="primary"
+                                            <Button Grid.Column="1" Content="{loc:Tr develop.button.mountToEdit}" Classes="primary"
                                                     Command="{Binding #Root.((vm:DevelopViewModel)DataContext).MountCommand}"
                                                     CommandParameter="{Binding}"/>
                                         </Grid>
@@ -86,7 +87,7 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <TextBlock Text="No git-loaded packages in this project." Classes="muted" FontSize="12"
+                        <TextBlock Text="{loc:Tr develop.section.noGitPackages}" Classes="muted" FontSize="12"
                                    Margin="20,16" IsVisible="{Binding NoGitPackages}"/>
                     </StackPanel>
                 </Border>
@@ -95,7 +96,7 @@
                 <Border Classes="card" Padding="0" IsVisible="{Binding HasMounted}">
                     <StackPanel>
                         <Border Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                            <TextBlock Text="Mounted for editing" Classes="h3"/>
+                            <TextBlock Text="{loc:Tr develop.section.mountedForEditing}" Classes="h3"/>
                         </Border>
                         <ItemsControl ItemsSource="{Binding Mounted}">
                             <ItemsControl.ItemTemplate>
@@ -107,13 +108,13 @@
                                                 <TextBlock Text="{Binding FolderPath}" Classes="dim" FontSize="11" TextTrimming="CharacterEllipsis"/>
                                             </StackPanel>
                                             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                                <Button Content="Open folder"
-                                                        Command="{Binding #Root.((vm:DevelopViewModel)DataContext).OpenFolderCommand}"
+                                                <Button Content="{loc:Tr develop.button.openInUnity}"
+                                                        Command="{Binding #Root.((vm:DevelopViewModel)DataContext).OpenInUnityCommand}"
                                                         CommandParameter="{Binding}"/>
-                                                <Button Content="Swap back"
+                                                <Button Content="{loc:Tr develop.button.swapBack}"
                                                         Command="{Binding #Root.((vm:DevelopViewModel)DataContext).SwapBackCommand}"
                                                         CommandParameter="{Binding}"/>
-                                                <Button Content="Submit PR" Classes="primary"
+                                                <Button Content="{loc:Tr develop.button.submitPr}" Classes="primary"
                                                         Command="{Binding #Root.((vm:DevelopViewModel)DataContext).SubmitPrCommand}"
                                                         CommandParameter="{Binding}"/>
                                             </StackPanel>

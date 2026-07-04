@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using Avalonia.Media;
+using BasisPM.App.Localization;
 using BasisPM.App.Services;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
@@ -84,9 +85,9 @@ public sealed class AnnouncementCard
 
     public string LevelLabel => Norm switch
     {
-        "update" => "UPDATE",
-        "alert" => "HEADS UP",
-        _ => "NEWS",
+        "update" => L.Tr("announcements.level.update"),
+        "alert" => L.Tr("announcements.level.alert"),
+        _ => L.Tr("announcements.level.news"),
     };
 
     public IBrush LevelBrush => new SolidColorBrush(Color.Parse(Norm switch
@@ -99,7 +100,7 @@ public sealed class AnnouncementCard
     public bool HasLink => !string.IsNullOrWhiteSpace(_a.Url);
 
     public string LinkText =>
-        (string.IsNullOrWhiteSpace(_a.LinkText) ? "Learn more" : _a.LinkText!) + "  ↗";
+        (string.IsNullOrWhiteSpace(_a.LinkText) ? L.Tr("announcements.card.learnMore") : _a.LinkText!) + "  ↗";
 
     public RelayCommand OpenLinkCommand { get; }
 

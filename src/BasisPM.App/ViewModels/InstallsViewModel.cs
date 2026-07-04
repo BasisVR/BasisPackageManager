@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using BasisPM.App.Localization;
 using BasisPM.App.Views;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
@@ -150,13 +151,13 @@ public sealed class InstallsViewModel : ObservableObject
     private async Task RefreshGitInfoAsync(InstallRow? row, bool fetch)
     {
         if (row is null) return;
-        if (!row.Install.IsGitRepo) { row.GitSummary = "not a git repository"; return; }
+        if (!row.Install.IsGitRepo) { row.GitSummary = L.Tr("installs.git.notGitRepo"); return; }
         row.IsBusy = true;
         try
         {
             if (fetch)
             {
-                row.GitSummary = "checking remote…";
+                row.GitSummary = L.Tr("installs.git.checkingRemote");
                 await _git.FetchAsync(row.RepoRoot);
             }
             var status = await _git.GetStatusAsync(row.RepoRoot);
@@ -165,11 +166,11 @@ public sealed class InstallsViewModel : ObservableObject
             row.GitSummary = DescribeStatus(status);
             row.ChangeCount = status.ChangeCount;
             if (fetch)
-                _shell.SetStatus($"{row.Name}: {row.GitSummary}", StatusKind.Info);
+                _shell.SetStatus(L.Tr("installs.status.rowSummary", row.Name, row.GitSummary), StatusKind.Info);
         }
         catch (Exception ex)
         {
-            row.GitSummary = $"git error: {ex.Message}";
+            row.GitSummary = L.Tr("installs.git.error", ex.Message);
         }
         finally { row.IsBusy = false; }
     }
@@ -179,12 +180,12 @@ public sealed class InstallsViewModel : ObservableObject
         var parts = new List<string>();
         if (status.Upstream.HasUpstream)
         {
-            if (status.Upstream.Behind > 0) parts.Add($"{status.Upstream.Behind} behind upstream");
-            if (status.Upstream.Ahead > 0) parts.Add($"{status.Upstream.Ahead} ahead");
-            if (status.Upstream.IsUpToDate) parts.Add("up to date");
+            if (status.Upstream.Behind > 0) parts.Add(L.Tr("installs.git.behindUpstream", status.Upstream.Behind));
+            if (status.Upstream.Ahead > 0) parts.Add(L.Tr("installs.git.ahead", status.Upstream.Ahead));
+            if (status.Upstream.IsUpToDate) parts.Add(L.Tr("installs.git.upToDate"));
         }
-        else parts.Add("no upstream");
-        if (status.ChangeCount > 0) parts.Add($"{status.ChangeCount} local change{(status.ChangeCount == 1 ? "" : "s")}");
+        else parts.Add(L.Tr("installs.git.noUpstream"));
+        if (status.ChangeCount > 0) parts.Add(L.Tr("installs.git.localChanges", status.ChangeCount, status.ChangeCount == 1 ? "" : "s"));
         return string.Join("  ·  ", parts);
     }
 
@@ -234,21 +235,21 @@ public sealed class InstallsViewModel : ObservableObject
         IsCloneSpaceCritical = info.FreeBytes < CriticalBelowBytes;
         var free = DiskSpace.Human(info.FreeBytes);
         CloneSpaceWarning = IsCloneSpaceCritical
-            ? $"Very low disk space — only {free} free on {info.DriveName}. Cloning Basis will likely fail; free up space or choose another drive."
-            : $"Low disk space — {free} free on {info.DriveName}. Basis plus its Unity Library can use 20 GB or more.";
+            ? L.Tr("installs.space.criticalWarning", free, info.DriveName)
+            : L.Tr("installs.space.lowWarning", free, info.DriveName);
     }
 
     private async Task CloneAsync()
     {
         if (!_git.IsAvailable)
         {
-            _shell.SetStatus("Git was not found. Install Git and add it to your PATH (see Settings).", StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.gitNotFound"), StatusKind.Error);
             return;
         }
         var parent = ClonePath?.Trim();
         if (string.IsNullOrEmpty(parent))
         {
-            _shell.SetStatus("Choose a folder to clone into first.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.chooseFolderFirst"), StatusKind.Error);
             return;
         }
 
@@ -256,12 +257,11 @@ public sealed class InstallsViewModel : ObservableObject
         var space = DiskSpace.ForPath(parent);
         if (space is not null && space.FreeBytes < CriticalBelowBytes)
         {
-            var proceed = await BasisPM.App.Services.Dialogs.ConfirmAsync("Low disk space",
-                $"Only {DiskSpace.Human(space.FreeBytes)} is free on {space.DriveName}. Cloning Basis and opening it in Unity " +
-                "can need well over that, and the clone may fail partway.\n\nClone here anyway?");
+            var proceed = await BasisPM.App.Services.Dialogs.ConfirmAsync(L.Tr("installs.dialog.lowDiskSpaceTitle"),
+                L.Tr("installs.dialog.lowDiskSpaceBody", DiskSpace.Human(space.FreeBytes), space.DriveName));
             if (!proceed)
             {
-                _shell.SetStatus("Clone cancelled — low disk space on the target drive.", StatusKind.Info);
+                _shell.SetStatus(L.Tr("installs.status.cloneCancelledLowSpace"), StatusKind.Info);
                 return;
             }
         }
@@ -270,18 +270,18 @@ public sealed class InstallsViewModel : ObservableObject
 
         if (Directory.Exists(dest) && Directory.EnumerateFileSystemEntries(dest).Any())
         {
-            _shell.SetStatus($"{dest} already exists and is not empty.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.destExists", dest), StatusKind.Error);
             return;
         }
         if (Installs.Any(r => string.Equals(r.RepoRoot, dest, StringComparison.OrdinalIgnoreCase)))
         {
-            _shell.SetStatus("That install is already in the list.", StatusKind.Info);
+            _shell.SetStatus(L.Tr("installs.status.alreadyInList"), StatusKind.Info);
             return;
         }
 
         IsCloning = true;
-        CloneProgress = "Starting clone…";
-        _shell.SetStatus($"Cloning Basis into {dest}…");
+        CloneProgress = L.Tr("installs.progress.starting");
+        _shell.SetStatus(L.Tr("installs.status.cloningInto", dest));
         try
         {
             Directory.CreateDirectory(parent);
@@ -291,24 +291,24 @@ public sealed class InstallsViewModel : ObservableObject
 
             if (!result.Ok)
             {
-                _shell.SetStatus($"Clone failed (exit {result.Code}). {Tail(result.Output)}", StatusKind.Error);
+                _shell.SetStatus(L.Tr("installs.status.cloneFailed", result.Code, Tail(result.Output)), StatusKind.Error);
                 return;
             }
 
             var install = await _installService.LoadAsync(dest);
-            var alias = await BasisPM.App.Services.Dialogs.PromptAliasAsync("Name this install", dest, install.Name);
+            var alias = await BasisPM.App.Services.Dialogs.PromptAliasAsync(L.Tr("installs.dialog.nameThisInstall"), dest, install.Name);
             install.Alias = string.IsNullOrWhiteSpace(alias) ? null : alias;
             AddRow(install, activate: true);
             await PersistAsync();
             CloneProgress = "";
             var versionNote = install.HasUnityProject && install.UnityVersion != "unknown"
-                ? $" Requires Unity {install.UnityVersion} — open the Unity tab to install it."
+                ? L.Tr("installs.status.requiresUnityNote", install.UnityVersion)
                 : "";
-            _shell.SetStatus($"Cloned Basis into {dest}.{versionNote}", StatusKind.Success);
+            _shell.SetStatus(L.Tr("installs.status.clonedInto", dest, versionNote), StatusKind.Success);
         }
         catch (Exception ex)
         {
-            _shell.SetStatus($"Clone error: {ex.Message}", StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.cloneError", ex.Message), StatusKind.Error);
         }
         finally { IsCloning = false; }
     }
@@ -318,15 +318,15 @@ public sealed class InstallsViewModel : ObservableObject
         if (row is null) return;
         if (!row.Install.IsGitRepo)
         {
-            _shell.SetStatus($"{row.Name} is not a git repository.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.notGitRepo", row.Name), StatusKind.Error);
             return;
         }
 
-        if (!await PromptBackupAsync(row, "Update Core runs 'git pull', which can change files in your Basis project."))
+        if (!await PromptBackupAsync(row, L.Tr("installs.action.updateCore")))
             return;
 
         row.IsBusy = true;
-        _shell.SetStatus($"Updating {row.Name} (git pull)…");
+        _shell.SetStatus(L.Tr("installs.status.updating", row.Name));
         try
         {
             var result = await _git.PullAsync(row.RepoRoot);
@@ -336,16 +336,16 @@ public sealed class InstallsViewModel : ObservableObject
                 row.UpdateInstall(reloaded);
                 if (row.IsActive) _shell.SetActiveInstall(reloaded);
                 await RefreshGitInfoAsync(row, fetch: false);
-                _shell.SetStatus($"Updated {row.Name}. {Tail(result.Output)}", StatusKind.Success);
+                _shell.SetStatus(L.Tr("installs.status.updated", row.Name, Tail(result.Output)), StatusKind.Success);
             }
             else
             {
-                _shell.SetStatus($"Update failed for {row.Name}: {Tail(result.Output)}", StatusKind.Error);
+                _shell.SetStatus(L.Tr("installs.status.updateFailed", row.Name, Tail(result.Output)), StatusKind.Error);
             }
         }
         catch (Exception ex)
         {
-            _shell.SetStatus($"Update error: {ex.Message}", StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.updateError", ex.Message), StatusKind.Error);
         }
         finally { row.IsBusy = false; }
     }
@@ -355,21 +355,21 @@ public sealed class InstallsViewModel : ObservableObject
         if (row is null) return;
         if (!BackupService.LooksLikeUnityProject(row.UnityProjectPath))
         {
-            _shell.SetStatus($"{row.Name} has no Unity project to back up.", StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.noUnityToBackup", row.Name), StatusKind.Error);
             return;
         }
         row.IsBusy = true;
-        _shell.SetStatus($"Backing up {row.Name}…");
+        _shell.SetStatus(L.Tr("installs.status.backingUp", row.Name));
         try
         {
             var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
             var zip = await BackupService.CreateBackupAsync(row.UnityProjectPath, DefaultBackupDir(row), stamp,
                 msg => Dispatcher.UIThread.Post(() => _shell.SetStatus(msg)));
-            _shell.SetStatus($"Backed up {row.Name} → {zip}", StatusKind.Success);
+            _shell.SetStatus(L.Tr("installs.status.backedUp", row.Name, zip), StatusKind.Success);
         }
         catch (Exception ex)
         {
-            _shell.SetStatus($"Backup failed: {ex.Message}", StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.backupFailed", ex.Message), StatusKind.Error);
         }
         finally { row.IsBusy = false; }
     }
@@ -384,8 +384,7 @@ public sealed class InstallsViewModel : ObservableObject
         var window = GetMainWindow();
         if (window is null) return true;
 
-        var message = $"{action}\n\nBack up {row.Name} first? This zips Assets, Packages and " +
-                      "ProjectSettings (not the Library cache) into a BasisBackups folder next to your install.";
+        var message = L.Tr("installs.dialog.backupPrompt", action, row.Name);
         var choice = await new BackupPromptDialog(message).ShowDialog<BackupChoice>(window);
         if (choice == BackupChoice.Cancel) return false;
         if (choice == BackupChoice.Backup) await BackupAsync(row);
@@ -401,7 +400,7 @@ public sealed class InstallsViewModel : ObservableObject
         if (window is null) return;
         var folders = await window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
-            Title = "Select an existing Basis clone",
+            Title = L.Tr("installs.picker.selectExistingClone"),
             AllowMultiple = false,
         });
         var picked = folders?.FirstOrDefault()?.TryGetLocalPath();
@@ -409,17 +408,17 @@ public sealed class InstallsViewModel : ObservableObject
 
         if (Installs.Any(r => string.Equals(r.RepoRoot, picked, StringComparison.OrdinalIgnoreCase)))
         {
-            _shell.SetStatus("That install is already in the list.", StatusKind.Info);
+            _shell.SetStatus(L.Tr("installs.status.alreadyInList"), StatusKind.Info);
             return;
         }
 
         var install = await _installService.LoadAsync(picked);
-        var alias = await BasisPM.App.Services.Dialogs.PromptAliasAsync("Name this install", picked, install.Name);
+        var alias = await BasisPM.App.Services.Dialogs.PromptAliasAsync(L.Tr("installs.dialog.nameThisInstall"), picked, install.Name);
         install.Alias = string.IsNullOrWhiteSpace(alias) ? null : alias;
         AddRow(install, activate: true);
         await PersistAsync();
-        var note = install.HasUnityProject ? "" : " (no Unity project detected under it)";
-        _shell.SetStatus($"Added {install.Name}{note}.", install.HasUnityProject ? StatusKind.Success : StatusKind.Info);
+        var note = install.HasUnityProject ? "" : L.Tr("installs.status.noUnityDetectedNote");
+        _shell.SetStatus(L.Tr("installs.status.added", install.Name, note), install.HasUnityProject ? StatusKind.Success : StatusKind.Info);
     }
 
     private async Task BrowseCloneFolderAsync()
@@ -428,7 +427,7 @@ public sealed class InstallsViewModel : ObservableObject
         if (window is null) return;
         var folders = await window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
-            Title = "Choose a folder to clone Basis into",
+            Title = L.Tr("installs.picker.chooseCloneFolder"),
             AllowMultiple = false,
         });
         var picked = folders?.FirstOrDefault()?.TryGetLocalPath();
@@ -444,7 +443,7 @@ public sealed class InstallsViewModel : ObservableObject
         if (row is null) return;
         if (!Directory.Exists(row.RepoRoot))
         {
-            _shell.SetStatus($"Folder no longer exists: {row.RepoRoot}", StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.folderMissing", row.RepoRoot), StatusKind.Error);
             return;
         }
         BasisPM.App.Services.ExternalLink.OpenFolder(row.RepoRoot);
@@ -462,7 +461,7 @@ public sealed class InstallsViewModel : ObservableObject
             if (next is not null) Activate(next, null);
         }
         await PersistAsync();
-        _shell.SetStatus($"Removed {row.Name} from the list (files left on disk).", StatusKind.Info);
+        _shell.SetStatus(L.Tr("installs.status.removed", row.Name), StatusKind.Info);
     }
 
     private async Task PersistAsync()
@@ -489,14 +488,14 @@ public sealed class InstallsViewModel : ObservableObject
 
 public sealed record BranchOption(string Name, bool IsDefault)
 {
-    public string Display => IsDefault ? $"{Name} (main)" : Name;
+    public string Display => IsDefault ? L.Tr("installs.branch.default", Name) : Name;
 }
 
 public sealed class InstallRow : ObservableObject
 {
     private string _branch = "…";
     private string _commit = "";
-    private string _gitSummary = "checking…";
+    private string _gitSummary = L.Tr("installs.git.checking");
     private int _changeCount;
     private bool _isBusy;
     private bool _isActive;
@@ -511,7 +510,7 @@ public sealed class InstallRow : ObservableObject
     public string UnityProjectPath => Install.UnityProjectPath;
     public string UnityVersion => Install.UnityVersion;
     public bool HasUnityProject => Install.HasUnityProject;
-    public string UnityVersionLabel => Install.HasUnityProject ? $"Unity {Install.UnityVersion}" : "No Unity project";
+    public string UnityVersionLabel => Install.HasUnityProject ? L.Tr("installs.row.unityVersion", Install.UnityVersion) : L.Tr("installs.row.noUnityProject");
 
     public string Branch { get => _branch; set => SetField(ref _branch, value); }
     public string Commit { get => _commit; set { if (SetField(ref _commit, value)) OnPropertyChanged(nameof(BranchCommit)); } }

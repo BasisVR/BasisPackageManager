@@ -1,30 +1,31 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:BasisPM.App.Localization"
         x:Class="BasisPM.App.Views.RoleWizardWindow"
-        Title="Welcome to Basis Package Manager"
+        Title="{loc:Tr dialog.roleWizard.title}"
         Width="560" SizeToContent="Height"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BasisBackgroundBrush}">
     <StackPanel Margin="30" Spacing="18">
         <StackPanel Spacing="6">
-            <TextBlock Text="Welcome 👋" FontSize="22" FontWeight="Bold"/>
-            <TextBlock Text="How will you use Basis? We'll tailor which tools are shown — you can change this anytime in Settings."
+            <TextBlock Text="{loc:Tr dialog.roleWizard.welcome}" FontSize="22" FontWeight="Bold"/>
+            <TextBlock Text="{loc:Tr dialog.roleWizard.intro}"
                        Classes="muted" FontSize="13" TextWrapping="Wrap"/>
         </StackPanel>
 
         <Button Click="OnUser" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="18,16">
             <StackPanel Spacing="4">
-                <TextBlock Text="🎮   I'm using the framework" FontWeight="SemiBold" FontSize="15"/>
-                <TextBlock Text="Clone Basis, install packages, and keep it up to date. The essentials, nothing extra."
+                <TextBlock Text="{loc:Tr dialog.roleWizard.userTitle}" FontWeight="SemiBold" FontSize="15"/>
+                <TextBlock Text="{loc:Tr dialog.roleWizard.userDesc}"
                            Classes="muted" FontSize="12" TextWrapping="Wrap"/>
             </StackPanel>
         </Button>
 
         <Button Click="OnDeveloper" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="18,16">
             <StackPanel Spacing="4">
-                <TextBlock Text="🛠   I'm a developer" FontWeight="SemiBold" FontSize="15"/>
-                <TextBlock Text="Everything above, plus the Develop tab — mount packages locally, edit them in Unity, and open pull requests."
+                <TextBlock Text="{loc:Tr dialog.roleWizard.developerTitle}" FontWeight="SemiBold" FontSize="15"/>
+                <TextBlock Text="{loc:Tr dialog.roleWizard.developerDesc}"
                            Classes="muted" FontSize="12" TextWrapping="Wrap"/>
             </StackPanel>
         </Button>

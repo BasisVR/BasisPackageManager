@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using BasisPM.App.Localization;
 using BasisPM.Core.Models;
 
 namespace BasisPM.App.Views;
@@ -17,8 +18,8 @@ public partial class VersionPickerWindow : Window
         TitleText.Text = title;
         _all = versions.Options;
         SubText.Text = versions.HasReleases
-            ? "Pick a published release, or the latest default branch."
-            : "No releases published — showing tags / the default branch. Ask the creator to cut releases for stable versions.";
+            ? L.Tr("dialog.versionPicker.subHasReleases")
+            : L.Tr("dialog.versionPicker.subNoReleases");
         // If there's no stable option, show prereleases by default so the list isn't empty.
         ShowPre.IsChecked = !_all.Any(o => !o.IsPrerelease && o.Kind != VersionKind.Branch);
         Rebuild();

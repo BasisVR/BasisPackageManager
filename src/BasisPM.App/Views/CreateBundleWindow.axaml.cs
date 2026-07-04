@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using BasisPM.App.Localization;
 using BasisPM.Core.Models;
 
 namespace BasisPM.App.Views;
@@ -51,8 +52,8 @@ public partial class CreateBundleWindow : Window
     {
         var name = (NameBox.Text ?? "").Trim();
         var chosen = _picks.Where(p => p.Include).Select(p => p.Package).ToList();
-        if (string.IsNullOrWhiteSpace(name)) { ShowError("Give your bundle a name."); return; }
-        if (chosen.Count == 0) { ShowError("Pick at least one package to include."); return; }
+        if (string.IsNullOrWhiteSpace(name)) { ShowError(L.Tr("dialog.createBundle.errorNoName")); return; }
+        if (chosen.Count == 0) { ShowError(L.Tr("dialog.createBundle.errorNoPackages")); return; }
         Close(new BundleDraft(name, (DescBox.Text ?? "").Trim(), chosen));
     }
 

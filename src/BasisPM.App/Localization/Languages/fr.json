@@ -1,0 +1,1626 @@
+{
+  "code": "fr",
+  "nativeName": "Français",
+  "entries": [
+    {
+      "key": "nav.changes",
+      "value": "Modifications locales"
+    },
+    {
+      "key": "nav.community",
+      "value": "Communauté"
+    },
+    {
+      "key": "nav.develop",
+      "value": "Développer"
+    },
+    {
+      "key": "nav.installs",
+      "value": "Projets"
+    },
+    {
+      "key": "nav.packages",
+      "value": "Paquets"
+    },
+    {
+      "key": "nav.settings",
+      "value": "Paramètres"
+    },
+    {
+      "key": "nav.unity",
+      "value": "Éditeurs Unity"
+    },
+    {
+      "key": "shell.bundle.pickerLabel",
+      "value": "{0} ({1} paquets)"
+    },
+    {
+      "key": "shell.crash.dialogMessage",
+      "value": "Il semble que l'application se soit fermée de manière inattendue la dernière fois. Ouvrir un ticket GitHub pré-rempli pour que nous puissions examiner cela ?"
+    },
+    {
+      "key": "shell.crash.dialogTitle",
+      "value": "Basis Package Manager s'est fermé de manière inattendue"
+    },
+    {
+      "key": "shell.deeplink.thePackage",
+      "value": "le paquet"
+    },
+    {
+      "key": "shell.desktopShortcut.dialogMessage",
+      "value": "Ajouter un raccourci bureau pour Basis Package Manager ? Vous pourrez toujours le retrouver dans le menu Démarrer."
+    },
+    {
+      "key": "shell.desktopShortcut.dialogTitle",
+      "value": "Raccourci bureau"
+    },
+    {
+      "key": "shell.footer.license",
+      "value": "Sous licence MIT"
+    },
+    {
+      "key": "shell.installPicker.prompt",
+      "value": "Ajouter “{0}” à quel projet ?"
+    },
+    {
+      "key": "shell.status.bundleNotFound",
+      "value": "Bundle “{0}” introuvable dans le registre."
+    },
+    {
+      "key": "shell.status.checkingForUpdates",
+      "value": "Recherche de mises à jour…"
+    },
+    {
+      "key": "shell.status.cloneFirst",
+      "value": "Clonez ou ajoutez d'abord une installation Basis, puis installez {0}."
+    },
+    {
+      "key": "shell.status.copied",
+      "value": "État copié dans le presse-papiers."
+    },
+    {
+      "key": "shell.status.copy",
+      "value": "Copier"
+    },
+    {
+      "key": "shell.status.copyFailed",
+      "value": "Échec de la copie : {0}"
+    },
+    {
+      "key": "shell.status.copyTooltip",
+      "value": "Copier le message d'état dans le presse-papiers"
+    },
+    {
+      "key": "shell.status.desktopShortcutCreated",
+      "value": "Raccourci bureau créé."
+    },
+    {
+      "key": "shell.status.desktopShortcutFailed",
+      "value": "Impossible de créer le raccourci bureau : {0}"
+    },
+    {
+      "key": "shell.status.downloadingUpdate",
+      "value": "Téléchargement de la mise à jour…"
+    },
+    {
+      "key": "shell.status.installLinkMissingGit",
+      "value": "Le lien d'installation de {0} n'avait pas d'URL git."
+    },
+    {
+      "key": "shell.status.loadingBundle",
+      "value": "Chargement du bundle…"
+    },
+    {
+      "key": "shell.status.noUnityProject",
+      "value": "Aucun projet Unity à ouvrir."
+    },
+    {
+      "key": "shell.status.ok",
+      "value": "OK"
+    },
+    {
+      "key": "shell.status.okTooltip",
+      "value": "Ignorer ce message"
+    },
+    {
+      "key": "shell.status.openIssue",
+      "value": "Ouvrir un ticket"
+    },
+    {
+      "key": "shell.status.openIssueTooltip",
+      "value": "Ouvrir un ticket GitHub pré-rempli avec cette erreur et vos dernières actions"
+    },
+    {
+      "key": "shell.status.openUnityFailed",
+      "value": "Impossible d'ouvrir Unity : {0}"
+    },
+    {
+      "key": "shell.status.openedInUnity",
+      "value": "Ouverture de {0} dans Unity {1}."
+    },
+    {
+      "key": "shell.status.openingInUnity",
+      "value": "Ouverture de {0} dans Unity…"
+    },
+    {
+      "key": "shell.status.runningFromSource",
+      "value": "Exécution depuis les sources — les mises à jour sont gérées par votre build, pas par le programme de mise à jour intégré."
+    },
+    {
+      "key": "shell.status.unityNotInstalled",
+      "value": "Unity {0} n'est pas installé. Ajoutez-le dans l'onglet Éditeurs Unity, puis réessayez."
+    },
+    {
+      "key": "shell.status.unityNotInstalledOpenedHub",
+      "value": "Unity {0} n'est pas installé — Unity Hub a été ouvert pour que vous puissiez l'ajouter."
+    },
+    {
+      "key": "shell.status.upToDate",
+      "value": "Vous disposez de la dernière version."
+    },
+    {
+      "key": "shell.status.updateAvailable",
+      "value": "Une mise à jour est disponible."
+    },
+    {
+      "key": "shell.status.updateCheckFailed",
+      "value": "Échec de la vérification des mises à jour : {0}"
+    },
+    {
+      "key": "shell.status.updateFailed",
+      "value": "Échec de la mise à jour : {0}"
+    },
+    {
+      "key": "shell.update.bannerAvailable",
+      "value": "Basis Package Manager {0} est disponible."
+    },
+    {
+      "key": "shell.update.later",
+      "value": "Plus tard"
+    },
+    {
+      "key": "shell.update.laterTooltip",
+      "value": "Ignorer jusqu'au prochain démarrage"
+    },
+    {
+      "key": "shell.update.now",
+      "value": "Mettre à jour maintenant"
+    },
+    {
+      "key": "shell.update.nowTooltip",
+      "value": "Télécharger la mise à jour et redémarrer"
+    },
+    {
+      "key": "shell.version.tooltip",
+      "value": "Version installée — vérifiez les mises à jour dans Paramètres"
+    },
+    {
+      "key": "shell.window.title",
+      "value": "Basis Package Manager"
+    },
+    {
+      "key": "shell.wordmark.name",
+      "value": "BasisVR"
+    },
+    {
+      "key": "shell.wordmark.tagline",
+      "value": "Gestionnaire de paquets"
+    },
+    {
+      "key": "installs.action.updateCore",
+      "value": "Mettre à jour Core exécute 'git pull', ce qui peut modifier des fichiers de votre projet Basis."
+    },
+    {
+      "key": "installs.badge.active",
+      "value": "ACTIF"
+    },
+    {
+      "key": "installs.branch.default",
+      "value": "{0} (main)"
+    },
+    {
+      "key": "installs.button.addExisting",
+      "value": "Ajouter existant"
+    },
+    {
+      "key": "installs.button.backup",
+      "value": "Sauvegarder"
+    },
+    {
+      "key": "installs.button.browse",
+      "value": "Parcourir…"
+    },
+    {
+      "key": "installs.button.changes",
+      "value": "Modifications"
+    },
+    {
+      "key": "installs.button.cloneBasis",
+      "value": "Cloner Basis"
+    },
+    {
+      "key": "installs.button.open",
+      "value": "Ouvrir"
+    },
+    {
+      "key": "installs.button.packages",
+      "value": "Paquets"
+    },
+    {
+      "key": "installs.button.refresh",
+      "value": "Actualiser"
+    },
+    {
+      "key": "installs.button.remove",
+      "value": "Retirer"
+    },
+    {
+      "key": "installs.button.updateCore",
+      "value": "Mettre à jour Core"
+    },
+    {
+      "key": "installs.cloneForm.branchLabel",
+      "value": "Branche"
+    },
+    {
+      "key": "installs.cloneForm.cloneIntoLabel",
+      "value": "Cloner dans le dossier"
+    },
+    {
+      "key": "installs.cloneForm.heading",
+      "value": "Cloner Basis"
+    },
+    {
+      "key": "installs.cloneForm.subFolderLabel",
+      "value": "Nom du sous-dossier"
+    },
+    {
+      "key": "installs.dialog.backupPrompt",
+      "value": "{0}\n\nSauvegarder {1} d'abord ? Cela compresse Assets, Packages et ProjectSettings (pas le cache Library) dans un dossier BasisBackups à côté de votre installation."
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceBody",
+      "value": "Il ne reste que {0} de libre sur {1}. Cloner Basis et l'ouvrir dans Unity peut nécessiter bien plus, et le clonage peut échouer en cours de route.\n\nCloner ici quand même ?"
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceTitle",
+      "value": "Espace disque faible"
+    },
+    {
+      "key": "installs.dialog.nameThisInstall",
+      "value": "Nommer cette installation"
+    },
+    {
+      "key": "installs.empty.body",
+      "value": "Utilisez Cloner Basis ci-dessus pour récupérer BasisVR/Basis, ou Ajouter existant pour enregistrer un clone que vous avez déjà."
+    },
+    {
+      "key": "installs.empty.title",
+      "value": "Aucune installation pour l'instant"
+    },
+    {
+      "key": "installs.git.ahead",
+      "value": "{0} en avance"
+    },
+    {
+      "key": "installs.git.behindUpstream",
+      "value": "{0} en retard sur l'amont"
+    },
+    {
+      "key": "installs.git.checking",
+      "value": "vérification…"
+    },
+    {
+      "key": "installs.git.checkingRemote",
+      "value": "vérification du dépôt distant…"
+    },
+    {
+      "key": "installs.git.error",
+      "value": "erreur git : {0}"
+    },
+    {
+      "key": "installs.git.localChanges",
+      "value": "{0} modification{1} en local"
+    },
+    {
+      "key": "installs.git.noUpstream",
+      "value": "aucun amont"
+    },
+    {
+      "key": "installs.git.notGitRepo",
+      "value": "pas un dépôt git"
+    },
+    {
+      "key": "installs.git.upToDate",
+      "value": "à jour"
+    },
+    {
+      "key": "installs.hero.subtitle",
+      "value": "Clonez le dépôt BasisVR/Basis, puis gérez les paquets, mises à jour et modifications locales de chaque projet."
+    },
+    {
+      "key": "installs.hero.tagline",
+      "value": "PROJETS"
+    },
+    {
+      "key": "installs.hero.title",
+      "value": "Vos projets Basis"
+    },
+    {
+      "key": "installs.picker.chooseCloneFolder",
+      "value": "Choisir un dossier où cloner Basis"
+    },
+    {
+      "key": "installs.picker.selectExistingClone",
+      "value": "Sélectionner un clone Basis existant"
+    },
+    {
+      "key": "installs.progress.starting",
+      "value": "Démarrage du clonage…"
+    },
+    {
+      "key": "installs.row.noUnityProject",
+      "value": "Aucun projet Unity"
+    },
+    {
+      "key": "installs.row.unityVersion",
+      "value": "Unity {0}"
+    },
+    {
+      "key": "installs.space.criticalWarning",
+      "value": "Espace disque très faible — seulement {0} de libre sur {1}. Le clonage de Basis échouera probablement ; libérez de l'espace ou choisissez un autre disque."
+    },
+    {
+      "key": "installs.space.lowWarning",
+      "value": "Espace disque faible — {0} de libre sur {1}. Basis et sa Library Unity peuvent utiliser 20 Go ou plus."
+    },
+    {
+      "key": "installs.status.added",
+      "value": "Ajout de {0}{1}."
+    },
+    {
+      "key": "installs.status.alreadyInList",
+      "value": "Cette installation est déjà dans la liste."
+    },
+    {
+      "key": "installs.status.backedUp",
+      "value": "{0} sauvegardé → {1}"
+    },
+    {
+      "key": "installs.status.backingUp",
+      "value": "Sauvegarde de {0}…"
+    },
+    {
+      "key": "installs.status.backupFailed",
+      "value": "Échec de la sauvegarde : {0}"
+    },
+    {
+      "key": "installs.status.chooseFolderFirst",
+      "value": "Choisissez d'abord un dossier où cloner."
+    },
+    {
+      "key": "installs.status.cloneCancelledLowSpace",
+      "value": "Clonage annulé — espace disque faible sur le disque cible."
+    },
+    {
+      "key": "installs.status.cloneError",
+      "value": "Erreur de clonage : {0}"
+    },
+    {
+      "key": "installs.status.cloneFailed",
+      "value": "Échec du clonage (code {0}). {1}"
+    },
+    {
+      "key": "installs.status.clonedInto",
+      "value": "Basis cloné dans {0}.{1}"
+    },
+    {
+      "key": "installs.status.cloningInto",
+      "value": "Clonage de Basis dans {0}…"
+    },
+    {
+      "key": "installs.status.destExists",
+      "value": "{0} existe déjà et n'est pas vide."
+    },
+    {
+      "key": "installs.status.folderMissing",
+      "value": "Le dossier n'existe plus : {0}"
+    },
+    {
+      "key": "installs.status.gitNotFound",
+      "value": "Git est introuvable. Installez Git et ajoutez-le à votre PATH (voir Paramètres)."
+    },
+    {
+      "key": "installs.status.noUnityDetectedNote",
+      "value": " (aucun projet Unity détecté à l'intérieur)"
+    },
+    {
+      "key": "installs.status.noUnityToBackup",
+      "value": "{0} n'a aucun projet Unity à sauvegarder."
+    },
+    {
+      "key": "installs.status.notGitRepo",
+      "value": "{0} n'est pas un dépôt git."
+    },
+    {
+      "key": "installs.status.removed",
+      "value": "{0} retiré de la liste (fichiers conservés sur le disque)."
+    },
+    {
+      "key": "installs.status.requiresUnityNote",
+      "value": " Nécessite Unity {0} — ouvrez l'onglet Unity pour l'installer."
+    },
+    {
+      "key": "installs.status.rowSummary",
+      "value": "{0} : {1}"
+    },
+    {
+      "key": "installs.status.updateError",
+      "value": "Erreur de mise à jour : {0}"
+    },
+    {
+      "key": "installs.status.updateFailed",
+      "value": "Échec de la mise à jour de {0} : {1}"
+    },
+    {
+      "key": "installs.status.updated",
+      "value": "{0} mis à jour. {1}"
+    },
+    {
+      "key": "installs.status.updating",
+      "value": "Mise à jour de {0} (git pull)…"
+    },
+    {
+      "key": "installs.tooltip.backup",
+      "value": "Compresse Assets, Packages et ProjectSettings (pas le cache Library)"
+    },
+    {
+      "key": "packages.badge.basisRegistry",
+      "value": "REGISTRE BASIS"
+    },
+    {
+      "key": "packages.badge.github",
+      "value": "github"
+    },
+    {
+      "key": "packages.bundle.basisLine",
+      "value": "Basis : {0}  ·  Unity {1}"
+    },
+    {
+      "key": "packages.bundle.unknownCommit",
+      "value": "inconnu"
+    },
+    {
+      "key": "packages.button.add",
+      "value": "+ Ajouter"
+    },
+    {
+      "key": "packages.button.chooseVersion",
+      "value": "Choisir la version…"
+    },
+    {
+      "key": "packages.button.createBundle",
+      "value": "Créer un bundle"
+    },
+    {
+      "key": "packages.button.install",
+      "value": "Installer"
+    },
+    {
+      "key": "packages.button.refresh",
+      "value": "Actualiser"
+    },
+    {
+      "key": "packages.button.remove",
+      "value": "Retirer"
+    },
+    {
+      "key": "packages.button.update",
+      "value": "Mettre à jour"
+    },
+    {
+      "key": "packages.community.description",
+      "value": "Collez une URL GitHub, ou owner/repo[?path=Sub/Folder][#branch]. Son package.json est ajouté à votre manifeste Unity en tant que dépendance git."
+    },
+    {
+      "key": "packages.community.watermark",
+      "value": "https://github.com/owner/repo  ou  owner/repo?path=Packages/com.x#main"
+    },
+    {
+      "key": "packages.dialog.installTitle",
+      "value": "Installer {0}"
+    },
+    {
+      "key": "packages.empty.noInstallSelected",
+      "value": "Aucune installation sélectionnée"
+    },
+    {
+      "key": "packages.empty.noProjectDescription",
+      "value": "Clonez ou sélectionnez une installation Basis dans l'onglet Projets pour gérer ses paquets."
+    },
+    {
+      "key": "packages.empty.noProjectTitle",
+      "value": "Aucune installation avec un projet Unity"
+    },
+    {
+      "key": "packages.filter.allOwners",
+      "value": "Tous les propriétaires"
+    },
+    {
+      "key": "packages.filter.otherOwner",
+      "value": "Autre"
+    },
+    {
+      "key": "packages.filter.watermark",
+      "value": "Filtrer les paquets..."
+    },
+    {
+      "key": "packages.header.available",
+      "value": "Disponibles à l'installation"
+    },
+    {
+      "key": "packages.header.community",
+      "value": "Ajouter un paquet communautaire depuis GitHub"
+    },
+    {
+      "key": "packages.header.installed",
+      "value": "Installés"
+    },
+    {
+      "key": "packages.hero.subtitle",
+      "value": "Choisissez un projet, puis installez des paquets depuis le registre Basis ou ajoutez n'importe quel paquet UPM communautaire par URL git."
+    },
+    {
+      "key": "packages.hero.tagline",
+      "value": "PAQUETS"
+    },
+    {
+      "key": "packages.hero.title",
+      "value": "Paquets"
+    },
+    {
+      "key": "packages.label.project",
+      "value": "Projet"
+    },
+    {
+      "key": "packages.status.added",
+      "value": "Ajouté"
+    },
+    {
+      "key": "packages.status.addedBundle",
+      "value": "Bundle “{0}” ajouté ({1} paquet(s)){2} → {3}."
+    },
+    {
+      "key": "packages.status.addedDeepLink",
+      "value": "{0} {1}{2} → {3}."
+    },
+    {
+      "key": "packages.status.addedFromGitHub",
+      "value": "{0} {1}{2} depuis GitHub."
+    },
+    {
+      "key": "packages.status.bundleInstallFailed",
+      "value": "Échec de l'installation du bundle : {0}"
+    },
+    {
+      "key": "packages.status.chooseProject",
+      "value": "Choisissez d'abord un projet."
+    },
+    {
+      "key": "packages.status.deepLinkFailed",
+      "value": "Échec de l'installation par lien direct : {0}"
+    },
+    {
+      "key": "packages.status.defaultBranch",
+      "value": "branche par défaut"
+    },
+    {
+      "key": "packages.status.depNote",
+      "value": " (+{0} paquet{1} de dépendance)"
+    },
+    {
+      "key": "packages.status.dependencyConflict",
+      "value": "Conflit de dépendance : {0}"
+    },
+    {
+      "key": "packages.status.gitHubAddFailed",
+      "value": "Échec de l'ajout depuis GitHub : {0}"
+    },
+    {
+      "key": "packages.status.gitUrlParseFailed",
+      "value": "Impossible d'analyser l'URL git du paquet."
+    },
+    {
+      "key": "packages.status.installError",
+      "value": "Erreur d'installation : {0}"
+    },
+    {
+      "key": "packages.status.installLinkMissing",
+      "value": "Le lien d'installation n'avait pas l'identifiant du paquet ou l'URL git."
+    },
+    {
+      "key": "packages.status.installed",
+      "value": "{0} installé dans {1}."
+    },
+    {
+      "key": "packages.status.installedVersion",
+      "value": "{0} ({1}) installé dans {2}."
+    },
+    {
+      "key": "packages.status.invalidGitHub",
+      "value": "Référence GitHub invalide : {0}"
+    },
+    {
+      "key": "packages.status.loadingVersions",
+      "value": "Chargement des versions de {0}…"
+    },
+    {
+      "key": "packages.status.noAddonPackages",
+      "value": "Ce projet n'a pas encore de paquets additionnels à regrouper."
+    },
+    {
+      "key": "packages.status.noVersionsFound",
+      "value": "Aucune version trouvée pour {0}."
+    },
+    {
+      "key": "packages.status.notGitPackage",
+      "value": "{0} n'est pas un paquet git — aucune version à choisir."
+    },
+    {
+      "key": "packages.status.openInstallFirst",
+      "value": "Ouvrez d'abord une installation avec un projet Unity, puis cliquez à nouveau sur Installer pour {0}."
+    },
+    {
+      "key": "packages.status.openingIssue",
+      "value": "Ouverture d'un ticket GitHub pour soumettre “{0}” ({1} paquets)…"
+    },
+    {
+      "key": "packages.status.packageJsonLoadFailed",
+      "value": "Impossible de charger package.json depuis {0}/{1}{2} — vérifiez le chemin et que le dépôt est public."
+    },
+    {
+      "key": "packages.status.pasteGitHub",
+      "value": "Collez une URL GitHub ou owner/repo."
+    },
+    {
+      "key": "packages.status.refusedUnsafeUrl",
+      "value": "Ajout de {0} refusé : l'URL git du lien d'installation utilise un transport non pris en charge ou non sécurisé."
+    },
+    {
+      "key": "packages.status.removed",
+      "value": "{0} retiré."
+    },
+    {
+      "key": "packages.status.skipNote",
+      "value": " ({0} ignoré pour une URL git non sécurisée)"
+    },
+    {
+      "key": "packages.status.updated",
+      "value": "Mis à jour"
+    },
+    {
+      "key": "packages.status.versionInstallError",
+      "value": "Erreur d'installation de version : {0}"
+    },
+    {
+      "key": "packages.tooltip.chooseVersion",
+      "value": "Choisir une version précise, une bêta ou la branche par défaut"
+    },
+    {
+      "key": "packages.tooltip.filterByOwner",
+      "value": "Filtrer les paquets installés par propriétaire (d'après l'identifiant du paquet)"
+    },
+    {
+      "key": "unity.button.install",
+      "value": "Installer via Unity Hub"
+    },
+    {
+      "key": "unity.button.refresh",
+      "value": "Actualiser"
+    },
+    {
+      "key": "unity.button.reloadList",
+      "value": "Recharger la liste"
+    },
+    {
+      "key": "unity.button.uninstall",
+      "value": "Désinstaller"
+    },
+    {
+      "key": "unity.header.subtitle",
+      "value": "Détectez les éditeurs Unity installés et installez la version requise par Basis."
+    },
+    {
+      "key": "unity.header.tagline",
+      "value": "ÉDITEURS UNITY"
+    },
+    {
+      "key": "unity.header.title",
+      "value": "Versions d'éditeur"
+    },
+    {
+      "key": "unity.install.hint",
+      "value": "Choisissez une version de Unity 6. Le changeset est renseigné automatiquement à partir du flux de versions de Unity."
+    },
+    {
+      "key": "unity.label.changeset",
+      "value": "Changeset"
+    },
+    {
+      "key": "unity.label.release",
+      "value": "Version de Unity 6"
+    },
+    {
+      "key": "unity.label.streamFilter",
+      "value": "Filtre de flux"
+    },
+    {
+      "key": "unity.section.installNew",
+      "value": "Installer un nouvel éditeur"
+    },
+    {
+      "key": "unity.section.installedEditors",
+      "value": "Éditeurs installés"
+    },
+    {
+      "key": "unity.status.alreadyInstalled",
+      "value": "Unity {0} est déjà installé."
+    },
+    {
+      "key": "unity.status.error",
+      "value": "Erreur : {0}"
+    },
+    {
+      "key": "unity.status.fetchReleasesFailed",
+      "value": "Impossible de récupérer les versions Unity : {0}"
+    },
+    {
+      "key": "unity.status.hubNotDetected",
+      "value": "Unity Hub non détecté."
+    },
+    {
+      "key": "unity.status.hubPath",
+      "value": "Unity Hub : {0}"
+    },
+    {
+      "key": "unity.status.installError",
+      "value": "Erreur d'installation : {0}"
+    },
+    {
+      "key": "unity.status.installFailed",
+      "value": "Échec de l'installation (code de sortie {0})."
+    },
+    {
+      "key": "unity.status.installKickedOff",
+      "value": "Installation lancée via Unity Hub pour {0}."
+    },
+    {
+      "key": "unity.status.installing",
+      "value": "Installation de Unity {0}..."
+    },
+    {
+      "key": "unity.status.noEditorsInstalled",
+      "value": " (aucun éditeur installé)"
+    },
+    {
+      "key": "unity.status.pickReleaseFirst",
+      "value": "Choisissez d'abord une version de Unity 6 dans la liste déroulante."
+    },
+    {
+      "key": "unity.status.requiredVersionNote",
+      "value": "Votre installation Basis cible Unity {0}. Installez exactement cette version ci-dessous pour une ouverture sans problème."
+    },
+    {
+      "key": "unity.status.uninstallError",
+      "value": "Erreur de désinstallation : {0}"
+    },
+    {
+      "key": "unity.status.uninstallFailed",
+      "value": "Échec de la désinstallation (code de sortie {0})."
+    },
+    {
+      "key": "unity.status.uninstalled",
+      "value": "Unity {0} désinstallé."
+    },
+    {
+      "key": "unity.status.uninstalling",
+      "value": "Désinstallation de Unity {0}..."
+    },
+    {
+      "key": "unity.tag.installed",
+      "value": "installé"
+    },
+    {
+      "key": "unity.tag.recommended",
+      "value": "recommandé"
+    },
+    {
+      "key": "develop.auth.cliNotLoggedIn",
+      "value": "GitHub CLI trouvé mais non connecté — exécutez “gh auth login”, puis Revérifier."
+    },
+    {
+      "key": "develop.auth.notSignedIn",
+      "value": "Non connecté — collez un jeton ci-dessous, ou installez GitHub CLI et connectez-vous."
+    },
+    {
+      "key": "develop.auth.signedIn",
+      "value": "Connecté à GitHub en tant que {0}"
+    },
+    {
+      "key": "develop.auth.tokenLabel",
+      "value": "Jeton GitHub (nécessite la portée “repo”)"
+    },
+    {
+      "key": "develop.auth.tokenWatermark",
+      "value": "ghp_…  ou  github_pat_…"
+    },
+    {
+      "key": "develop.button.installGit",
+      "value": "Installer Git"
+    },
+    {
+      "key": "develop.button.mountToEdit",
+      "value": "Monter pour modifier"
+    },
+    {
+      "key": "develop.button.openInUnity",
+      "value": "Ouvrir dans Unity"
+    },
+    {
+      "key": "develop.button.recheck",
+      "value": "Revérifier"
+    },
+    {
+      "key": "develop.button.refresh",
+      "value": "Actualiser"
+    },
+    {
+      "key": "develop.button.signIn",
+      "value": "Se connecter"
+    },
+    {
+      "key": "develop.button.submitPr",
+      "value": "Soumettre la PR"
+    },
+    {
+      "key": "develop.button.swapBack",
+      "value": "Rétablir"
+    },
+    {
+      "key": "develop.confirm.alreadyMounted",
+      "value": "{0} est déjà monté dans Packages/{0}.\n\nLe remplacer par un nouveau clone ? Toute modification locale dans ce dossier sera perdue."
+    },
+    {
+      "key": "develop.confirm.packageExists",
+      "value": "Packages/{0} existe déjà et n'est pas vide — il peut s'agir d'un montage résiduel ou d'une copie locale.\n\nLe remplacer par un nouveau clone ? Son contenu actuel sera supprimé."
+    },
+    {
+      "key": "develop.confirm.packageThereTitle",
+      "value": "Paquet déjà présent"
+    },
+    {
+      "key": "develop.empty.description",
+      "value": "Sélectionnez une installation Basis dans l'onglet Projets pour modifier ses paquets."
+    },
+    {
+      "key": "develop.empty.title",
+      "value": "Aucune installation avec un projet Unity"
+    },
+    {
+      "key": "develop.git.requiredDescription",
+      "value": "Monter un paquet et soumettre des pull requests nécessitent Git. Installez-le, puis Revérifier."
+    },
+    {
+      "key": "develop.git.requiredTitle",
+      "value": "Git est requis"
+    },
+    {
+      "key": "develop.header.description",
+      "value": "Montez un paquet git pour le modifier dans Unity, puis ouvrez une pull request en amont — rétablissez-le ou conservez-le une fois terminé."
+    },
+    {
+      "key": "develop.header.tagline",
+      "value": "DÉVELOPPER"
+    },
+    {
+      "key": "develop.install.none",
+      "value": "Aucune installation sélectionnée"
+    },
+    {
+      "key": "develop.section.gitPackages",
+      "value": "Paquets git"
+    },
+    {
+      "key": "develop.section.mountedForEditing",
+      "value": "Montés pour modification"
+    },
+    {
+      "key": "develop.section.noGitPackages",
+      "value": "Aucun paquet chargé via git dans ce projet."
+    },
+    {
+      "key": "develop.status.clearFailed",
+      "value": "Impossible de vider Packages/{0} : {1}"
+    },
+    {
+      "key": "develop.status.gitRequired",
+      "value": "Git est requis."
+    },
+    {
+      "key": "develop.status.gitRequiredMount",
+      "value": "Git est requis pour monter un paquet. Installez-le, puis Revérifier."
+    },
+    {
+      "key": "develop.status.loginUnverified",
+      "value": "Impossible de vérifier votre connexion GitHub."
+    },
+    {
+      "key": "develop.status.mountCancelled",
+      "value": "Montage annulé — Packages/{0} laissé tel quel."
+    },
+    {
+      "key": "develop.status.mountError",
+      "value": "Erreur de montage : {0}"
+    },
+    {
+      "key": "develop.status.mountFailed",
+      "value": "Échec du montage."
+    },
+    {
+      "key": "develop.status.mounted",
+      "value": "{0} monté dans Packages/ — modifiez-le dans Unity, puis Soumettre la PR."
+    },
+    {
+      "key": "develop.status.mounting",
+      "value": "Montage de {0}…"
+    },
+    {
+      "key": "develop.status.prError",
+      "value": "Erreur de PR : {0}"
+    },
+    {
+      "key": "develop.status.prFailed",
+      "value": "Échec de la soumission de la PR."
+    },
+    {
+      "key": "develop.status.prOpened",
+      "value": "Pull request ouverte{0} : {1}"
+    },
+    {
+      "key": "develop.status.signInFirst",
+      "value": "Connectez-vous d'abord à GitHub (GitHub CLI ou un jeton)."
+    },
+    {
+      "key": "develop.status.signedInAs",
+      "value": "Connecté en tant que {0}."
+    },
+    {
+      "key": "develop.status.submittingPr",
+      "value": "Soumission d'une pull request pour {0}…"
+    },
+    {
+      "key": "develop.status.swapBackError",
+      "value": "Erreur de rétablissement : {0}"
+    },
+    {
+      "key": "develop.status.swapBackFailed",
+      "value": "Échec du rétablissement."
+    },
+    {
+      "key": "develop.status.swappedBack",
+      "value": "{0} est revenu à son URL git."
+    },
+    {
+      "key": "develop.status.swapping",
+      "value": "Rétablissement de {0} vers son URL git…"
+    },
+    {
+      "key": "develop.status.tokenFailed",
+      "value": "Ce jeton n'a pas pu s'authentifier — assurez-vous qu'il a la portée “repo”."
+    },
+    {
+      "key": "develop.status.viaFork",
+      "value": " (via votre fork)"
+    },
+    {
+      "key": "changes.button.refresh",
+      "value": "Actualiser"
+    },
+    {
+      "key": "changes.diff.loadError",
+      "value": "Impossible de charger les différences : {0}"
+    },
+    {
+      "key": "changes.diff.title",
+      "value": "Différences"
+    },
+    {
+      "key": "changes.empty.description",
+      "value": "Choisissez une installation dans l'onglet Projets pour voir ce que vous avez modifié."
+    },
+    {
+      "key": "changes.empty.title",
+      "value": "Aucune installation sélectionnée"
+    },
+    {
+      "key": "changes.header.clean",
+      "value": "{0} · {1} — copie de travail propre"
+    },
+    {
+      "key": "changes.header.dirtyMany",
+      "value": "{0} · {1} — {2} fichiers modifiés"
+    },
+    {
+      "key": "changes.header.dirtyOne",
+      "value": "{0} · {1} — {2} fichier modifié"
+    },
+    {
+      "key": "changes.header.gitError",
+      "value": "erreur git : {0}"
+    },
+    {
+      "key": "changes.header.notGitRepo",
+      "value": "Cette installation n'est pas un dépôt git ; les modifications locales ne peuvent donc pas être suivies."
+    },
+    {
+      "key": "changes.hero.subtitle",
+      "value": "Ce que vous avez modifié dans les sources de Basis depuis votre dernier commit."
+    },
+    {
+      "key": "changes.hero.tagline",
+      "value": "MODIFICATIONS LOCALES"
+    },
+    {
+      "key": "changes.list.title",
+      "value": "Fichiers modifiés"
+    },
+    {
+      "key": "settings.about.checkUpdates",
+      "value": "Vérifier les mises à jour"
+    },
+    {
+      "key": "settings.about.title",
+      "value": "À propos"
+    },
+    {
+      "key": "settings.about.updatesBlurb",
+      "value": "Basis Package Manager se met à jour depuis GitHub Releases. Lorsqu'une nouvelle version est publiée, une bannière de mise à jour apparaît en haut de la fenêtre — un clic la télécharge et redémarre."
+    },
+    {
+      "key": "settings.about.version",
+      "value": "Version"
+    },
+    {
+      "key": "settings.button.save",
+      "value": "Enregistrer"
+    },
+    {
+      "key": "settings.catalog.description",
+      "value": "URL JSON fournissant un catalogue compatible Basis. Laissez vide pour utiliser le registre de paquets Basis (basisvr.org/packages)."
+    },
+    {
+      "key": "settings.catalog.title",
+      "value": "URL du catalogue de paquets"
+    },
+    {
+      "key": "settings.clone.description",
+      "value": "Emplacement où les nouveaux clones Basis sont créés par défaut."
+    },
+    {
+      "key": "settings.clone.title",
+      "value": "Emplacement de clonage par défaut"
+    },
+    {
+      "key": "settings.detected.git",
+      "value": "Git"
+    },
+    {
+      "key": "settings.detected.gitNotFound",
+      "value": "Git introuvable dans le PATH — installez-le depuis git-scm.com."
+    },
+    {
+      "key": "settings.detected.hubNotFound",
+      "value": "Unity Hub non détecté."
+    },
+    {
+      "key": "settings.detected.settingsFile",
+      "value": "Fichier de paramètres"
+    },
+    {
+      "key": "settings.detected.title",
+      "value": "Outils détectés"
+    },
+    {
+      "key": "settings.detected.unityHub",
+      "value": "Unity Hub"
+    },
+    {
+      "key": "settings.hero.subtitle",
+      "value": "Emplacement de clonage, source du catalogue et chemins des outils."
+    },
+    {
+      "key": "settings.hero.tagline",
+      "value": "PARAMÈTRES"
+    },
+    {
+      "key": "settings.hero.title",
+      "value": "Configuration"
+    },
+    {
+      "key": "settings.language.description",
+      "value": "Choisissez la langue de l'interface de Basis Package Manager. S'applique immédiatement."
+    },
+    {
+      "key": "settings.language.title",
+      "value": "Langue"
+    },
+    {
+      "key": "settings.logs.clear",
+      "value": "Effacer"
+    },
+    {
+      "key": "settings.logs.copy",
+      "value": "Copier"
+    },
+    {
+      "key": "settings.logs.description",
+      "value": "Ce que l'application a fait durant cette session — les chemins personnels, noms d'utilisateur et adresses IP sont masqués. Joignez-les lors du signalement d'un problème."
+    },
+    {
+      "key": "settings.logs.openFolder",
+      "value": "Ouvrir le dossier"
+    },
+    {
+      "key": "settings.logs.title",
+      "value": "Journal d'activité"
+    },
+    {
+      "key": "settings.status.saved",
+      "value": "Paramètres enregistrés."
+    },
+    {
+      "key": "settings.toggle.developer",
+      "value": "Mode développeur (afficher l'onglet Développer)"
+    },
+    {
+      "key": "settings.toggle.developer.tip",
+      "value": "Montez des paquets git localement, modifiez-les dans Unity et ouvrez des pull requests. Masqué pour les non-développeurs."
+    },
+    {
+      "key": "settings.toggle.localChanges",
+      "value": "Afficher l'onglet Modifications locales"
+    },
+    {
+      "key": "settings.toggle.localChanges.tip",
+      "value": "Un statut git + un diff par fichier de votre installation. Masqué par défaut."
+    },
+    {
+      "key": "settings.toggle.prerelease",
+      "value": "Recevoir les mises à jour en préversion (expérimental — peut être instable)"
+    },
+    {
+      "key": "settings.toggle.prerelease.tip",
+      "value": "Recevez les versions préliminaires dès leur publication — fréquentes et parfois instables. Désactivé = versions stables uniquement. S'applique à l'enregistrement."
+    },
+    {
+      "key": "settings.unityHub.description",
+      "value": "Chemin vers le binaire Unity Hub, s'il n'est pas détecté automatiquement."
+    },
+    {
+      "key": "settings.unityHub.title",
+      "value": "Chemin Unity Hub personnalisé"
+    },
+    {
+      "key": "support.button.backOpenCollective",
+      "value": "Contribuer sur OpenCollective"
+    },
+    {
+      "key": "support.button.fullFundingPage",
+      "value": "Lire la page de financement complète  ↗"
+    },
+    {
+      "key": "support.button.joinDiscord",
+      "value": "Rejoindre le Discord"
+    },
+    {
+      "key": "support.button.openCollective",
+      "value": "♥   Soutenir via OpenCollective"
+    },
+    {
+      "key": "support.button.sponsorFeature",
+      "value": "Parrainer une fonctionnalité"
+    },
+    {
+      "key": "support.community.body",
+      "value": "Des particuliers soutiennent Basis sur OpenCollective — mensuellement ou ponctuellement. Ces fonds financent avant tout la maintenance à plein temps et le travail sur l'expérience développeur."
+    },
+    {
+      "key": "support.community.bullets",
+      "value": "•  Options mensuelles et ponctuelles\n•  Mur des contributeurs public et registre transparent"
+    },
+    {
+      "key": "support.community.title",
+      "value": "Dons de la communauté"
+    },
+    {
+      "key": "support.company.body",
+      "value": "Les entreprises parrainent des éléments de la feuille de route ou cofinancent des fonctionnalités — réseau, systèmes d'avatars, outils. Le travail est intégré en amont et reste sous licence MIT par défaut."
+    },
+    {
+      "key": "support.company.bullets",
+      "value": "•  Infrastructure partagée plutôt que forks sur mesure\n•  Livrables clairs, développement ouvert"
+    },
+    {
+      "key": "support.company.title",
+      "value": "Collaborations d'entreprise"
+    },
+    {
+      "key": "support.hero.subtitle",
+      "value": "Basis est sous licence MIT et pense d'abord aux créateurs. Les dons de la communauté et les collaborations d'entreprise permettent à un mainteneur de travailler à plein temps et accélèrent les versions."
+    },
+    {
+      "key": "support.hero.tagline",
+      "value": "SOUTIEN"
+    },
+    {
+      "key": "support.hero.title",
+      "value": "Financer Basis"
+    },
+    {
+      "key": "support.where.body",
+      "value": "Les fonds sont mis en commun pour résoudre des problèmes communs — réseau, incarnation, outils — qui profitent à tous. Un registre public est disponible sur OpenCollective, et le travail parrainé est crédité dans les notes de version. Les parrains ne contrôlent pas le projet."
+    },
+    {
+      "key": "support.where.title",
+      "value": "Où va l'argent"
+    },
+    {
+      "key": "docs.button.askDiscord",
+      "value": "Demander sur Discord"
+    },
+    {
+      "key": "docs.button.basisGithub",
+      "value": "Basis sur GitHub  ↗"
+    },
+    {
+      "key": "docs.button.joinDiscord",
+      "value": "Rejoindre le Discord"
+    },
+    {
+      "key": "docs.button.openDocs",
+      "value": "Ouvrir la documentation  ↗"
+    },
+    {
+      "key": "docs.button.openDocsSite",
+      "value": "Ouvrir docs.basisvr.org  ↗"
+    },
+    {
+      "key": "docs.button.packageManagerGithub",
+      "value": "Gestionnaire de paquets sur GitHub  ↗"
+    },
+    {
+      "key": "docs.community.body",
+      "value": "Bloqué sur un point non couvert par la documentation ? Le Discord est le moyen le plus rapide d'obtenir de l'aide d'autres créateurs et des mainteneurs."
+    },
+    {
+      "key": "docs.community.title",
+      "value": "Demander à la communauté"
+    },
+    {
+      "key": "docs.hero.subtitle",
+      "value": "Guides, référence de l'API et tutoriels pour développer sur Basis — ainsi que la communauté à solliciter en cas de blocage."
+    },
+    {
+      "key": "docs.hero.tagline",
+      "value": "DOCUMENTATION"
+    },
+    {
+      "key": "docs.hero.title",
+      "value": "Apprendre Basis"
+    },
+    {
+      "key": "docs.site.body",
+      "value": "Installation, premiers pas, avatars, mondes, réseau et SDK — la documentation complète se trouve sur docs.basisvr.org."
+    },
+    {
+      "key": "docs.site.title",
+      "value": "Site de documentation"
+    },
+    {
+      "key": "docs.source.body",
+      "value": "Lisez le code, signalez un bug ou ouvrez une pull request. Basis est sous licence MIT et développé de manière ouverte."
+    },
+    {
+      "key": "docs.source.title",
+      "value": "Code source et tickets"
+    },
+    {
+      "key": "logs.button.clear",
+      "value": "Effacer"
+    },
+    {
+      "key": "logs.button.copy",
+      "value": "Copier"
+    },
+    {
+      "key": "logs.button.openFolder",
+      "value": "Ouvrir le dossier"
+    },
+    {
+      "key": "logs.hero.subtitle",
+      "value": "Ce que l'application a fait durant cette session — les chemins personnels, noms d'utilisateur et adresses IP sont masqués. Joignez-les lors du signalement d'un problème."
+    },
+    {
+      "key": "logs.hero.tagline",
+      "value": "JOURNAUX"
+    },
+    {
+      "key": "logs.hero.title",
+      "value": "Journal d'activité"
+    },
+    {
+      "key": "announcements.button.refresh",
+      "value": "Actualiser"
+    },
+    {
+      "key": "announcements.card.learnMore",
+      "value": "En savoir plus"
+    },
+    {
+      "key": "announcements.card.pinned",
+      "value": "ÉPINGLÉ"
+    },
+    {
+      "key": "announcements.empty.body",
+      "value": "Revenez plus tard — les actualités de l'équipe Basis apparaîtront ici."
+    },
+    {
+      "key": "announcements.empty.title",
+      "value": "Aucune annonce pour l'instant"
+    },
+    {
+      "key": "announcements.hero.subtitle",
+      "value": "Mises à jour et actualités de l'équipe Basis."
+    },
+    {
+      "key": "announcements.hero.tagline",
+      "value": "ANNONCES"
+    },
+    {
+      "key": "announcements.hero.title",
+      "value": "Nouveautés"
+    },
+    {
+      "key": "announcements.level.alert",
+      "value": "À NOTER"
+    },
+    {
+      "key": "announcements.level.news",
+      "value": "ACTUALITÉS"
+    },
+    {
+      "key": "announcements.level.update",
+      "value": "MISE À JOUR"
+    },
+    {
+      "key": "announcements.status.loading",
+      "value": "Chargement des annonces…"
+    },
+    {
+      "key": "dialog.alias.cancel",
+      "value": "Annuler"
+    },
+    {
+      "key": "dialog.alias.displayName",
+      "value": "Nom d'affichage"
+    },
+    {
+      "key": "dialog.alias.hint",
+      "value": "Un nom convivial affiché dans toute l'application pour ce clone."
+    },
+    {
+      "key": "dialog.alias.save",
+      "value": "Enregistrer"
+    },
+    {
+      "key": "dialog.alias.title",
+      "value": "Nommer cette installation"
+    },
+    {
+      "key": "dialog.alias.watermark",
+      "value": "p. ex. Mon projet Basis"
+    },
+    {
+      "key": "dialog.backup.backupContinue",
+      "value": "Sauvegarder et continuer"
+    },
+    {
+      "key": "dialog.backup.cancel",
+      "value": "Annuler"
+    },
+    {
+      "key": "dialog.backup.continueWithout",
+      "value": "Continuer sans sauvegarde"
+    },
+    {
+      "key": "dialog.backup.heading",
+      "value": "Sauvegarder votre projet d'abord ?"
+    },
+    {
+      "key": "dialog.backup.title",
+      "value": "Sauvegarder votre projet ?"
+    },
+    {
+      "key": "dialog.confirm.no",
+      "value": "Non, merci"
+    },
+    {
+      "key": "dialog.confirm.title",
+      "value": "Confirmer"
+    },
+    {
+      "key": "dialog.confirm.yes",
+      "value": "Oui"
+    },
+    {
+      "key": "dialog.createBundle.cancel",
+      "value": "Annuler"
+    },
+    {
+      "key": "dialog.createBundle.create",
+      "value": "Créer la soumission"
+    },
+    {
+      "key": "dialog.createBundle.descriptionLabel",
+      "value": "Description"
+    },
+    {
+      "key": "dialog.createBundle.errorNoName",
+      "value": "Donnez un nom à votre bundle."
+    },
+    {
+      "key": "dialog.createBundle.errorNoPackages",
+      "value": "Choisissez au moins un paquet à inclure."
+    },
+    {
+      "key": "dialog.createBundle.heading",
+      "value": "Créer un bundle"
+    },
+    {
+      "key": "dialog.createBundle.intro",
+      "value": "Partagez votre Basis + paquets sous forme de bundle installable. Cela ouvre un ticket GitHub pour la soumission."
+    },
+    {
+      "key": "dialog.createBundle.nameLabel",
+      "value": "Nom"
+    },
+    {
+      "key": "dialog.createBundle.packagesLabel",
+      "value": "Paquets à inclure"
+    },
+    {
+      "key": "dialog.createBundle.title",
+      "value": "Créer un bundle"
+    },
+    {
+      "key": "dialog.installPicker.addHere",
+      "value": "Ajouter ici"
+    },
+    {
+      "key": "dialog.installPicker.cancel",
+      "value": "Annuler"
+    },
+    {
+      "key": "dialog.installPicker.heading",
+      "value": "Ajouter un paquet"
+    },
+    {
+      "key": "dialog.installPicker.subtitle",
+      "value": "Choisissez à quelle installation ajouter ce paquet."
+    },
+    {
+      "key": "dialog.installPicker.title",
+      "value": "Choisir une installation"
+    },
+    {
+      "key": "dialog.roleWizard.developerDesc",
+      "value": "Tout ce qui précède, plus l'onglet Développer — montez des paquets localement, modifiez-les dans Unity et ouvrez des pull requests."
+    },
+    {
+      "key": "dialog.roleWizard.developerTitle",
+      "value": "🛠   Je suis développeur"
+    },
+    {
+      "key": "dialog.roleWizard.intro",
+      "value": "Comment allez-vous utiliser Basis ? Nous adapterons les outils affichés — vous pourrez changer cela à tout moment dans Paramètres."
+    },
+    {
+      "key": "dialog.roleWizard.title",
+      "value": "Bienvenue dans Basis Package Manager"
+    },
+    {
+      "key": "dialog.roleWizard.userDesc",
+      "value": "Clonez Basis, installez des paquets et gardez le tout à jour. L'essentiel, rien de plus."
+    },
+    {
+      "key": "dialog.roleWizard.userTitle",
+      "value": "🎮   J'utilise le framework"
+    },
+    {
+      "key": "dialog.roleWizard.welcome",
+      "value": "Bienvenue 👋"
+    },
+    {
+      "key": "dialog.submitPr.branchLabel",
+      "value": "Nom de la branche"
+    },
+    {
+      "key": "dialog.submitPr.cancel",
+      "value": "Annuler"
+    },
+    {
+      "key": "dialog.submitPr.contributeHint",
+      "value": "Reversez vos modifications de {0} vers son dépôt."
+    },
+    {
+      "key": "dialog.submitPr.defaultTitle",
+      "value": "Mettre à jour {0}"
+    },
+    {
+      "key": "dialog.submitPr.descriptionLabel",
+      "value": "Description"
+    },
+    {
+      "key": "dialog.submitPr.descriptionWatermark",
+      "value": "Qu'avez-vous changé et pourquoi ?"
+    },
+    {
+      "key": "dialog.submitPr.hint",
+      "value": "Nous créons cette branche, validons vos modifications, poussons (en forkant d'abord si vous ne pouvez pas pousser directement) et ouvrons la PR."
+    },
+    {
+      "key": "dialog.submitPr.openPr",
+      "value": "Ouvrir la pull request"
+    },
+    {
+      "key": "dialog.submitPr.title",
+      "value": "Soumettre une pull request"
+    },
+    {
+      "key": "dialog.submitPr.titleLabel",
+      "value": "Titre"
+    },
+    {
+      "key": "dialog.submitPr.titleWatermark",
+      "value": "Mettre à jour le paquet"
+    },
+    {
+      "key": "dialog.versionPicker.betaPill",
+      "value": "bêta"
+    },
+    {
+      "key": "dialog.versionPicker.cancel",
+      "value": "Annuler"
+    },
+    {
+      "key": "dialog.versionPicker.install",
+      "value": "Installer cette version"
+    },
+    {
+      "key": "dialog.versionPicker.showPrereleases",
+      "value": "Afficher les préversions (bêtas)"
+    },
+    {
+      "key": "dialog.versionPicker.subHasReleases",
+      "value": "Choisissez une version publiée, ou la dernière branche par défaut."
+    },
+    {
+      "key": "dialog.versionPicker.subNoReleases",
+      "value": "Aucune version publiée — affichage des tags / de la branche par défaut. Demandez au créateur de publier des versions officielles pour proposer des versions stables."
+    },
+    {
+      "key": "dialog.versionPicker.title",
+      "value": "Choisir une version"
+    }
+  ]
+}

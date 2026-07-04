@@ -43,4 +43,8 @@ public sealed class UserSettings
     // Ids of announcements the user has already seen (drives the unread badge on the nav).
     [JsonPropertyName("seenAnnouncementIds")]
     public List<string> SeenAnnouncementIds { get; set; } = new();
+
+    // UI language code (e.g. "en", "ja", "zh-Hans"). Null/blank = English.
+    [JsonPropertyName("language")]
+    public string? Language { get; set; }
 }

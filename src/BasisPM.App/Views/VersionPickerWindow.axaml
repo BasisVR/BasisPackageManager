@@ -1,17 +1,18 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:models="using:BasisPM.Core.Models"
+        xmlns:loc="using:BasisPM.App.Localization"
         x:Class="BasisPM.App.Views.VersionPickerWindow"
-        Title="Choose a version"
+        Title="{loc:Tr dialog.versionPicker.title}"
         Width="560" Height="520"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BasisBackgroundBrush}">
     <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="26">
         <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,12">
-            <TextBlock x:Name="TitleText" Text="Choose a version" Classes="h3"/>
+            <TextBlock x:Name="TitleText" Text="{loc:Tr dialog.versionPicker.title}" Classes="h3"/>
             <TextBlock x:Name="SubText" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
         </StackPanel>
-        <CheckBox Grid.Row="1" x:Name="ShowPre" Content="Show prereleases (betas)" Margin="0,0,0,10" Click="OnShowPreChanged"/>
+        <CheckBox Grid.Row="1" x:Name="ShowPre" Content="{loc:Tr dialog.versionPicker.showPrereleases}" Margin="0,0,0,10" Click="OnShowPreChanged"/>
         <Border Grid.Row="2" Classes="card" Padding="4">
             <ListBox x:Name="List" Background="Transparent">
                 <ListBox.ItemTemplate>
@@ -22,7 +23,7 @@
                                 <TextBlock Text="{Binding Kind}" Classes="dim" FontSize="10"/>
                             </StackPanel>
                             <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsPrerelease}">
-                                <TextBlock Text="beta" FontSize="10" FontWeight="Bold" Classes="brand"/>
+                                <TextBlock Text="{loc:Tr dialog.versionPicker.betaPill}" FontSize="10" FontWeight="Bold" Classes="brand"/>
                             </Border>
                         </Grid>
                     </DataTemplate>
@@ -30,8 +31,8 @@
             </ListBox>
         </Border>
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,14,0,0">
-            <Button Content="Cancel" Click="OnCancel"/>
-            <Button Classes="primary" Content="Install this version" Click="OnOk"/>
+            <Button Content="{loc:Tr dialog.versionPicker.cancel}" Click="OnCancel"/>
+            <Button Classes="primary" Content="{loc:Tr dialog.versionPicker.install}" Click="OnOk"/>
         </StackPanel>
     </Grid>
 </Window>

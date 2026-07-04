@@ -40,5 +40,8 @@
         <DataTemplate DataType="vm:LogsViewModel">
             <views:LogsView />
         </DataTemplate>
+        <DataTemplate DataType="vm:CommunityViewModel">
+            <views:CommunityView />
+        </DataTemplate>
     </Application.DataTemplates>
 </Application>

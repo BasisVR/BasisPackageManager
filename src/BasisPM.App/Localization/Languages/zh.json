@@ -1,0 +1,1626 @@
+{
+  "code": "zh",
+  "nativeName": "中文（繁體）",
+  "entries": [
+    {
+      "key": "nav.changes",
+      "value": "本地更改"
+    },
+    {
+      "key": "nav.community",
+      "value": "社区"
+    },
+    {
+      "key": "nav.develop",
+      "value": "开发"
+    },
+    {
+      "key": "nav.installs",
+      "value": "项目"
+    },
+    {
+      "key": "nav.packages",
+      "value": "包"
+    },
+    {
+      "key": "nav.settings",
+      "value": "设置"
+    },
+    {
+      "key": "nav.unity",
+      "value": "Unity 编辑器"
+    },
+    {
+      "key": "shell.bundle.pickerLabel",
+      "value": "{0}（{1} 个包）"
+    },
+    {
+      "key": "shell.crash.dialogMessage",
+      "value": "看起来应用上次意外关闭了。打开一个预填好的 GitHub issue 以便我们排查？"
+    },
+    {
+      "key": "shell.crash.dialogTitle",
+      "value": "Basis 包管理器意外关闭"
+    },
+    {
+      "key": "shell.deeplink.thePackage",
+      "value": "该包"
+    },
+    {
+      "key": "shell.desktopShortcut.dialogMessage",
+      "value": "为 Basis 包管理器添加桌面快捷方式吗？你随时可以从开始菜单找到它。"
+    },
+    {
+      "key": "shell.desktopShortcut.dialogTitle",
+      "value": "桌面快捷方式"
+    },
+    {
+      "key": "shell.footer.license",
+      "value": "MIT 许可"
+    },
+    {
+      "key": "shell.installPicker.prompt",
+      "value": "将 “{0}” 添加到哪个项目？"
+    },
+    {
+      "key": "shell.status.bundleNotFound",
+      "value": "在注册表中找不到捆绑包 “{0}”。"
+    },
+    {
+      "key": "shell.status.checkingForUpdates",
+      "value": "正在检查更新…"
+    },
+    {
+      "key": "shell.status.cloneFirst",
+      "value": "请先克隆或添加一个 Basis 安装，然后再安装 {0}。"
+    },
+    {
+      "key": "shell.status.copied",
+      "value": "已将状态复制到剪贴板。"
+    },
+    {
+      "key": "shell.status.copy",
+      "value": "复制"
+    },
+    {
+      "key": "shell.status.copyFailed",
+      "value": "复制失败：{0}"
+    },
+    {
+      "key": "shell.status.copyTooltip",
+      "value": "将状态消息复制到剪贴板"
+    },
+    {
+      "key": "shell.status.desktopShortcutCreated",
+      "value": "已创建桌面快捷方式。"
+    },
+    {
+      "key": "shell.status.desktopShortcutFailed",
+      "value": "无法创建桌面快捷方式：{0}"
+    },
+    {
+      "key": "shell.status.downloadingUpdate",
+      "value": "正在下载更新…"
+    },
+    {
+      "key": "shell.status.installLinkMissingGit",
+      "value": "{0} 的安装链接缺少其 git URL。"
+    },
+    {
+      "key": "shell.status.loadingBundle",
+      "value": "正在加载捆绑包…"
+    },
+    {
+      "key": "shell.status.noUnityProject",
+      "value": "没有可打开的 Unity 项目。"
+    },
+    {
+      "key": "shell.status.ok",
+      "value": "确定"
+    },
+    {
+      "key": "shell.status.okTooltip",
+      "value": "关闭此消息"
+    },
+    {
+      "key": "shell.status.openIssue",
+      "value": "打开一个 issue"
+    },
+    {
+      "key": "shell.status.openIssueTooltip",
+      "value": "打开一个预填好的 GitHub issue，包含此错误和你最近的操作"
+    },
+    {
+      "key": "shell.status.openUnityFailed",
+      "value": "无法打开 Unity：{0}"
+    },
+    {
+      "key": "shell.status.openedInUnity",
+      "value": "正在 Unity {1} 中打开 {0}。"
+    },
+    {
+      "key": "shell.status.openingInUnity",
+      "value": "正在 Unity 中打开 {0}…"
+    },
+    {
+      "key": "shell.status.runningFromSource",
+      "value": "正在从源码运行 — 更新由你的构建处理，而非应用内更新程序。"
+    },
+    {
+      "key": "shell.status.unityNotInstalled",
+      "value": "未安装 Unity {0}。请在 Unity 编辑器选项卡中添加它，然后重试。"
+    },
+    {
+      "key": "shell.status.unityNotInstalledOpenedHub",
+      "value": "未安装 Unity {0} — 已打开 Unity Hub 以便你添加它。"
+    },
+    {
+      "key": "shell.status.upToDate",
+      "value": "你已是最新版本。"
+    },
+    {
+      "key": "shell.status.updateAvailable",
+      "value": "有可用更新。"
+    },
+    {
+      "key": "shell.status.updateCheckFailed",
+      "value": "检查更新失败：{0}"
+    },
+    {
+      "key": "shell.status.updateFailed",
+      "value": "更新失败：{0}"
+    },
+    {
+      "key": "shell.update.bannerAvailable",
+      "value": "Basis 包管理器 {0} 已可用。"
+    },
+    {
+      "key": "shell.update.later",
+      "value": "稍后"
+    },
+    {
+      "key": "shell.update.laterTooltip",
+      "value": "关闭，下次启动前不再提示"
+    },
+    {
+      "key": "shell.update.now",
+      "value": "立即更新"
+    },
+    {
+      "key": "shell.update.nowTooltip",
+      "value": "下载更新并重启"
+    },
+    {
+      "key": "shell.version.tooltip",
+      "value": "已安装版本 — 在设置中检查更新"
+    },
+    {
+      "key": "shell.window.title",
+      "value": "Basis 包管理器"
+    },
+    {
+      "key": "shell.wordmark.name",
+      "value": "BasisVR"
+    },
+    {
+      "key": "shell.wordmark.tagline",
+      "value": "包管理器"
+    },
+    {
+      "key": "installs.action.updateCore",
+      "value": "更新核心会执行 'git pull'，这可能更改你 Basis 项目中的文件。"
+    },
+    {
+      "key": "installs.badge.active",
+      "value": "使用中"
+    },
+    {
+      "key": "installs.branch.default",
+      "value": "{0}（main）"
+    },
+    {
+      "key": "installs.button.addExisting",
+      "value": "添加现有"
+    },
+    {
+      "key": "installs.button.backup",
+      "value": "备份"
+    },
+    {
+      "key": "installs.button.browse",
+      "value": "浏览…"
+    },
+    {
+      "key": "installs.button.changes",
+      "value": "更改"
+    },
+    {
+      "key": "installs.button.cloneBasis",
+      "value": "克隆 Basis"
+    },
+    {
+      "key": "installs.button.open",
+      "value": "打开"
+    },
+    {
+      "key": "installs.button.packages",
+      "value": "包"
+    },
+    {
+      "key": "installs.button.refresh",
+      "value": "刷新"
+    },
+    {
+      "key": "installs.button.remove",
+      "value": "移除"
+    },
+    {
+      "key": "installs.button.updateCore",
+      "value": "更新核心"
+    },
+    {
+      "key": "installs.cloneForm.branchLabel",
+      "value": "分支"
+    },
+    {
+      "key": "installs.cloneForm.cloneIntoLabel",
+      "value": "克隆到文件夹"
+    },
+    {
+      "key": "installs.cloneForm.heading",
+      "value": "克隆 Basis"
+    },
+    {
+      "key": "installs.cloneForm.subFolderLabel",
+      "value": "子文件夹名称"
+    },
+    {
+      "key": "installs.dialog.backupPrompt",
+      "value": "{0}\n\n先备份 {1} 吗？这会将 Assets、Packages 和 ProjectSettings（不含 Library 缓存）打包到你安装旁边的 BasisBackups 文件夹中。"
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceBody",
+      "value": "{1} 上仅剩 {0} 可用。克隆 Basis 并在 Unity 中打开它可能需要远超于此的空间，克隆可能中途失败。\n\n仍要在此克隆吗？"
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceTitle",
+      "value": "磁盘空间不足"
+    },
+    {
+      "key": "installs.dialog.nameThisInstall",
+      "value": "为此安装命名"
+    },
+    {
+      "key": "installs.empty.body",
+      "value": "使用上方的克隆 Basis 拉取 BasisVR/Basis，或使用添加现有来注册你已有的克隆。"
+    },
+    {
+      "key": "installs.empty.title",
+      "value": "还没有安装"
+    },
+    {
+      "key": "installs.git.ahead",
+      "value": "领先 {0}"
+    },
+    {
+      "key": "installs.git.behindUpstream",
+      "value": "落后上游 {0}"
+    },
+    {
+      "key": "installs.git.checking",
+      "value": "检查中…"
+    },
+    {
+      "key": "installs.git.checkingRemote",
+      "value": "正在检查远程…"
+    },
+    {
+      "key": "installs.git.error",
+      "value": "git 错误：{0}"
+    },
+    {
+      "key": "installs.git.localChanges",
+      "value": "{0} 处本地更改{1}"
+    },
+    {
+      "key": "installs.git.noUpstream",
+      "value": "无上游"
+    },
+    {
+      "key": "installs.git.notGitRepo",
+      "value": "非 git 仓库"
+    },
+    {
+      "key": "installs.git.upToDate",
+      "value": "已是最新"
+    },
+    {
+      "key": "installs.hero.subtitle",
+      "value": "克隆 BasisVR/Basis 仓库，然后管理每个项目的包、更新和本地更改。"
+    },
+    {
+      "key": "installs.hero.tagline",
+      "value": "项目"
+    },
+    {
+      "key": "installs.hero.title",
+      "value": "你的 Basis 项目"
+    },
+    {
+      "key": "installs.picker.chooseCloneFolder",
+      "value": "选择用于克隆 Basis 的文件夹"
+    },
+    {
+      "key": "installs.picker.selectExistingClone",
+      "value": "选择一个现有的 Basis 克隆"
+    },
+    {
+      "key": "installs.progress.starting",
+      "value": "正在开始克隆…"
+    },
+    {
+      "key": "installs.row.noUnityProject",
+      "value": "无 Unity 项目"
+    },
+    {
+      "key": "installs.row.unityVersion",
+      "value": "Unity {0}"
+    },
+    {
+      "key": "installs.space.criticalWarning",
+      "value": "磁盘空间严重不足 — {1} 上仅剩 {0} 可用。克隆 Basis 很可能失败；请释放空间或选择另一个驱动器。"
+    },
+    {
+      "key": "installs.space.lowWarning",
+      "value": "磁盘空间不足 — {1} 上剩余 {0} 可用。Basis 及其 Unity Library 可能占用 20 GB 或更多。"
+    },
+    {
+      "key": "installs.status.added",
+      "value": "已添加 {0}{1}。"
+    },
+    {
+      "key": "installs.status.alreadyInList",
+      "value": "该安装已在列表中。"
+    },
+    {
+      "key": "installs.status.backedUp",
+      "value": "已备份 {0} → {1}"
+    },
+    {
+      "key": "installs.status.backingUp",
+      "value": "正在备份 {0}…"
+    },
+    {
+      "key": "installs.status.backupFailed",
+      "value": "备份失败：{0}"
+    },
+    {
+      "key": "installs.status.chooseFolderFirst",
+      "value": "请先选择要克隆到的文件夹。"
+    },
+    {
+      "key": "installs.status.cloneCancelledLowSpace",
+      "value": "克隆已取消 — 目标驱动器磁盘空间不足。"
+    },
+    {
+      "key": "installs.status.cloneError",
+      "value": "克隆错误：{0}"
+    },
+    {
+      "key": "installs.status.cloneFailed",
+      "value": "克隆失败（退出码 {0}）。{1}"
+    },
+    {
+      "key": "installs.status.clonedInto",
+      "value": "已将 Basis 克隆到 {0}。{1}"
+    },
+    {
+      "key": "installs.status.cloningInto",
+      "value": "正在将 Basis 克隆到 {0}…"
+    },
+    {
+      "key": "installs.status.destExists",
+      "value": "{0} 已存在且非空。"
+    },
+    {
+      "key": "installs.status.folderMissing",
+      "value": "文件夹已不存在：{0}"
+    },
+    {
+      "key": "installs.status.gitNotFound",
+      "value": "未找到 Git。请安装 Git 并将其添加到你的 PATH（见设置）。"
+    },
+    {
+      "key": "installs.status.noUnityDetectedNote",
+      "value": " （未在其下检测到 Unity 项目）"
+    },
+    {
+      "key": "installs.status.noUnityToBackup",
+      "value": "{0} 没有可备份的 Unity 项目。"
+    },
+    {
+      "key": "installs.status.notGitRepo",
+      "value": "{0} 不是 git 仓库。"
+    },
+    {
+      "key": "installs.status.removed",
+      "value": "已从列表中移除 {0}（文件仍保留在磁盘上）。"
+    },
+    {
+      "key": "installs.status.requiresUnityNote",
+      "value": " 需要 Unity {0} — 打开 Unity 选项卡来安装它。"
+    },
+    {
+      "key": "installs.status.rowSummary",
+      "value": "{0}：{1}"
+    },
+    {
+      "key": "installs.status.updateError",
+      "value": "更新错误：{0}"
+    },
+    {
+      "key": "installs.status.updateFailed",
+      "value": "{0} 更新失败：{1}"
+    },
+    {
+      "key": "installs.status.updated",
+      "value": "已更新 {0}。{1}"
+    },
+    {
+      "key": "installs.status.updating",
+      "value": "正在更新 {0}（git pull）…"
+    },
+    {
+      "key": "installs.tooltip.backup",
+      "value": "打包 Assets、Packages 和 ProjectSettings（不含 Library 缓存）"
+    },
+    {
+      "key": "packages.badge.basisRegistry",
+      "value": "BASIS 注册表"
+    },
+    {
+      "key": "packages.badge.github",
+      "value": "github"
+    },
+    {
+      "key": "packages.bundle.basisLine",
+      "value": "Basis：{0}  ·  Unity {1}"
+    },
+    {
+      "key": "packages.bundle.unknownCommit",
+      "value": "未知"
+    },
+    {
+      "key": "packages.button.add",
+      "value": "+ 添加"
+    },
+    {
+      "key": "packages.button.chooseVersion",
+      "value": "选择版本…"
+    },
+    {
+      "key": "packages.button.createBundle",
+      "value": "创建捆绑包"
+    },
+    {
+      "key": "packages.button.install",
+      "value": "安装"
+    },
+    {
+      "key": "packages.button.refresh",
+      "value": "刷新"
+    },
+    {
+      "key": "packages.button.remove",
+      "value": "移除"
+    },
+    {
+      "key": "packages.button.update",
+      "value": "更新"
+    },
+    {
+      "key": "packages.community.description",
+      "value": "粘贴一个 GitHub URL，或 owner/repo[?path=Sub/Folder][#branch]。其 package.json 会作为 git 依赖添加到你的 Unity 清单中。"
+    },
+    {
+      "key": "packages.community.watermark",
+      "value": "https://github.com/owner/repo  或  owner/repo?path=Packages/com.x#main"
+    },
+    {
+      "key": "packages.dialog.installTitle",
+      "value": "安装 {0}"
+    },
+    {
+      "key": "packages.empty.noInstallSelected",
+      "value": "未选择安装"
+    },
+    {
+      "key": "packages.empty.noProjectDescription",
+      "value": "在项目选项卡中克隆或选择一个 Basis 安装以管理其包。"
+    },
+    {
+      "key": "packages.empty.noProjectTitle",
+      "value": "没有带 Unity 项目的安装"
+    },
+    {
+      "key": "packages.filter.allOwners",
+      "value": "全部所有者"
+    },
+    {
+      "key": "packages.filter.otherOwner",
+      "value": "其他"
+    },
+    {
+      "key": "packages.filter.watermark",
+      "value": "筛选包..."
+    },
+    {
+      "key": "packages.header.available",
+      "value": "可安装"
+    },
+    {
+      "key": "packages.header.community",
+      "value": "从 GitHub 添加社区包"
+    },
+    {
+      "key": "packages.header.installed",
+      "value": "已安装"
+    },
+    {
+      "key": "packages.hero.subtitle",
+      "value": "选择一个项目，然后从 Basis 注册表安装包，或通过 git URL 添加任何社区 UPM 包。"
+    },
+    {
+      "key": "packages.hero.tagline",
+      "value": "包"
+    },
+    {
+      "key": "packages.hero.title",
+      "value": "包"
+    },
+    {
+      "key": "packages.label.project",
+      "value": "项目"
+    },
+    {
+      "key": "packages.status.added",
+      "value": "已添加"
+    },
+    {
+      "key": "packages.status.addedBundle",
+      "value": "已添加捆绑包 “{0}”（{1} 个包）{2} → {3}。"
+    },
+    {
+      "key": "packages.status.addedDeepLink",
+      "value": "{0} {1}{2} → {3}。"
+    },
+    {
+      "key": "packages.status.addedFromGitHub",
+      "value": "{0} {1}{2}，来自 GitHub。"
+    },
+    {
+      "key": "packages.status.bundleInstallFailed",
+      "value": "捆绑包安装失败：{0}"
+    },
+    {
+      "key": "packages.status.chooseProject",
+      "value": "请先选择一个项目。"
+    },
+    {
+      "key": "packages.status.deepLinkFailed",
+      "value": "深层链接安装失败：{0}"
+    },
+    {
+      "key": "packages.status.defaultBranch",
+      "value": "默认分支"
+    },
+    {
+      "key": "packages.status.depNote",
+      "value": " （+{0} 个依赖包{1}）"
+    },
+    {
+      "key": "packages.status.dependencyConflict",
+      "value": "依赖冲突：{0}"
+    },
+    {
+      "key": "packages.status.gitHubAddFailed",
+      "value": "GitHub 添加失败：{0}"
+    },
+    {
+      "key": "packages.status.gitUrlParseFailed",
+      "value": "无法解析该包的 git URL。"
+    },
+    {
+      "key": "packages.status.installError",
+      "value": "安装错误：{0}"
+    },
+    {
+      "key": "packages.status.installLinkMissing",
+      "value": "安装链接缺少包 id 或 git URL。"
+    },
+    {
+      "key": "packages.status.installed",
+      "value": "已将 {0} 安装到 {1}。"
+    },
+    {
+      "key": "packages.status.installedVersion",
+      "value": "已将 {0}（{1}）安装到 {2}。"
+    },
+    {
+      "key": "packages.status.invalidGitHub",
+      "value": "无效的 GitHub 引用：{0}"
+    },
+    {
+      "key": "packages.status.loadingVersions",
+      "value": "正在加载 {0} 的版本…"
+    },
+    {
+      "key": "packages.status.noAddonPackages",
+      "value": "此项目暂无可打包的附加包。"
+    },
+    {
+      "key": "packages.status.noVersionsFound",
+      "value": "找不到 {0} 的任何版本。"
+    },
+    {
+      "key": "packages.status.notGitPackage",
+      "value": "{0} 不是 git 包 — 没有可选版本。"
+    },
+    {
+      "key": "packages.status.openInstallFirst",
+      "value": "请先打开一个带 Unity 项目的安装，然后再次为 {0} 点击安装。"
+    },
+    {
+      "key": "packages.status.openingIssue",
+      "value": "正在打开 GitHub issue 以提交 “{0}”（{1} 个包）…"
+    },
+    {
+      "key": "packages.status.packageJsonLoadFailed",
+      "value": "无法从 {0}/{1}{2} 加载 package.json — 请检查路径以及仓库是否公开。"
+    },
+    {
+      "key": "packages.status.pasteGitHub",
+      "value": "粘贴一个 GitHub URL 或 owner/repo。"
+    },
+    {
+      "key": "packages.status.refusedUnsafeUrl",
+      "value": "拒绝添加 {0}：安装链接的 git URL 使用了不受支持或不安全的传输方式。"
+    },
+    {
+      "key": "packages.status.removed",
+      "value": "已移除 {0}。"
+    },
+    {
+      "key": "packages.status.skipNote",
+      "value": " （{0} 个因不安全的 git URL 被跳过）"
+    },
+    {
+      "key": "packages.status.updated",
+      "value": "已更新"
+    },
+    {
+      "key": "packages.status.versionInstallError",
+      "value": "版本安装错误：{0}"
+    },
+    {
+      "key": "packages.tooltip.chooseVersion",
+      "value": "选择特定的发行版、测试版或默认分支"
+    },
+    {
+      "key": "packages.tooltip.filterByOwner",
+      "value": "按所有者筛选已安装的包（取自包 id）"
+    },
+    {
+      "key": "unity.button.install",
+      "value": "通过 Unity Hub 安装"
+    },
+    {
+      "key": "unity.button.refresh",
+      "value": "刷新"
+    },
+    {
+      "key": "unity.button.reloadList",
+      "value": "重新加载列表"
+    },
+    {
+      "key": "unity.button.uninstall",
+      "value": "卸载"
+    },
+    {
+      "key": "unity.header.subtitle",
+      "value": "检测已安装的 Unity 编辑器，并安装 Basis 所需的版本。"
+    },
+    {
+      "key": "unity.header.tagline",
+      "value": "Unity 编辑器"
+    },
+    {
+      "key": "unity.header.title",
+      "value": "编辑器版本"
+    },
+    {
+      "key": "unity.install.hint",
+      "value": "选择一个 Unity 6 版本。变更集会自动从 Unity 的发布源填入。"
+    },
+    {
+      "key": "unity.label.changeset",
+      "value": "变更集"
+    },
+    {
+      "key": "unity.label.release",
+      "value": "Unity 6 版本"
+    },
+    {
+      "key": "unity.label.streamFilter",
+      "value": "发布流筛选"
+    },
+    {
+      "key": "unity.section.installNew",
+      "value": "安装新编辑器"
+    },
+    {
+      "key": "unity.section.installedEditors",
+      "value": "已安装的编辑器"
+    },
+    {
+      "key": "unity.status.alreadyInstalled",
+      "value": "Unity {0} 已安装。"
+    },
+    {
+      "key": "unity.status.error",
+      "value": "错误：{0}"
+    },
+    {
+      "key": "unity.status.fetchReleasesFailed",
+      "value": "无法获取 Unity 版本：{0}"
+    },
+    {
+      "key": "unity.status.hubNotDetected",
+      "value": "未检测到 Unity Hub。"
+    },
+    {
+      "key": "unity.status.hubPath",
+      "value": "Unity Hub：{0}"
+    },
+    {
+      "key": "unity.status.installError",
+      "value": "安装错误：{0}"
+    },
+    {
+      "key": "unity.status.installFailed",
+      "value": "安装失败（退出码 {0}）。"
+    },
+    {
+      "key": "unity.status.installKickedOff",
+      "value": "已通过 Unity Hub 为 {0} 启动安装。"
+    },
+    {
+      "key": "unity.status.installing",
+      "value": "正在安装 Unity {0}..."
+    },
+    {
+      "key": "unity.status.noEditorsInstalled",
+      "value": " （未安装编辑器）"
+    },
+    {
+      "key": "unity.status.pickReleaseFirst",
+      "value": "请先从下拉菜单中选择一个 Unity 6 版本。"
+    },
+    {
+      "key": "unity.status.requiredVersionNote",
+      "value": "你的 Basis 安装以 Unity {0} 为目标。请在下方安装该确切版本以便顺利打开。"
+    },
+    {
+      "key": "unity.status.uninstallError",
+      "value": "卸载错误：{0}"
+    },
+    {
+      "key": "unity.status.uninstallFailed",
+      "value": "卸载失败（退出码 {0}）。"
+    },
+    {
+      "key": "unity.status.uninstalled",
+      "value": "已卸载 Unity {0}。"
+    },
+    {
+      "key": "unity.status.uninstalling",
+      "value": "正在卸载 Unity {0}..."
+    },
+    {
+      "key": "unity.tag.installed",
+      "value": "已安装"
+    },
+    {
+      "key": "unity.tag.recommended",
+      "value": "推荐"
+    },
+    {
+      "key": "develop.auth.cliNotLoggedIn",
+      "value": "找到 GitHub CLI 但未登录 — 运行 “gh auth login”，然后重新检查。"
+    },
+    {
+      "key": "develop.auth.notSignedIn",
+      "value": "未登录 — 在下方粘贴令牌，或安装并使用 GitHub CLI 登录。"
+    },
+    {
+      "key": "develop.auth.signedIn",
+      "value": "已以 {0} 登录 GitHub"
+    },
+    {
+      "key": "develop.auth.tokenLabel",
+      "value": "GitHub 令牌（需要 “repo” 权限范围）"
+    },
+    {
+      "key": "develop.auth.tokenWatermark",
+      "value": "ghp_…  或  github_pat_…"
+    },
+    {
+      "key": "develop.button.installGit",
+      "value": "安装 Git"
+    },
+    {
+      "key": "develop.button.mountToEdit",
+      "value": "挂载以编辑"
+    },
+    {
+      "key": "develop.button.openInUnity",
+      "value": "在 Unity 中打开"
+    },
+    {
+      "key": "develop.button.recheck",
+      "value": "重新检查"
+    },
+    {
+      "key": "develop.button.refresh",
+      "value": "刷新"
+    },
+    {
+      "key": "develop.button.signIn",
+      "value": "登录"
+    },
+    {
+      "key": "develop.button.submitPr",
+      "value": "提交 PR"
+    },
+    {
+      "key": "develop.button.swapBack",
+      "value": "换回"
+    },
+    {
+      "key": "develop.confirm.alreadyMounted",
+      "value": "{0} 已挂载到 Packages/{0}。\n\n用全新克隆替换它吗？该文件夹中的任何本地修改都将丢失。"
+    },
+    {
+      "key": "develop.confirm.packageExists",
+      "value": "Packages/{0} 已存在且非空 — 它可能是残留的挂载或本地副本。\n\n用全新克隆替换它吗？其当前内容将被删除。"
+    },
+    {
+      "key": "develop.confirm.packageThereTitle",
+      "value": "包已存在"
+    },
+    {
+      "key": "develop.empty.description",
+      "value": "在项目选项卡中选择一个 Basis 安装以编辑其包。"
+    },
+    {
+      "key": "develop.empty.title",
+      "value": "没有带 Unity 项目的安装"
+    },
+    {
+      "key": "develop.git.requiredDescription",
+      "value": "挂载包和提交拉取请求需要 Git。请安装它，然后重新检查。"
+    },
+    {
+      "key": "develop.git.requiredTitle",
+      "value": "需要 Git"
+    },
+    {
+      "key": "develop.header.description",
+      "value": "挂载一个 git 包以在 Unity 中编辑它，然后向上游发起拉取请求 — 完成后可换回或保留它。"
+    },
+    {
+      "key": "develop.header.tagline",
+      "value": "开发"
+    },
+    {
+      "key": "develop.install.none",
+      "value": "未选择安装"
+    },
+    {
+      "key": "develop.section.gitPackages",
+      "value": "Git 包"
+    },
+    {
+      "key": "develop.section.mountedForEditing",
+      "value": "已挂载以编辑"
+    },
+    {
+      "key": "develop.section.noGitPackages",
+      "value": "此项目中没有通过 git 加载的包。"
+    },
+    {
+      "key": "develop.status.clearFailed",
+      "value": "无法清除 Packages/{0}：{1}"
+    },
+    {
+      "key": "develop.status.gitRequired",
+      "value": "需要 Git。"
+    },
+    {
+      "key": "develop.status.gitRequiredMount",
+      "value": "挂载包需要 Git。请安装它，然后重新检查。"
+    },
+    {
+      "key": "develop.status.loginUnverified",
+      "value": "无法验证你的 GitHub 登录。"
+    },
+    {
+      "key": "develop.status.mountCancelled",
+      "value": "挂载已取消 — Packages/{0} 保持原样。"
+    },
+    {
+      "key": "develop.status.mountError",
+      "value": "挂载错误：{0}"
+    },
+    {
+      "key": "develop.status.mountFailed",
+      "value": "挂载失败。"
+    },
+    {
+      "key": "develop.status.mounted",
+      "value": "已将 {0} 挂载到 Packages/ — 在 Unity 中编辑它，然后提交 PR。"
+    },
+    {
+      "key": "develop.status.mounting",
+      "value": "正在挂载 {0}…"
+    },
+    {
+      "key": "develop.status.prError",
+      "value": "PR 错误：{0}"
+    },
+    {
+      "key": "develop.status.prFailed",
+      "value": "提交 PR 失败。"
+    },
+    {
+      "key": "develop.status.prOpened",
+      "value": "已打开拉取请求{0}：{1}"
+    },
+    {
+      "key": "develop.status.signInFirst",
+      "value": "请先登录 GitHub（GitHub CLI 或令牌）。"
+    },
+    {
+      "key": "develop.status.signedInAs",
+      "value": "已以 {0} 登录。"
+    },
+    {
+      "key": "develop.status.submittingPr",
+      "value": "正在为 {0} 提交拉取请求…"
+    },
+    {
+      "key": "develop.status.swapBackError",
+      "value": "换回错误：{0}"
+    },
+    {
+      "key": "develop.status.swapBackFailed",
+      "value": "换回失败。"
+    },
+    {
+      "key": "develop.status.swappedBack",
+      "value": "{0} 已恢复为其 git URL。"
+    },
+    {
+      "key": "develop.status.swapping",
+      "value": "正在将 {0} 换回其 git URL…"
+    },
+    {
+      "key": "develop.status.tokenFailed",
+      "value": "该令牌未通过认证 — 请确保它具有 “repo” 权限范围。"
+    },
+    {
+      "key": "develop.status.viaFork",
+      "value": " （通过你的复刻）"
+    },
+    {
+      "key": "changes.button.refresh",
+      "value": "刷新"
+    },
+    {
+      "key": "changes.diff.loadError",
+      "value": "无法加载差异：{0}"
+    },
+    {
+      "key": "changes.diff.title",
+      "value": "差异"
+    },
+    {
+      "key": "changes.empty.description",
+      "value": "在项目选项卡中选择一个安装以查看你所做的更改。"
+    },
+    {
+      "key": "changes.empty.title",
+      "value": "未选择安装"
+    },
+    {
+      "key": "changes.header.clean",
+      "value": "{0} · {1} — 工作树干净"
+    },
+    {
+      "key": "changes.header.dirtyMany",
+      "value": "{0} · {1} — {2} 个更改的文件"
+    },
+    {
+      "key": "changes.header.dirtyOne",
+      "value": "{0} · {1} — {2} 个更改的文件"
+    },
+    {
+      "key": "changes.header.gitError",
+      "value": "git 错误：{0}"
+    },
+    {
+      "key": "changes.header.notGitRepo",
+      "value": "此安装不是 git 仓库，因此无法跟踪本地更改。"
+    },
+    {
+      "key": "changes.hero.subtitle",
+      "value": "自你上次提交以来，你在 Basis 源码中所做的更改。"
+    },
+    {
+      "key": "changes.hero.tagline",
+      "value": "本地更改"
+    },
+    {
+      "key": "changes.list.title",
+      "value": "更改的文件"
+    },
+    {
+      "key": "settings.about.checkUpdates",
+      "value": "检查更新"
+    },
+    {
+      "key": "settings.about.title",
+      "value": "关于"
+    },
+    {
+      "key": "settings.about.updatesBlurb",
+      "value": "Basis 包管理器通过 GitHub Releases 自我更新。当有新版本发布时，窗口顶部会出现更新横幅 — 一键即可下载并重启。"
+    },
+    {
+      "key": "settings.about.version",
+      "value": "版本"
+    },
+    {
+      "key": "settings.button.save",
+      "value": "保存"
+    },
+    {
+      "key": "settings.catalog.description",
+      "value": "提供 Basis 兼容目录的 JSON URL。留空则使用 Basis 包注册表（basisvr.org/packages）。"
+    },
+    {
+      "key": "settings.catalog.title",
+      "value": "包目录 URL"
+    },
+    {
+      "key": "settings.clone.description",
+      "value": "默认创建新 Basis 克隆的位置。"
+    },
+    {
+      "key": "settings.clone.title",
+      "value": "默认克隆位置"
+    },
+    {
+      "key": "settings.detected.git",
+      "value": "Git"
+    },
+    {
+      "key": "settings.detected.gitNotFound",
+      "value": "PATH 中未找到 Git — 请从 git-scm.com 安装。"
+    },
+    {
+      "key": "settings.detected.hubNotFound",
+      "value": "未检测到 Unity Hub。"
+    },
+    {
+      "key": "settings.detected.settingsFile",
+      "value": "设置文件"
+    },
+    {
+      "key": "settings.detected.title",
+      "value": "已检测到的工具"
+    },
+    {
+      "key": "settings.detected.unityHub",
+      "value": "Unity Hub"
+    },
+    {
+      "key": "settings.hero.subtitle",
+      "value": "克隆位置、目录来源和工具路径。"
+    },
+    {
+      "key": "settings.hero.tagline",
+      "value": "设置"
+    },
+    {
+      "key": "settings.hero.title",
+      "value": "配置"
+    },
+    {
+      "key": "settings.language.description",
+      "value": "选择 Basis 包管理器界面的语言。立即生效。"
+    },
+    {
+      "key": "settings.language.title",
+      "value": "语言"
+    },
+    {
+      "key": "settings.logs.clear",
+      "value": "清除"
+    },
+    {
+      "key": "settings.logs.copy",
+      "value": "复制"
+    },
+    {
+      "key": "settings.logs.description",
+      "value": "本次会话中应用执行的操作 — 个人路径、用户名和 IP 已隐去。报告问题时请附上这些。"
+    },
+    {
+      "key": "settings.logs.openFolder",
+      "value": "打开文件夹"
+    },
+    {
+      "key": "settings.logs.title",
+      "value": "活动日志"
+    },
+    {
+      "key": "settings.status.saved",
+      "value": "设置已保存。"
+    },
+    {
+      "key": "settings.toggle.developer",
+      "value": "开发者模式（显示开发选项卡）"
+    },
+    {
+      "key": "settings.toggle.developer.tip",
+      "value": "在本地挂载 git 包，在 Unity 中编辑它们，并发起拉取请求。对非开发者隐藏。"
+    },
+    {
+      "key": "settings.toggle.localChanges",
+      "value": "显示本地更改选项卡"
+    },
+    {
+      "key": "settings.toggle.localChanges.tip",
+      "value": "你安装的 git 状态和逐文件差异。默认隐藏。"
+    },
+    {
+      "key": "settings.toggle.prerelease",
+      "value": "接收预发布更新（实验性 — 可能有问题）"
+    },
+    {
+      "key": "settings.toggle.prerelease.tip",
+      "value": "一经发布即获取早期构建 — 频繁且有时不稳定。关闭 = 仅稳定发行版。保存时生效。"
+    },
+    {
+      "key": "settings.unityHub.description",
+      "value": "Unity Hub 可执行文件的路径（如未自动检测到）。"
+    },
+    {
+      "key": "settings.unityHub.title",
+      "value": "Unity Hub 覆盖"
+    },
+    {
+      "key": "support.button.backOpenCollective",
+      "value": "在 OpenCollective 上资助"
+    },
+    {
+      "key": "support.button.fullFundingPage",
+      "value": "阅读完整的资助页面  ↗"
+    },
+    {
+      "key": "support.button.joinDiscord",
+      "value": "加入 Discord"
+    },
+    {
+      "key": "support.button.openCollective",
+      "value": "♥   通过 OpenCollective 支持"
+    },
+    {
+      "key": "support.button.sponsorFeature",
+      "value": "赞助一项功能"
+    },
+    {
+      "key": "support.community.body",
+      "value": "个人在 OpenCollective 上支持 Basis — 按月或一次性。这些资金主要用于全职维护和开发者体验方面的工作。"
+    },
+    {
+      "key": "support.community.bullets",
+      "value": "•  按月和一次性选项\n•  公开的支持者墙与透明账本"
+    },
+    {
+      "key": "support.community.title",
+      "value": "社区捐赠"
+    },
+    {
+      "key": "support.company.body",
+      "value": "公司可赞助路线图项目或共同资助功能 — 网络、虚拟形象系统、工具。成果会合入上游，并默认保持 MIT 许可。"
+    },
+    {
+      "key": "support.company.bullets",
+      "value": "•  共享基础设施优于定制复刻\n•  明确的交付成果，开放的开发"
+    },
+    {
+      "key": "support.company.title",
+      "value": "公司合作"
+    },
+    {
+      "key": "support.hero.subtitle",
+      "value": "Basis 采用 MIT 许可，以创作者为先。社区捐赠和公司合作让维护者得以全职工作并加快发布。"
+    },
+    {
+      "key": "support.hero.tagline",
+      "value": "支持"
+    },
+    {
+      "key": "support.hero.title",
+      "value": "资助 Basis"
+    },
+    {
+      "key": "support.where.body",
+      "value": "资金汇集起来共同解决惠及所有人的共性问题 — 网络、化身、工具。OpenCollective 上有公开账本，受赞助的工作会在发行说明中注明。赞助者不掌控项目。"
+    },
+    {
+      "key": "support.where.title",
+      "value": "资金的去向"
+    },
+    {
+      "key": "docs.button.askDiscord",
+      "value": "在 Discord 上提问"
+    },
+    {
+      "key": "docs.button.basisGithub",
+      "value": "GitHub 上的 Basis  ↗"
+    },
+    {
+      "key": "docs.button.joinDiscord",
+      "value": "加入 Discord"
+    },
+    {
+      "key": "docs.button.openDocs",
+      "value": "打开文档  ↗"
+    },
+    {
+      "key": "docs.button.openDocsSite",
+      "value": "打开 docs.basisvr.org  ↗"
+    },
+    {
+      "key": "docs.button.packageManagerGithub",
+      "value": "GitHub 上的包管理器  ↗"
+    },
+    {
+      "key": "docs.community.body",
+      "value": "遇到文档未涵盖的问题？Discord 是从其他创作者和维护者那里获得帮助的最快途径。"
+    },
+    {
+      "key": "docs.community.title",
+      "value": "向社区提问"
+    },
+    {
+      "key": "docs.hero.subtitle",
+      "value": "在 Basis 上构建的指南、API 参考和操作教程 — 以及在你遇到困难时可以求助的社区。"
+    },
+    {
+      "key": "docs.hero.tagline",
+      "value": "文档"
+    },
+    {
+      "key": "docs.hero.title",
+      "value": "学习 Basis"
+    },
+    {
+      "key": "docs.site.body",
+      "value": "安装、入门、虚拟形象、世界、网络和 SDK — 完整文档位于 docs.basisvr.org。"
+    },
+    {
+      "key": "docs.site.title",
+      "value": "文档站点"
+    },
+    {
+      "key": "docs.source.body",
+      "value": "阅读代码、提交 bug 或发起拉取请求。Basis 采用 MIT 许可并开放开发。"
+    },
+    {
+      "key": "docs.source.title",
+      "value": "源码与 issue"
+    },
+    {
+      "key": "logs.button.clear",
+      "value": "清除"
+    },
+    {
+      "key": "logs.button.copy",
+      "value": "复制"
+    },
+    {
+      "key": "logs.button.openFolder",
+      "value": "打开文件夹"
+    },
+    {
+      "key": "logs.hero.subtitle",
+      "value": "本次会话中应用执行的操作 — 个人路径、用户名和 IP 已隐去。报告问题时请附上这些。"
+    },
+    {
+      "key": "logs.hero.tagline",
+      "value": "日志"
+    },
+    {
+      "key": "logs.hero.title",
+      "value": "活动日志"
+    },
+    {
+      "key": "announcements.button.refresh",
+      "value": "刷新"
+    },
+    {
+      "key": "announcements.card.learnMore",
+      "value": "了解更多"
+    },
+    {
+      "key": "announcements.card.pinned",
+      "value": "已置顶"
+    },
+    {
+      "key": "announcements.empty.body",
+      "value": "稍后再来看看 — 来自 Basis 团队的消息会显示在这里。"
+    },
+    {
+      "key": "announcements.empty.title",
+      "value": "暂无公告"
+    },
+    {
+      "key": "announcements.hero.subtitle",
+      "value": "来自 Basis 团队的更新与资讯。"
+    },
+    {
+      "key": "announcements.hero.tagline",
+      "value": "公告"
+    },
+    {
+      "key": "announcements.hero.title",
+      "value": "最新动态"
+    },
+    {
+      "key": "announcements.level.alert",
+      "value": "注意"
+    },
+    {
+      "key": "announcements.level.news",
+      "value": "资讯"
+    },
+    {
+      "key": "announcements.level.update",
+      "value": "更新"
+    },
+    {
+      "key": "announcements.status.loading",
+      "value": "正在加载公告…"
+    },
+    {
+      "key": "dialog.alias.cancel",
+      "value": "取消"
+    },
+    {
+      "key": "dialog.alias.displayName",
+      "value": "显示名称"
+    },
+    {
+      "key": "dialog.alias.hint",
+      "value": "在整个应用中为此克隆显示的友好名称。"
+    },
+    {
+      "key": "dialog.alias.save",
+      "value": "保存"
+    },
+    {
+      "key": "dialog.alias.title",
+      "value": "为此安装命名"
+    },
+    {
+      "key": "dialog.alias.watermark",
+      "value": "例如 我的 Basis 项目"
+    },
+    {
+      "key": "dialog.backup.backupContinue",
+      "value": "备份并继续"
+    },
+    {
+      "key": "dialog.backup.cancel",
+      "value": "取消"
+    },
+    {
+      "key": "dialog.backup.continueWithout",
+      "value": "不备份继续"
+    },
+    {
+      "key": "dialog.backup.heading",
+      "value": "先备份你的项目吗？"
+    },
+    {
+      "key": "dialog.backup.title",
+      "value": "备份你的项目吗？"
+    },
+    {
+      "key": "dialog.confirm.no",
+      "value": "不用了"
+    },
+    {
+      "key": "dialog.confirm.title",
+      "value": "确认"
+    },
+    {
+      "key": "dialog.confirm.yes",
+      "value": "是"
+    },
+    {
+      "key": "dialog.createBundle.cancel",
+      "value": "取消"
+    },
+    {
+      "key": "dialog.createBundle.create",
+      "value": "创建提交"
+    },
+    {
+      "key": "dialog.createBundle.descriptionLabel",
+      "value": "描述"
+    },
+    {
+      "key": "dialog.createBundle.errorNoName",
+      "value": "给你的捆绑包起个名字。"
+    },
+    {
+      "key": "dialog.createBundle.errorNoPackages",
+      "value": "至少选择一个要包含的包。"
+    },
+    {
+      "key": "dialog.createBundle.heading",
+      "value": "创建捆绑包"
+    },
+    {
+      "key": "dialog.createBundle.intro",
+      "value": "将你的 Basis + 包作为可安装的捆绑包分享。它会打开一个 GitHub issue 以供提交。"
+    },
+    {
+      "key": "dialog.createBundle.nameLabel",
+      "value": "名称"
+    },
+    {
+      "key": "dialog.createBundle.packagesLabel",
+      "value": "要包含的包"
+    },
+    {
+      "key": "dialog.createBundle.title",
+      "value": "创建捆绑包"
+    },
+    {
+      "key": "dialog.installPicker.addHere",
+      "value": "添加到这里"
+    },
+    {
+      "key": "dialog.installPicker.cancel",
+      "value": "取消"
+    },
+    {
+      "key": "dialog.installPicker.heading",
+      "value": "添加包"
+    },
+    {
+      "key": "dialog.installPicker.subtitle",
+      "value": "选择要将此包添加到哪个安装。"
+    },
+    {
+      "key": "dialog.installPicker.title",
+      "value": "选择一个安装"
+    },
+    {
+      "key": "dialog.roleWizard.developerDesc",
+      "value": "以上全部，外加开发选项卡 — 在本地挂载包，在 Unity 中编辑它们，并发起拉取请求。"
+    },
+    {
+      "key": "dialog.roleWizard.developerTitle",
+      "value": "🛠   我是开发者"
+    },
+    {
+      "key": "dialog.roleWizard.intro",
+      "value": "你将如何使用 Basis？我们会据此定制显示哪些工具 — 你可以随时在设置中更改。"
+    },
+    {
+      "key": "dialog.roleWizard.title",
+      "value": "欢迎使用 Basis 包管理器"
+    },
+    {
+      "key": "dialog.roleWizard.userDesc",
+      "value": "克隆 Basis、安装包并保持其最新。只有必需功能，别无其他。"
+    },
+    {
+      "key": "dialog.roleWizard.userTitle",
+      "value": "🎮   我在使用该框架"
+    },
+    {
+      "key": "dialog.roleWizard.welcome",
+      "value": "欢迎 👋"
+    },
+    {
+      "key": "dialog.submitPr.branchLabel",
+      "value": "分支名称"
+    },
+    {
+      "key": "dialog.submitPr.cancel",
+      "value": "取消"
+    },
+    {
+      "key": "dialog.submitPr.contributeHint",
+      "value": "将你对 {0} 的更改贡献回其仓库。"
+    },
+    {
+      "key": "dialog.submitPr.defaultTitle",
+      "value": "更新 {0}"
+    },
+    {
+      "key": "dialog.submitPr.descriptionLabel",
+      "value": "描述"
+    },
+    {
+      "key": "dialog.submitPr.descriptionWatermark",
+      "value": "你更改了什么，为什么？"
+    },
+    {
+      "key": "dialog.submitPr.hint",
+      "value": "我们会创建此分支、提交你的更改、推送（如果你无法直接推送，会先复刻），并打开 PR。"
+    },
+    {
+      "key": "dialog.submitPr.openPr",
+      "value": "打开拉取请求"
+    },
+    {
+      "key": "dialog.submitPr.title",
+      "value": "提交拉取请求"
+    },
+    {
+      "key": "dialog.submitPr.titleLabel",
+      "value": "标题"
+    },
+    {
+      "key": "dialog.submitPr.titleWatermark",
+      "value": "更新此包"
+    },
+    {
+      "key": "dialog.versionPicker.betaPill",
+      "value": "测试版"
+    },
+    {
+      "key": "dialog.versionPicker.cancel",
+      "value": "取消"
+    },
+    {
+      "key": "dialog.versionPicker.install",
+      "value": "安装此版本"
+    },
+    {
+      "key": "dialog.versionPicker.showPrereleases",
+      "value": "显示预发布版（测试版）"
+    },
+    {
+      "key": "dialog.versionPicker.subHasReleases",
+      "value": "选择一个已发布的发行版，或最新的默认分支。"
+    },
+    {
+      "key": "dialog.versionPicker.subNoReleases",
+      "value": "尚未发布任何发行版 — 显示标签/默认分支。请创作者发布发行版以获得稳定版本。"
+    },
+    {
+      "key": "dialog.versionPicker.title",
+      "value": "选择版本"
+    }
+  ]
+}

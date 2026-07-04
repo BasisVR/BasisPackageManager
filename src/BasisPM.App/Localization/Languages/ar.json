@@ -1,0 +1,1626 @@
+{
+  "code": "ar",
+  "nativeName": "العربية",
+  "entries": [
+    {
+      "key": "nav.changes",
+      "value": "التغييرات المحلية"
+    },
+    {
+      "key": "nav.community",
+      "value": "المجتمع"
+    },
+    {
+      "key": "nav.develop",
+      "value": "تطوير"
+    },
+    {
+      "key": "nav.installs",
+      "value": "المشاريع"
+    },
+    {
+      "key": "nav.packages",
+      "value": "الحزم"
+    },
+    {
+      "key": "nav.settings",
+      "value": "الإعدادات"
+    },
+    {
+      "key": "nav.unity",
+      "value": "محرّرات Unity"
+    },
+    {
+      "key": "shell.bundle.pickerLabel",
+      "value": "{0} ({1} حزمة)"
+    },
+    {
+      "key": "shell.crash.dialogMessage",
+      "value": "يبدو أن التطبيق أُغلق بشكل غير متوقع في المرة الأخيرة. هل تريد فتح مشكلة GitHub مُعبّأة مسبقًا لنتمكن من فحصها؟"
+    },
+    {
+      "key": "shell.crash.dialogTitle",
+      "value": "أُغلق مدير حزم Basis بشكل غير متوقع"
+    },
+    {
+      "key": "shell.deeplink.thePackage",
+      "value": "الحزمة"
+    },
+    {
+      "key": "shell.desktopShortcut.dialogMessage",
+      "value": "هل تريد إضافة اختصار على سطح المكتب لمدير حزم Basis؟ يمكنك دائمًا العثور عليه من قائمة ابدأ."
+    },
+    {
+      "key": "shell.desktopShortcut.dialogTitle",
+      "value": "اختصار سطح المكتب"
+    },
+    {
+      "key": "shell.footer.license",
+      "value": "مرخّص بموجب MIT"
+    },
+    {
+      "key": "shell.installPicker.prompt",
+      "value": "إلى أي مشروع تريد إضافة “{0}”؟"
+    },
+    {
+      "key": "shell.status.bundleNotFound",
+      "value": "تعذّر العثور على الحزمة المجمّعة “{0}” في السجلّ."
+    },
+    {
+      "key": "shell.status.checkingForUpdates",
+      "value": "جارٍ التحقق من التحديثات…"
+    },
+    {
+      "key": "shell.status.cloneFirst",
+      "value": "استنسخ أو أضِف تثبيت Basis أولًا، ثم ثبّت {0}."
+    },
+    {
+      "key": "shell.status.copied",
+      "value": "تم نسخ الحالة إلى الحافظة."
+    },
+    {
+      "key": "shell.status.copy",
+      "value": "نسخ"
+    },
+    {
+      "key": "shell.status.copyFailed",
+      "value": "فشل النسخ: {0}"
+    },
+    {
+      "key": "shell.status.copyTooltip",
+      "value": "نسخ رسالة الحالة إلى الحافظة"
+    },
+    {
+      "key": "shell.status.desktopShortcutCreated",
+      "value": "تم إنشاء اختصار سطح المكتب."
+    },
+    {
+      "key": "shell.status.desktopShortcutFailed",
+      "value": "تعذّر إنشاء اختصار سطح المكتب: {0}"
+    },
+    {
+      "key": "shell.status.downloadingUpdate",
+      "value": "جارٍ تنزيل التحديث…"
+    },
+    {
+      "key": "shell.status.installLinkMissingGit",
+      "value": "رابط تثبيت {0} كان يفتقد عنوان git الخاص به."
+    },
+    {
+      "key": "shell.status.loadingBundle",
+      "value": "جارٍ تحميل الحزمة المجمّعة…"
+    },
+    {
+      "key": "shell.status.noUnityProject",
+      "value": "لا يوجد مشروع Unity لفتحه."
+    },
+    {
+      "key": "shell.status.ok",
+      "value": "موافق"
+    },
+    {
+      "key": "shell.status.okTooltip",
+      "value": "تجاهل هذه الرسالة"
+    },
+    {
+      "key": "shell.status.openIssue",
+      "value": "فتح مشكلة"
+    },
+    {
+      "key": "shell.status.openIssueTooltip",
+      "value": "فتح مشكلة GitHub مُعبّأة مسبقًا تتضمّن هذا الخطأ وآخر إجراءاتك"
+    },
+    {
+      "key": "shell.status.openUnityFailed",
+      "value": "تعذّر فتح Unity: {0}"
+    },
+    {
+      "key": "shell.status.openedInUnity",
+      "value": "جارٍ فتح {0} في Unity {1}."
+    },
+    {
+      "key": "shell.status.openingInUnity",
+      "value": "جارٍ فتح {0} في Unity…"
+    },
+    {
+      "key": "shell.status.runningFromSource",
+      "value": "التشغيل من المصدر — تتم إدارة التحديثات عبر بنيتك البرمجية، لا عبر أداة التحديث داخل التطبيق."
+    },
+    {
+      "key": "shell.status.unityNotInstalled",
+      "value": "Unity {0} غير مثبّت. أضِفه من تبويب محرّرات Unity، ثم أعد المحاولة."
+    },
+    {
+      "key": "shell.status.unityNotInstalledOpenedHub",
+      "value": "Unity {0} غير مثبّت — تم فتح Unity Hub لتتمكن من إضافته."
+    },
+    {
+      "key": "shell.status.upToDate",
+      "value": "أنت على أحدث إصدار."
+    },
+    {
+      "key": "shell.status.updateAvailable",
+      "value": "يتوفّر تحديث."
+    },
+    {
+      "key": "shell.status.updateCheckFailed",
+      "value": "فشل التحقق من التحديثات: {0}"
+    },
+    {
+      "key": "shell.status.updateFailed",
+      "value": "فشل التحديث: {0}"
+    },
+    {
+      "key": "shell.update.bannerAvailable",
+      "value": "يتوفّر مدير حزم Basis {0}."
+    },
+    {
+      "key": "shell.update.later",
+      "value": "لاحقًا"
+    },
+    {
+      "key": "shell.update.laterTooltip",
+      "value": "التجاهل حتى التشغيل التالي"
+    },
+    {
+      "key": "shell.update.now",
+      "value": "تحديث الآن"
+    },
+    {
+      "key": "shell.update.nowTooltip",
+      "value": "تنزيل التحديث وإعادة التشغيل"
+    },
+    {
+      "key": "shell.version.tooltip",
+      "value": "الإصدار المثبّت — تحقق من التحديثات في الإعدادات"
+    },
+    {
+      "key": "shell.window.title",
+      "value": "مدير حزم Basis"
+    },
+    {
+      "key": "shell.wordmark.name",
+      "value": "BasisVR"
+    },
+    {
+      "key": "shell.wordmark.tagline",
+      "value": "مدير الحزم"
+    },
+    {
+      "key": "installs.action.updateCore",
+      "value": "يؤدي تحديث النواة إلى تنفيذ 'git pull'، وهو ما قد يغيّر ملفات في مشروع Basis الخاص بك."
+    },
+    {
+      "key": "installs.badge.active",
+      "value": "نشط"
+    },
+    {
+      "key": "installs.branch.default",
+      "value": "{0} (main)"
+    },
+    {
+      "key": "installs.button.addExisting",
+      "value": "إضافة موجود"
+    },
+    {
+      "key": "installs.button.backup",
+      "value": "نسخ احتياطي"
+    },
+    {
+      "key": "installs.button.browse",
+      "value": "استعراض…"
+    },
+    {
+      "key": "installs.button.changes",
+      "value": "التغييرات"
+    },
+    {
+      "key": "installs.button.cloneBasis",
+      "value": "استنساخ Basis"
+    },
+    {
+      "key": "installs.button.open",
+      "value": "فتح"
+    },
+    {
+      "key": "installs.button.packages",
+      "value": "الحزم"
+    },
+    {
+      "key": "installs.button.refresh",
+      "value": "تحديث"
+    },
+    {
+      "key": "installs.button.remove",
+      "value": "إزالة"
+    },
+    {
+      "key": "installs.button.updateCore",
+      "value": "تحديث النواة"
+    },
+    {
+      "key": "installs.cloneForm.branchLabel",
+      "value": "الفرع"
+    },
+    {
+      "key": "installs.cloneForm.cloneIntoLabel",
+      "value": "الاستنساخ في مجلّد"
+    },
+    {
+      "key": "installs.cloneForm.heading",
+      "value": "استنساخ Basis"
+    },
+    {
+      "key": "installs.cloneForm.subFolderLabel",
+      "value": "اسم المجلّد الفرعي"
+    },
+    {
+      "key": "installs.dialog.backupPrompt",
+      "value": "{0}\n\nهل تريد إنشاء نسخة احتياطية من {1} أولًا؟ يؤدي ذلك إلى ضغط Assets وPackages وProjectSettings (وليس ذاكرة Library المؤقتة) في مجلّد BasisBackups بجوار التثبيت الخاص بك."
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceBody",
+      "value": "لا يتوفّر سوى {0} على {1}. قد يتطلّب استنساخ Basis وفتحه في Unity أكثر من ذلك بكثير، وقد يفشل الاستنساخ في منتصفه.\n\nهل تريد الاستنساخ هنا على أي حال؟"
+    },
+    {
+      "key": "installs.dialog.lowDiskSpaceTitle",
+      "value": "مساحة القرص منخفضة"
+    },
+    {
+      "key": "installs.dialog.nameThisInstall",
+      "value": "تسمية هذا التثبيت"
+    },
+    {
+      "key": "installs.empty.body",
+      "value": "استخدم زر استنساخ Basis أعلاه لجلب BasisVR/Basis، أو إضافة موجود لتسجيل نسخة مستنسخة لديك بالفعل."
+    },
+    {
+      "key": "installs.empty.title",
+      "value": "لا توجد تثبيتات بعد"
+    },
+    {
+      "key": "installs.git.ahead",
+      "value": "{0} متقدّم"
+    },
+    {
+      "key": "installs.git.behindUpstream",
+      "value": "{0} متأخّر عن المصدر"
+    },
+    {
+      "key": "installs.git.checking",
+      "value": "جارٍ التحقق…"
+    },
+    {
+      "key": "installs.git.checkingRemote",
+      "value": "جارٍ فحص المستودع البعيد…"
+    },
+    {
+      "key": "installs.git.error",
+      "value": "خطأ git: {0}"
+    },
+    {
+      "key": "installs.git.localChanges",
+      "value": "{0} تغيير محلي{1}"
+    },
+    {
+      "key": "installs.git.noUpstream",
+      "value": "لا يوجد مصدر"
+    },
+    {
+      "key": "installs.git.notGitRepo",
+      "value": "ليس مستودع git"
+    },
+    {
+      "key": "installs.git.upToDate",
+      "value": "محدّث"
+    },
+    {
+      "key": "installs.hero.subtitle",
+      "value": "استنسخ مستودع BasisVR/Basis، ثم أدِر حزم كل مشروع وتحديثاته وتغييراته المحلية."
+    },
+    {
+      "key": "installs.hero.tagline",
+      "value": "المشاريع"
+    },
+    {
+      "key": "installs.hero.title",
+      "value": "مشاريع Basis الخاصة بك"
+    },
+    {
+      "key": "installs.picker.chooseCloneFolder",
+      "value": "اختر مجلّدًا لاستنساخ Basis فيه"
+    },
+    {
+      "key": "installs.picker.selectExistingClone",
+      "value": "حدّد نسخة Basis مستنسخة موجودة"
+    },
+    {
+      "key": "installs.progress.starting",
+      "value": "جارٍ بدء الاستنساخ…"
+    },
+    {
+      "key": "installs.row.noUnityProject",
+      "value": "لا يوجد مشروع Unity"
+    },
+    {
+      "key": "installs.row.unityVersion",
+      "value": "Unity {0}"
+    },
+    {
+      "key": "installs.space.criticalWarning",
+      "value": "مساحة القرص منخفضة جدًا — لا يتوفّر سوى {0} على {1}. من المرجّح أن يفشل استنساخ Basis؛ حرّر بعض المساحة أو اختر محرّك أقراص آخر."
+    },
+    {
+      "key": "installs.space.lowWarning",
+      "value": "مساحة القرص منخفضة — يتوفّر {0} على {1}. قد يستهلك Basis إضافةً إلى مكتبة Unity الخاصة به 20 غيغابايت أو أكثر."
+    },
+    {
+      "key": "installs.status.added",
+      "value": "تمت إضافة {0}{1}."
+    },
+    {
+      "key": "installs.status.alreadyInList",
+      "value": "هذا التثبيت موجود بالفعل في القائمة."
+    },
+    {
+      "key": "installs.status.backedUp",
+      "value": "تم إنشاء نسخة احتياطية من {0} → {1}"
+    },
+    {
+      "key": "installs.status.backingUp",
+      "value": "جارٍ إنشاء نسخة احتياطية من {0}…"
+    },
+    {
+      "key": "installs.status.backupFailed",
+      "value": "فشل النسخ الاحتياطي: {0}"
+    },
+    {
+      "key": "installs.status.chooseFolderFirst",
+      "value": "اختر مجلّدًا للاستنساخ فيه أولًا."
+    },
+    {
+      "key": "installs.status.cloneCancelledLowSpace",
+      "value": "تم إلغاء الاستنساخ — مساحة القرص منخفضة على محرّك الأقراص الهدف."
+    },
+    {
+      "key": "installs.status.cloneError",
+      "value": "خطأ في الاستنساخ: {0}"
+    },
+    {
+      "key": "installs.status.cloneFailed",
+      "value": "فشل الاستنساخ (رمز الخروج {0}). {1}"
+    },
+    {
+      "key": "installs.status.clonedInto",
+      "value": "تم استنساخ Basis في {0}.{1}"
+    },
+    {
+      "key": "installs.status.cloningInto",
+      "value": "جارٍ استنساخ Basis في {0}…"
+    },
+    {
+      "key": "installs.status.destExists",
+      "value": "{0} موجود بالفعل وليس فارغًا."
+    },
+    {
+      "key": "installs.status.folderMissing",
+      "value": "لم يعد المجلّد موجودًا: {0}"
+    },
+    {
+      "key": "installs.status.gitNotFound",
+      "value": "لم يُعثر على Git. ثبّت Git وأضِفه إلى مسار PATH (راجع الإعدادات)."
+    },
+    {
+      "key": "installs.status.noUnityDetectedNote",
+      "value": " (لم يُكتشف أي مشروع Unity بداخله)"
+    },
+    {
+      "key": "installs.status.noUnityToBackup",
+      "value": "لا يحتوي {0} على مشروع Unity لإنشاء نسخة احتياطية منه."
+    },
+    {
+      "key": "installs.status.notGitRepo",
+      "value": "{0} ليس مستودع git."
+    },
+    {
+      "key": "installs.status.removed",
+      "value": "تمت إزالة {0} من القائمة (بقيت الملفات على القرص)."
+    },
+    {
+      "key": "installs.status.requiresUnityNote",
+      "value": " يتطلّب Unity {0} — افتح تبويب Unity لتثبيته."
+    },
+    {
+      "key": "installs.status.rowSummary",
+      "value": "{0}: {1}"
+    },
+    {
+      "key": "installs.status.updateError",
+      "value": "خطأ في التحديث: {0}"
+    },
+    {
+      "key": "installs.status.updateFailed",
+      "value": "فشل تحديث {0}: {1}"
+    },
+    {
+      "key": "installs.status.updated",
+      "value": "تم تحديث {0}. {1}"
+    },
+    {
+      "key": "installs.status.updating",
+      "value": "جارٍ تحديث {0} (git pull)…"
+    },
+    {
+      "key": "installs.tooltip.backup",
+      "value": "ضغط Assets وPackages وProjectSettings (وليس ذاكرة Library المؤقتة)"
+    },
+    {
+      "key": "packages.badge.basisRegistry",
+      "value": "سجلّ BASIS"
+    },
+    {
+      "key": "packages.badge.github",
+      "value": "github"
+    },
+    {
+      "key": "packages.bundle.basisLine",
+      "value": "Basis: {0}  ·  Unity {1}"
+    },
+    {
+      "key": "packages.bundle.unknownCommit",
+      "value": "غير معروف"
+    },
+    {
+      "key": "packages.button.add",
+      "value": "+ إضافة"
+    },
+    {
+      "key": "packages.button.chooseVersion",
+      "value": "اختيار الإصدار…"
+    },
+    {
+      "key": "packages.button.createBundle",
+      "value": "إنشاء حزمة مجمّعة"
+    },
+    {
+      "key": "packages.button.install",
+      "value": "تثبيت"
+    },
+    {
+      "key": "packages.button.refresh",
+      "value": "تحديث"
+    },
+    {
+      "key": "packages.button.remove",
+      "value": "إزالة"
+    },
+    {
+      "key": "packages.button.update",
+      "value": "تحديث"
+    },
+    {
+      "key": "packages.community.description",
+      "value": "الصق عنوان GitHub، أو owner/repo[?path=Sub/Folder][#branch]. تتم إضافة ملف package.json الخاص به إلى بيان Unity كتبعية git."
+    },
+    {
+      "key": "packages.community.watermark",
+      "value": "https://github.com/owner/repo  أو  owner/repo?path=Packages/com.x#main"
+    },
+    {
+      "key": "packages.dialog.installTitle",
+      "value": "تثبيت {0}"
+    },
+    {
+      "key": "packages.empty.noInstallSelected",
+      "value": "لم يتم تحديد أي تثبيت"
+    },
+    {
+      "key": "packages.empty.noProjectDescription",
+      "value": "استنسخ أو حدّد تثبيت Basis من تبويب المشاريع لإدارة حزمه."
+    },
+    {
+      "key": "packages.empty.noProjectTitle",
+      "value": "لا يوجد تثبيت يتضمّن مشروع Unity"
+    },
+    {
+      "key": "packages.filter.allOwners",
+      "value": "جميع المالكين"
+    },
+    {
+      "key": "packages.filter.otherOwner",
+      "value": "أخرى"
+    },
+    {
+      "key": "packages.filter.watermark",
+      "value": "تصفية الحزم..."
+    },
+    {
+      "key": "packages.header.available",
+      "value": "متاح للتثبيت"
+    },
+    {
+      "key": "packages.header.community",
+      "value": "إضافة حزمة مجتمعية من GitHub"
+    },
+    {
+      "key": "packages.header.installed",
+      "value": "مثبّتة"
+    },
+    {
+      "key": "packages.hero.subtitle",
+      "value": "اختر مشروعًا، ثم ثبّت الحزم من سجلّ Basis أو أضِف أي حزمة UPM مجتمعية عبر عنوان git."
+    },
+    {
+      "key": "packages.hero.tagline",
+      "value": "الحزم"
+    },
+    {
+      "key": "packages.hero.title",
+      "value": "الحزم"
+    },
+    {
+      "key": "packages.label.project",
+      "value": "المشروع"
+    },
+    {
+      "key": "packages.status.added",
+      "value": "تمت الإضافة"
+    },
+    {
+      "key": "packages.status.addedBundle",
+      "value": "تمت إضافة الحزمة المجمّعة “{0}” ({1} حزمة){2} → {3}."
+    },
+    {
+      "key": "packages.status.addedDeepLink",
+      "value": "{0} {1}{2} → {3}."
+    },
+    {
+      "key": "packages.status.addedFromGitHub",
+      "value": "{0} {1}{2} من GitHub."
+    },
+    {
+      "key": "packages.status.bundleInstallFailed",
+      "value": "فشل تثبيت الحزمة المجمّعة: {0}"
+    },
+    {
+      "key": "packages.status.chooseProject",
+      "value": "اختر مشروعًا أولًا."
+    },
+    {
+      "key": "packages.status.deepLinkFailed",
+      "value": "فشل التثبيت عبر الرابط المباشر: {0}"
+    },
+    {
+      "key": "packages.status.defaultBranch",
+      "value": "الفرع الافتراضي"
+    },
+    {
+      "key": "packages.status.depNote",
+      "value": " (+{0} حزمة تبعية{1})"
+    },
+    {
+      "key": "packages.status.dependencyConflict",
+      "value": "تعارض في التبعيات: {0}"
+    },
+    {
+      "key": "packages.status.gitHubAddFailed",
+      "value": "فشلت الإضافة من GitHub: {0}"
+    },
+    {
+      "key": "packages.status.gitUrlParseFailed",
+      "value": "تعذّر تحليل عنوان git الخاص بالحزمة."
+    },
+    {
+      "key": "packages.status.installError",
+      "value": "خطأ في التثبيت: {0}"
+    },
+    {
+      "key": "packages.status.installLinkMissing",
+      "value": "كان رابط التثبيت يفتقد معرّف الحزمة أو عنوان git."
+    },
+    {
+      "key": "packages.status.installed",
+      "value": "تم تثبيت {0} في {1}."
+    },
+    {
+      "key": "packages.status.installedVersion",
+      "value": "تم تثبيت {0} ({1}) في {2}."
+    },
+    {
+      "key": "packages.status.invalidGitHub",
+      "value": "مرجع GitHub غير صالح: {0}"
+    },
+    {
+      "key": "packages.status.loadingVersions",
+      "value": "جارٍ تحميل إصدارات {0}…"
+    },
+    {
+      "key": "packages.status.noAddonPackages",
+      "value": "لا يحتوي هذا المشروع على أي حزم إضافية لتجميعها بعد."
+    },
+    {
+      "key": "packages.status.noVersionsFound",
+      "value": "تعذّر العثور على أي إصدارات لـ {0}."
+    },
+    {
+      "key": "packages.status.notGitPackage",
+      "value": "{0} ليست حزمة git — لا توجد إصدارات للاختيار من بينها."
+    },
+    {
+      "key": "packages.status.openInstallFirst",
+      "value": "افتح تثبيتًا يتضمّن مشروع Unity أولًا، ثم انقر على تثبيت لـ {0} مرة أخرى."
+    },
+    {
+      "key": "packages.status.openingIssue",
+      "value": "جارٍ فتح مشكلة GitHub لإرسال “{0}” ({1} حزمة)…"
+    },
+    {
+      "key": "packages.status.packageJsonLoadFailed",
+      "value": "تعذّر تحميل package.json من {0}/{1}{2} — تحقق من المسار ومن أن المستودع عام."
+    },
+    {
+      "key": "packages.status.pasteGitHub",
+      "value": "الصق عنوان GitHub أو owner/repo."
+    },
+    {
+      "key": "packages.status.refusedUnsafeUrl",
+      "value": "تم رفض إضافة {0}: يستخدم عنوان git الخاص برابط التثبيت بروتوكول نقل غير مدعوم أو غير آمن."
+    },
+    {
+      "key": "packages.status.removed",
+      "value": "تمت إزالة {0}."
+    },
+    {
+      "key": "packages.status.skipNote",
+      "value": " (تم تخطّي {0} بسبب عنوان git غير آمن)"
+    },
+    {
+      "key": "packages.status.updated",
+      "value": "تم التحديث"
+    },
+    {
+      "key": "packages.status.versionInstallError",
+      "value": "خطأ في تثبيت الإصدار: {0}"
+    },
+    {
+      "key": "packages.tooltip.chooseVersion",
+      "value": "اختر إصدارًا محدّدًا أو نسخة بيتا أو الفرع الافتراضي"
+    },
+    {
+      "key": "packages.tooltip.filterByOwner",
+      "value": "تصفية الحزم المثبّتة حسب المالك (من معرّف الحزمة)"
+    },
+    {
+      "key": "unity.button.install",
+      "value": "التثبيت عبر Unity Hub"
+    },
+    {
+      "key": "unity.button.refresh",
+      "value": "تحديث"
+    },
+    {
+      "key": "unity.button.reloadList",
+      "value": "إعادة تحميل القائمة"
+    },
+    {
+      "key": "unity.button.uninstall",
+      "value": "إلغاء التثبيت"
+    },
+    {
+      "key": "unity.header.subtitle",
+      "value": "اكتشف محرّرات Unity المثبّتة وثبّت الإصدار الذي يتطلّبه Basis."
+    },
+    {
+      "key": "unity.header.tagline",
+      "value": "محرّرات UNITY"
+    },
+    {
+      "key": "unity.header.title",
+      "value": "إصدارات المحرّر"
+    },
+    {
+      "key": "unity.install.hint",
+      "value": "اختر إصدار Unity 6. يتم ملء مجموعة التغييرات تلقائيًا من موجز إصدارات Unity."
+    },
+    {
+      "key": "unity.label.changeset",
+      "value": "مجموعة التغييرات"
+    },
+    {
+      "key": "unity.label.release",
+      "value": "إصدار Unity 6"
+    },
+    {
+      "key": "unity.label.streamFilter",
+      "value": "تصفية القناة"
+    },
+    {
+      "key": "unity.section.installNew",
+      "value": "تثبيت محرّر جديد"
+    },
+    {
+      "key": "unity.section.installedEditors",
+      "value": "المحرّرات المثبّتة"
+    },
+    {
+      "key": "unity.status.alreadyInstalled",
+      "value": "Unity {0} مثبّت بالفعل."
+    },
+    {
+      "key": "unity.status.error",
+      "value": "خطأ: {0}"
+    },
+    {
+      "key": "unity.status.fetchReleasesFailed",
+      "value": "تعذّر جلب إصدارات Unity: {0}"
+    },
+    {
+      "key": "unity.status.hubNotDetected",
+      "value": "لم يتم اكتشاف Unity Hub."
+    },
+    {
+      "key": "unity.status.hubPath",
+      "value": "Unity Hub: {0}"
+    },
+    {
+      "key": "unity.status.installError",
+      "value": "خطأ في التثبيت: {0}"
+    },
+    {
+      "key": "unity.status.installFailed",
+      "value": "فشل التثبيت (رمز الخروج {0})."
+    },
+    {
+      "key": "unity.status.installKickedOff",
+      "value": "بدأ التثبيت عبر Unity Hub لـ {0}."
+    },
+    {
+      "key": "unity.status.installing",
+      "value": "جارٍ تثبيت Unity {0}..."
+    },
+    {
+      "key": "unity.status.noEditorsInstalled",
+      "value": " (لا توجد محرّرات مثبّتة)"
+    },
+    {
+      "key": "unity.status.pickReleaseFirst",
+      "value": "اختر إصدار Unity 6 من القائمة المنسدلة أولًا."
+    },
+    {
+      "key": "unity.status.requiredVersionNote",
+      "value": "يستهدف تثبيت Basis الخاص بك إصدار Unity {0}. ثبّت هذا الإصدار بالتحديد أدناه لفتح نظيف."
+    },
+    {
+      "key": "unity.status.uninstallError",
+      "value": "خطأ في إلغاء التثبيت: {0}"
+    },
+    {
+      "key": "unity.status.uninstallFailed",
+      "value": "فشل إلغاء التثبيت (رمز الخروج {0})."
+    },
+    {
+      "key": "unity.status.uninstalled",
+      "value": "تم إلغاء تثبيت Unity {0}."
+    },
+    {
+      "key": "unity.status.uninstalling",
+      "value": "جارٍ إلغاء تثبيت Unity {0}..."
+    },
+    {
+      "key": "unity.tag.installed",
+      "value": "مثبّت"
+    },
+    {
+      "key": "unity.tag.recommended",
+      "value": "موصى به"
+    },
+    {
+      "key": "develop.auth.cliNotLoggedIn",
+      "value": "تم العثور على GitHub CLI لكن دون تسجيل دخول — نفّذ “gh auth login”، ثم أعد التحقق."
+    },
+    {
+      "key": "develop.auth.notSignedIn",
+      "value": "لم يتم تسجيل الدخول — الصق رمزًا مميّزًا أدناه، أو ثبّت GitHub CLI وسجّل الدخول به."
+    },
+    {
+      "key": "develop.auth.signedIn",
+      "value": "تم تسجيل الدخول إلى GitHub باسم {0}"
+    },
+    {
+      "key": "develop.auth.tokenLabel",
+      "value": "رمز GitHub المميّز (يتطلّب نطاق “repo”)"
+    },
+    {
+      "key": "develop.auth.tokenWatermark",
+      "value": "ghp_…  أو  github_pat_…"
+    },
+    {
+      "key": "develop.button.installGit",
+      "value": "تثبيت Git"
+    },
+    {
+      "key": "develop.button.mountToEdit",
+      "value": "تركيب للتحرير"
+    },
+    {
+      "key": "develop.button.openInUnity",
+      "value": "فتح في Unity"
+    },
+    {
+      "key": "develop.button.recheck",
+      "value": "إعادة التحقق"
+    },
+    {
+      "key": "develop.button.refresh",
+      "value": "تحديث"
+    },
+    {
+      "key": "develop.button.signIn",
+      "value": "تسجيل الدخول"
+    },
+    {
+      "key": "develop.button.submitPr",
+      "value": "إرسال طلب سحب"
+    },
+    {
+      "key": "develop.button.swapBack",
+      "value": "إعادة التبديل"
+    },
+    {
+      "key": "develop.confirm.alreadyMounted",
+      "value": "{0} مُركّب بالفعل في Packages/{0}.\n\nهل تريد استبداله بنسخة مستنسخة جديدة؟ ستُفقد أي تعديلات محلية في ذلك المجلّد."
+    },
+    {
+      "key": "develop.confirm.packageExists",
+      "value": "Packages/{0} موجود بالفعل وليس فارغًا — قد يكون تركيبًا متبقيًا أو نسخة محلية.\n\nهل تريد استبداله بنسخة مستنسخة جديدة؟ سيتم حذف محتوياته الحالية."
+    },
+    {
+      "key": "develop.confirm.packageThereTitle",
+      "value": "الحزمة موجودة بالفعل"
+    },
+    {
+      "key": "develop.empty.description",
+      "value": "حدّد تثبيت Basis من تبويب المشاريع لتحرير حزمه."
+    },
+    {
+      "key": "develop.empty.title",
+      "value": "لا يوجد تثبيت يتضمّن مشروع Unity"
+    },
+    {
+      "key": "develop.git.requiredDescription",
+      "value": "يتطلّب تركيب حزمة وإرسال طلبات السحب وجود Git. ثبّته، ثم أعد التحقق."
+    },
+    {
+      "key": "develop.git.requiredTitle",
+      "value": "Git مطلوب"
+    },
+    {
+      "key": "develop.header.description",
+      "value": "ركّب حزمة git لتحريرها في Unity، ثم افتح طلب سحب إلى المصدر — أعد التبديل أو احتفظ بها عند الانتهاء."
+    },
+    {
+      "key": "develop.header.tagline",
+      "value": "تطوير"
+    },
+    {
+      "key": "develop.install.none",
+      "value": "لم يتم تحديد أي تثبيت"
+    },
+    {
+      "key": "develop.section.gitPackages",
+      "value": "حزم Git"
+    },
+    {
+      "key": "develop.section.mountedForEditing",
+      "value": "مُركّبة للتحرير"
+    },
+    {
+      "key": "develop.section.noGitPackages",
+      "value": "لا توجد حزم محمّلة عبر git في هذا المشروع."
+    },
+    {
+      "key": "develop.status.clearFailed",
+      "value": "تعذّر مسح Packages/{0}: {1}"
+    },
+    {
+      "key": "develop.status.gitRequired",
+      "value": "Git مطلوب."
+    },
+    {
+      "key": "develop.status.gitRequiredMount",
+      "value": "Git مطلوب لتركيب حزمة. ثبّته، ثم أعد التحقق."
+    },
+    {
+      "key": "develop.status.loginUnverified",
+      "value": "تعذّر التحقق من تسجيل دخولك إلى GitHub."
+    },
+    {
+      "key": "develop.status.mountCancelled",
+      "value": "تم إلغاء التركيب — تُرك Packages/{0} كما هو."
+    },
+    {
+      "key": "develop.status.mountError",
+      "value": "خطأ في التركيب: {0}"
+    },
+    {
+      "key": "develop.status.mountFailed",
+      "value": "فشل التركيب."
+    },
+    {
+      "key": "develop.status.mounted",
+      "value": "تم تركيب {0} في Packages/ — حرّرها في Unity، ثم أرسِل طلب سحب."
+    },
+    {
+      "key": "develop.status.mounting",
+      "value": "جارٍ تركيب {0}…"
+    },
+    {
+      "key": "develop.status.prError",
+      "value": "خطأ في طلب السحب: {0}"
+    },
+    {
+      "key": "develop.status.prFailed",
+      "value": "فشل إرسال طلب السحب."
+    },
+    {
+      "key": "develop.status.prOpened",
+      "value": "تم فتح طلب السحب{0}: {1}"
+    },
+    {
+      "key": "develop.status.signInFirst",
+      "value": "سجّل الدخول إلى GitHub أولًا (عبر GitHub CLI أو رمز مميّز)."
+    },
+    {
+      "key": "develop.status.signedInAs",
+      "value": "تم تسجيل الدخول باسم {0}."
+    },
+    {
+      "key": "develop.status.submittingPr",
+      "value": "جارٍ إرسال طلب سحب لـ {0}…"
+    },
+    {
+      "key": "develop.status.swapBackError",
+      "value": "خطأ في إعادة التبديل: {0}"
+    },
+    {
+      "key": "develop.status.swapBackFailed",
+      "value": "فشلت إعادة التبديل."
+    },
+    {
+      "key": "develop.status.swappedBack",
+      "value": "عاد {0} إلى عنوان git الخاص به."
+    },
+    {
+      "key": "develop.status.swapping",
+      "value": "جارٍ إعادة تبديل {0} إلى عنوان git الخاص به…"
+    },
+    {
+      "key": "develop.status.tokenFailed",
+      "value": "لم يُصادَق على هذا الرمز — تأكّد من أنه يمتلك نطاق “repo”."
+    },
+    {
+      "key": "develop.status.viaFork",
+      "value": " (عبر نسختك المتفرّعة)"
+    },
+    {
+      "key": "changes.button.refresh",
+      "value": "تحديث"
+    },
+    {
+      "key": "changes.diff.loadError",
+      "value": "تعذّر تحميل الفروقات: {0}"
+    },
+    {
+      "key": "changes.diff.title",
+      "value": "الفروقات"
+    },
+    {
+      "key": "changes.empty.description",
+      "value": "اختر تثبيتًا من تبويب المشاريع لرؤية ما غيّرته."
+    },
+    {
+      "key": "changes.empty.title",
+      "value": "لم يتم تحديد أي تثبيت"
+    },
+    {
+      "key": "changes.header.clean",
+      "value": "{0} · {1} — شجرة العمل نظيفة"
+    },
+    {
+      "key": "changes.header.dirtyMany",
+      "value": "{0} · {1} — {2} ملف مُغيَّر"
+    },
+    {
+      "key": "changes.header.dirtyOne",
+      "value": "{0} · {1} — {2} ملف مُغيَّر"
+    },
+    {
+      "key": "changes.header.gitError",
+      "value": "خطأ git: {0}"
+    },
+    {
+      "key": "changes.header.notGitRepo",
+      "value": "هذا التثبيت ليس مستودع git، لذا لا يمكن تتبّع التغييرات المحلية."
+    },
+    {
+      "key": "changes.hero.subtitle",
+      "value": "ما غيّرته في مصدر Basis منذ آخر التزام لك."
+    },
+    {
+      "key": "changes.hero.tagline",
+      "value": "التغييرات المحلية"
+    },
+    {
+      "key": "changes.list.title",
+      "value": "الملفات المُغيَّرة"
+    },
+    {
+      "key": "settings.about.checkUpdates",
+      "value": "التحقق من التحديثات"
+    },
+    {
+      "key": "settings.about.title",
+      "value": "حول"
+    },
+    {
+      "key": "settings.about.updatesBlurb",
+      "value": "يحدّث مدير حزم Basis نفسه من GitHub Releases. عند نشر إصدار جديد يظهر شريط تحديث أعلى النافذة — نقرة واحدة تنزّله وتعيد التشغيل."
+    },
+    {
+      "key": "settings.about.version",
+      "value": "الإصدار"
+    },
+    {
+      "key": "settings.button.save",
+      "value": "حفظ"
+    },
+    {
+      "key": "settings.catalog.description",
+      "value": "عنوان URL بصيغة JSON يقدّم فهرسًا متوافقًا مع Basis. اتركه فارغًا لاستخدام سجلّ حزم Basis (basisvr.org/packages)."
+    },
+    {
+      "key": "settings.catalog.title",
+      "value": "عنوان URL لفهرس الحزم"
+    },
+    {
+      "key": "settings.clone.description",
+      "value": "المكان الذي تُنشأ فيه نسخ Basis المستنسخة الجديدة افتراضيًا."
+    },
+    {
+      "key": "settings.clone.title",
+      "value": "موقع الاستنساخ الافتراضي"
+    },
+    {
+      "key": "settings.detected.git",
+      "value": "Git"
+    },
+    {
+      "key": "settings.detected.gitNotFound",
+      "value": "لم يُعثر على Git في مسار PATH — ثبّته من git-scm.com."
+    },
+    {
+      "key": "settings.detected.hubNotFound",
+      "value": "لم يتم اكتشاف Unity Hub."
+    },
+    {
+      "key": "settings.detected.settingsFile",
+      "value": "ملف الإعدادات"
+    },
+    {
+      "key": "settings.detected.title",
+      "value": "الأدوات المكتشفة"
+    },
+    {
+      "key": "settings.detected.unityHub",
+      "value": "Unity Hub"
+    },
+    {
+      "key": "settings.hero.subtitle",
+      "value": "موقع الاستنساخ ومصدر الفهرس ومسارات الأدوات."
+    },
+    {
+      "key": "settings.hero.tagline",
+      "value": "الإعدادات"
+    },
+    {
+      "key": "settings.hero.title",
+      "value": "التهيئة"
+    },
+    {
+      "key": "settings.language.description",
+      "value": "اختر لغة واجهة مدير حزم Basis. يُطبَّق فورًا."
+    },
+    {
+      "key": "settings.language.title",
+      "value": "اللغة"
+    },
+    {
+      "key": "settings.logs.clear",
+      "value": "مسح"
+    },
+    {
+      "key": "settings.logs.copy",
+      "value": "نسخ"
+    },
+    {
+      "key": "settings.logs.description",
+      "value": "ما فعله التطبيق في هذه الجلسة — تم إخفاء المسارات الشخصية وأسماء المستخدمين وعناوين IP. أرفِق هذه عند الإبلاغ عن مشكلة."
+    },
+    {
+      "key": "settings.logs.openFolder",
+      "value": "فتح المجلّد"
+    },
+    {
+      "key": "settings.logs.title",
+      "value": "سجلّ النشاط"
+    },
+    {
+      "key": "settings.status.saved",
+      "value": "تم حفظ الإعدادات."
+    },
+    {
+      "key": "settings.toggle.developer",
+      "value": "وضع المطوّر (إظهار تبويب تطوير)"
+    },
+    {
+      "key": "settings.toggle.developer.tip",
+      "value": "ركّب حزم git محليًا، وحرّرها في Unity، وافتح طلبات السحب. مخفي لغير المطوّرين."
+    },
+    {
+      "key": "settings.toggle.localChanges",
+      "value": "إظهار تبويب التغييرات المحلية"
+    },
+    {
+      "key": "settings.toggle.localChanges.tip",
+      "value": "حالة git مع فروقات لكل ملف في تثبيتك. مخفي افتراضيًا."
+    },
+    {
+      "key": "settings.toggle.prerelease",
+      "value": "تلقّي تحديثات ما قبل الإصدار (تجريبية — قد تكون معطّلة)"
+    },
+    {
+      "key": "settings.toggle.prerelease.tip",
+      "value": "احصل على الإصدارات المبكرة فور نشرها — متكرّرة وغير مستقرة أحيانًا. الإيقاف = الإصدارات المستقرة فقط. يُطبَّق عند الحفظ."
+    },
+    {
+      "key": "settings.unityHub.description",
+      "value": "مسار الملف التنفيذي لـ Unity Hub، إذا لم يُكتشف تلقائيًا."
+    },
+    {
+      "key": "settings.unityHub.title",
+      "value": "تجاوز مسار Unity Hub"
+    },
+    {
+      "key": "support.button.backOpenCollective",
+      "value": "ادعم عبر OpenCollective"
+    },
+    {
+      "key": "support.button.fullFundingPage",
+      "value": "اقرأ صفحة التمويل الكاملة  ↗"
+    },
+    {
+      "key": "support.button.joinDiscord",
+      "value": "انضم إلى Discord"
+    },
+    {
+      "key": "support.button.openCollective",
+      "value": "♥   ادعم عبر OpenCollective"
+    },
+    {
+      "key": "support.button.sponsorFeature",
+      "value": "ارعَ ميزة"
+    },
+    {
+      "key": "support.community.body",
+      "value": "يدعم الأفراد Basis عبر OpenCollective — بشكل شهري أو لمرة واحدة. تدعم هذه الأموال بالدرجة الأولى الصيانة بدوام كامل وأعمال تحسين تجربة المطوّر."
+    },
+    {
+      "key": "support.community.bullets",
+      "value": "•  خيارات شهرية ولمرة واحدة\n•  جدار داعمين علني وسجلّ شفّاف"
+    },
+    {
+      "key": "support.community.title",
+      "value": "تبرّعات المجتمع"
+    },
+    {
+      "key": "support.company.body",
+      "value": "ترعى الشركات عناصر خارطة الطريق أو تشارك في تمويل الميزات — الشبكات وأنظمة الأفاتار والأدوات. يُدمَج العمل في المصدر ويبقى مرخّصًا بموجب MIT افتراضيًا."
+    },
+    {
+      "key": "support.company.bullets",
+      "value": "•  بنية تحتية مشتركة بدلًا من نسخ متفرّعة مخصّصة\n•  مخرجات واضحة وتطوير مفتوح"
+    },
+    {
+      "key": "support.company.title",
+      "value": "تعاونات الشركات"
+    },
+    {
+      "key": "support.hero.subtitle",
+      "value": "Basis مرخّص بموجب MIT ويضع صانعي المحتوى أولًا. تُبقي تبرّعات المجتمع وتعاونات الشركات مشرفًا يعمل بدوام كامل وتسرّع الإصدارات."
+    },
+    {
+      "key": "support.hero.tagline",
+      "value": "الدعم"
+    },
+    {
+      "key": "support.hero.title",
+      "value": "موّل Basis"
+    },
+    {
+      "key": "support.where.body",
+      "value": "تُجمَّع الأموال لمعالجة المشكلات المشتركة — الشبكات والتجسيد والأدوات — التي تفيد الجميع. يوجد سجلّ علني على OpenCollective، ويُنسب العمل المموَّل في ملاحظات الإصدار. الرعاة لا يتحكمون في المشروع."
+    },
+    {
+      "key": "support.where.title",
+      "value": "أين تُصرف الأموال"
+    },
+    {
+      "key": "docs.button.askDiscord",
+      "value": "اسأل على Discord"
+    },
+    {
+      "key": "docs.button.basisGithub",
+      "value": "Basis على GitHub  ↗"
+    },
+    {
+      "key": "docs.button.joinDiscord",
+      "value": "انضم إلى Discord"
+    },
+    {
+      "key": "docs.button.openDocs",
+      "value": "افتح الوثائق  ↗"
+    },
+    {
+      "key": "docs.button.openDocsSite",
+      "value": "افتح docs.basisvr.org  ↗"
+    },
+    {
+      "key": "docs.button.packageManagerGithub",
+      "value": "مدير الحزم على GitHub  ↗"
+    },
+    {
+      "key": "docs.community.body",
+      "value": "هل واجهت مشكلة لا تغطّيها الوثائق؟ Discord هو أسرع وسيلة للحصول على المساعدة من صانعي المحتوى الآخرين والمشرفين."
+    },
+    {
+      "key": "docs.community.title",
+      "value": "اسأل المجتمع"
+    },
+    {
+      "key": "docs.hero.subtitle",
+      "value": "أدلّة ومرجع API وإرشادات للبناء على Basis — إضافةً إلى المجتمع لتسأله عند تعثّرك."
+    },
+    {
+      "key": "docs.hero.tagline",
+      "value": "الوثائق"
+    },
+    {
+      "key": "docs.hero.title",
+      "value": "تعلّم Basis"
+    },
+    {
+      "key": "docs.site.body",
+      "value": "التثبيت والخطوات الأولى والأفاتار والعوالم والشبكات وSDK — تتوفّر الوثائق الكاملة على docs.basisvr.org."
+    },
+    {
+      "key": "docs.site.title",
+      "value": "موقع الوثائق"
+    },
+    {
+      "key": "docs.source.body",
+      "value": "اقرأ الشيفرة، أو أبلِغ عن خطأ، أو افتح طلب سحب. Basis مرخّص بموجب MIT ويُطوَّر بشكل مفتوح."
+    },
+    {
+      "key": "docs.source.title",
+      "value": "المصدر والمشكلات"
+    },
+    {
+      "key": "logs.button.clear",
+      "value": "مسح"
+    },
+    {
+      "key": "logs.button.copy",
+      "value": "نسخ"
+    },
+    {
+      "key": "logs.button.openFolder",
+      "value": "فتح المجلّد"
+    },
+    {
+      "key": "logs.hero.subtitle",
+      "value": "ما فعله التطبيق في هذه الجلسة — تم إخفاء المسارات الشخصية وأسماء المستخدمين وعناوين IP. أرفِق هذه عند الإبلاغ عن مشكلة."
+    },
+    {
+      "key": "logs.hero.tagline",
+      "value": "السجلّات"
+    },
+    {
+      "key": "logs.hero.title",
+      "value": "سجلّ النشاط"
+    },
+    {
+      "key": "announcements.button.refresh",
+      "value": "تحديث"
+    },
+    {
+      "key": "announcements.card.learnMore",
+      "value": "اعرف المزيد"
+    },
+    {
+      "key": "announcements.card.pinned",
+      "value": "مثبّت"
+    },
+    {
+      "key": "announcements.empty.body",
+      "value": "عُد لاحقًا — ستظهر هنا أخبار فريق Basis."
+    },
+    {
+      "key": "announcements.empty.title",
+      "value": "لا توجد إعلانات بعد"
+    },
+    {
+      "key": "announcements.hero.subtitle",
+      "value": "تحديثات وأخبار من فريق Basis."
+    },
+    {
+      "key": "announcements.hero.tagline",
+      "value": "الإعلانات"
+    },
+    {
+      "key": "announcements.hero.title",
+      "value": "ما الجديد"
+    },
+    {
+      "key": "announcements.level.alert",
+      "value": "تنبيه"
+    },
+    {
+      "key": "announcements.level.news",
+      "value": "أخبار"
+    },
+    {
+      "key": "announcements.level.update",
+      "value": "تحديث"
+    },
+    {
+      "key": "announcements.status.loading",
+      "value": "جارٍ تحميل الإعلانات…"
+    },
+    {
+      "key": "dialog.alias.cancel",
+      "value": "إلغاء"
+    },
+    {
+      "key": "dialog.alias.displayName",
+      "value": "الاسم المعروض"
+    },
+    {
+      "key": "dialog.alias.hint",
+      "value": "اسم ودّي يظهر في جميع أنحاء التطبيق لهذه النسخة المستنسخة."
+    },
+    {
+      "key": "dialog.alias.save",
+      "value": "حفظ"
+    },
+    {
+      "key": "dialog.alias.title",
+      "value": "تسمية هذا التثبيت"
+    },
+    {
+      "key": "dialog.alias.watermark",
+      "value": "مثال: مشروع Basis الخاص بي"
+    },
+    {
+      "key": "dialog.backup.backupContinue",
+      "value": "إنشاء نسخة احتياطية والمتابعة"
+    },
+    {
+      "key": "dialog.backup.cancel",
+      "value": "إلغاء"
+    },
+    {
+      "key": "dialog.backup.continueWithout",
+      "value": "المتابعة دون نسخة احتياطية"
+    },
+    {
+      "key": "dialog.backup.heading",
+      "value": "هل تريد إنشاء نسخة احتياطية من مشروعك أولًا؟"
+    },
+    {
+      "key": "dialog.backup.title",
+      "value": "هل تريد إنشاء نسخة احتياطية من مشروعك؟"
+    },
+    {
+      "key": "dialog.confirm.no",
+      "value": "لا، شكرًا"
+    },
+    {
+      "key": "dialog.confirm.title",
+      "value": "تأكيد"
+    },
+    {
+      "key": "dialog.confirm.yes",
+      "value": "نعم"
+    },
+    {
+      "key": "dialog.createBundle.cancel",
+      "value": "إلغاء"
+    },
+    {
+      "key": "dialog.createBundle.create",
+      "value": "إنشاء التقديم"
+    },
+    {
+      "key": "dialog.createBundle.descriptionLabel",
+      "value": "الوصف"
+    },
+    {
+      "key": "dialog.createBundle.errorNoName",
+      "value": "امنح حزمتك المجمّعة اسمًا."
+    },
+    {
+      "key": "dialog.createBundle.errorNoPackages",
+      "value": "اختر حزمة واحدة على الأقل لتضمينها."
+    },
+    {
+      "key": "dialog.createBundle.heading",
+      "value": "إنشاء حزمة مجمّعة"
+    },
+    {
+      "key": "dialog.createBundle.intro",
+      "value": "شارِك Basis مع حزمك كحزمة مجمّعة قابلة للتثبيت. يفتح ذلك مشكلة GitHub لإرسالها."
+    },
+    {
+      "key": "dialog.createBundle.nameLabel",
+      "value": "الاسم"
+    },
+    {
+      "key": "dialog.createBundle.packagesLabel",
+      "value": "الحزم المراد تضمينها"
+    },
+    {
+      "key": "dialog.createBundle.title",
+      "value": "إنشاء حزمة مجمّعة"
+    },
+    {
+      "key": "dialog.installPicker.addHere",
+      "value": "إضافة هنا"
+    },
+    {
+      "key": "dialog.installPicker.cancel",
+      "value": "إلغاء"
+    },
+    {
+      "key": "dialog.installPicker.heading",
+      "value": "إضافة حزمة"
+    },
+    {
+      "key": "dialog.installPicker.subtitle",
+      "value": "اختر التثبيت الذي تريد إضافة هذه الحزمة إليه."
+    },
+    {
+      "key": "dialog.installPicker.title",
+      "value": "اختيار تثبيت"
+    },
+    {
+      "key": "dialog.roleWizard.developerDesc",
+      "value": "كل ما سبق، إضافةً إلى تبويب تطوير — ركّب الحزم محليًا، وحرّرها في Unity، وافتح طلبات السحب."
+    },
+    {
+      "key": "dialog.roleWizard.developerTitle",
+      "value": "🛠   أنا مطوّر"
+    },
+    {
+      "key": "dialog.roleWizard.intro",
+      "value": "كيف ستستخدم Basis؟ سنخصّص الأدوات المعروضة — يمكنك تغيير ذلك في أي وقت من الإعدادات."
+    },
+    {
+      "key": "dialog.roleWizard.title",
+      "value": "مرحبًا بك في مدير حزم Basis"
+    },
+    {
+      "key": "dialog.roleWizard.userDesc",
+      "value": "استنسخ Basis، وثبّت الحزم، وأبقِه محدّثًا. الأساسيات، دون أي إضافات."
+    },
+    {
+      "key": "dialog.roleWizard.userTitle",
+      "value": "🎮   أستخدم إطار العمل"
+    },
+    {
+      "key": "dialog.roleWizard.welcome",
+      "value": "مرحبًا 👋"
+    },
+    {
+      "key": "dialog.submitPr.branchLabel",
+      "value": "اسم الفرع"
+    },
+    {
+      "key": "dialog.submitPr.cancel",
+      "value": "إلغاء"
+    },
+    {
+      "key": "dialog.submitPr.contributeHint",
+      "value": "ساهِم بتغييراتك على {0} في مستودعه الأصلي."
+    },
+    {
+      "key": "dialog.submitPr.defaultTitle",
+      "value": "تحديث {0}"
+    },
+    {
+      "key": "dialog.submitPr.descriptionLabel",
+      "value": "الوصف"
+    },
+    {
+      "key": "dialog.submitPr.descriptionWatermark",
+      "value": "ما الذي غيّرته ولماذا؟"
+    },
+    {
+      "key": "dialog.submitPr.hint",
+      "value": "ننشئ هذا الفرع، ونودِع تغييراتك، وندفعها (مع إنشاء نسخة متفرّعة أولًا إذا تعذّر الدفع مباشرةً)، ونفتح طلب السحب."
+    },
+    {
+      "key": "dialog.submitPr.openPr",
+      "value": "فتح طلب السحب"
+    },
+    {
+      "key": "dialog.submitPr.title",
+      "value": "إرسال طلب سحب"
+    },
+    {
+      "key": "dialog.submitPr.titleLabel",
+      "value": "العنوان"
+    },
+    {
+      "key": "dialog.submitPr.titleWatermark",
+      "value": "تحديث الحزمة"
+    },
+    {
+      "key": "dialog.versionPicker.betaPill",
+      "value": "بيتا"
+    },
+    {
+      "key": "dialog.versionPicker.cancel",
+      "value": "إلغاء"
+    },
+    {
+      "key": "dialog.versionPicker.install",
+      "value": "تثبيت هذا الإصدار"
+    },
+    {
+      "key": "dialog.versionPicker.showPrereleases",
+      "value": "إظهار إصدارات ما قبل الإصدار (بيتا)"
+    },
+    {
+      "key": "dialog.versionPicker.subHasReleases",
+      "value": "اختر إصدارًا منشورًا، أو أحدث نسخة من الفرع الافتراضي."
+    },
+    {
+      "key": "dialog.versionPicker.subNoReleases",
+      "value": "لم تُنشر أي إصدارات — يتم عرض الوسوم / الفرع الافتراضي. اطلب من المنشئ إنشاء إصدارات رسمية للنسخ المستقرة."
+    },
+    {
+      "key": "dialog.versionPicker.title",
+      "value": "اختيار إصدار"
+    }
+  ]
+}

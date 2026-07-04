@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:BasisPM.App.ViewModels"
+             xmlns:loc="using:BasisPM.App.Localization"
              x:Class="BasisPM.App.Views.InstallsView"
              x:DataType="vm:InstallsViewModel"
              Name="Root">
@@ -12,22 +13,22 @@
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
                 <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                     <StackPanel Grid.Column="0" Spacing="6">
-                        <TextBlock Text="INSTALLS" Classes="tagline"/>
-                        <TextBlock Text="Your Basis clones" Classes="h1"/>
-                        <TextBlock Text="Clone the BasisVR/Basis repository, then manage its packages, updates and local changes."
+                        <TextBlock Text="{loc:Tr installs.hero.tagline}" Classes="tagline"/>
+                        <TextBlock Text="{loc:Tr installs.hero.title}" Classes="h1"/>
+                        <TextBlock Text="{loc:Tr installs.hero.subtitle}"
                                    Classes="muted" FontSize="14"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
-                        <Button Content="Add existing" Command="{Binding AddExistingCommand}"/>
-                        <Button Content="Clone Basis" Command="{Binding ToggleCloneFormCommand}"/>
-                        <Button Content="Refresh" Command="{Binding RefreshCommand}"/>
+                        <Button Content="{loc:Tr installs.button.addExisting}" Command="{Binding AddExistingCommand}"/>
+                        <Button Content="{loc:Tr installs.button.cloneBasis}" Command="{Binding ToggleCloneFormCommand}"/>
+                        <Button Content="{loc:Tr installs.button.refresh}" Command="{Binding RefreshCommand}"/>
                     </StackPanel>
                 </Grid>
             </Border>
 
             <Border Classes="card" IsVisible="{Binding ShowCloneForm}">
                 <StackPanel Spacing="14">
-                    <TextBlock Text="Clone Basis" Classes="h3"/>
+                    <TextBlock Text="{loc:Tr installs.cloneForm.heading}" Classes="h3"/>
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Border Classes="versionPill">
                             <TextBlock Text="{Binding RepoUrl}" FontSize="11" Classes="brand"/>
@@ -36,10 +37,10 @@
 
                     <Grid ColumnDefinitions="*,8,Auto" RowDefinitions="Auto,Auto">
                         <StackPanel Grid.Row="0" Grid.Column="0" Spacing="6">
-                            <TextBlock Text="Clone into folder" Classes="muted" FontSize="11"/>
+                            <TextBlock Text="{loc:Tr installs.cloneForm.cloneIntoLabel}" Classes="muted" FontSize="11"/>
                             <TextBox Text="{Binding ClonePath}" Watermark="C:\Users\you\BasisVR"/>
                         </StackPanel>
-                        <Button Grid.Row="0" Grid.Column="2" Content="Browse…" VerticalAlignment="Bottom"
+                        <Button Grid.Row="0" Grid.Column="2" Content="{loc:Tr installs.button.browse}" VerticalAlignment="Bottom"
                                 Command="{Binding BrowseCloneFolderCommand}"/>
                     </Grid>
 
@@ -55,11 +56,11 @@
 
                     <Grid ColumnDefinitions="*,16,*">
                         <StackPanel Grid.Column="0" Spacing="6">
-                            <TextBlock Text="Sub-folder name" Classes="muted" FontSize="11"/>
+                            <TextBlock Text="{loc:Tr installs.cloneForm.subFolderLabel}" Classes="muted" FontSize="11"/>
                             <TextBox Text="{Binding FolderName}" Watermark="Basis"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2" Spacing="6">
-                            <TextBlock Text="Branch" Classes="muted" FontSize="11"/>
+                            <TextBlock Text="{loc:Tr installs.cloneForm.branchLabel}" Classes="muted" FontSize="11"/>
                             <ComboBox ItemsSource="{Binding Branches}" SelectedItem="{Binding SelectedBranch}"
                                       HorizontalAlignment="Stretch" MaxDropDownHeight="320">
                                 <ComboBox.ItemTemplate>
@@ -72,7 +73,7 @@
                     </Grid>
 
                     <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                        <Button Classes="cta" Content="Clone Basis"
+                        <Button Classes="cta" Content="{loc:Tr installs.button.cloneBasis}"
                                 Command="{Binding CloneCommand}"
                                 IsEnabled="{Binding IsNotCloning}"/>
                         <TextBlock Text="{Binding CloneProgress}" Classes="dim" FontSize="12"
@@ -96,7 +97,7 @@
                                     <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Name}" Classes="h3"/>
                                         <Border Classes="brandBadge" IsVisible="{Binding IsActive}">
-                                            <TextBlock Text="ACTIVE" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                            <TextBlock Text="{loc:Tr installs.badge.active}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
                                         </Border>
                                     </StackPanel>
                                     <TextBlock Text="{Binding RepoRoot}" Classes="dim" FontSize="12" TextTrimming="CharacterEllipsis"/>
@@ -120,23 +121,23 @@
                                     <TextBlock Text="{Binding GitSummary}" Classes="muted" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                    <Button Content="Update Core" Classes="primary"
+                                    <Button Content="{loc:Tr installs.button.updateCore}" Classes="primary"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).UpdateCoreCommand}"
                                             CommandParameter="{Binding}"/>
-                                    <Button Content="Packages"
+                                    <Button Content="{loc:Tr installs.button.packages}"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ManagePackagesCommand}"
                                             CommandParameter="{Binding}"/>
-                                    <Button Content="Changes"
+                                    <Button Content="{loc:Tr installs.button.changes}"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ViewChangesCommand}"
                                             CommandParameter="{Binding}"/>
-                                    <Button Content="Open"
+                                    <Button Content="{loc:Tr installs.button.open}"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenFolderCommand}"
                                             CommandParameter="{Binding}"/>
-                                    <Button Content="Backup" IsVisible="{Binding HasUnityProject}"
+                                    <Button Content="{loc:Tr installs.button.backup}" IsVisible="{Binding HasUnityProject}"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).BackupCommand}"
                                             CommandParameter="{Binding}"
-                                            ToolTip.Tip="Zip Assets, Packages and ProjectSettings (not the Library cache)"/>
-                                    <Button Content="Remove" Classes="danger"
+                                            ToolTip.Tip="{loc:Tr installs.tooltip.backup}"/>
+                                    <Button Content="{loc:Tr installs.button.remove}" Classes="danger"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).RemoveCommand}"
                                             CommandParameter="{Binding}"/>
                                 </StackPanel>
@@ -148,8 +149,8 @@
 
             <Border Classes="card" IsVisible="{Binding Installs.Count, Converter={x:Static vm:Converters.IntZero}}">
                 <StackPanel Spacing="8" HorizontalAlignment="Center" Margin="0,40">
-                    <TextBlock Text="No installs yet" Classes="h3" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Use Clone Basis above to pull down BasisVR/Basis, or Add existing to register a clone you already have."
+                    <TextBlock Text="{loc:Tr installs.empty.title}" Classes="h3" HorizontalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr installs.empty.body}"
                                Classes="muted" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="520" TextWrapping="Wrap"/>
                 </StackPanel>
             </Border>

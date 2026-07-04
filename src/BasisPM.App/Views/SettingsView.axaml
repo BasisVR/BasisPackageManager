@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:BasisPM.App.ViewModels"
+             xmlns:loc="using:BasisPM.App.Localization"
              x:Class="BasisPM.App.Views.SettingsView"
              x:DataType="vm:SettingsViewModel">
 
@@ -10,61 +11,77 @@
             <Border CornerRadius="14" Padding="32,28" Background="{StaticResource BasisHeroGradient}"
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
                 <StackPanel Spacing="6">
-                    <TextBlock Text="SETTINGS" Classes="tagline"/>
-                    <TextBlock Text="Configuration" Classes="h1"/>
-                    <TextBlock Text="Clone location, catalog source and tooling paths." Classes="muted" FontSize="14"/>
+                    <TextBlock Text="{loc:Tr settings.hero.tagline}" Classes="tagline"/>
+                    <TextBlock Text="{loc:Tr settings.hero.title}" Classes="h1"/>
+                    <TextBlock Text="{loc:Tr settings.hero.subtitle}" Classes="muted" FontSize="14"/>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{loc:Tr settings.language.title}" Classes="h3"/>
+                    <TextBlock Text="{loc:Tr settings.language.description}"
+                               Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                    <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}"
+                              MinWidth="260" HorizontalAlignment="Left">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="loc:LanguageInfo">
+                                <TextBlock Text="{Binding NativeName}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </StackPanel>
             </Border>
 
             <Border Classes="card">
                 <StackPanel Spacing="20">
                     <StackPanel Spacing="6">
-                        <TextBlock Text="Default clone location" Classes="h3"/>
-                        <TextBlock Text="Where new Basis clones are created by default."
+                        <TextBlock Text="{loc:Tr settings.clone.title}" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr settings.clone.description}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                         <TextBox Text="{Binding ClonePath}" Watermark="C:\Users\you\BasisVR"/>
                     </StackPanel>
 
                     <StackPanel Spacing="6">
-                        <TextBlock Text="Package Catalog URL" Classes="h3"/>
-                        <TextBlock Text="JSON URL serving a Basis-compatible catalog. Leave blank to use the Basis package registry (basisvr.org/packages)."
+                        <TextBlock Text="{loc:Tr settings.catalog.title}" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr settings.catalog.description}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                         <TextBox Text="{Binding CatalogUrl}" Watermark="https://basisvr.org/packages/catalog.json"/>
                     </StackPanel>
 
                     <StackPanel Spacing="6">
-                        <TextBlock Text="Unity Hub override" Classes="h3"/>
-                        <TextBlock Text="Path to the Unity Hub binary, if not auto-detected."
+                        <TextBlock Text="{loc:Tr settings.unityHub.title}" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr settings.unityHub.description}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                         <TextBox Text="{Binding UnityHubPath}" Watermark="C:\Program Files\Unity Hub\Unity Hub.exe"/>
                     </StackPanel>
 
-                    <CheckBox Content="Show the Local Changes tab" IsChecked="{Binding ShowLocalChanges}"
-                              ToolTip.Tip="A git status + per-file diff of your install. Hidden by default."/>
+                    <CheckBox Content="{loc:Tr settings.toggle.localChanges}" IsChecked="{Binding ShowLocalChanges}"
+                              ToolTip.Tip="{loc:Tr settings.toggle.localChanges.tip}"/>
 
-                    <CheckBox Content="Developer mode (show the Develop tab)" IsChecked="{Binding DeveloperMode}"
-                              ToolTip.Tip="Mount git packages locally, edit them in Unity, and open pull requests. Hidden for non-developers."/>
+                    <CheckBox Content="{loc:Tr settings.toggle.developer}" IsChecked="{Binding DeveloperMode}"
+                              ToolTip.Tip="{loc:Tr settings.toggle.developer.tip}"/>
 
-                    <CheckBox Content="Receive prerelease updates (experimental — may be broken)" IsChecked="{Binding PrereleaseUpdates}"
-                              ToolTip.Tip="Get early builds as soon as they're published — frequent and sometimes unstable. Off = stable releases only. Applies on Save."/>
+                    <CheckBox Content="{loc:Tr settings.toggle.prerelease}" IsChecked="{Binding PrereleaseUpdates}"
+                              ToolTip.Tip="{loc:Tr settings.toggle.prerelease.tip}"/>
 
-                    <Button Classes="primary" Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Left"/>
+                    <Button Classes="primary" Content="{loc:Tr settings.button.save}" Command="{Binding SaveCommand}" HorizontalAlignment="Left"/>
                 </StackPanel>
             </Border>
 
             <Border Classes="card">
                 <StackPanel Spacing="16">
-                    <TextBlock Text="Detected tooling" Classes="h3"/>
+                    <TextBlock Text="{loc:Tr settings.detected.title}" Classes="h3"/>
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Git" Classes="muted" FontSize="11"/>
+                        <TextBlock Text="{loc:Tr settings.detected.git}" Classes="muted" FontSize="11"/>
                         <TextBlock Text="{Binding GitDetected}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
                     </StackPanel>
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Unity Hub" Classes="muted" FontSize="11"/>
+                        <TextBlock Text="{loc:Tr settings.detected.unityHub}" Classes="muted" FontSize="11"/>
                         <TextBlock Text="{Binding HubDetected}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
                     </StackPanel>
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Settings file" Classes="muted" FontSize="11"/>
+                        <TextBlock Text="{loc:Tr settings.detected.settingsFile}" Classes="muted" FontSize="11"/>
                         <TextBlock Text="{Binding SettingsPath}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
                     </StackPanel>
                 </StackPanel>
@@ -72,17 +89,51 @@
 
             <Border Classes="card">
                 <StackPanel Spacing="16">
-                    <TextBlock Text="About" Classes="h3"/>
+                    <TextBlock Text="{loc:Tr settings.about.title}" Classes="h3"/>
                     <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                        <TextBlock Text="Version" Classes="muted" FontSize="12" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr settings.about.version}" Classes="muted" FontSize="12" VerticalAlignment="Center"/>
                         <Border Classes="versionPill" VerticalAlignment="Center">
                             <TextBlock Text="{Binding AppVersion}" FontSize="12" FontWeight="SemiBold"/>
                         </Border>
                     </StackPanel>
-                    <Button Content="Check for updates" Command="{Binding CheckForUpdatesCommand}"
+                    <Button Content="{loc:Tr settings.about.checkUpdates}" Command="{Binding CheckForUpdatesCommand}"
                             HorizontalAlignment="Left"/>
-                    <TextBlock Text="Basis Package Manager updates itself from GitHub Releases. When a new version is published an update banner appears at the top of the window — one click downloads it and restarts."
+                    <TextBlock Text="{loc:Tr settings.about.updatesBlurb}"
                                Classes="dim" FontSize="12" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+                <StackPanel Spacing="14">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock Text="{loc:Tr settings.logs.title}" Classes="h3"/>
+                            <TextBlock Text="{loc:Tr settings.logs.description}"
+                                       Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Top">
+                            <Button Content="{loc:Tr settings.logs.copy}" Click="OnCopyLogs"/>
+                            <Button Content="{loc:Tr settings.logs.openFolder}" Command="{Binding Logs.OpenFolderCommand}"/>
+                            <Button Content="{loc:Tr settings.logs.clear}" Command="{Binding Logs.ClearCommand}"/>
+                        </StackPanel>
+                    </Grid>
+                    <Border Background="{StaticResource BasisPanelBrush}" BorderBrush="{StaticResource BasisBorderBrush}"
+                            BorderThickness="1" CornerRadius="8" Padding="0" MaxHeight="340">
+                        <ScrollViewer>
+                            <ItemsControl ItemsSource="{Binding Logs.Entries}" Margin="8,10">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="vm:LogRow">
+                                        <Grid ColumnDefinitions="Auto,*" Margin="12,2">
+                                            <TextBlock Grid.Column="0" Text="{Binding Time}" Classes="dim"
+                                                       FontFamily="Cascadia Code,Consolas,monospace" FontSize="12" Margin="0,0,12,0"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Message}" Foreground="{Binding Brush}"
+                                                       FontFamily="Cascadia Code,Consolas,monospace" FontSize="12" TextWrapping="Wrap"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
                 </StackPanel>
             </Border>
         </StackPanel>
