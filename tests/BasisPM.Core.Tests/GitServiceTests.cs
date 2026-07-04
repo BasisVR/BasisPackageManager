@@ -13,6 +13,8 @@ public sealed class GitServiceTests
         var repo = t.CreateDir("repo");
         var init = await git.InitAsync(repo);
         Assert.True(init.Ok, init.Output);
+        File.AppendAllText(Path.Combine(repo, ".git", "config"),
+            "\n[user]\n\tname = Tester\n\temail = tester@example.com\n");
         return (git, repo);
     }
 
