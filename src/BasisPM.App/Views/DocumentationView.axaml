@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             x:Class="BasisPM.App.Views.DocumentationView"
+             x:DataType="vm:DocumentationViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="40,32" Spacing="20">
+
+            <Border CornerRadius="14" Padding="32,28"
+                    Background="{StaticResource BasisHeroGradient}"
+                    BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="DOCUMENTATION" Classes="tagline"/>
+                    <TextBlock Text="Learn Basis" Classes="h1"/>
+                    <TextBlock Text="Guides, API reference and how-tos for building on Basis — plus the community to ask when you're stuck."
+                               Classes="muted" FontSize="14" TextWrapping="Wrap" MaxWidth="660" HorizontalAlignment="Left"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
+                        <Button Classes="primary" Content="Open the docs  ↗" Command="{Binding DocsCommand}"/>
+                        <Button Content="Ask on Discord" Command="{Binding DiscordCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*">
+                <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Documentation site" Classes="h3"/>
+                        <TextBlock Text="Installation, first steps, avatars, worlds, networking and the SDK — the full docs live at docs.basisvr.org."
+                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                        <Button Content="Open docs.basisvr.org  ↗" Command="{Binding DocsCommand}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Ask the community" Classes="h3"/>
+                        <TextBlock Text="Stuck on something the docs don't cover? The Discord is the fastest way to get help from other creators and the maintainers."
+                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                        <Button Content="Join the Discord" Command="{Binding DiscordCommand}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Classes="card">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Source &amp; issues" Classes="h3"/>
+                    <TextBlock Text="Read the code, file a bug or open a pull request. Basis is MIT-licensed and developed in the open."
+                               Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Button Content="Basis on GitHub  ↗" Command="{Binding BasisRepoCommand}" HorizontalAlignment="Left"/>
+                        <Button Content="Package Manager on GitHub  ↗" Command="{Binding PackageManagerRepoCommand}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

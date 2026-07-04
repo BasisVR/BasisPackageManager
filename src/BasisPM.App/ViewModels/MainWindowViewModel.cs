@@ -6,7 +6,7 @@ using Velopack;
 
 namespace BasisPM.App.ViewModels;
 
-public enum NavPage { Installs, Packages, Changes, Unity, Settings, Support, Develop, Announcements }
+public enum NavPage { Installs, Packages, Changes, Unity, Settings, Support, Develop, Announcements, Documentation, Logs }
 
 public enum StatusKind { Info, Success, Error }
 
@@ -25,6 +25,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly GitHubAuthService _ghAuth = new();
     private readonly GitHubApiService _ghApi = new();
     private readonly MountRegistry _mountRegistry = new();
+    private readonly LogService _log = new();
 
     private NavPage _currentPage = NavPage.Installs;
     private object? _currentView;
@@ -49,6 +50,8 @@ public sealed class MainWindowViewModel : ObservableObject
     public FundingViewModel FundingVM { get; }
     public DevelopViewModel DevelopVM { get; }
     public AnnouncementsViewModel AnnouncementsVM { get; }
+    public LogsViewModel LogsVM { get; }
+    public DocumentationViewModel DocumentationVM { get; }
 
     public RelayCommand InstallUpdateCommand { get; }
     public RelayCommand DismissUpdateCommand { get; }
@@ -68,6 +71,8 @@ public sealed class MainWindowViewModel : ObservableObject
         var contributeService = new ContributeService(_gitService, _ghApi);
         DevelopVM = new DevelopViewModel(mountService, contributeService, _ghAuth, _ghApi, _gitService, _mountRegistry, this);
         AnnouncementsVM = new AnnouncementsViewModel(_announcementService);
+        LogsVM = new LogsViewModel(_log);
+        DocumentationVM = new DocumentationViewModel();
 
         InstallUpdateCommand = new RelayCommand(InstallUpdateAsync);
         DismissUpdateCommand = new RelayCommand(() => { UpdateAvailable = false; });
@@ -96,6 +101,8 @@ public sealed class MainWindowViewModel : ObservableObject
                     NavPage.Support => FundingVM,
                     NavPage.Develop => DevelopVM,
                     NavPage.Announcements => AnnouncementsVM,
+                    NavPage.Documentation => DocumentationVM,
+                    NavPage.Logs => LogsVM,
                     _ => InstallsVM,
                 };
                 OnPropertyChanged(nameof(IsInstalls));
@@ -106,6 +113,8 @@ public sealed class MainWindowViewModel : ObservableObject
                 OnPropertyChanged(nameof(IsSupport));
                 OnPropertyChanged(nameof(IsDevelop));
                 OnPropertyChanged(nameof(IsAnnouncements));
+                OnPropertyChanged(nameof(IsLogs));
+                OnPropertyChanged(nameof(IsDocumentation));
 
                 if (value == NavPage.Changes) _ = ChangesVM.RefreshAsync();
                 if (value == NavPage.Announcements) _ = MarkAnnouncementsSeenAsync();
@@ -123,6 +132,8 @@ public sealed class MainWindowViewModel : ObservableObject
     public bool IsSupport => CurrentPage == NavPage.Support;
     public bool IsDevelop => CurrentPage == NavPage.Develop;
     public bool IsAnnouncements => CurrentPage == NavPage.Announcements;
+    public bool IsLogs => CurrentPage == NavPage.Logs;
+    public bool IsDocumentation => CurrentPage == NavPage.Documentation;
 
     private bool _showChangesTab;
     public bool ShowChangesTab
@@ -218,6 +229,8 @@ public sealed class MainWindowViewModel : ObservableObject
         StatusMessage = message;
         StatusKind = kind;
         RecordBreadcrumb(message, kind);
+        if (!IsProgressNoise(message))
+            _log.Add(kind switch { StatusKind.Error => LogLevel.Error, StatusKind.Success => LogLevel.Success, _ => LogLevel.Info }, message);
     }
 
     public void DismissStatus() => SetStatus("Ready", StatusKind.Info);
@@ -258,6 +271,7 @@ public sealed class MainWindowViewModel : ObservableObject
             $"- App: {AppVersion}\n" +
             $"- OS: {Environment.OSVersion}\n\n" +
             "_Filed from the Basis Package Manager error bar. Please add anything else that helps reproduce it._";
+        body = Redact.Scrub(body);
         if (body.Length > 5500) body = body[..5500] + "\n… (truncated)";
         var url = $"https://github.com/{IssueRepo}/issues/new?labels=bug&title={Uri.EscapeDataString("Error: " + title)}&body={Uri.EscapeDataString(body)}";
         ExternalLink.Open(url);
@@ -320,7 +334,7 @@ public sealed class MainWindowViewModel : ObservableObject
                    $"- App: {AppVersion}\n- OS: {Environment.OSVersion}\n\n" +
                    "_Please describe what you were doing when it happened._";
         }
-        var url = $"https://github.com/{IssueRepo}/issues/new?labels=crash&title={Uri.EscapeDataString("Crash report")}&body={Uri.EscapeDataString(body)}";
+        var url = $"https://github.com/{IssueRepo}/issues/new?labels=crash&title={Uri.EscapeDataString("Crash report")}&body={Uri.EscapeDataString(Redact.Scrub(body))}";
         OpenUrl(url);
     }
 
@@ -535,6 +549,8 @@ public sealed class MainWindowViewModel : ObservableObject
             "support" => NavPage.Support,
             "develop" => NavPage.Develop,
             "announcements" => NavPage.Announcements,
+            "logs" => NavPage.Logs,
+            "documentation" => NavPage.Documentation,
             _ => CurrentPage,
         };
     }

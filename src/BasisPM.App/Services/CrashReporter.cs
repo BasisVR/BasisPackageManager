@@ -53,7 +53,7 @@ public static class CrashReporter
                 $"os: {Environment.OSVersion}\n" +
                 (string.IsNullOrWhiteSpace(crumbs) ? "" : $"breadcrumbs:\n{crumbs}\n") +
                 $"exception:\n{ex}";
-            File.WriteAllText(CrashFile, text);
+            File.WriteAllText(CrashFile, Redact.Scrub(text));
         }
         catch { }
     }

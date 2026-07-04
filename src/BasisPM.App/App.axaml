@@ -34,5 +34,11 @@
         <DataTemplate DataType="vm:AnnouncementsViewModel">
             <views:AnnouncementsView />
         </DataTemplate>
+        <DataTemplate DataType="vm:DocumentationViewModel">
+            <views:DocumentationView />
+        </DataTemplate>
+        <DataTemplate DataType="vm:LogsViewModel">
+            <views:LogsView />
+        </DataTemplate>
     </Application.DataTemplates>
 </Application>

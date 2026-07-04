@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             x:Class="BasisPM.App.Views.LogsView"
+             x:DataType="vm:LogsViewModel"
+             Name="Root">
+    <Grid Margin="40,32" RowDefinitions="Auto,*">
+        <Border Grid.Row="0" CornerRadius="14" Padding="32,24" Background="{StaticResource BasisHeroGradient}"
+                BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                <StackPanel Grid.Column="0" Spacing="6">
+                    <TextBlock Text="LOGS" Classes="tagline"/>
+                    <TextBlock Text="Activity log" Classes="h1"/>
+                    <TextBlock Text="What the app did this session — personal paths, usernames and IPs are redacted. Attach these when reporting a problem."
+                               Classes="muted" FontSize="14" TextWrapping="Wrap"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Top">
+                    <Button Content="Copy" Click="OnCopy"/>
+                    <Button Content="Open folder" Command="{Binding OpenFolderCommand}"/>
+                    <Button Content="Clear" Command="{Binding ClearCommand}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Classes="card" Margin="0,20,0,0" Padding="0">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Entries}" Margin="8,10">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="vm:LogRow">
+                            <Grid ColumnDefinitions="Auto,*" Margin="12,2">
+                                <TextBlock Grid.Column="0" Text="{Binding Time}" Classes="dim"
+                                           FontFamily="Cascadia Code,Consolas,monospace" FontSize="12" Margin="0,0,12,0"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Message}" Foreground="{Binding Brush}"
+                                           FontFamily="Cascadia Code,Consolas,monospace" FontSize="12" TextWrapping="Wrap"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

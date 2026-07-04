@@ -127,17 +127,17 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Installed -->
-                <Border Classes="card" Padding="0">
-                    <StackPanel>
-                        <Border Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                            <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-                                <TextBlock Grid.Column="0" Text="Installed" Classes="h3" VerticalAlignment="Center"/>
-                                <ComboBox Grid.Column="2" MinWidth="150"
-                                          ItemsSource="{Binding InstalledOwners}"
-                                          SelectedItem="{Binding SelectedInstalledOwner}"
-                                          ToolTip.Tip="Filter installed packages by owner (from the package id)"/>
-                            </Grid>
+                <!-- Installed (a collapsible tab, closed until opened) -->
+                <Expander IsExpanded="False" HorizontalAlignment="Stretch">
+                    <Expander.Header>
+                        <TextBlock Text="Installed" Classes="h3"/>
+                    </Expander.Header>
+                    <StackPanel Margin="0,10,0,0">
+                        <Border Padding="0,0,0,10" Margin="0,0,0,4" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                            <ComboBox HorizontalAlignment="Left" MinWidth="150"
+                                      ItemsSource="{Binding InstalledOwners}"
+                                      SelectedItem="{Binding SelectedInstalledOwner}"
+                                      ToolTip.Tip="Filter installed packages by owner (from the package id)"/>
                         </Border>
                         <ItemsControl ItemsSource="{Binding Installed}">
                             <ItemsControl.ItemTemplate>
@@ -162,7 +162,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </StackPanel>
-                </Border>
+                </Expander>
 
             </StackPanel>
         </StackPanel>

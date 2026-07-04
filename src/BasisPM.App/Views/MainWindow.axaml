@@ -79,15 +79,21 @@
                         </Border>
                     </Grid>
                     <Button Classes="nav" Classes.active="{Binding IsSupport}" Tag="support" Click="OnNavClick">Support</Button>
+                    <Button Classes="nav" Classes.active="{Binding IsDocumentation}" Tag="documentation" Click="OnNavClick">Documentation</Button>
                     <Button Classes="nav" Classes.active="{Binding IsPackages}" Tag="packages" Click="OnNavClick">Packages</Button>
                     <Button Classes="nav" Classes.active="{Binding IsDevelop}" Tag="develop" Click="OnNavClick" IsVisible="{Binding ShowDevelopTab}">Develop</Button>
                     <Button Classes="nav" Classes.active="{Binding IsChanges}" Tag="changes" Click="OnNavClick" IsVisible="{Binding ShowChangesTab}">Local Changes</Button>
                     <Button Classes="nav" Classes.active="{Binding IsUnity}" Tag="unity" Click="OnNavClick">Unity Editors</Button>
                     <Button Classes="nav" Classes.active="{Binding IsSettings}" Tag="settings" Click="OnNavClick">Settings</Button>
+                    <Button Classes="nav" Classes.active="{Binding IsLogs}" Tag="logs" Click="OnNavClick">Logs</Button>
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" Margin="22,0,22,22" Spacing="6">
                     <Rectangle Height="1" Fill="{StaticResource BasisBorderBrush}" Margin="0,0,0,12"/>
+                    <Border Classes="versionPill" HorizontalAlignment="Left" Margin="0,0,0,4"
+                            ToolTip.Tip="Installed version — check for updates in Settings">
+                        <TextBlock Text="{Binding AppVersion, StringFormat='v{0}'}" FontSize="12" FontWeight="SemiBold" Classes="brand"/>
+                    </Border>
                     <TextBlock Text="basisvr.org" Classes="dim" FontSize="11"/>
                     <TextBlock Text="MIT licensed" Classes="dim" FontSize="11"/>
                 </StackPanel>
