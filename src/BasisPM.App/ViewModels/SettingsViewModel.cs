@@ -15,6 +15,7 @@ public sealed class SettingsViewModel : ObservableObject
     private string _unityHubPath = "";
     private bool _showLocalChanges;
     private bool _developerMode;
+    private bool _prereleaseUpdates;
     private string _settingsPath = "";
     private string _gitDetected = "";
     private string _hubDetected = "";
@@ -24,6 +25,7 @@ public sealed class SettingsViewModel : ObservableObject
     public string UnityHubPath { get => _unityHubPath; set => SetField(ref _unityHubPath, value); }
     public bool ShowLocalChanges { get => _showLocalChanges; set => SetField(ref _showLocalChanges, value); }
     public bool DeveloperMode { get => _developerMode; set => SetField(ref _developerMode, value); }
+    public bool PrereleaseUpdates { get => _prereleaseUpdates; set => SetField(ref _prereleaseUpdates, value); }
     public string SettingsPath { get => _settingsPath; private set => SetField(ref _settingsPath, value); }
     public string GitDetected { get => _gitDetected; private set => SetField(ref _gitDetected, value); }
     public string HubDetected { get => _hubDetected; private set => SetField(ref _hubDetected, value); }
@@ -51,6 +53,7 @@ public sealed class SettingsViewModel : ObservableObject
         UnityHubPath = settings.UnityHubPath ?? "";
         ShowLocalChanges = settings.ShowLocalChanges;
         DeveloperMode = settings.DeveloperMode;
+        PrereleaseUpdates = settings.PrereleaseUpdates;
         RefreshDetected();
     }
 
@@ -70,11 +73,13 @@ public sealed class SettingsViewModel : ObservableObject
         settings.UnityHubPath = string.IsNullOrWhiteSpace(UnityHubPath) ? null : UnityHubPath.Trim();
         settings.ShowLocalChanges = ShowLocalChanges;
         settings.DeveloperMode = DeveloperMode;
+        settings.PrereleaseUpdates = PrereleaseUpdates;
         await _settingsService.SaveAsync(settings);
 
         await _shell.PackagesVM.LoadCatalogAsync(settings.CatalogUrl);
         _shell.ShowChangesTab = settings.ShowLocalChanges;
         _shell.ShowDevelopTab = settings.DeveloperMode;
+        _shell.ApplyPrerelease(settings.PrereleaseUpdates);
         RefreshDetected();
         _shell.SetStatus("Settings saved.", StatusKind.Success);
     }

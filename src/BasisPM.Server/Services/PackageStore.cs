@@ -1,5 +1,6 @@
 using System.Text.Json;
 using BasisPM.Core.Models;
+using BasisPM.Core.Services;
 using BasisPM.Server.Models;
 
 namespace BasisPM.Server.Services;
@@ -114,6 +115,20 @@ public sealed class PackageStore
                 .OrderBy(c => c, StringComparer.OrdinalIgnoreCase).ToList();
     }
 
+    // Caps that stop a public submission endpoint being used to fill the disk or push oversized
+    // fields to every client. Generous enough for any real package.
+    private const int MaxPackages = 5000;
+    private const int MaxFieldLen = 2000;
+    private const int MaxTags = 24;
+    private const int MaxTagLen = 64;
+    private const int MaxDependencies = 128;
+
+    /// <summary>
+    /// Adds a community-submitted package. Validated and <b>create-only</b>: it will not overwrite an
+    /// existing entry, so a submission can never repoint a curated (or any prior) package's git URL.
+    /// Real updates go through a pull request to the seed. Throws <see cref="ArgumentException"/> for
+    /// bad input and <see cref="InvalidOperationException"/> for a conflicting id / full registry.
+    /// </summary>
     public RegistryPackage Upsert(RegistrySubmission sub)
     {
         if (string.IsNullOrWhiteSpace(sub.Id)) throw new ArgumentException("Package id is required.");
@@ -121,30 +136,62 @@ public sealed class PackageStore
         if (string.IsNullOrWhiteSpace(sub.GitUrl))
             throw new ArgumentException("Provide a gitUrl (UPM git URL for GitHub or GitLab).");
 
+        var id = sub.Id.Trim();
+        if (!IsSafeId(id))
+            throw new ArgumentException("Package id may contain only letters, digits, '.', '_' and '-'.");
+        if (!GitUrlPolicy.IsHostedGitUrl(sub.GitUrl))
+            throw new ArgumentException("gitUrl must be an https URL on github.com or gitlab.com.");
+        if (!string.IsNullOrWhiteSpace(sub.RepoUrl) && !GitUrlPolicy.IsWebUrl(sub.RepoUrl))
+            throw new ArgumentException("repoUrl must be an http(s) URL.");
+        if (!string.IsNullOrWhiteSpace(sub.AuthorUrl) && !GitUrlPolicy.IsWebUrl(sub.AuthorUrl))
+            throw new ArgumentException("authorUrl must be an http(s) URL.");
+        if (TooLong(sub.Name) || TooLong(sub.Description) || TooLong(sub.Author) || TooLong(sub.Category)
+            || TooLong(sub.Version) || TooLong(sub.Unity) || TooLong(sub.GitUrl) || TooLong(sub.RepoUrl) || TooLong(sub.AuthorUrl))
+            throw new ArgumentException("One or more fields exceed the length limit.");
+        if (sub.Dependencies is { Count: > MaxDependencies })
+            throw new ArgumentException("Too many dependencies.");
+
         lock (_gate)
         {
-            var existing = _packages.FirstOrDefault(p => string.Equals(p.Id, sub.Id, StringComparison.OrdinalIgnoreCase));
-            var pkg = existing ?? new RegistryPackage { Id = sub.Id.Trim() };
+            if (_packages.Any(p => string.Equals(p.Id, id, StringComparison.OrdinalIgnoreCase)))
+                throw new InvalidOperationException($"A package with id '{id}' already exists.");
+            if (_packages.Count >= MaxPackages)
+                throw new InvalidOperationException("The registry is full.");
 
-            pkg.Name = sub.Name.Trim();
-            pkg.Description = sub.Description?.Trim() ?? "";
-            pkg.Author = string.IsNullOrWhiteSpace(sub.Author) ? "Community" : sub.Author.Trim();
-            pkg.AuthorUrl = sub.AuthorUrl;
-            pkg.Category = string.IsNullOrWhiteSpace(sub.Category) ? "Misc" : sub.Category.Trim();
-            pkg.Tags = sub.Tags ?? pkg.Tags;
-            pkg.GitUrl = sub.GitUrl?.Trim();
-            pkg.RepoUrl = sub.RepoUrl?.Trim();
-            pkg.Source = DeriveSource(pkg.RepoUrl, pkg.GitUrl);
-            pkg.Unity = sub.Unity?.Trim();
-            pkg.Version = string.IsNullOrWhiteSpace(sub.Version) ? (existing?.Version ?? "1.0.0") : sub.Version.Trim();
-            pkg.Dependencies = sub.Dependencies ?? pkg.Dependencies;
-            if (string.IsNullOrEmpty(pkg.Icon)) pkg.Icon = "📦";
+            var tags = (sub.Tags ?? new List<string>())
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .Select(t => t.Trim())
+                .Where(t => t.Length <= MaxTagLen)
+                .Take(MaxTags)
+                .ToList();
 
-            if (existing is null) _packages.Add(pkg);
+            var pkg = new RegistryPackage
+            {
+                Id = id,
+                Name = sub.Name.Trim(),
+                Description = sub.Description?.Trim() ?? "",
+                Author = string.IsNullOrWhiteSpace(sub.Author) ? "Community" : sub.Author.Trim(),
+                AuthorUrl = sub.AuthorUrl?.Trim(),
+                Category = string.IsNullOrWhiteSpace(sub.Category) ? "Misc" : sub.Category.Trim(),
+                Tags = tags,
+                GitUrl = sub.GitUrl.Trim(),
+                RepoUrl = sub.RepoUrl?.Trim(),
+                // Always community: "curated" is reserved for the PR-reviewed seed, so a submitter can't
+                // mint a trusted-looking badge by pointing at a github.com/BasisVR URL they don't own.
+                Source = "community",
+                Unity = sub.Unity?.Trim(),
+                Version = string.IsNullOrWhiteSpace(sub.Version) ? "1.0.0" : sub.Version.Trim(),
+                Dependencies = sub.Dependencies,
+                Icon = "📦",
+            };
+
+            _packages.Add(pkg);
             Save();
             return pkg;
         }
     }
+
+    private static bool TooLong(string? s) => s is not null && s.Length > MaxFieldLen;
 
     public Catalog ToCatalog()
     {

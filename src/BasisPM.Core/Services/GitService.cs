@@ -36,17 +36,35 @@ public sealed class GitService
     public async Task<GitResult> CloneAsync(string url, string destPath, string? branch, Action<string>? onProgress = null, CancellationToken ct = default)
     {
         var git = FindGit() ?? throw new InvalidOperationException("Git was not found. Install Git and make sure it is on your PATH.");
+        if (!GitUrlPolicy.IsSafeUrl(url))
+            return new GitResult(false, -1, "Refused to clone: the URL uses an unsupported or unsafe git transport.");
+        if (!GitUrlPolicy.IsSafeRef(branch))
+            return new GitResult(false, -1, "Refused to clone: the branch name is not valid.");
+
         var args = new List<string> { "clone", "--progress" };
         if (!string.IsNullOrWhiteSpace(branch))
         {
             args.Add("--branch");
             args.Add(branch.Trim());
         }
+        args.Add("--");            // no option may follow — url/dest are positional even if they start with '-'
         args.Add(url);
         args.Add(destPath);
 
         var (code, _, err) = await RunAsync(git, args, null, onProgress, ct).ConfigureAwait(false);
         return new GitResult(code == 0, code, err.Trim());
+    }
+
+    /// <summary>Clones, then checks out a specific ref — works for a branch, tag, OR commit (unlike clone --branch).</summary>
+    public async Task<GitResult> CloneAtAsync(string url, string destPath, string? gitRef, Action<string>? onProgress = null, CancellationToken ct = default)
+    {
+        if (!GitUrlPolicy.IsSafeRef(gitRef))
+            return new GitResult(false, -1, $"Refused to check out '{gitRef}': the ref is not valid.");
+        var clone = await CloneAsync(url, destPath, null, onProgress, ct).ConfigureAwait(false);
+        if (!clone.Ok || string.IsNullOrWhiteSpace(gitRef)) return clone;
+        // Trailing "--" keeps a ref that collides with a filename from being taken as a pathspec.
+        var (code, outText, err) = await RunGitAsync(destPath, new[] { "checkout", gitRef.Trim(), "--" }, onProgress, ct).ConfigureAwait(false);
+        return code == 0 ? clone : new GitResult(false, code, $"Cloned, but couldn't check out '{gitRef}': {Combine(outText, err)}");
     }
 
     public async Task<GitResult> PullAsync(string repoRoot, Action<string>? onProgress = null, CancellationToken ct = default)
@@ -131,7 +149,7 @@ public sealed class GitService
     public async Task<IReadOnlyList<string>> ListRemoteBranchesAsync(string url, CancellationToken ct = default)
     {
         var git = FindGit();
-        if (git is null) return Array.Empty<string>();
+        if (git is null || !GitUrlPolicy.IsSafeUrl(url)) return Array.Empty<string>();
         var (code, outText, _) = await RunAsync(git, new[] { "ls-remote", "--heads", url }, null, null, ct).ConfigureAwait(false);
         if (code != 0) return Array.Empty<string>();
         var branches = new List<string>();
@@ -180,6 +198,8 @@ public sealed class GitService
     /// <summary>Creates and switches to a new branch (for the PR flow).</summary>
     public async Task<GitResult> CheckoutNewBranchAsync(string repoRoot, string branch, CancellationToken ct = default)
     {
+        if (!GitUrlPolicy.IsSafeRef(branch))
+            return new GitResult(false, -1, $"Refused to create branch '{branch}': the name is not valid.");
         var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "checkout", "-b", branch }, null, ct).ConfigureAwait(false);
         return new GitResult(code == 0, code, Combine(outText, err));
     }
@@ -254,6 +274,9 @@ public sealed class GitService
         if (!string.IsNullOrEmpty(workingDir)) psi.WorkingDirectory = workingDir;
         foreach (var a in args) psi.ArgumentList.Add(a);
         psi.Environment["GIT_TERMINAL_PROMPT"] = "0";
+        // Defence in depth: even if a hostile URL reaches git, only real fetch protocols are permitted.
+        // This disables ext:: (arbitrary command execution) and file: at the git layer for every call.
+        psi.Environment["GIT_ALLOW_PROTOCOL"] = GitUrlPolicy.AllowedGitProtocols;
 
         using var p = new Process { StartInfo = psi, EnableRaisingEvents = true };
         var stdout = new StringBuilder();

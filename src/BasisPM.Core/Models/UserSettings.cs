@@ -35,4 +35,12 @@ public sealed class UserSettings
     // Whether we've already offered a desktop shortcut on first run (so we only ask once).
     [JsonPropertyName("askedDesktopShortcut")]
     public bool AskedDesktopShortcut { get; set; }
+
+    // Opt into the prerelease update channel — frequent, experimental builds that may be broken.
+    [JsonPropertyName("prereleaseUpdates")]
+    public bool PrereleaseUpdates { get; set; }
+
+    // Ids of announcements the user has already seen (drives the unread badge on the nav).
+    [JsonPropertyName("seenAnnouncementIds")]
+    public List<string> SeenAnnouncementIds { get; set; } = new();
 }

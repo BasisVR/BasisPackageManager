@@ -45,6 +45,9 @@
                     <CheckBox Content="Developer mode (show the Develop tab)" IsChecked="{Binding DeveloperMode}"
                               ToolTip.Tip="Mount git packages locally, edit them in Unity, and open pull requests. Hidden for non-developers."/>
 
+                    <CheckBox Content="Receive prerelease updates (experimental — may be broken)" IsChecked="{Binding PrereleaseUpdates}"
+                              ToolTip.Tip="Get early builds as soon as they're published — frequent and sometimes unstable. Off = stable releases only. Applies on Save."/>
+
                     <Button Classes="primary" Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Left"/>
                 </StackPanel>
             </Border>

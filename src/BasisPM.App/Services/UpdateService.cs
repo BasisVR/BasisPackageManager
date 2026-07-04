@@ -14,12 +14,27 @@ public sealed class UpdateService
 {
     private const string RepoUrl = "https://github.com/BasisVR/BasisPackageManager";
 
-    private readonly UpdateManager _mgr;
+    private UpdateManager _mgr;
+    private bool _prerelease;
 
     public UpdateService()
     {
-        // accessToken null = public repo; prerelease false = the stable channel only.
-        _mgr = new UpdateManager(new GithubSource(RepoUrl, null, false, null));
+        _mgr = Build(false);
+    }
+
+    // accessToken null = public repo; the prerelease flag picks the stable vs prerelease channel.
+    private static UpdateManager Build(bool prerelease) =>
+        new(new GithubSource(RepoUrl, null, prerelease, null));
+
+    /// <summary>Whether the updater is currently following the prerelease channel.</summary>
+    public bool Prerelease => _prerelease;
+
+    /// <summary>Switch update channel: false = stable releases only, true = include prereleases.</summary>
+    public void SetPrerelease(bool prerelease)
+    {
+        if (prerelease == _prerelease) return;
+        _prerelease = prerelease;
+        _mgr = Build(prerelease);
     }
 
     /// <summary>True only when launched from a Velopack install (i.e. self-update is possible).</summary>

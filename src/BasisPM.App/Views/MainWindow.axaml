@@ -71,6 +71,17 @@
                     <Button Classes="nav" Classes.active="{Binding IsDevelop}" Tag="develop" Click="OnNavClick" IsVisible="{Binding ShowDevelopTab}">Develop</Button>
                     <Button Classes="nav" Classes.active="{Binding IsChanges}" Tag="changes" Click="OnNavClick" IsVisible="{Binding ShowChangesTab}">Local Changes</Button>
                     <Button Classes="nav" Classes.active="{Binding IsUnity}" Tag="unity" Click="OnNavClick">Unity Editors</Button>
+                    <Grid>
+                        <Button Classes="nav" Classes.active="{Binding IsAnnouncements}" Tag="announcements" Click="OnNavClick" HorizontalAlignment="Stretch">Announcements</Button>
+                        <Border Classes="brandBadge" Padding="7,1" MinWidth="18"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding HasUnreadAnnouncements}">
+                            <TextBlock Text="{Binding AnnouncementsUnreadCount}"
+                                       FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                    </Grid>
                     <Button Classes="nav" Classes.active="{Binding IsSettings}" Tag="settings" Click="OnNavClick">Settings</Button>
                     <Button Classes="nav" Classes.active="{Binding IsSupport}" Tag="support" Click="OnNavClick">Support</Button>
                 </StackPanel>
@@ -134,6 +145,10 @@
                         <Button Content="Copy" Padding="10,4" FontSize="11"
                                 Click="OnCopyStatusClick"
                                 ToolTip.Tip="Copy status message to clipboard"/>
+                        <Button Content="Open an issue" Padding="10,4" FontSize="11"
+                                IsVisible="{Binding IsStatusError}"
+                                Command="{Binding OpenIssueCommand}"
+                                ToolTip.Tip="Open a pre-filled GitHub issue with this error and your last actions"/>
                         <Button Content="OK" Padding="10,4" FontSize="11"
                                 Click="OnDismissStatusClick"
                                 ToolTip.Tip="Dismiss this message"/>

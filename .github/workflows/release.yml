@@ -163,3 +163,12 @@ jobs:
           --tag "${{ github.ref_name }}"
           --merge
           --token "${{ secrets.GITHUB_TOKEN }}"
+
+      # A tag with a prerelease suffix (e.g. v0.2.0-beta.1) is the prerelease channel: mark the
+      # GitHub release as a pre-release so stable users don't receive it (opt-in via app Settings).
+      - name: Flag prerelease (for -beta / -pre tags)
+        if: ${{ contains(github.ref_name, '-') }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release edit "${{ github.ref_name }}" --prerelease --repo "${{ github.repository }}"

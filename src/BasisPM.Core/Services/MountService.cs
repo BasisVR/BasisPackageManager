@@ -30,23 +30,58 @@ public sealed class MountService
     {
         var parsed = UpmGitUrl.Parse(manifestGitValue);
         if (parsed is null) return MountResult.Fail("Couldn't parse this package's git URL.");
-        if (parsed.Path is not null)
-            return MountResult.Fail("This package lives in a subfolder of its repo — subfolder mounting isn't supported yet.");
-
-        var dest = Path.Combine(install.UnityProjectPath, "Packages", packageId);
-        if (Directory.Exists(dest) && Directory.EnumerateFileSystemEntries(dest).Any())
-            return MountResult.Fail($"{dest} already exists and isn't empty.");
-
-        var clone = await _git.CloneAsync(parsed.CloneUrl, dest, parsed.Ref, onProgress, ct).ConfigureAwait(false);
-        if (!clone.Ok) return MountResult.Fail($"Clone failed: {clone.Output}");
+        if (!GitUrlPolicy.IsSafeUrl(parsed.CloneUrl))
+            return MountResult.Fail("This package's git URL uses an unsupported or unsafe transport.");
+        if (!GitUrlPolicy.IsSafeRef(parsed.Ref))
+            return MountResult.Fail("This package pins an invalid git ref.");
+        if (!GitUrlPolicy.IsSafeSubPath(parsed.Path))
+            return MountResult.Fail("This package's sub-path escapes the repository.");
 
         var info = await _projects.LoadAsync(install.UnityProjectPath, ct).ConfigureAwait(false);
-        info.Manifest.Dependencies.Remove(packageId);
+
+        if (parsed.Path is null)
+        {
+            // Root-level package: clone straight into Packages/<id> as an embedded package.
+            var dest = Path.Combine(install.UnityProjectPath, "Packages", packageId);
+            if (Directory.Exists(dest) && Directory.EnumerateFileSystemEntries(dest).Any())
+                return MountResult.Fail($"{dest} already exists and isn't empty.");
+
+            var clone = await _git.CloneAtAsync(parsed.CloneUrl, dest, parsed.Ref, onProgress, ct).ConfigureAwait(false);
+            if (!clone.Ok) { TryForceDelete(dest); return MountResult.Fail($"Clone failed: {clone.Output}"); }
+
+            info.Manifest.Dependencies.Remove(packageId);
+            await _projects.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
+            install.Manifest = info.Manifest;
+
+            _registry.Add(new MountRecord(install.UnityProjectPath, packageId, dest, manifestGitValue));
+            return MountResult.Success(dest);
+        }
+
+        // Subfolder package: clone the whole repo into a Unity-ignored workspace (.basisdev/<id>) and
+        // point the manifest at the sub-path with a Unity "file:" local dependency (editable in place).
+        // The full clone is what the PR flow commits and pushes from.
+        var workspace = Path.Combine(install.UnityProjectPath, ".basisdev", packageId);
+        if (Directory.Exists(workspace) && Directory.EnumerateFileSystemEntries(workspace).Any())
+            return MountResult.Fail($"{workspace} already exists and isn't empty.");
+
+        var repoClone = await _git.CloneAtAsync(parsed.CloneUrl, workspace, parsed.Ref, onProgress, ct).ConfigureAwait(false);
+        if (!repoClone.Ok) { TryForceDelete(workspace); return MountResult.Fail($"Clone failed: {repoClone.Output}"); }
+
+        var pkgDir = Path.Combine(workspace, parsed.Path.Replace('/', Path.DirectorySeparatorChar));
+        if (!File.Exists(Path.Combine(pkgDir, "package.json")))
+        {
+            TryForceDelete(workspace);
+            return MountResult.Fail($"Couldn't find package.json at “{parsed.Path}” in {parsed.Slug}.");
+        }
+
+        var packagesDir = Path.Combine(install.UnityProjectPath, "Packages");
+        var relative = Path.GetRelativePath(packagesDir, pkgDir).Replace('\\', '/');
+        info.Manifest.Dependencies[packageId] = "file:" + relative;
         await _projects.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
         install.Manifest = info.Manifest;
 
-        _registry.Add(new MountRecord(install.UnityProjectPath, packageId, dest, manifestGitValue));
-        return MountResult.Success(dest);
+        _registry.Add(new MountRecord(install.UnityProjectPath, packageId, workspace, manifestGitValue));
+        return MountResult.Success(workspace);
     }
 
     public async Task<MountResult> SwapBackAsync(BasisInstall install, string packageId, CancellationToken ct = default)
@@ -74,6 +109,12 @@ public sealed class MountService
 
         _registry.Remove(install.UnityProjectPath, packageId);
         return MountResult.Success(dest);
+    }
+
+    private static void TryForceDelete(string path)
+    {
+        try { if (Directory.Exists(path)) ForceDeleteDirectory(path); }
+        catch { }
     }
 
     // git stores read-only objects under .git; clear attributes before deleting.

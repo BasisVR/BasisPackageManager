@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             x:Class="BasisPM.App.Views.AnnouncementsView"
+             x:DataType="vm:AnnouncementsViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="40,32" Spacing="20">
+
+            <Border CornerRadius="14" Padding="32,28"
+                    Background="{StaticResource BasisHeroGradient}"
+                    BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                    <StackPanel Grid.Column="0" Spacing="6">
+                        <TextBlock Text="ANNOUNCEMENTS" Classes="tagline"/>
+                        <TextBlock Text="What's new" Classes="h1"/>
+                        <TextBlock Text="Updates and news from the Basis team."
+                                   Classes="muted" FontSize="14"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Refresh" VerticalAlignment="Center"
+                            Command="{Binding RefreshCommand}"/>
+                </Grid>
+            </Border>
+
+            <TextBlock Text="Loading announcements…" Classes="dim" FontSize="12"
+                       IsVisible="{Binding IsLoading}"/>
+
+            <ItemsControl ItemsSource="{Binding Announcements}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="14"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:AnnouncementCard">
+                        <Border Classes="card">
+                            <StackPanel Spacing="10">
+                                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                    <Border CornerRadius="999" Padding="10,3" Background="{Binding LevelBrush}">
+                                        <TextBlock Text="{Binding LevelLabel}" FontSize="10"
+                                                   FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    </Border>
+                                    <Border Classes="versionPill" IsVisible="{Binding IsPinned}">
+                                        <TextBlock Text="PINNED" FontSize="10" FontWeight="Bold" Classes="muted"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding DateDisplay}" Classes="dim" FontSize="12"
+                                               VerticalAlignment="Center" IsVisible="{Binding HasDate}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Title}" Classes="h3" FontSize="17"/>
+                                <TextBlock Text="{Binding Body}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                                <Button Content="{Binding LinkText}" HorizontalAlignment="Left"
+                                        IsVisible="{Binding HasLink}"
+                                        Command="{Binding OpenLinkCommand}"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Border Classes="card" IsVisible="{Binding ShowEmpty}">
+                <StackPanel Spacing="8" HorizontalAlignment="Center" Margin="0,40">
+                    <TextBlock Text="No announcements yet" Classes="h3" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Check back later — news from the Basis team will show up here."
+                               Classes="muted" HorizontalAlignment="Center" TextAlignment="Center"
+                               MaxWidth="480" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

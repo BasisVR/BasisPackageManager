@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using BasisPM.App.Services;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
@@ -73,7 +72,7 @@ public sealed class DevelopViewModel : ObservableObject
         MountCommand = new RelayCommand<GitPackageRow>(MountAsync);
         SubmitPrCommand = new RelayCommand<MountedRow>(SubmitPrAsync);
         SwapBackCommand = new RelayCommand<MountedRow>(SwapBackAsync);
-        OpenFolderCommand = new RelayCommand<MountedRow>(r => { if (r is not null) OpenUrl(r.FolderPath); });
+        OpenFolderCommand = new RelayCommand<MountedRow>(r => { if (r is not null) ExternalLink.OpenFolder(r.FolderPath); });
     }
 
     public void SetActiveInstall(BasisInstall install)
@@ -145,7 +144,23 @@ public sealed class DevelopViewModel : ObservableObject
     {
         if (row is null || _install is null) return;
         if (!_git.IsAvailable) { _shell.SetStatus("Git is required to mount a package. Install it, then Re-check.", StatusKind.Error); return; }
-        if (row.InSubfolder) { _shell.SetStatus($"{row.Id} lives in a subfolder of its repo — subfolder mounting isn't supported yet.", StatusKind.Error); return; }
+
+        // If Packages/<id> already exists (already mounted, a leftover, or a local copy), ask before replacing it.
+        var dest = Path.Combine(_install.UnityProjectPath, "Packages", row.Id);
+        if (Directory.Exists(dest) && Directory.EnumerateFileSystemEntries(dest).Any())
+        {
+            var mounted = _registry.Find(_install.UnityProjectPath, row.Id) is not null;
+            var msg = mounted
+                ? $"{row.Id} is already mounted at Packages/{row.Id}.\n\nReplace it with a fresh clone? Any local edits in that folder will be lost."
+                : $"Packages/{row.Id} already exists and isn't empty — it may be a leftover mount or a local copy.\n\nReplace it with a fresh clone? Its current contents will be deleted.";
+            if (!await Dialogs.ConfirmAsync("Package already there", msg))
+            {
+                _shell.SetStatus($"Mount cancelled — Packages/{row.Id} left as-is.", StatusKind.Info);
+                return;
+            }
+            try { TryForceDelete(dest); }
+            catch (Exception ex) { _shell.SetStatus($"Couldn't clear Packages/{row.Id}: {ex.Message}", StatusKind.Error); return; }
+        }
 
         IsBusy = true;
         _shell.SetStatus($"Mounting {row.Id}…");
@@ -203,11 +218,18 @@ public sealed class DevelopViewModel : ObservableObject
         finally { IsBusy = false; }
     }
 
-    private static void OpenUrl(string url)
+    // git marks objects under .git read-only; clear attributes before deleting the clone.
+    private static void TryForceDelete(string path)
     {
-        try { Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true }); }
-        catch { }
+        if (!Directory.Exists(path)) return;
+        foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+        {
+            try { File.SetAttributes(file, FileAttributes.Normal); } catch { }
+        }
+        Directory.Delete(path, recursive: true);
     }
+
+    private static void OpenUrl(string url) => ExternalLink.Open(url);
 }
 
 public sealed record GitPackageRow(string Id, string GitUrl, string Host, string Slug, bool InSubfolder);

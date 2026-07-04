@@ -153,6 +153,8 @@ const REPO = "BasisVR/BasisPackageManager";
 let RAW = [], ALL = [], RAWB = [], bundlesLoaded = false;
 
 const esc = s => (s??"").toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Only ever put http/https links in an href — an escaped "javascript:…" is still a clickable script.
+const safeUrl = u => { try { const x = new URL(u, location.href); return (x.protocol==='http:'||x.protocol==='https:') ? x.href : '#'; } catch { return '#'; } };
 const hostOf = p => { const u=(p.repoUrl||p.gitUrl||'').toLowerCase(); return u.includes('gitlab')?'GitLab':u.includes('github')?'GitHub':''; };
 // curated = hosted under the Basis org (github.com/BasisVR/…); anything else is community.
 const deriveSource = (repoUrl, gitUrl) => { const m=(repoUrl||gitUrl||'').toLowerCase().match(/github\.com[/:]+([^/?#]+)/); return (m && m[1]==='basisvr') ? 'curated' : 'community'; };
@@ -385,7 +387,7 @@ function openDetail(id){
       <div class="inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 text-3xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${imgOrIcon(p)}</div>
       <div class="min-w-0 flex-1">
         <h2 class="flex flex-wrap items-center gap-2 text-xl font-bold">${esc(p.name)} <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${badgeCls(p.source)}">${esc(p.source)}</span></h2>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">by ${p.authorUrl?`<a href="${esc(p.authorUrl)}" target="_blank" class="underline hover:text-brand">${esc(p.author)}</a>`:esc(p.author)} · ${esc(p.category)}${hostOf(p)?' · '+hostOf(p):''}</p>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">by ${p.authorUrl?`<a href="${esc(safeUrl(p.authorUrl))}" target="_blank" rel="noopener noreferrer" class="underline hover:text-brand">${esc(p.author)}</a>`:esc(p.author)} · ${esc(p.category)}${hostOf(p)?' · '+hostOf(p):''}</p>
       </div>
       <button onclick="closeModals()" class="text-2xl leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">&times;</button>
     </div>
@@ -411,7 +413,7 @@ function openDetail(id){
         <div class="space-y-3">${installMethods(p)}</div>
       </div>
       <div class="flex flex-wrap gap-2">
-        ${p.repoUrl?`<a href="${esc(p.repoUrl)}" target="_blank" class="rounded-xl border border-gray-200 px-3 py-1.5 text-sm hover:border-brand hover:text-brand dark:border-white/10">${hostOf(p)?'View on '+hostOf(p):'Repository'} ↗</a>`:''}
+        ${p.repoUrl?`<a href="${esc(safeUrl(p.repoUrl))}" target="_blank" rel="noopener noreferrer" class="rounded-xl border border-gray-200 px-3 py-1.5 text-sm hover:border-brand hover:text-brand dark:border-white/10">${hostOf(p)?'View on '+hostOf(p):'Repository'} ↗</a>`:''}
       </div>
     </div>
   </div>`;
@@ -455,7 +457,7 @@ function openBundle(id){
       <div class="inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 text-3xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${imgOrIcon({image:b.image,icon:b.icon||'🧩'})}</div>
       <div class="min-w-0 flex-1">
         <h2 class="text-xl font-bold">${esc(b.name)}</h2>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">by ${b.authorUrl?`<a href="${esc(b.authorUrl)}" target="_blank" class="underline hover:text-brand">${esc(b.author||'—')}</a>`:esc(b.author||'—')} · Basis ${basis}${b.unity?' · Unity '+esc(b.unity):''}</p>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">by ${b.authorUrl?`<a href="${esc(safeUrl(b.authorUrl))}" target="_blank" rel="noopener noreferrer" class="underline hover:text-brand">${esc(b.author||'—')}</a>`:esc(b.author||'—')} · Basis ${basis}${b.unity?' · Unity '+esc(b.unity):''}</p>
       </div>
       <button onclick="closeModals()" class="text-2xl leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">&times;</button>
     </div>

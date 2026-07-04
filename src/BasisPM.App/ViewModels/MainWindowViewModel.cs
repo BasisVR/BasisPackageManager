@@ -6,7 +6,7 @@ using Velopack;
 
 namespace BasisPM.App.ViewModels;
 
-public enum NavPage { Installs, Packages, Changes, Unity, Settings, Support, Develop }
+public enum NavPage { Installs, Packages, Changes, Unity, Settings, Support, Develop, Announcements }
 
 public enum StatusKind { Info, Success, Error }
 
@@ -17,6 +17,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly GitService _gitService = new();
     private readonly BasisInstallService _installService;
     private readonly CatalogService _catalogService = new();
+    private readonly AnnouncementService _announcementService = new();
     private readonly BundleService _bundleService = new();
     private readonly UnityHubService _hubService = new();
     private readonly UnityReleaseService _releaseService = new();
@@ -29,6 +30,8 @@ public sealed class MainWindowViewModel : ObservableObject
     private object? _currentView;
     private string _statusMessage = "Ready";
     private StatusKind _statusKind = StatusKind.Info;
+    private readonly List<string> _breadcrumbs = new();
+    private const string IssueRepo = "BasisVR/BasisPackageManager";
     private BasisInstall? _activeInstall;
     private string? _catalogUrl;
 
@@ -45,10 +48,12 @@ public sealed class MainWindowViewModel : ObservableObject
     public SettingsViewModel SettingsVM { get; }
     public FundingViewModel FundingVM { get; }
     public DevelopViewModel DevelopVM { get; }
+    public AnnouncementsViewModel AnnouncementsVM { get; }
 
     public RelayCommand InstallUpdateCommand { get; }
     public RelayCommand DismissUpdateCommand { get; }
     public RelayCommand CheckForUpdatesCommand { get; }
+    public RelayCommand OpenIssueCommand { get; }
 
     public MainWindowViewModel()
     {
@@ -62,10 +67,12 @@ public sealed class MainWindowViewModel : ObservableObject
         var mountService = new MountService(_gitService, _projectService, _mountRegistry);
         var contributeService = new ContributeService(_gitService, _ghApi);
         DevelopVM = new DevelopViewModel(mountService, contributeService, _ghAuth, _ghApi, _gitService, _mountRegistry, this);
+        AnnouncementsVM = new AnnouncementsViewModel(_announcementService);
 
         InstallUpdateCommand = new RelayCommand(InstallUpdateAsync);
         DismissUpdateCommand = new RelayCommand(() => { UpdateAvailable = false; });
         CheckForUpdatesCommand = new RelayCommand(() => CheckForUpdatesAsync(manual: true));
+        OpenIssueCommand = new RelayCommand(OpenIssue);
 
         CurrentView = InstallsVM;
     }
@@ -86,6 +93,7 @@ public sealed class MainWindowViewModel : ObservableObject
                     NavPage.Settings => SettingsVM,
                     NavPage.Support => FundingVM,
                     NavPage.Develop => DevelopVM,
+                    NavPage.Announcements => AnnouncementsVM,
                     _ => InstallsVM,
                 };
                 OnPropertyChanged(nameof(IsInstalls));
@@ -95,8 +103,10 @@ public sealed class MainWindowViewModel : ObservableObject
                 OnPropertyChanged(nameof(IsSettings));
                 OnPropertyChanged(nameof(IsSupport));
                 OnPropertyChanged(nameof(IsDevelop));
+                OnPropertyChanged(nameof(IsAnnouncements));
 
                 if (value == NavPage.Changes) _ = ChangesVM.RefreshAsync();
+                if (value == NavPage.Announcements) _ = MarkAnnouncementsSeenAsync();
             }
         }
     }
@@ -110,6 +120,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public bool IsSettings => CurrentPage == NavPage.Settings;
     public bool IsSupport => CurrentPage == NavPage.Support;
     public bool IsDevelop => CurrentPage == NavPage.Develop;
+    public bool IsAnnouncements => CurrentPage == NavPage.Announcements;
 
     private bool _showChangesTab;
     public bool ShowChangesTab
@@ -147,6 +158,14 @@ public sealed class MainWindowViewModel : ObservableObject
     public string ActiveInstallName => _activeInstall?.DisplayName ?? "No install selected";
 
     public string AppVersion => _updateService.CurrentVersion;
+
+    private int _announcementsUnread;
+    public int AnnouncementsUnreadCount
+    {
+        get => _announcementsUnread;
+        private set { if (SetField(ref _announcementsUnread, value)) OnPropertyChanged(nameof(HasUnreadAnnouncements)); }
+    }
+    public bool HasUnreadAnnouncements => _announcementsUnread > 0;
 
     public bool UpdateAvailable { get => _updateAvailable; private set => SetField(ref _updateAvailable, value); }
     public string UpdateBannerText { get => _updateBannerText; private set => SetField(ref _updateBannerText, value); }
@@ -196,14 +215,57 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         StatusMessage = message;
         StatusKind = kind;
+        RecordBreadcrumb(message, kind);
     }
 
     public void DismissStatus() => SetStatus("Ready", StatusKind.Info);
+
+    // A short trail of the meaningful things that happened, for the "Open an issue" bug report.
+    private void RecordBreadcrumb(string message, StatusKind kind)
+    {
+        if (string.IsNullOrWhiteSpace(message) || message == "Ready" || IsProgressNoise(message)) return;
+        var tag = kind switch { StatusKind.Error => "✗", StatusKind.Success => "✓", _ => "·" };
+        var line = $"{tag} {message}";
+        if (_breadcrumbs.Count > 0 && _breadcrumbs[^1] == line) return;   // dedupe consecutive
+        _breadcrumbs.Add(line);
+        if (_breadcrumbs.Count > 20) _breadcrumbs.RemoveAt(0);
+    }
+
+    // Keep raw git/clone progress chatter out of the breadcrumb trail.
+    private static bool IsProgressNoise(string m) =>
+        m.Contains('%') ||
+        m.StartsWith("remote:", StringComparison.OrdinalIgnoreCase) ||
+        m.StartsWith("Receiving", StringComparison.OrdinalIgnoreCase) ||
+        m.StartsWith("Resolving", StringComparison.OrdinalIgnoreCase) ||
+        m.StartsWith("Compressing", StringComparison.OrdinalIgnoreCase) ||
+        m.StartsWith("Counting", StringComparison.OrdinalIgnoreCase) ||
+        m.StartsWith("Enumerating", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Opens a pre-filled GitHub issue with the current error and the last few actions.</summary>
+    private void OpenIssue()
+    {
+        var title = StatusMessage.Length > 90 ? StatusMessage[..90] + "…" : StatusMessage;
+        var recent = _breadcrumbs.Skip(Math.Max(0, _breadcrumbs.Count - 10)).ToList();
+        var actions = recent.Count > 0
+            ? string.Join("\n", recent.Select((c, i) => $"{i + 1}. {c}"))
+            : "_none recorded_";
+        var body =
+            "### What happened\n\n```\n" + StatusMessage + "\n```\n\n" +
+            "### Last actions (most recent last)\n" + actions + "\n\n" +
+            "### Environment\n" +
+            $"- App: {AppVersion}\n" +
+            $"- OS: {Environment.OSVersion}\n\n" +
+            "_Filed from the Basis Package Manager error bar. Please add anything else that helps reproduce it._";
+        if (body.Length > 5500) body = body[..5500] + "\n… (truncated)";
+        var url = $"https://github.com/{IssueRepo}/issues/new?labels=bug&title={Uri.EscapeDataString("Error: " + title)}&body={Uri.EscapeDataString(body)}";
+        ExternalLink.Open(url);
+    }
 
     public async Task InitializeAsync()
     {
         var settings = await _settingsService.LoadAsync();
         _catalogUrl = settings.CatalogUrl;
+        _updateService.SetPrerelease(settings.PrereleaseUpdates);
         SettingsVM.Apply(settings);
         ShowChangesTab = settings.ShowLocalChanges;
         ShowDevelopTab = settings.DeveloperMode;
@@ -220,6 +282,7 @@ public sealed class MainWindowViewModel : ObservableObject
         await UnityVM.RefreshAsync();
 
         _ = CheckForUpdatesAsync(manual: false);
+        _ = LoadAnnouncementsAsync();
         _ = RunFirstRunPromptsAsync();
     }
 
@@ -337,6 +400,13 @@ public sealed class MainWindowViewModel : ObservableObject
         return await Dialogs.PickInstallAsync($"Add “{label}” to which project?", targets);
     }
 
+    /// <summary>Applies a change to the prerelease-channel preference and re-checks for updates.</summary>
+    public void ApplyPrerelease(bool prerelease)
+    {
+        _updateService.SetPrerelease(prerelease);
+        _ = CheckForUpdatesAsync(manual: false);
+    }
+
     public async Task CheckForUpdatesAsync(bool manual)
     {
         if (!_updateService.IsSupported)
@@ -390,6 +460,32 @@ public sealed class MainWindowViewModel : ObservableObject
         }
     }
 
+    /// <summary>Loads announcements from the website feed and updates the unread badge.</summary>
+    private async Task LoadAnnouncementsAsync()
+    {
+        try
+        {
+            await AnnouncementsVM.LoadAsync();
+            var settings = await _settingsService.LoadAsync();
+            var seen = settings.SeenAnnouncementIds;
+            AnnouncementsUnreadCount = AnnouncementsVM.AllIds.Count(id => !seen.Contains(id));
+        }
+        catch { }
+    }
+
+    /// <summary>Marks every currently-shown announcement as read (persisted) and clears the badge.</summary>
+    private async Task MarkAnnouncementsSeenAsync()
+    {
+        AnnouncementsUnreadCount = 0;
+        try
+        {
+            var settings = await _settingsService.LoadAsync();
+            settings.SeenAnnouncementIds = AnnouncementsVM.AllIds.ToList();
+            await _settingsService.SaveAsync(settings);
+        }
+        catch { }
+    }
+
     public void NavigateTo(string page)
     {
         CurrentPage = page switch
@@ -401,6 +497,7 @@ public sealed class MainWindowViewModel : ObservableObject
             "settings" => NavPage.Settings,
             "support" => NavPage.Support,
             "develop" => NavPage.Develop,
+            "announcements" => NavPage.Announcements,
             _ => CurrentPage,
         };
     }

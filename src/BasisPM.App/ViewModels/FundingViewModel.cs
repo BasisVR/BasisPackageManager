@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using BasisPM.App.Services;
 
 namespace BasisPM.App.ViewModels;
 
@@ -11,14 +11,8 @@ public sealed class FundingViewModel : ObservableObject
 
     public FundingViewModel()
     {
-        OpenCollectiveCommand = new RelayCommand(() => Open("https://opencollective.com/basis"));
-        DiscordCommand = new RelayCommand(() => Open("https://discord.gg/v6ve6WT562"));
-        FundingPageCommand = new RelayCommand(() => Open("https://basisvr.org/funding"));
-    }
-
-    private static void Open(string url)
-    {
-        try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }
-        catch { }
+        OpenCollectiveCommand = new RelayCommand(() => ExternalLink.Open("https://opencollective.com/basis"));
+        DiscordCommand = new RelayCommand(() => ExternalLink.Open("https://discord.gg/v6ve6WT562"));
+        FundingPageCommand = new RelayCommand(() => ExternalLink.Open("https://basisvr.org/funding"));
     }
 }

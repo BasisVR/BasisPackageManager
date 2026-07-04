@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using BasisPM.App.Services;
@@ -341,6 +340,11 @@ public sealed class PackagesViewModel : ObservableObject
             _shell.SetStatus("Install link was missing the package id or git URL.", StatusKind.Error);
             return;
         }
+        if (!GitUrlPolicy.IsSafeUrl(gitUrl))
+        {
+            _shell.SetStatus($"Refused to add {name ?? id}: the install link's git URL uses an unsupported or unsafe transport.", StatusKind.Error);
+            return;
+        }
         if (_install is null || !_install.HasUnityProject)
         {
             _shell.SetStatus($"Open an install with a Unity project first, then click Install for {name ?? id} again.", StatusKind.Error);
@@ -436,11 +440,15 @@ public sealed class PackagesViewModel : ObservableObject
         IsBusy = true;
         try
         {
+            var skipped = 0;
             foreach (var p in bundle.Packages)
             {
                 if (string.IsNullOrWhiteSpace(p.Id)) continue;
                 if (!string.IsNullOrWhiteSpace(p.GitUrl))
+                {
+                    if (!GitUrlPolicy.IsSafeUrl(p.GitUrl)) { skipped++; continue; }  // never write an unsafe transport to the manifest
                     target.Manifest.Dependencies[p.Id] = p.GitUrl!.Trim();
+                }
                 // Resolve the package + its registry dependencies from the catalog…
                 AddCatalogDependencies(target, new[] { (p.Id, string.IsNullOrWhiteSpace(p.Version) ? "*" : p.Version!) });
                 // …otherwise fall back to the declared version so Unity's registry can resolve it.
@@ -448,7 +456,9 @@ public sealed class PackagesViewModel : ObservableObject
                     target.Manifest.Dependencies[p.Id] = p.Version!.Trim();
             }
             await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
-            _shell.SetStatus($"Added bundle “{bundle.Name}” ({bundle.Packages.Count} package(s)) → {target.DisplayName}.", StatusKind.Success);
+            var skipNote = skipped > 0 ? $" ({skipped} skipped for an unsafe git URL)" : "";
+            _shell.SetStatus($"Added bundle “{bundle.Name}” ({bundle.Packages.Count} package(s)){skipNote} → {target.DisplayName}.",
+                skipped > 0 ? StatusKind.Info : StatusKind.Success);
             RefreshInstalled();
         }
         catch (Exception ex)
@@ -466,11 +476,7 @@ public sealed class PackagesViewModel : ObservableObject
         return slug.Length == 0 ? "bundle" : slug;
     }
 
-    private static void OpenUrl(string url)
-    {
-        try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }
-        catch { }
-    }
+    private static void OpenUrl(string url) => ExternalLink.Open(url);
 }
 
 public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVersion)

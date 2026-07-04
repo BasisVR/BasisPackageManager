@@ -57,18 +57,40 @@ api.MapGet("/bundles/{id}", (BundleStore bundles, string id) =>
     return b is null ? Results.NotFound() : Results.Ok(b);
 });
 
-api.MapPost("/packages", (PackageStore store, RegistrySubmission sub) =>
+// The write endpoint is OFF by default: it persists to disk and its data is served to every client
+// and desktop app, so an open, unauthenticated POST is a registry-poisoning / package-hijack surface.
+// Enable it deliberately with BASISPM_ENABLE_SUBMISSIONS=1, and/or require a shared secret with
+// BASISPM_SUBMIT_TOKEN (clients send it as the X-Submit-Token header). Curated data always comes from
+// the PR-reviewed seed, never this endpoint.
+var submitToken = Environment.GetEnvironmentVariable("BASISPM_SUBMIT_TOKEN");
+var submissionsEnabled = IsTrue(Environment.GetEnvironmentVariable("BASISPM_ENABLE_SUBMISSIONS"))
+                         || !string.IsNullOrEmpty(submitToken);
+
+if (submissionsEnabled)
 {
-    try
+    api.MapPost("/packages", (PackageStore store, RegistrySubmission sub, HttpContext ctx) =>
     {
-        var pkg = store.Upsert(sub);
-        return Results.Created($"/api/packages/{pkg.Id}", pkg);
-    }
-    catch (ArgumentException ex)
-    {
-        return Results.BadRequest(new { error = ex.Message });
-    }
-});
+        if (!string.IsNullOrEmpty(submitToken))
+        {
+            var provided = ctx.Request.Headers["X-Submit-Token"].ToString();
+            if (!TokensMatch(provided, submitToken))
+                return Results.StatusCode(StatusCodes.Status401Unauthorized);
+        }
+        try
+        {
+            var pkg = store.Upsert(sub);
+            return Results.Created($"/api/packages/{pkg.Id}", pkg);
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Results.Conflict(new { error = ex.Message });
+        }
+    });
+}
 
 app.MapFallbackToFile("index.html");
 
@@ -150,6 +172,17 @@ static async Task<string?> FetchUpmVersionAsync(GitHubService github, string? gi
     }
     catch { return null; }
 }
+
+static bool IsTrue(string? v) =>
+    v is not null && (v == "1"
+        || v.Equals("true", StringComparison.OrdinalIgnoreCase)
+        || v.Equals("yes", StringComparison.OrdinalIgnoreCase));
+
+// Constant-time compare so a wrong token can't be recovered byte-by-byte via response timing.
+static bool TokensMatch(string? provided, string expected) =>
+    System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(
+        System.Text.Encoding.UTF8.GetBytes(provided ?? ""),
+        System.Text.Encoding.UTF8.GetBytes(expected));
 
 static string? ResolveUp(string start, string relative)
 {

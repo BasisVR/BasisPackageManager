@@ -33,6 +33,24 @@ The baseline version lives in [`Directory.Build.props`](Directory.Build.props), 
 `v1.4.2` ships version `1.4.2` regardless of the props file. Use plain semver
 (`vMAJOR.MINOR.PATCH`); Velopack rejects 4-part versions.
 
+## Release channels (stable vs prerelease)
+
+Two update channels:
+
+- **Stable** — a plain tag like `v0.2.0`. Everyone receives it.
+- **Prerelease** — a tag with a prerelease suffix like `v0.2.0-beta.1` (anything containing a `-`).
+  The workflow marks that GitHub release as a **pre-release**, so only users who opt in via
+  **Settings → "Receive prerelease updates"** get it. Use this for the frequent, may-be-broken
+  builds; stable users stay on the last full release until you cut a plain `vX.Y.Z`.
+
+```bash
+git tag v0.2.0-beta.1        # prerelease channel
+git push origin v0.2.0-beta.1
+```
+
+Prerelease versions sort *below* the matching stable (`0.2.0-beta.1` < `0.2.0`), so cutting the
+stable `v0.2.0` later promotes prerelease testers up to it automatically.
+
 ## Code signing
 
 Releases are **unsigned by default**, which is why users see Windows SmartScreen and macOS
