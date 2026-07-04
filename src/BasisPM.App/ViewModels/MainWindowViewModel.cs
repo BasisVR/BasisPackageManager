@@ -524,6 +524,8 @@ public sealed class MainWindowViewModel : ObservableObject
         SetStatus(L.Tr("shell.status.downloadingUpdate"));
         try
         {
+            // An update restarts the process — an intentional exit, not a crash. Clear the marker first.
+            CrashReporter.MarkCleanExit();
             // Velopack reports progress off the UI thread; marshal each tick back.
             await _updateService.DownloadAndApplyAsync(_pendingUpdate,
                 pct => Dispatcher.UIThread.Post(() => UpdateProgress = pct));
@@ -531,6 +533,7 @@ public sealed class MainWindowViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            CrashReporter.ArmSession();   // update aborted — still running, so re-arm crash detection
             IsUpdating = false;
             SetStatus(L.Tr("shell.status.updateFailed", ex.Message), StatusKind.Error);
         }

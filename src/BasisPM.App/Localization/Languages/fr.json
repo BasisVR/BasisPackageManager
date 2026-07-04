@@ -1621,6 +1621,138 @@
     {
       "key": "dialog.versionPicker.title",
       "value": "Choisir une version"
+    },
+    {
+      "key": "community.hero.tagline",
+      "value": "COMMUNAUTÉ"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Actualités, documentation et soutien"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Les nouveautés de Basis, où l'apprendre et comment aider à le faire vivre."
+    },
+    {
+      "key": "community.button.openDocs",
+      "value": "Ouvrir la documentation  ↗"
+    },
+    {
+      "key": "community.button.joinDiscord",
+      "value": "Rejoindre le Discord"
+    },
+    {
+      "key": "community.button.refresh",
+      "value": "Actualiser"
+    },
+    {
+      "key": "community.announcements.heading",
+      "value": "Annonces"
+    },
+    {
+      "key": "community.announcements.loading",
+      "value": "Chargement des annonces…"
+    },
+    {
+      "key": "community.announcements.pinned",
+      "value": "ÉPINGLÉ"
+    },
+    {
+      "key": "community.announcements.emptyTitle",
+      "value": "Aucune annonce pour l'instant"
+    },
+    {
+      "key": "community.announcements.emptyBody",
+      "value": "Revenez plus tard — les actualités de l'équipe Basis apparaîtront ici."
+    },
+    {
+      "key": "community.docs.heading",
+      "value": "Documentation"
+    },
+    {
+      "key": "community.docs.siteTitle",
+      "value": "Site de documentation"
+    },
+    {
+      "key": "community.docs.siteBody",
+      "value": "Installation, premiers pas, avatars, mondes, réseau et SDK — la documentation complète se trouve sur docs.basisvr.org."
+    },
+    {
+      "key": "community.docs.openSite",
+      "value": "Ouvrir docs.basisvr.org  ↗"
+    },
+    {
+      "key": "community.docs.askTitle",
+      "value": "Demander à la communauté"
+    },
+    {
+      "key": "community.docs.askBody",
+      "value": "Bloqué sur un point non couvert par la documentation ? Le Discord est le moyen le plus rapide d'obtenir de l'aide d'autres créateurs et des mainteneurs."
+    },
+    {
+      "key": "community.docs.sourceTitle",
+      "value": "Code source et tickets"
+    },
+    {
+      "key": "community.docs.sourceBody",
+      "value": "Lisez le code, signalez un bug ou ouvrez une pull request. Basis est sous licence MIT et développé de manière ouverte."
+    },
+    {
+      "key": "community.docs.basisRepo",
+      "value": "Basis sur GitHub  ↗"
+    },
+    {
+      "key": "community.docs.pmRepo",
+      "value": "Gestionnaire de paquets sur GitHub  ↗"
+    },
+    {
+      "key": "community.support.heading",
+      "value": "Soutenir Basis"
+    },
+    {
+      "key": "community.support.intro",
+      "value": "Basis est sous licence MIT et pense d'abord aux créateurs. Les dons de la communauté et les collaborations d'entreprise permettent à un mainteneur de travailler à plein temps et accélèrent les versions."
+    },
+    {
+      "key": "community.support.openCollective",
+      "value": "♥   Soutenir via OpenCollective"
+    },
+    {
+      "key": "community.support.donationsTitle",
+      "value": "Dons de la communauté"
+    },
+    {
+      "key": "community.support.donationsBody",
+      "value": "Des particuliers soutiennent Basis sur OpenCollective — mensuellement ou ponctuellement. Ces fonds financent avant tout la maintenance à plein temps et le travail sur l'expérience développeur."
+    },
+    {
+      "key": "community.support.backOpenCollective",
+      "value": "Contribuer sur OpenCollective"
+    },
+    {
+      "key": "community.support.collabTitle",
+      "value": "Collaborations d'entreprise"
+    },
+    {
+      "key": "community.support.collabBody",
+      "value": "Les entreprises parrainent des éléments de la feuille de route ou cofinancent des fonctionnalités — réseau, systèmes d'avatars, outils. Le travail est intégré en amont et reste sous licence MIT par défaut."
+    },
+    {
+      "key": "community.support.sponsorFeature",
+      "value": "Parrainer une fonctionnalité"
+    },
+    {
+      "key": "community.support.moneyTitle",
+      "value": "Où va l'argent"
+    },
+    {
+      "key": "community.support.moneyBody",
+      "value": "Les fonds sont mis en commun pour résoudre des problèmes communs — réseau, incarnation, outils — qui profitent à tous. Un registre public est disponible sur OpenCollective, et le travail parrainé est crédité dans les notes de version. Les parrains ne contrôlent pas le projet."
+    },
+    {
+      "key": "community.support.fundingPage",
+      "value": "Lire la page de financement complète  ↗"
     }
   ]
 }

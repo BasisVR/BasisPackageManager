@@ -1621,6 +1621,138 @@
     {
       "key": "dialog.versionPicker.title",
       "value": "एक संस्करण चुनें"
+    },
+    {
+      "key": "community.hero.tagline",
+      "value": "समुदाय"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "खबरें, दस्तावेज़ और समर्थन"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Basis में नया क्या है, इसे कहाँ सीखें, और इसे चलते रहने में कैसे मदद करें।"
+    },
+    {
+      "key": "community.button.openDocs",
+      "value": "दस्तावेज़ खोलें  ↗"
+    },
+    {
+      "key": "community.button.joinDiscord",
+      "value": "Discord से जुड़ें"
+    },
+    {
+      "key": "community.button.refresh",
+      "value": "रिफ़्रेश करें"
+    },
+    {
+      "key": "community.announcements.heading",
+      "value": "घोषणाएँ"
+    },
+    {
+      "key": "community.announcements.loading",
+      "value": "घोषणाएँ लोड हो रही हैं…"
+    },
+    {
+      "key": "community.announcements.pinned",
+      "value": "पिन किया गया"
+    },
+    {
+      "key": "community.announcements.emptyTitle",
+      "value": "अभी तक कोई घोषणा नहीं"
+    },
+    {
+      "key": "community.announcements.emptyBody",
+      "value": "बाद में फिर देखें — Basis टीम की खबरें यहाँ दिखाई देंगी।"
+    },
+    {
+      "key": "community.docs.heading",
+      "value": "दस्तावेज़"
+    },
+    {
+      "key": "community.docs.siteTitle",
+      "value": "दस्तावेज़ साइट"
+    },
+    {
+      "key": "community.docs.siteBody",
+      "value": "इंस्टॉलेशन, पहले कदम, अवतार, दुनिया, नेटवर्किंग और SDK — पूरे दस्तावेज़ docs.basisvr.org पर हैं।"
+    },
+    {
+      "key": "community.docs.openSite",
+      "value": "docs.basisvr.org खोलें  ↗"
+    },
+    {
+      "key": "community.docs.askTitle",
+      "value": "समुदाय से पूछें"
+    },
+    {
+      "key": "community.docs.askBody",
+      "value": "किसी ऐसी चीज़ पर अटके हैं जो दस्तावेज़ में नहीं है? अन्य क्रिएटर्स और मेंटेनर्स से मदद पाने का सबसे तेज़ तरीका Discord है।"
+    },
+    {
+      "key": "community.docs.sourceTitle",
+      "value": "स्रोत और इश्यू"
+    },
+    {
+      "key": "community.docs.sourceBody",
+      "value": "कोड पढ़ें, कोई बग दर्ज करें या पुल रिक्वेस्ट खोलें। Basis MIT-लाइसेंस प्राप्त है और खुले में विकसित किया जाता है।"
+    },
+    {
+      "key": "community.docs.basisRepo",
+      "value": "GitHub पर Basis  ↗"
+    },
+    {
+      "key": "community.docs.pmRepo",
+      "value": "GitHub पर Package Manager  ↗"
+    },
+    {
+      "key": "community.support.heading",
+      "value": "Basis का समर्थन करें"
+    },
+    {
+      "key": "community.support.intro",
+      "value": "Basis MIT-लाइसेंस प्राप्त और क्रिएटर-प्रथम है। समुदाय दान और कंपनी सहयोग एक मेंटेनर को पूर्णकालिक काम करते रहने और रिलीज़ तेज़ करने में मदद करते हैं।"
+    },
+    {
+      "key": "community.support.openCollective",
+      "value": "♥   OpenCollective के माध्यम से समर्थन करें"
+    },
+    {
+      "key": "community.support.donationsTitle",
+      "value": "समुदाय दान"
+    },
+    {
+      "key": "community.support.donationsBody",
+      "value": "व्यक्ति OpenCollective पर Basis को समर्थन देते हैं — मासिक या एकमुश्त। ये फंड मुख्य रूप से पूर्णकालिक रखरखाव और डेवलपर-अनुभव के काम का समर्थन करते हैं।"
+    },
+    {
+      "key": "community.support.backOpenCollective",
+      "value": "OpenCollective पर समर्थन दें"
+    },
+    {
+      "key": "community.support.collabTitle",
+      "value": "कंपनी सहयोग"
+    },
+    {
+      "key": "community.support.collabBody",
+      "value": "कंपनियाँ रोडमैप आइटम प्रायोजित करती हैं या फ़ीचर्स को सह-वित्तपोषित करती हैं — नेटवर्किंग, अवतार सिस्टम, टूलिंग। काम अपस्ट्रीम पहुँचता है और डिफ़ॉल्ट रूप से MIT-लाइसेंस प्राप्त रहता है।"
+    },
+    {
+      "key": "community.support.sponsorFeature",
+      "value": "किसी फ़ीचर को प्रायोजित करें"
+    },
+    {
+      "key": "community.support.moneyTitle",
+      "value": "पैसा कहाँ जाता है"
+    },
+    {
+      "key": "community.support.moneyBody",
+      "value": "साझा समस्याओं — नेटवर्किंग, एम्बॉडिमेंट, टूलिंग — से निपटने के लिए फंड एकत्र किए जाते हैं, जिनसे सभी को लाभ होता है। OpenCollective पर एक सार्वजनिक बहीखाता है, और प्रायोजित काम का श्रेय रिलीज़ नोट्स में दिया जाता है। प्रायोजक प्रोजेक्ट को नियंत्रित नहीं करते।"
+    },
+    {
+      "key": "community.support.fundingPage",
+      "value": "पूरा फंडिंग पेज पढ़ें  ↗"
     }
   ]
 }

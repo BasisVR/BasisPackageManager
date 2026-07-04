@@ -1621,6 +1621,138 @@
     {
       "key": "dialog.versionPicker.title",
       "value": "Version wählen"
+    },
+    {
+      "key": "community.hero.tagline",
+      "value": "COMMUNITY"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Neuigkeiten, Doku & Support"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Was es bei Basis Neues gibt, wo du es lernst und wie du hilfst, es am Laufen zu halten."
+    },
+    {
+      "key": "community.button.openDocs",
+      "value": "Doku öffnen  ↗"
+    },
+    {
+      "key": "community.button.joinDiscord",
+      "value": "Dem Discord beitreten"
+    },
+    {
+      "key": "community.button.refresh",
+      "value": "Aktualisieren"
+    },
+    {
+      "key": "community.announcements.heading",
+      "value": "Ankündigungen"
+    },
+    {
+      "key": "community.announcements.loading",
+      "value": "Ankündigungen werden geladen…"
+    },
+    {
+      "key": "community.announcements.pinned",
+      "value": "ANGEHEFTET"
+    },
+    {
+      "key": "community.announcements.emptyTitle",
+      "value": "Noch keine Ankündigungen"
+    },
+    {
+      "key": "community.announcements.emptyBody",
+      "value": "Schau später wieder vorbei — Neuigkeiten vom Basis-Team erscheinen hier."
+    },
+    {
+      "key": "community.docs.heading",
+      "value": "Dokumentation"
+    },
+    {
+      "key": "community.docs.siteTitle",
+      "value": "Dokumentationsseite"
+    },
+    {
+      "key": "community.docs.siteBody",
+      "value": "Installation, erste Schritte, Avatare, Welten, Networking und das SDK — die vollständige Doku findest du unter docs.basisvr.org."
+    },
+    {
+      "key": "community.docs.openSite",
+      "value": "docs.basisvr.org öffnen  ↗"
+    },
+    {
+      "key": "community.docs.askTitle",
+      "value": "Die Community fragen"
+    },
+    {
+      "key": "community.docs.askBody",
+      "value": "Hängst du an etwas, das die Doku nicht abdeckt? Der Discord ist der schnellste Weg, um Hilfe von anderen Creators und den Maintainern zu bekommen."
+    },
+    {
+      "key": "community.docs.sourceTitle",
+      "value": "Quellcode & Issues"
+    },
+    {
+      "key": "community.docs.sourceBody",
+      "value": "Lies den Code, melde einen Fehler oder öffne einen Pull Request. Basis ist MIT-lizenziert und wird offen entwickelt."
+    },
+    {
+      "key": "community.docs.basisRepo",
+      "value": "Basis auf GitHub  ↗"
+    },
+    {
+      "key": "community.docs.pmRepo",
+      "value": "Package Manager auf GitHub  ↗"
+    },
+    {
+      "key": "community.support.heading",
+      "value": "Basis unterstützen"
+    },
+    {
+      "key": "community.support.intro",
+      "value": "Basis ist MIT-lizenziert und stellt Creator an erste Stelle. Community-Spenden und Unternehmenskooperationen ermöglichen einem Maintainer die Vollzeitarbeit und beschleunigen Releases."
+    },
+    {
+      "key": "community.support.openCollective",
+      "value": "♥   Über OpenCollective unterstützen"
+    },
+    {
+      "key": "community.support.donationsTitle",
+      "value": "Community-Spenden"
+    },
+    {
+      "key": "community.support.donationsBody",
+      "value": "Einzelpersonen unterstützen Basis auf OpenCollective — monatlich oder einmalig. Diese Mittel fließen vor allem in Vollzeit-Wartung und die Verbesserung der Entwicklererfahrung."
+    },
+    {
+      "key": "community.support.backOpenCollective",
+      "value": "Auf OpenCollective unterstützen"
+    },
+    {
+      "key": "community.support.collabTitle",
+      "value": "Unternehmenskooperationen"
+    },
+    {
+      "key": "community.support.collabBody",
+      "value": "Unternehmen sponsern Roadmap-Punkte oder finanzieren Features mit — Networking, Avatar-Systeme, Tools. Die Arbeit fließt in den Upstream und bleibt standardmäßig MIT-lizenziert."
+    },
+    {
+      "key": "community.support.sponsorFeature",
+      "value": "Ein Feature sponsern"
+    },
+    {
+      "key": "community.support.moneyTitle",
+      "value": "Wohin das Geld fließt"
+    },
+    {
+      "key": "community.support.moneyBody",
+      "value": "Die Mittel werden gebündelt, um gemeinsame Probleme — Networking, Embodiment, Tools — zu lösen, von denen alle profitieren. Auf OpenCollective gibt es ein öffentliches Hauptbuch, und gesponserte Arbeit wird in den Release Notes ausgewiesen. Sponsoren steuern das Projekt nicht."
+    },
+    {
+      "key": "community.support.fundingPage",
+      "value": "Vollständige Förderseite lesen  ↗"
     }
   ]
 }

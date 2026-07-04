@@ -1621,6 +1621,138 @@
     {
       "key": "dialog.versionPicker.title",
       "value": "バージョンを選択"
+    },
+    {
+      "key": "community.hero.tagline",
+      "value": "コミュニティ"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "ニュース、ドキュメント、支援"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Basis の最新情報、学べる場所、そして開発を支える方法。"
+    },
+    {
+      "key": "community.button.openDocs",
+      "value": "ドキュメントを開く  ↗"
+    },
+    {
+      "key": "community.button.joinDiscord",
+      "value": "Discord に参加"
+    },
+    {
+      "key": "community.button.refresh",
+      "value": "再読み込み"
+    },
+    {
+      "key": "community.announcements.heading",
+      "value": "お知らせ"
+    },
+    {
+      "key": "community.announcements.loading",
+      "value": "お知らせを読み込み中…"
+    },
+    {
+      "key": "community.announcements.pinned",
+      "value": "固定"
+    },
+    {
+      "key": "community.announcements.emptyTitle",
+      "value": "お知らせはまだありません"
+    },
+    {
+      "key": "community.announcements.emptyBody",
+      "value": "また後で確認してください — Basis チームからのお知らせがここに表示されます。"
+    },
+    {
+      "key": "community.docs.heading",
+      "value": "ドキュメント"
+    },
+    {
+      "key": "community.docs.siteTitle",
+      "value": "ドキュメントサイト"
+    },
+    {
+      "key": "community.docs.siteBody",
+      "value": "インストール、最初のステップ、アバター、ワールド、ネットワーキング、SDK — 完全なドキュメントは docs.basisvr.org にあります。"
+    },
+    {
+      "key": "community.docs.openSite",
+      "value": "docs.basisvr.org を開く  ↗"
+    },
+    {
+      "key": "community.docs.askTitle",
+      "value": "コミュニティに聞く"
+    },
+    {
+      "key": "community.docs.askBody",
+      "value": "ドキュメントに載っていないことで行き詰まっていますか？Discord が、他のクリエイターやメンテナーから助けを得る最も早い方法です。"
+    },
+    {
+      "key": "community.docs.sourceTitle",
+      "value": "ソースと issue"
+    },
+    {
+      "key": "community.docs.sourceBody",
+      "value": "コードを読み、バグを報告し、プルリクエストを開きましょう。Basis は MIT ライセンスで、オープンに開発されています。"
+    },
+    {
+      "key": "community.docs.basisRepo",
+      "value": "GitHub の Basis  ↗"
+    },
+    {
+      "key": "community.docs.pmRepo",
+      "value": "GitHub の Package Manager  ↗"
+    },
+    {
+      "key": "community.support.heading",
+      "value": "Basis を支援する"
+    },
+    {
+      "key": "community.support.intro",
+      "value": "Basis は MIT ライセンスで、クリエイターを第一に考えています。コミュニティからの寄付と企業とのコラボレーションが、メンテナーのフルタイム稼働を支え、リリースを加速します。"
+    },
+    {
+      "key": "community.support.openCollective",
+      "value": "♥   OpenCollective で支援する"
+    },
+    {
+      "key": "community.support.donationsTitle",
+      "value": "コミュニティからの寄付"
+    },
+    {
+      "key": "community.support.donationsBody",
+      "value": "個人の方は OpenCollective で Basis を支援できます — 毎月または一度きり。この資金は主にフルタイムのメンテナンスと開発者体験の向上に充てられます。"
+    },
+    {
+      "key": "community.support.backOpenCollective",
+      "value": "OpenCollective で支援する"
+    },
+    {
+      "key": "community.support.collabTitle",
+      "value": "企業とのコラボレーション"
+    },
+    {
+      "key": "community.support.collabBody",
+      "value": "企業はロードマップ項目のスポンサーや機能の共同出資が可能です — ネットワーキング、アバターシステム、ツール類など。成果はアップストリームに反映され、既定で MIT ライセンスのまま維持されます。"
+    },
+    {
+      "key": "community.support.sponsorFeature",
+      "value": "機能をスポンサーする"
+    },
+    {
+      "key": "community.support.moneyTitle",
+      "value": "資金の使い道"
+    },
+    {
+      "key": "community.support.moneyBody",
+      "value": "資金はプールされ、皆に役立つ共通の課題 — ネットワーキング、身体性、ツール — に取り組むために使われます。OpenCollective に公開会計があり、スポンサー付きの作業はリリースノートに明記されます。スポンサーがプロジェクトを支配することはありません。"
+    },
+    {
+      "key": "community.support.fundingPage",
+      "value": "資金支援ページ全文を読む  ↗"
     }
   ]
 }

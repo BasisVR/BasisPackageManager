@@ -20,19 +20,25 @@ public static class CrashReporter
 
     public static void Install()
     {
-        try
-        {
-            Directory.CreateDirectory(Dir);
-            _previousUnclean = File.Exists(MarkerFile);   // a leftover marker = last session didn't exit cleanly
-            File.WriteAllText(MarkerFile, DateTime.UtcNow.ToString("o"));
-        }
-        catch { }
+        try { _previousUnclean = File.Exists(MarkerFile); } catch { }   // a leftover marker = last session didn't exit cleanly
+        ArmSession();
 
         AppDomain.CurrentDomain.UnhandledException += (_, e) => Write(e.ExceptionObject as Exception, "AppDomain");
         TaskScheduler.UnobservedTaskException += (_, e) => { Write(e.Exception, "UnobservedTask"); e.SetObserved(); };
     }
 
-    /// <summary>Call on a clean shutdown so the next launch knows the session ended normally.</summary>
+    /// <summary>(Re)writes the session marker. Used at startup, and to re-arm after an intentional exit that was aborted.</summary>
+    public static void ArmSession()
+    {
+        try
+        {
+            Directory.CreateDirectory(Dir);
+            File.WriteAllText(MarkerFile, DateTime.UtcNow.ToString("o"));
+        }
+        catch { }
+    }
+
+    /// <summary>Clears the marker so the next launch knows the session ended normally (clean exit OR an update restart).</summary>
     public static void MarkCleanExit()
     {
         try { if (File.Exists(MarkerFile)) File.Delete(MarkerFile); } catch { }

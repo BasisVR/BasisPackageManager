@@ -1621,6 +1621,138 @@
     {
       "key": "dialog.versionPicker.title",
       "value": "选择一个版本"
+    },
+    {
+      "key": "community.hero.tagline",
+      "value": "社区"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "资讯、文档与支持"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Basis 的最新动态、在哪里学习它，以及如何帮助它持续发展。"
+    },
+    {
+      "key": "community.button.openDocs",
+      "value": "打开文档  ↗"
+    },
+    {
+      "key": "community.button.joinDiscord",
+      "value": "加入 Discord"
+    },
+    {
+      "key": "community.button.refresh",
+      "value": "刷新"
+    },
+    {
+      "key": "community.announcements.heading",
+      "value": "公告"
+    },
+    {
+      "key": "community.announcements.loading",
+      "value": "正在加载公告…"
+    },
+    {
+      "key": "community.announcements.pinned",
+      "value": "置顶"
+    },
+    {
+      "key": "community.announcements.emptyTitle",
+      "value": "还没有公告"
+    },
+    {
+      "key": "community.announcements.emptyBody",
+      "value": "请稍后再来 — 来自 Basis 团队的消息会显示在这里。"
+    },
+    {
+      "key": "community.docs.heading",
+      "value": "文档"
+    },
+    {
+      "key": "community.docs.siteTitle",
+      "value": "文档站点"
+    },
+    {
+      "key": "community.docs.siteBody",
+      "value": "安装、入门、虚拟形象、世界、网络和 SDK — 完整文档位于 docs.basisvr.org。"
+    },
+    {
+      "key": "community.docs.openSite",
+      "value": "打开 docs.basisvr.org  ↗"
+    },
+    {
+      "key": "community.docs.askTitle",
+      "value": "向社区提问"
+    },
+    {
+      "key": "community.docs.askBody",
+      "value": "遇到文档未涵盖的问题？Discord 是从其他创作者和维护者那里获得帮助的最快方式。"
+    },
+    {
+      "key": "community.docs.sourceTitle",
+      "value": "源码与 issue"
+    },
+    {
+      "key": "community.docs.sourceBody",
+      "value": "阅读代码、提交缺陷报告或发起拉取请求。Basis 采用 MIT 许可，并公开开发。"
+    },
+    {
+      "key": "community.docs.basisRepo",
+      "value": "GitHub 上的 Basis  ↗"
+    },
+    {
+      "key": "community.docs.pmRepo",
+      "value": "GitHub 上的软件包管理器  ↗"
+    },
+    {
+      "key": "community.support.heading",
+      "value": "支持 Basis"
+    },
+    {
+      "key": "community.support.intro",
+      "value": "Basis 采用 MIT 许可，以创作者为先。社区捐助和公司合作让维护者得以全职工作并加快版本发布。"
+    },
+    {
+      "key": "community.support.openCollective",
+      "value": "♥   通过 OpenCollective 支持"
+    },
+    {
+      "key": "community.support.donationsTitle",
+      "value": "社区捐助"
+    },
+    {
+      "key": "community.support.donationsBody",
+      "value": "个人在 OpenCollective 上支持 Basis — 按月或一次性。这些资金主要用于全职维护和开发者体验方面的工作。"
+    },
+    {
+      "key": "community.support.backOpenCollective",
+      "value": "在 OpenCollective 上支持"
+    },
+    {
+      "key": "community.support.collabTitle",
+      "value": "公司合作"
+    },
+    {
+      "key": "community.support.collabBody",
+      "value": "公司可赞助路线图项目或共同资助功能 — 网络、虚拟形象系统、工具。成果会合入上游，并默认保持 MIT 许可。"
+    },
+    {
+      "key": "community.support.sponsorFeature",
+      "value": "赞助一项功能"
+    },
+    {
+      "key": "community.support.moneyTitle",
+      "value": "资金去向"
+    },
+    {
+      "key": "community.support.moneyBody",
+      "value": "资金汇集起来用于解决惠及所有人的共同问题 — 网络、化身、工具。OpenCollective 上有公开账本，受赞助的工作会在发行说明中注明。赞助者不会控制项目。"
+    },
+    {
+      "key": "community.support.fundingPage",
+      "value": "阅读完整的资助页面  ↗"
     }
   ]
 }

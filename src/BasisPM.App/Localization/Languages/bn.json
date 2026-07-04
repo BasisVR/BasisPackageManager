@@ -1621,6 +1621,138 @@
     {
       "key": "dialog.versionPicker.title",
       "value": "একটি সংস্করণ বেছে নিন"
+    },
+    {
+      "key": "community.hero.tagline",
+      "value": "কমিউনিটি"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "খবর, ডকুমেন্টেশন ও সমর্থন"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Basis-এ নতুন কী আছে, কোথায় এটি শিখবেন, এবং কীভাবে এটিকে সচল রাখতে সাহায্য করবেন।"
+    },
+    {
+      "key": "community.button.openDocs",
+      "value": "ডকুমেন্টেশন খুলুন  ↗"
+    },
+    {
+      "key": "community.button.joinDiscord",
+      "value": "Discord-এ যোগ দিন"
+    },
+    {
+      "key": "community.button.refresh",
+      "value": "রিফ্রেশ"
+    },
+    {
+      "key": "community.announcements.heading",
+      "value": "ঘোষণা"
+    },
+    {
+      "key": "community.announcements.loading",
+      "value": "ঘোষণা লোড হচ্ছে…"
+    },
+    {
+      "key": "community.announcements.pinned",
+      "value": "পিন করা"
+    },
+    {
+      "key": "community.announcements.emptyTitle",
+      "value": "এখনও কোনো ঘোষণা নেই"
+    },
+    {
+      "key": "community.announcements.emptyBody",
+      "value": "পরে আবার দেখুন — Basis দলের খবর এখানে প্রদর্শিত হবে।"
+    },
+    {
+      "key": "community.docs.heading",
+      "value": "ডকুমেন্টেশন"
+    },
+    {
+      "key": "community.docs.siteTitle",
+      "value": "ডকুমেন্টেশন সাইট"
+    },
+    {
+      "key": "community.docs.siteBody",
+      "value": "ইনস্টলেশন, প্রথম ধাপ, অবতার, ওয়ার্ল্ড, নেটওয়ার্কিং এবং SDK — সম্পূর্ণ ডকুমেন্টেশন docs.basisvr.org-এ রয়েছে।"
+    },
+    {
+      "key": "community.docs.openSite",
+      "value": "docs.basisvr.org খুলুন  ↗"
+    },
+    {
+      "key": "community.docs.askTitle",
+      "value": "কমিউনিটিকে জিজ্ঞাসা করুন"
+    },
+    {
+      "key": "community.docs.askBody",
+      "value": "ডকুমেন্টেশনে নেই এমন কিছুতে আটকে গেছেন? অন্য নির্মাতা এবং রক্ষণাবেক্ষণকারীদের কাছ থেকে সাহায্য পাওয়ার দ্রুততম উপায় হলো Discord।"
+    },
+    {
+      "key": "community.docs.sourceTitle",
+      "value": "সোর্স ও ইস্যু"
+    },
+    {
+      "key": "community.docs.sourceBody",
+      "value": "কোড পড়ুন, একটি বাগ ফাইল করুন বা একটি পুল রিকোয়েস্ট খুলুন। Basis MIT-লাইসেন্সকৃত এবং উন্মুক্তভাবে উন্নত।"
+    },
+    {
+      "key": "community.docs.basisRepo",
+      "value": "GitHub-এ Basis  ↗"
+    },
+    {
+      "key": "community.docs.pmRepo",
+      "value": "GitHub-এ Package Manager  ↗"
+    },
+    {
+      "key": "community.support.heading",
+      "value": "Basis-কে সমর্থন করুন"
+    },
+    {
+      "key": "community.support.intro",
+      "value": "Basis MIT-লাইসেন্সকৃত এবং নির্মাতা-কেন্দ্রিক। কমিউনিটি অনুদান এবং কোম্পানি সহযোগিতা একজন রক্ষণাবেক্ষণকারীকে পূর্ণকালীন কাজে রাখে এবং রিলিজ ত্বরান্বিত করে।"
+    },
+    {
+      "key": "community.support.openCollective",
+      "value": "♥   OpenCollective-এর মাধ্যমে সমর্থন করুন"
+    },
+    {
+      "key": "community.support.donationsTitle",
+      "value": "কমিউনিটি অনুদান"
+    },
+    {
+      "key": "community.support.donationsBody",
+      "value": "ব্যক্তিরা OpenCollective-এ Basis-কে সমর্থন করেন — মাসিক বা এককালীন। এই তহবিল প্রাথমিকভাবে পূর্ণকালীন রক্ষণাবেক্ষণ এবং ডেভেলপার-অভিজ্ঞতার কাজে সহায়তা করে।"
+    },
+    {
+      "key": "community.support.backOpenCollective",
+      "value": "OpenCollective-এ সমর্থন করুন"
+    },
+    {
+      "key": "community.support.collabTitle",
+      "value": "কোম্পানি সহযোগিতা"
+    },
+    {
+      "key": "community.support.collabBody",
+      "value": "কোম্পানিগুলি রোডম্যাপ আইটেম স্পনসর করে বা ফিচার সহ-অর্থায়ন করে — নেটওয়ার্কিং, অবতার সিস্টেম, টুলিং। কাজ আপস্ট্রিমে যুক্ত হয় এবং ডিফল্টভাবে MIT-লাইসেন্সকৃত থাকে।"
+    },
+    {
+      "key": "community.support.sponsorFeature",
+      "value": "একটি ফিচার স্পনসর করুন"
+    },
+    {
+      "key": "community.support.moneyTitle",
+      "value": "অর্থ কোথায় যায়"
+    },
+    {
+      "key": "community.support.moneyBody",
+      "value": "সবার উপকারে আসে এমন ভাগ করা সমস্যা — নেটওয়ার্কিং, এমবডিমেন্ট, টুলিং — সমাধানে তহবিল একত্র করা হয়। OpenCollective-এ একটি সর্বজনীন হিসাবখাতা আছে, এবং স্পনসরকৃত কাজ রিলিজ নোটে কৃতিত্ব দেওয়া হয়। স্পনসররা প্রকল্প নিয়ন্ত্রণ করে না।"
+    },
+    {
+      "key": "community.support.fundingPage",
+      "value": "সম্পূর্ণ ফান্ডিং পৃষ্ঠা পড়ুন  ↗"
     }
   ]
 }

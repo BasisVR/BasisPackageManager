@@ -1621,6 +1621,138 @@
     {
       "key": "dialog.versionPicker.title",
       "value": "Kies een versie"
+    },
+    {
+      "key": "community.hero.tagline",
+      "value": "COMMUNITY"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Nieuws, documentatie en steun"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Wat er nieuw is bij Basis, waar je het leert en hoe je helpt het draaiende te houden."
+    },
+    {
+      "key": "community.button.openDocs",
+      "value": "Open de documentatie  ↗"
+    },
+    {
+      "key": "community.button.joinDiscord",
+      "value": "Word lid van de Discord"
+    },
+    {
+      "key": "community.button.refresh",
+      "value": "Vernieuwen"
+    },
+    {
+      "key": "community.announcements.heading",
+      "value": "Aankondigingen"
+    },
+    {
+      "key": "community.announcements.loading",
+      "value": "Aankondigingen laden…"
+    },
+    {
+      "key": "community.announcements.pinned",
+      "value": "VASTGEZET"
+    },
+    {
+      "key": "community.announcements.emptyTitle",
+      "value": "Nog geen aankondigingen"
+    },
+    {
+      "key": "community.announcements.emptyBody",
+      "value": "Kom later terug — nieuws van het Basis-team verschijnt hier."
+    },
+    {
+      "key": "community.docs.heading",
+      "value": "Documentatie"
+    },
+    {
+      "key": "community.docs.siteTitle",
+      "value": "Documentatiesite"
+    },
+    {
+      "key": "community.docs.siteBody",
+      "value": "Installatie, eerste stappen, avatars, werelden, netwerken en de SDK — de volledige documentatie staat op docs.basisvr.org."
+    },
+    {
+      "key": "community.docs.openSite",
+      "value": "Open docs.basisvr.org  ↗"
+    },
+    {
+      "key": "community.docs.askTitle",
+      "value": "Vraag het de community"
+    },
+    {
+      "key": "community.docs.askBody",
+      "value": "Loop je vast op iets wat de documentatie niet behandelt? De Discord is de snelste manier om hulp te krijgen van andere makers en de beheerders."
+    },
+    {
+      "key": "community.docs.sourceTitle",
+      "value": "Broncode en issues"
+    },
+    {
+      "key": "community.docs.sourceBody",
+      "value": "Lees de code, meld een bug of open een pull request. Basis is MIT-gelicentieerd en wordt in de openbaarheid ontwikkeld."
+    },
+    {
+      "key": "community.docs.basisRepo",
+      "value": "Basis op GitHub  ↗"
+    },
+    {
+      "key": "community.docs.pmRepo",
+      "value": "Package Manager op GitHub  ↗"
+    },
+    {
+      "key": "community.support.heading",
+      "value": "Basis steunen"
+    },
+    {
+      "key": "community.support.intro",
+      "value": "Basis is MIT-gelicentieerd en zet makers voorop. Community-donaties en samenwerkingen met bedrijven houden een beheerder fulltime aan het werk en versnellen releases."
+    },
+    {
+      "key": "community.support.openCollective",
+      "value": "♥   Steun via OpenCollective"
+    },
+    {
+      "key": "community.support.donationsTitle",
+      "value": "Community-donaties"
+    },
+    {
+      "key": "community.support.donationsBody",
+      "value": "Individuen steunen Basis op OpenCollective — maandelijks of eenmalig. Deze middelen ondersteunen vooral fulltime onderhoud en werk aan de ontwikkelaarservaring."
+    },
+    {
+      "key": "community.support.backOpenCollective",
+      "value": "Steun op OpenCollective"
+    },
+    {
+      "key": "community.support.collabTitle",
+      "value": "Samenwerkingen met bedrijven"
+    },
+    {
+      "key": "community.support.collabBody",
+      "value": "Bedrijven sponsoren roadmap-items of cofinancieren functies — netwerken, avatarsystemen, tooling. Het werk komt upstream terecht en blijft standaard MIT-gelicentieerd."
+    },
+    {
+      "key": "community.support.sponsorFeature",
+      "value": "Sponsor een functie"
+    },
+    {
+      "key": "community.support.moneyTitle",
+      "value": "Waar het geld naartoe gaat"
+    },
+    {
+      "key": "community.support.moneyBody",
+      "value": "Middelen worden samengevoegd om gedeelde problemen aan te pakken — netwerken, embodiment, tooling — waar iedereen baat bij heeft. Er is een openbaar grootboek op OpenCollective, en gesponsord werk wordt vermeld in de release-opmerkingen. Sponsors hebben geen zeggenschap over het project."
+    },
+    {
+      "key": "community.support.fundingPage",
+      "value": "Lees de volledige financieringspagina  ↗"
     }
   ]
 }

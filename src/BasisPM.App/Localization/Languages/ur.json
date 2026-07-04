@@ -1621,6 +1621,138 @@
     {
       "key": "dialog.versionPicker.title",
       "value": "ایک ورژن منتخب کریں"
+    },
+    {
+      "key": "community.hero.tagline",
+      "value": "کمیونٹی"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "خبریں، دستاویزات اور تعاون"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Basis میں کیا نیا ہے، اسے کہاں سیکھیں، اور اسے جاری رکھنے میں کیسے مدد کریں۔"
+    },
+    {
+      "key": "community.button.openDocs",
+      "value": "دستاویزات کھولیں  ↗"
+    },
+    {
+      "key": "community.button.joinDiscord",
+      "value": "Discord میں شامل ہوں"
+    },
+    {
+      "key": "community.button.refresh",
+      "value": "تازہ کریں"
+    },
+    {
+      "key": "community.announcements.heading",
+      "value": "اعلانات"
+    },
+    {
+      "key": "community.announcements.loading",
+      "value": "اعلانات لوڈ ہو رہے ہیں…"
+    },
+    {
+      "key": "community.announcements.pinned",
+      "value": "پن شدہ"
+    },
+    {
+      "key": "community.announcements.emptyTitle",
+      "value": "ابھی تک کوئی اعلانات نہیں"
+    },
+    {
+      "key": "community.announcements.emptyBody",
+      "value": "بعد میں دوبارہ دیکھیں — Basis ٹیم کی خبریں یہاں ظاہر ہوں گی۔"
+    },
+    {
+      "key": "community.docs.heading",
+      "value": "دستاویزات"
+    },
+    {
+      "key": "community.docs.siteTitle",
+      "value": "دستاویزات سائٹ"
+    },
+    {
+      "key": "community.docs.siteBody",
+      "value": "انسٹالیشن، پہلے اقدامات، اوتار، دنیائیں، نیٹ ورکنگ اور SDK — مکمل دستاویزات docs.basisvr.org پر موجود ہیں۔"
+    },
+    {
+      "key": "community.docs.openSite",
+      "value": "docs.basisvr.org کھولیں  ↗"
+    },
+    {
+      "key": "community.docs.askTitle",
+      "value": "کمیونٹی سے پوچھیں"
+    },
+    {
+      "key": "community.docs.askBody",
+      "value": "کسی ایسی چیز پر اٹکے ہیں جو دستاویزات میں شامل نہیں؟ Discord دیگر تخلیق کاروں اور مینٹینرز سے مدد حاصل کرنے کا تیز ترین طریقہ ہے۔"
+    },
+    {
+      "key": "community.docs.sourceTitle",
+      "value": "سورس اور مسائل"
+    },
+    {
+      "key": "community.docs.sourceBody",
+      "value": "کوڈ پڑھیں، کوئی bug درج کریں یا ایک pull request کھولیں۔ Basis MIT لائسنس یافتہ ہے اور کھلے عام تیار کیا جاتا ہے۔"
+    },
+    {
+      "key": "community.docs.basisRepo",
+      "value": "GitHub پر Basis  ↗"
+    },
+    {
+      "key": "community.docs.pmRepo",
+      "value": "GitHub پر Package Manager  ↗"
+    },
+    {
+      "key": "community.support.heading",
+      "value": "Basis کی مدد کریں"
+    },
+    {
+      "key": "community.support.intro",
+      "value": "Basis MIT لائسنس یافتہ اور تخلیق کار کو ترجیح دینے والا ہے۔ کمیونٹی عطیات اور کمپنی اشتراک ایک مینٹینر کو کل وقتی کام پر رکھتے ہیں اور ریلیزز کو تیز کرتے ہیں۔"
+    },
+    {
+      "key": "community.support.openCollective",
+      "value": "♥   OpenCollective کے ذریعے تعاون کریں"
+    },
+    {
+      "key": "community.support.donationsTitle",
+      "value": "کمیونٹی عطیات"
+    },
+    {
+      "key": "community.support.donationsBody",
+      "value": "افراد OpenCollective پر Basis کی مدد کرتے ہیں — ماہانہ یا یک بار۔ یہ فنڈز بنیادی طور پر کل وقتی دیکھ بھال اور ڈویلپر تجربے کے کام میں مدد دیتے ہیں۔"
+    },
+    {
+      "key": "community.support.backOpenCollective",
+      "value": "OpenCollective پر تعاون کریں"
+    },
+    {
+      "key": "community.support.collabTitle",
+      "value": "کمپنی اشتراک"
+    },
+    {
+      "key": "community.support.collabBody",
+      "value": "کمپنیاں روڈ میپ آئٹمز کی اسپانسرشپ کرتی ہیں یا فیچرز کی مشترکہ فنڈنگ کرتی ہیں — نیٹ ورکنگ، اوتار سسٹمز، ٹولنگ۔ کام اپ اسٹریم پہنچتا ہے اور بطور ڈیفالٹ MIT لائسنس یافتہ رہتا ہے۔"
+    },
+    {
+      "key": "community.support.sponsorFeature",
+      "value": "کسی فیچر کی اسپانسرشپ کریں"
+    },
+    {
+      "key": "community.support.moneyTitle",
+      "value": "پیسہ کہاں جاتا ہے"
+    },
+    {
+      "key": "community.support.moneyBody",
+      "value": "فنڈز کو مشترکہ مسائل حل کرنے کے لیے یکجا کیا جاتا ہے — نیٹ ورکنگ، ایمبڈیمنٹ، ٹولنگ — جن سے سب کو فائدہ ہوتا ہے۔ OpenCollective پر ایک عوامی کھاتہ موجود ہے، اور اسپانسر شدہ کام کو ریلیز نوٹس میں منسوب کیا جاتا ہے۔ اسپانسرز پروجیکٹ کو کنٹرول نہیں کرتے۔"
+    },
+    {
+      "key": "community.support.fundingPage",
+      "value": "مکمل فنڈنگ صفحہ پڑھیں  ↗"
     }
   ]
 }

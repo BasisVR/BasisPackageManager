@@ -1621,6 +1621,138 @@
     {
       "key": "dialog.versionPicker.title",
       "value": "Выберите версию"
+    },
+    {
+      "key": "community.hero.tagline",
+      "value": "СООБЩЕСТВО"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Новости, документация и поддержка"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Что нового в Basis, где его освоить и как помочь ему развиваться."
+    },
+    {
+      "key": "community.button.openDocs",
+      "value": "Открыть документацию  ↗"
+    },
+    {
+      "key": "community.button.joinDiscord",
+      "value": "Присоединиться к Discord"
+    },
+    {
+      "key": "community.button.refresh",
+      "value": "Обновить"
+    },
+    {
+      "key": "community.announcements.heading",
+      "value": "Объявления"
+    },
+    {
+      "key": "community.announcements.loading",
+      "value": "Загрузка объявлений…"
+    },
+    {
+      "key": "community.announcements.pinned",
+      "value": "ЗАКРЕПЛЕНО"
+    },
+    {
+      "key": "community.announcements.emptyTitle",
+      "value": "Пока нет объявлений"
+    },
+    {
+      "key": "community.announcements.emptyBody",
+      "value": "Загляните позже — новости от команды Basis появятся здесь."
+    },
+    {
+      "key": "community.docs.heading",
+      "value": "Документация"
+    },
+    {
+      "key": "community.docs.siteTitle",
+      "value": "Сайт документации"
+    },
+    {
+      "key": "community.docs.siteBody",
+      "value": "Установка, первые шаги, аватары, миры, сеть и SDK — полная документация на docs.basisvr.org."
+    },
+    {
+      "key": "community.docs.openSite",
+      "value": "Открыть docs.basisvr.org  ↗"
+    },
+    {
+      "key": "community.docs.askTitle",
+      "value": "Спросить сообщество"
+    },
+    {
+      "key": "community.docs.askBody",
+      "value": "Столкнулись с тем, чего нет в документации? Discord — самый быстрый способ получить помощь от других авторов и сопровождающих."
+    },
+    {
+      "key": "community.docs.sourceTitle",
+      "value": "Исходный код и обращения"
+    },
+    {
+      "key": "community.docs.sourceBody",
+      "value": "Читайте код, сообщайте об ошибках или открывайте pull request. Basis распространяется под лицензией MIT и разрабатывается открыто."
+    },
+    {
+      "key": "community.docs.basisRepo",
+      "value": "Basis на GitHub  ↗"
+    },
+    {
+      "key": "community.docs.pmRepo",
+      "value": "Менеджер пакетов на GitHub  ↗"
+    },
+    {
+      "key": "community.support.heading",
+      "value": "Поддержать Basis"
+    },
+    {
+      "key": "community.support.intro",
+      "value": "Basis распространяется под лицензией MIT и ставит авторов на первое место. Пожертвования сообщества и сотрудничество с компаниями позволяют сопровождающему работать полный день и ускоряют выпуск релизов."
+    },
+    {
+      "key": "community.support.openCollective",
+      "value": "♥   Поддержать через OpenCollective"
+    },
+    {
+      "key": "community.support.donationsTitle",
+      "value": "Пожертвования сообщества"
+    },
+    {
+      "key": "community.support.donationsBody",
+      "value": "Люди поддерживают Basis на OpenCollective — ежемесячно или разово. Эти средства в первую очередь идут на постоянное сопровождение и улучшение опыта разработчиков."
+    },
+    {
+      "key": "community.support.backOpenCollective",
+      "value": "Поддержать на OpenCollective"
+    },
+    {
+      "key": "community.support.collabTitle",
+      "value": "Сотрудничество с компаниями"
+    },
+    {
+      "key": "community.support.collabBody",
+      "value": "Компании спонсируют пункты дорожной карты или совместно финансируют функции — сетевые технологии, системы аватаров, инструменты. Результаты попадают в основной репозиторий и по умолчанию остаются под лицензией MIT."
+    },
+    {
+      "key": "community.support.sponsorFeature",
+      "value": "Спонсировать функцию"
+    },
+    {
+      "key": "community.support.moneyTitle",
+      "value": "Куда идут деньги"
+    },
+    {
+      "key": "community.support.moneyBody",
+      "value": "Средства объединяются для решения общих задач — сетевые технологии, воплощение, инструменты — которые полезны всем. На OpenCollective есть публичная бухгалтерия, а спонсируемая работа отмечается в примечаниях к релизам. Спонсоры не управляют проектом."
+    },
+    {
+      "key": "community.support.fundingPage",
+      "value": "Читать полную страницу финансирования  ↗"
     }
   ]
 }

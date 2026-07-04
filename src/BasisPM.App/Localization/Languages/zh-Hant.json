@@ -1621,6 +1621,138 @@
     {
       "key": "dialog.versionPicker.title",
       "value": "選擇版本"
+    },
+    {
+      "key": "community.hero.tagline",
+      "value": "社群"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "資訊、文件與支持"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Basis 的最新動態、在哪裡學習它，以及如何幫助它持續發展。"
+    },
+    {
+      "key": "community.button.openDocs",
+      "value": "開啟文件  ↗"
+    },
+    {
+      "key": "community.button.joinDiscord",
+      "value": "加入 Discord"
+    },
+    {
+      "key": "community.button.refresh",
+      "value": "重新整理"
+    },
+    {
+      "key": "community.announcements.heading",
+      "value": "公告"
+    },
+    {
+      "key": "community.announcements.loading",
+      "value": "正在載入公告…"
+    },
+    {
+      "key": "community.announcements.pinned",
+      "value": "已釘選"
+    },
+    {
+      "key": "community.announcements.emptyTitle",
+      "value": "尚無公告"
+    },
+    {
+      "key": "community.announcements.emptyBody",
+      "value": "請稍後再來查看 — Basis 團隊的消息會顯示在這裡。"
+    },
+    {
+      "key": "community.docs.heading",
+      "value": "文件"
+    },
+    {
+      "key": "community.docs.siteTitle",
+      "value": "文件網站"
+    },
+    {
+      "key": "community.docs.siteBody",
+      "value": "安裝、入門、虛擬形象、世界、網路與 SDK — 完整文件位於 docs.basisvr.org。"
+    },
+    {
+      "key": "community.docs.openSite",
+      "value": "開啟 docs.basisvr.org  ↗"
+    },
+    {
+      "key": "community.docs.askTitle",
+      "value": "詢問社群"
+    },
+    {
+      "key": "community.docs.askBody",
+      "value": "遇到文件未涵蓋的問題？Discord 是向其他創作者與維護者求助最快的方式。"
+    },
+    {
+      "key": "community.docs.sourceTitle",
+      "value": "原始碼與 issue"
+    },
+    {
+      "key": "community.docs.sourceBody",
+      "value": "閱讀程式碼、回報錯誤或開啟 pull request。Basis 採用 MIT 授權，並以開放方式開發。"
+    },
+    {
+      "key": "community.docs.basisRepo",
+      "value": "GitHub 上的 Basis  ↗"
+    },
+    {
+      "key": "community.docs.pmRepo",
+      "value": "GitHub 上的套件管理器  ↗"
+    },
+    {
+      "key": "community.support.heading",
+      "value": "支持 Basis"
+    },
+    {
+      "key": "community.support.intro",
+      "value": "Basis 採用 MIT 授權且以創作者為先。社群捐款與企業合作讓維護者得以全職投入，並加速版本發布。"
+    },
+    {
+      "key": "community.support.openCollective",
+      "value": "♥   透過 OpenCollective 支持"
+    },
+    {
+      "key": "community.support.donationsTitle",
+      "value": "社群捐款"
+    },
+    {
+      "key": "community.support.donationsBody",
+      "value": "個人在 OpenCollective 上支持 Basis — 可按月或一次性。這些資金主要用於支持全職維護與開發者體驗的工作。"
+    },
+    {
+      "key": "community.support.backOpenCollective",
+      "value": "在 OpenCollective 上支持"
+    },
+    {
+      "key": "community.support.collabTitle",
+      "value": "企業合作"
+    },
+    {
+      "key": "community.support.collabBody",
+      "value": "企業贊助路線圖項目或共同資助功能 — 網路、虛擬形象系統、工具。相關工作會併入上游，並預設維持 MIT 授權。"
+    },
+    {
+      "key": "community.support.sponsorFeature",
+      "value": "贊助一項功能"
+    },
+    {
+      "key": "community.support.moneyTitle",
+      "value": "資金的去向"
+    },
+    {
+      "key": "community.support.moneyBody",
+      "value": "資金會集中運用，以解決惠及所有人的共通問題 — 網路、體現、工具。OpenCollective 上有公開的帳本，受贊助的工作也會在發行說明中標註。贊助者並不掌控此專案。"
+    },
+    {
+      "key": "community.support.fundingPage",
+      "value": "閱讀完整募資頁面  ↗"
     }
   ]
 }

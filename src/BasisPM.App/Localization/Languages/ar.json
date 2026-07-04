@@ -1621,6 +1621,138 @@
     {
       "key": "dialog.versionPicker.title",
       "value": "اختيار إصدار"
+    },
+    {
+      "key": "community.hero.tagline",
+      "value": "المجتمع"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "الأخبار والوثائق والدعم"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "ما الجديد في Basis، وأين تتعلّمه، وكيف تساعد في استمراره."
+    },
+    {
+      "key": "community.button.openDocs",
+      "value": "افتح الوثائق  ↗"
+    },
+    {
+      "key": "community.button.joinDiscord",
+      "value": "انضم إلى Discord"
+    },
+    {
+      "key": "community.button.refresh",
+      "value": "تحديث"
+    },
+    {
+      "key": "community.announcements.heading",
+      "value": "الإعلانات"
+    },
+    {
+      "key": "community.announcements.loading",
+      "value": "جارٍ تحميل الإعلانات…"
+    },
+    {
+      "key": "community.announcements.pinned",
+      "value": "مثبّت"
+    },
+    {
+      "key": "community.announcements.emptyTitle",
+      "value": "لا توجد إعلانات بعد"
+    },
+    {
+      "key": "community.announcements.emptyBody",
+      "value": "عُد لاحقًا — ستظهر هنا أخبار فريق Basis."
+    },
+    {
+      "key": "community.docs.heading",
+      "value": "الوثائق"
+    },
+    {
+      "key": "community.docs.siteTitle",
+      "value": "موقع الوثائق"
+    },
+    {
+      "key": "community.docs.siteBody",
+      "value": "التثبيت والخطوات الأولى والأفاتار والعوالم والشبكات وSDK — تتوفّر الوثائق الكاملة على docs.basisvr.org."
+    },
+    {
+      "key": "community.docs.openSite",
+      "value": "افتح docs.basisvr.org  ↗"
+    },
+    {
+      "key": "community.docs.askTitle",
+      "value": "اسأل المجتمع"
+    },
+    {
+      "key": "community.docs.askBody",
+      "value": "هل واجهت مشكلة لا تغطّيها الوثائق؟ Discord هو أسرع وسيلة للحصول على المساعدة من صانعي المحتوى الآخرين والمشرفين."
+    },
+    {
+      "key": "community.docs.sourceTitle",
+      "value": "المصدر والمشكلات"
+    },
+    {
+      "key": "community.docs.sourceBody",
+      "value": "اقرأ الشيفرة، أو أبلِغ عن خطأ، أو افتح طلب سحب. Basis مرخّص بموجب MIT ويُطوَّر بشكل مفتوح."
+    },
+    {
+      "key": "community.docs.basisRepo",
+      "value": "Basis على GitHub  ↗"
+    },
+    {
+      "key": "community.docs.pmRepo",
+      "value": "مدير الحزم على GitHub  ↗"
+    },
+    {
+      "key": "community.support.heading",
+      "value": "ادعم Basis"
+    },
+    {
+      "key": "community.support.intro",
+      "value": "Basis مرخّص بموجب MIT ويضع صانعي المحتوى أولًا. تُبقي تبرّعات المجتمع وتعاونات الشركات مشرفًا يعمل بدوام كامل وتسرّع الإصدارات."
+    },
+    {
+      "key": "community.support.openCollective",
+      "value": "♥   ادعم عبر OpenCollective"
+    },
+    {
+      "key": "community.support.donationsTitle",
+      "value": "تبرّعات المجتمع"
+    },
+    {
+      "key": "community.support.donationsBody",
+      "value": "يدعم الأفراد Basis عبر OpenCollective — بشكل شهري أو لمرة واحدة. تدعم هذه الأموال بالدرجة الأولى الصيانة بدوام كامل وأعمال تحسين تجربة المطوّر."
+    },
+    {
+      "key": "community.support.backOpenCollective",
+      "value": "ادعم عبر OpenCollective"
+    },
+    {
+      "key": "community.support.collabTitle",
+      "value": "تعاونات الشركات"
+    },
+    {
+      "key": "community.support.collabBody",
+      "value": "ترعى الشركات عناصر خارطة الطريق أو تشارك في تمويل الميزات — الشبكات وأنظمة الأفاتار والأدوات. يُدمَج العمل في المصدر ويبقى مرخّصًا بموجب MIT افتراضيًا."
+    },
+    {
+      "key": "community.support.sponsorFeature",
+      "value": "ارعَ ميزة"
+    },
+    {
+      "key": "community.support.moneyTitle",
+      "value": "أين تُصرف الأموال"
+    },
+    {
+      "key": "community.support.moneyBody",
+      "value": "تُجمَّع الأموال لمعالجة المشكلات المشتركة — الشبكات والتجسيد والأدوات — التي تفيد الجميع. يوجد سجلّ علني على OpenCollective، ويُنسب العمل المموَّل في ملاحظات الإصدار. الرعاة لا يتحكمون في المشروع."
+    },
+    {
+      "key": "community.support.fundingPage",
+      "value": "اقرأ صفحة التمويل الكاملة  ↗"
     }
   ]
 }
