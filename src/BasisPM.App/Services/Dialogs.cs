@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using BasisPM.App.Views;
 using BasisPM.Core.Models;
+using BasisPM.Core.Services;
 
 namespace BasisPM.App.Services;
 
@@ -41,5 +42,23 @@ public static class Dialogs
         var owner = Owner;
         if (owner is null) return null;
         return await new CreateBundleWindow(suggestedName, basisLine, candidates).ShowDialog<BundleDraft?>(owner);
+    }
+
+    /// <summary>Collects pull-request details for a mounted package; returns the request, or null if cancelled.</summary>
+    public static async Task<PrRequest?> SubmitPrAsync(string packageId)
+    {
+        var owner = Owner;
+        if (owner is null) return null;
+        var id = string.IsNullOrWhiteSpace(packageId) ? "package" : packageId;
+        var slug = new string(id.Select(c => char.IsLetterOrDigit(c) ? char.ToLowerInvariant(c) : '-').ToArray()).Trim('-');
+        return await new SubmitPrWindow(id, $"basis-edit-{slug}").ShowDialog<PrRequest?>(owner);
+    }
+
+    /// <summary>The first-run role wizard; true = developer (reveals the Develop tab).</summary>
+    public static async Task<bool> ChooseRoleAsync()
+    {
+        var owner = Owner;
+        if (owner is null) return false;
+        return await new RoleWizardWindow().ShowDialog<bool>(owner);
     }
 }

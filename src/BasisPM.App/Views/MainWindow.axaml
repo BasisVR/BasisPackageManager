@@ -68,6 +68,7 @@
                 <StackPanel Grid.Row="1" Spacing="0" Margin="10,0">
                     <Button Classes="nav" Classes.active="{Binding IsInstalls}" Tag="installs" Click="OnNavClick">Installs</Button>
                     <Button Classes="nav" Classes.active="{Binding IsPackages}" Tag="packages" Click="OnNavClick">Packages</Button>
+                    <Button Classes="nav" Classes.active="{Binding IsDevelop}" Tag="develop" Click="OnNavClick" IsVisible="{Binding ShowDevelopTab}">Develop</Button>
                     <Button Classes="nav" Classes.active="{Binding IsChanges}" Tag="changes" Click="OnNavClick" IsVisible="{Binding ShowChangesTab}">Local Changes</Button>
                     <Button Classes="nav" Classes.active="{Binding IsUnity}" Tag="unity" Click="OnNavClick">Unity Editors</Button>
                     <Button Classes="nav" Classes.active="{Binding IsSettings}" Tag="settings" Click="OnNavClick">Settings</Button>

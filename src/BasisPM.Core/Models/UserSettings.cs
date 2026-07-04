@@ -24,6 +24,14 @@ public sealed class UserSettings
     [JsonPropertyName("showLocalChanges")]
     public bool ShowLocalChanges { get; set; }
 
+    // Developer mode reveals the Develop tab (mount / edit / submit-PR). Set by the first-run role wizard.
+    [JsonPropertyName("developerMode")]
+    public bool DeveloperMode { get; set; }
+
+    // Whether the first-run role wizard has run (so we only ask once).
+    [JsonPropertyName("completedOnboarding")]
+    public bool CompletedOnboarding { get; set; }
+
     // Whether we've already offered a desktop shortcut on first run (so we only ask once).
     [JsonPropertyName("askedDesktopShortcut")]
     public bool AskedDesktopShortcut { get; set; }

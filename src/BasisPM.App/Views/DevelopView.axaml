@@ -1,0 +1,131 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             x:Class="BasisPM.App.Views.DevelopView"
+             x:DataType="vm:DevelopViewModel"
+             Name="Root">
+
+    <ScrollViewer>
+        <StackPanel Margin="40,32" Spacing="20">
+
+            <Border CornerRadius="14" Padding="32,28" Background="{StaticResource BasisHeroGradient}"
+                    BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                    <StackPanel Grid.Column="0" Spacing="6">
+                        <TextBlock Text="DEVELOP" Classes="tagline"/>
+                        <TextBlock Text="{Binding InstallName}" Classes="h1"/>
+                        <TextBlock Text="Mount a git package to edit it in Unity, then open a pull request upstream — swap back or keep it when you're done."
+                                   Classes="muted" FontSize="14" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Refresh" Command="{Binding RefreshCommand}" VerticalAlignment="Top"/>
+                </Grid>
+            </Border>
+
+            <Border Classes="card" IsVisible="{Binding !HasInstall}">
+                <StackPanel Spacing="10" HorizontalAlignment="Center" Margin="0,50">
+                    <TextBlock Text="No install with a Unity project" Classes="h3" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Select a Basis install on the Installs tab to edit its packages."
+                               Classes="muted" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <StackPanel Spacing="20" IsVisible="{Binding HasInstall}">
+
+                <!-- Preflight: Git -->
+                <Border Classes="card" Padding="20,16" IsVisible="{Binding GitMissing}">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Git is required" Classes="h3"/>
+                        <TextBlock Text="Mounting a package and submitting pull requests need Git. Install it, then Re-check."
+                                   Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Button Classes="primary" Content="Install Git" Command="{Binding InstallGitCommand}"/>
+                            <Button Content="Re-check" Command="{Binding RecheckCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Preflight: GitHub sign-in -->
+                <Border Classes="card" Padding="20,16">
+                    <StackPanel Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0" Text="{Binding AuthLabel}" Classes="muted" FontSize="12"
+                                       VerticalAlignment="Center" TextWrapping="Wrap"/>
+                            <Button Grid.Column="1" Content="Re-check" Command="{Binding RecheckCommand}" VerticalAlignment="Top"/>
+                        </Grid>
+                        <StackPanel Spacing="6" IsVisible="{Binding ShowPatEntry}">
+                            <TextBlock Text="GitHub token (needs the “repo” scope)" Classes="muted" FontSize="11"/>
+                            <Grid ColumnDefinitions="*,8,Auto">
+                                <TextBox Grid.Column="0" Text="{Binding PatInput}" PasswordChar="•"
+                                         Watermark="ghp_…  or  github_pat_…"/>
+                                <Button Grid.Column="2" Classes="primary" Content="Sign in" Command="{Binding ApplyPatCommand}"/>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Git packages (mountable) -->
+                <Border Classes="card" Padding="0">
+                    <StackPanel>
+                        <Border Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                            <TextBlock Text="Git packages" Classes="h3"/>
+                        </Border>
+                        <ItemsControl ItemsSource="{Binding GitPackages}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="vm:GitPackageRow">
+                                    <Border Padding="20,14" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                                        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                            <StackPanel Grid.Column="0" Spacing="3">
+                                                <TextBlock Text="{Binding Id}" FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding Slug}" Classes="dim" FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <Button Grid.Column="1" Content="Mount to edit" Classes="primary"
+                                                    Command="{Binding #Root.((vm:DevelopViewModel)DataContext).MountCommand}"
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="No git-loaded packages in this project." Classes="muted" FontSize="12"
+                                   Margin="20,16" IsVisible="{Binding NoGitPackages}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Mounted for editing -->
+                <Border Classes="card" Padding="0" IsVisible="{Binding HasMounted}">
+                    <StackPanel>
+                        <Border Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                            <TextBlock Text="Mounted for editing" Classes="h3"/>
+                        </Border>
+                        <ItemsControl ItemsSource="{Binding Mounted}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="vm:MountedRow">
+                                    <Border Padding="20,14" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                                        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                            <StackPanel Grid.Column="0" Spacing="3" ClipToBounds="True">
+                                                <TextBlock Text="{Binding Id}" FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding FolderPath}" Classes="dim" FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                                <Button Content="Open folder"
+                                                        Command="{Binding #Root.((vm:DevelopViewModel)DataContext).OpenFolderCommand}"
+                                                        CommandParameter="{Binding}"/>
+                                                <Button Content="Swap back"
+                                                        Command="{Binding #Root.((vm:DevelopViewModel)DataContext).SwapBackCommand}"
+                                                        CommandParameter="{Binding}"/>
+                                                <Button Content="Submit PR" Classes="primary"
+                                                        Command="{Binding #Root.((vm:DevelopViewModel)DataContext).SubmitPrCommand}"
+                                                        CommandParameter="{Binding}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

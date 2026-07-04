@@ -42,6 +42,9 @@
                     <CheckBox Content="Show the Local Changes tab" IsChecked="{Binding ShowLocalChanges}"
                               ToolTip.Tip="A git status + per-file diff of your install. Hidden by default."/>
 
+                    <CheckBox Content="Developer mode (show the Develop tab)" IsChecked="{Binding DeveloperMode}"
+                              ToolTip.Tip="Mount git packages locally, edit them in Unity, and open pull requests. Hidden for non-developers."/>
+
                     <Button Classes="primary" Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Left"/>
                 </StackPanel>
             </Border>

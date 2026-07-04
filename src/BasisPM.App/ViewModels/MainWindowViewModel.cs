@@ -6,7 +6,7 @@ using Velopack;
 
 namespace BasisPM.App.ViewModels;
 
-public enum NavPage { Installs, Packages, Changes, Unity, Settings, Support }
+public enum NavPage { Installs, Packages, Changes, Unity, Settings, Support, Develop }
 
 public enum StatusKind { Info, Success, Error }
 
@@ -21,6 +21,9 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly UnityHubService _hubService = new();
     private readonly UnityReleaseService _releaseService = new();
     private readonly UpdateService _updateService = new();
+    private readonly GitHubAuthService _ghAuth = new();
+    private readonly GitHubApiService _ghApi = new();
+    private readonly MountRegistry _mountRegistry = new();
 
     private NavPage _currentPage = NavPage.Installs;
     private object? _currentView;
@@ -41,6 +44,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public UnityViewModel UnityVM { get; }
     public SettingsViewModel SettingsVM { get; }
     public FundingViewModel FundingVM { get; }
+    public DevelopViewModel DevelopVM { get; }
 
     public RelayCommand InstallUpdateCommand { get; }
     public RelayCommand DismissUpdateCommand { get; }
@@ -55,6 +59,9 @@ public sealed class MainWindowViewModel : ObservableObject
         UnityVM = new UnityViewModel(_hubService, _releaseService, this);
         SettingsVM = new SettingsViewModel(_settingsService, _gitService, _hubService, this);
         FundingVM = new FundingViewModel();
+        var mountService = new MountService(_gitService, _projectService, _mountRegistry);
+        var contributeService = new ContributeService(_gitService, _ghApi);
+        DevelopVM = new DevelopViewModel(mountService, contributeService, _ghAuth, _ghApi, _gitService, _mountRegistry, this);
 
         InstallUpdateCommand = new RelayCommand(InstallUpdateAsync);
         DismissUpdateCommand = new RelayCommand(() => { UpdateAvailable = false; });
@@ -78,6 +85,7 @@ public sealed class MainWindowViewModel : ObservableObject
                     NavPage.Unity => UnityVM,
                     NavPage.Settings => SettingsVM,
                     NavPage.Support => FundingVM,
+                    NavPage.Develop => DevelopVM,
                     _ => InstallsVM,
                 };
                 OnPropertyChanged(nameof(IsInstalls));
@@ -86,6 +94,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 OnPropertyChanged(nameof(IsUnity));
                 OnPropertyChanged(nameof(IsSettings));
                 OnPropertyChanged(nameof(IsSupport));
+                OnPropertyChanged(nameof(IsDevelop));
 
                 if (value == NavPage.Changes) _ = ChangesVM.RefreshAsync();
             }
@@ -100,6 +109,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public bool IsUnity => CurrentPage == NavPage.Unity;
     public bool IsSettings => CurrentPage == NavPage.Settings;
     public bool IsSupport => CurrentPage == NavPage.Support;
+    public bool IsDevelop => CurrentPage == NavPage.Develop;
 
     private bool _showChangesTab;
     public bool ShowChangesTab
@@ -109,6 +119,17 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             // If it's turned off while the user is looking at it, send them back to Installs.
             if (SetField(ref _showChangesTab, value) && !value && CurrentPage == NavPage.Changes)
+                CurrentPage = NavPage.Installs;
+        }
+    }
+
+    private bool _showDevelopTab;
+    public bool ShowDevelopTab
+    {
+        get => _showDevelopTab;
+        set
+        {
+            if (SetField(ref _showDevelopTab, value) && !value && CurrentPage == NavPage.Develop)
                 CurrentPage = NavPage.Installs;
         }
     }
@@ -137,6 +158,7 @@ public sealed class MainWindowViewModel : ObservableObject
         ActiveInstall = install;
         PackagesVM.SetActiveInstall(install);
         ChangesVM.SetActiveInstall(install);
+        DevelopVM.SetActiveInstall(install);
         UnityVM.SetRequiredVersion(install.UnityVersion);
     }
 
@@ -184,6 +206,7 @@ public sealed class MainWindowViewModel : ObservableObject
         _catalogUrl = settings.CatalogUrl;
         SettingsVM.Apply(settings);
         ShowChangesTab = settings.ShowLocalChanges;
+        ShowDevelopTab = settings.DeveloperMode;
         await InstallsVM.LoadAsync(settings);
         await PackagesVM.LoadCatalogAsync(settings.CatalogUrl);
 
@@ -197,7 +220,33 @@ public sealed class MainWindowViewModel : ObservableObject
         await UnityVM.RefreshAsync();
 
         _ = CheckForUpdatesAsync(manual: false);
-        _ = MaybePromptDesktopShortcutAsync();
+        _ = RunFirstRunPromptsAsync();
+    }
+
+    // First-run prompts, one after another so two dialogs never open at once.
+    private async Task RunFirstRunPromptsAsync()
+    {
+        await MaybeRunOnboardingAsync();
+        await MaybePromptDesktopShortcutAsync();
+    }
+
+    /// <summary>First run: ask the user's role so we show only the tools they need (toggle later in Settings).</summary>
+    private async Task MaybeRunOnboardingAsync()
+    {
+        try
+        {
+            var settings = await _settingsService.LoadAsync();
+            if (settings.CompletedOnboarding) return;
+
+            var isDeveloper = await Dialogs.ChooseRoleAsync();
+            settings.DeveloperMode = isDeveloper;
+            settings.CompletedOnboarding = true;
+            await _settingsService.SaveAsync(settings);
+
+            ShowDevelopTab = isDeveloper;
+            SettingsVM.Apply(settings);
+        }
+        catch { }
     }
 
     /// <summary>On the first run of an installed build, offer to add a desktop shortcut (asked once).</summary>
@@ -351,6 +400,7 @@ public sealed class MainWindowViewModel : ObservableObject
             "unity" => NavPage.Unity,
             "settings" => NavPage.Settings,
             "support" => NavPage.Support,
+            "develop" => NavPage.Develop,
             _ => CurrentPage,
         };
     }
