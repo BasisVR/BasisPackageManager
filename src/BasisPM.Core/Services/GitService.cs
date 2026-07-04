@@ -161,6 +161,26 @@ public sealed class GitService
         return branches;
     }
 
+    /// <summary>Remote tag names (annotated-tag peels dropped/deduped). Works for any host, no token needed.</summary>
+    public async Task<IReadOnlyList<string>> ListRemoteTagsAsync(string url, CancellationToken ct = default)
+    {
+        var git = FindGit();
+        if (git is null || !GitUrlPolicy.IsSafeUrl(url)) return Array.Empty<string>();
+        var (code, outText, _) = await RunAsync(git, new[] { "ls-remote", "--tags", url }, null, null, ct).ConfigureAwait(false);
+        if (code != 0) return Array.Empty<string>();
+        var tags = new List<string>();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var line in outText.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var idx = line.IndexOf("refs/tags/", StringComparison.Ordinal);
+            if (idx < 0) continue;
+            var tag = line[(idx + "refs/tags/".Length)..].Trim();
+            if (tag.EndsWith("^{}", StringComparison.Ordinal)) tag = tag[..^3]; // annotated-tag peel
+            if (tag.Length > 0 && seen.Add(tag)) tags.Add(tag);
+        }
+        return tags;
+    }
+
     public bool IsGitRepo(string path)
     {
         try { return Directory.Exists(Path.Combine(path, ".git")) || File.Exists(Path.Combine(path, ".git")); }

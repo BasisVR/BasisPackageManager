@@ -61,4 +61,12 @@ public static class Dialogs
         if (owner is null) return false;
         return await new RoleWizardWindow().ShowDialog<bool>(owner);
     }
+
+    /// <summary>Shows the version picker; returns the chosen version, or null if cancelled.</summary>
+    public static async Task<PackageVersionOption?> PickVersionAsync(string title, PackageVersions versions)
+    {
+        var owner = Owner;
+        if (owner is null) return null;
+        return await new VersionPickerWindow(title, versions).ShowDialog<PackageVersionOption?>(owner);
+    }
 }

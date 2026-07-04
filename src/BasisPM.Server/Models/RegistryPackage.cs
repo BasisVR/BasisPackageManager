@@ -20,6 +20,8 @@ public sealed class RegistryPackage
     [JsonPropertyName("repoUrl")] public string? RepoUrl { get; set; }
 
     [JsonPropertyName("unity")] public string? Unity { get; set; }
+    // The Basis version this package was built/tested against (free-form: branch, tag or version — e.g. "main" or "1.2.0").
+    [JsonPropertyName("basisVersion")] public string? BasisVersion { get; set; }
     [JsonPropertyName("version")] public string Version { get; set; } = "0.0.0";
     [JsonPropertyName("stars")] public int Stars { get; set; }
     [JsonPropertyName("forks")] public int Forks { get; set; }
@@ -29,6 +31,10 @@ public sealed class RegistryPackage
     [JsonPropertyName("image")] public string? Image { get; set; }
     [JsonPropertyName("updated")] public string Updated { get; set; } = "";
     [JsonPropertyName("dependencies")] public Dictionary<string, string>? Dependencies { get; set; }
+
+    // Optional per-package community + funding links, shown on the package's registry page.
+    [JsonPropertyName("discord")] public string? Discord { get; set; }
+    [JsonPropertyName("donate")] public string? Donate { get; set; }
 }
 
 public sealed class RegistrySubmission
@@ -44,6 +50,9 @@ public sealed class RegistrySubmission
     [JsonPropertyName("gitUrl")] public string? GitUrl { get; set; }
     [JsonPropertyName("repoUrl")] public string? RepoUrl { get; set; }
     [JsonPropertyName("unity")] public string? Unity { get; set; }
+    [JsonPropertyName("basisVersion")] public string? BasisVersion { get; set; }
     [JsonPropertyName("version")] public string? Version { get; set; }
     [JsonPropertyName("dependencies")] public Dictionary<string, string>? Dependencies { get; set; }
+    [JsonPropertyName("discord")] public string? Discord { get; set; }
+    [JsonPropertyName("donate")] public string? Donate { get; set; }
 }

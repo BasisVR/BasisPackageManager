@@ -45,8 +45,15 @@ public static class SingleInstance
                         PipeName, PipeDirection.In, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
                     server.WaitForConnection();
                     using var reader = new StreamReader(server);
-                    var line = reader.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(line)) onUri(line);
+                    // Bounded read (a same-user process could write to this pipe): cap the size and only
+                    // ever forward a well-formed basispm:// deep link — never an arbitrary string.
+                    var buf = new char[4096];
+                    var n = reader.Read(buf, 0, buf.Length);
+                    if (n > 0)
+                    {
+                        var line = new string(buf, 0, n).Split('\n', 2)[0].Trim();
+                        if (DeepLink.IsDeepLink(line)) onUri(line);
+                    }
                 }
                 catch { Thread.Sleep(200); }
             }

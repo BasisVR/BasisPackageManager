@@ -73,6 +73,8 @@ public sealed class MainWindowViewModel : ObservableObject
         DismissUpdateCommand = new RelayCommand(() => { UpdateAvailable = false; });
         CheckForUpdatesCommand = new RelayCommand(() => CheckForUpdatesAsync(manual: true));
         OpenIssueCommand = new RelayCommand(OpenIssue);
+        CrashReporter.BreadcrumbProvider = () => string.Join("\n", _breadcrumbs);
+        CrashReporter.VersionProvider = () => AppVersion;
 
         CurrentView = InstallsVM;
     }
@@ -289,8 +291,43 @@ public sealed class MainWindowViewModel : ObservableObject
     // First-run prompts, one after another so two dialogs never open at once.
     private async Task RunFirstRunPromptsAsync()
     {
+        await OfferCrashIssueIfAnyAsync();
         await MaybeRunOnboardingAsync();
         await MaybePromptDesktopShortcutAsync();
+    }
+
+    /// <summary>If the previous run crashed, offer to file a pre-filled issue with the captured details.</summary>
+    private async Task OfferCrashIssueIfAnyAsync()
+    {
+        var (detail, unclean) = CrashReporter.TryTakePending();
+        if (detail is null && !unclean) return;
+
+        var yes = await Dialogs.ConfirmAsync("Basis Package Manager closed unexpectedly",
+            "It looks like the app closed unexpectedly last time. Open a pre-filled GitHub issue so we can look into it?");
+        if (!yes) return;
+
+        string body;
+        if (detail is not null)
+        {
+            var d = detail.Length > 5000 ? detail[..5000] + "\n… (truncated)" : detail;
+            body = "### The app crashed\n\n```\n" + d + "\n```\n\n" +
+                   "_Auto-collected after a crash. Please add what you were doing when it happened._";
+        }
+        else
+        {
+            body = "### The app closed unexpectedly\n\n" +
+                   "The previous session didn't shut down cleanly (a hang or force-close — no exception was captured).\n\n" +
+                   $"- App: {AppVersion}\n- OS: {Environment.OSVersion}\n\n" +
+                   "_Please describe what you were doing when it happened._";
+        }
+        var url = $"https://github.com/{IssueRepo}/issues/new?labels=crash&title={Uri.EscapeDataString("Crash report")}&body={Uri.EscapeDataString(body)}";
+        OpenUrl(url);
+    }
+
+    private static void OpenUrl(string url)
+    {
+        try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = url, UseShellExecute = true }); }
+        catch { }
     }
 
     /// <summary>First run: ask the user's role so we show only the tools they need (toggle later in Settings).</summary>

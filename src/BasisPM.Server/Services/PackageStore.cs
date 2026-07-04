@@ -145,8 +145,13 @@ public sealed class PackageStore
             throw new ArgumentException("repoUrl must be an http(s) URL.");
         if (!string.IsNullOrWhiteSpace(sub.AuthorUrl) && !GitUrlPolicy.IsWebUrl(sub.AuthorUrl))
             throw new ArgumentException("authorUrl must be an http(s) URL.");
+        if (!string.IsNullOrWhiteSpace(sub.Discord) && !GitUrlPolicy.IsWebUrl(sub.Discord))
+            throw new ArgumentException("discord must be an http(s) URL.");
+        if (!string.IsNullOrWhiteSpace(sub.Donate) && !GitUrlPolicy.IsWebUrl(sub.Donate))
+            throw new ArgumentException("donate must be an http(s) URL.");
         if (TooLong(sub.Name) || TooLong(sub.Description) || TooLong(sub.Author) || TooLong(sub.Category)
-            || TooLong(sub.Version) || TooLong(sub.Unity) || TooLong(sub.GitUrl) || TooLong(sub.RepoUrl) || TooLong(sub.AuthorUrl))
+            || TooLong(sub.Version) || TooLong(sub.Unity) || TooLong(sub.GitUrl) || TooLong(sub.RepoUrl) || TooLong(sub.AuthorUrl)
+            || TooLong(sub.BasisVersion) || TooLong(sub.Discord) || TooLong(sub.Donate))
             throw new ArgumentException("One or more fields exceed the length limit.");
         if (sub.Dependencies is { Count: > MaxDependencies })
             throw new ArgumentException("Too many dependencies.");
@@ -180,9 +185,12 @@ public sealed class PackageStore
                 // mint a trusted-looking badge by pointing at a github.com/BasisVR URL they don't own.
                 Source = "community",
                 Unity = sub.Unity?.Trim(),
+                BasisVersion = sub.BasisVersion?.Trim(),
                 Version = string.IsNullOrWhiteSpace(sub.Version) ? "1.0.0" : sub.Version.Trim(),
                 Dependencies = sub.Dependencies,
                 Icon = "📦",
+                Discord = sub.Discord?.Trim(),
+                Donate = sub.Donate?.Trim(),
             };
 
             _packages.Add(pkg);

@@ -11,7 +11,10 @@
     "gitUrl": "https://github.com/dooly123/MS-BASISSA-Billiards.git",
     "repoUrl": "https://github.com/dooly123/MS-BASISSA-Billiards",
     "unity": "6000.0",
+    "basisVersion": "main",
     "version": "0.0.1",
-    "icon": "🎱"
+    "icon": "🎱",
+    "discord": "https://discord.gg/v6ve6WT562",
+    "donate": "https://opencollective.com/basis"
   }
 ]

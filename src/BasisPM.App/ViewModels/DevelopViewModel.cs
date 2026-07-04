@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Avalonia.Threading;
 using BasisPM.App.Services;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
@@ -166,7 +167,7 @@ public sealed class DevelopViewModel : ObservableObject
         _shell.SetStatus($"Mounting {row.Id}…");
         try
         {
-            var result = await _mount.MountAsync(_install, row.Id, row.GitUrl, line => _shell.SetStatus(line));
+            var result = await _mount.MountAsync(_install, row.Id, row.GitUrl, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
             if (result.Ok) { _shell.SetStatus($"Mounted {row.Id} into Packages/ — edit it in Unity, then Submit PR.", StatusKind.Success); Refresh(); }
             else _shell.SetStatus(result.Error ?? "Mount failed.", StatusKind.Error);
         }
@@ -206,7 +207,7 @@ public sealed class DevelopViewModel : ObservableObject
         _shell.SetStatus($"Submitting a pull request for {row.Id}…");
         try
         {
-            var result = await _contribute.SubmitPrAsync(row.FolderPath, token, user, draft, line => _shell.SetStatus(line));
+            var result = await _contribute.SubmitPrAsync(row.FolderPath, token, user, draft, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
             if (result.Ok)
             {
                 _shell.SetStatus($"Pull request opened{(result.Forked ? " (via your fork)" : "")}: {result.PrUrl}", StatusKind.Success);

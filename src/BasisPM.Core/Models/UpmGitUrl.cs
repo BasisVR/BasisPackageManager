@@ -14,6 +14,17 @@ public sealed record UpmGitUrl(string Host, string Owner, string Repo, string Cl
     /// <summary>owner/repo (GitHub) or group/.../repo (GitLab).</summary>
     public string Slug => IsGitLab ? $"{Owner}/{Repo}" : $"{Owner}/{Repo}";
 
+    /// <summary>Rebuilds a UPM manifest URL: clone URL + optional <c>?path=</c> and <c>#ref</c>.
+    /// Pass a ref callers have validated via <c>GitUrlPolicy.IsSafeRef</c>; a null ref = the default branch.</summary>
+    public string ToManifestUrl(string? gitRef = null, string? subPath = null)
+    {
+        var url = CloneUrl;
+        var path = subPath ?? Path;
+        if (!string.IsNullOrEmpty(path)) url += $"?path={path}";
+        if (!string.IsNullOrEmpty(gitRef)) url += $"#{gitRef}";
+        return url;
+    }
+
     public static UpmGitUrl? Parse(string? url)
     {
         if (string.IsNullOrWhiteSpace(url)) return null;

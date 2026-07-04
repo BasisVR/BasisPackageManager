@@ -43,6 +43,16 @@
                                 Command="{Binding BrowseCloneFolderCommand}"/>
                     </Grid>
 
+                    <Border IsVisible="{Binding HasCloneSpaceWarning}"
+                            Background="#1FF59E0B" BorderBrush="#66F59E0B" BorderThickness="1"
+                            CornerRadius="8" Padding="12,9">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <TextBlock Text="⚠" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Top"/>
+                            <TextBlock Text="{Binding CloneSpaceWarning}" TextWrapping="Wrap"
+                                       FontSize="12" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
                     <Grid ColumnDefinitions="*,16,*">
                         <StackPanel Grid.Column="0" Spacing="6">
                             <TextBlock Text="Sub-folder name" Classes="muted" FontSize="11"/>

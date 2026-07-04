@@ -25,6 +25,9 @@ internal static class Program
         }
         catch { /* any failure → continue as a normal launch */ }
 
+        // Primary instance only: record unhandled exceptions / unclean shutdowns for the next launch.
+        CrashReporter.Install();
+
         try
         {
             var packaged = false;
@@ -36,7 +39,15 @@ internal static class Program
         DeepLinkDispatcher.Pending = uri;
         try { SingleInstance.StartServer(DeepLinkDispatcher.Raise); } catch { }
 
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        try
+        {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        catch (Exception ex)
+        {
+            CrashReporter.Write(ex, "Main");
+            throw;
+        }
     }
 
     public static AppBuilder BuildAvaloniaApp() =>

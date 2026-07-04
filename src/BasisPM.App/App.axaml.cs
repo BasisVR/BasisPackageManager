@@ -21,6 +21,9 @@ public partial class App : Application
             var window = new MainWindow { DataContext = vm };
             desktop.MainWindow = window;
 
+            // A clean exit clears the crash marker; a crash or force-close leaves it for the next launch.
+            desktop.Exit += (_, _) => CrashReporter.MarkCleanExit();
+
             // basispm:// links forwarded from a second launch while this instance is already running.
             DeepLinkDispatcher.UriReceived += uri => Dispatcher.UIThread.Post(() =>
             {

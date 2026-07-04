@@ -23,12 +23,29 @@ public sealed class InstallsViewModel : ObservableObject
     private bool _isCloning;
     private InstallRow? _activeRow;
     private bool _showCloneForm;
+    private string? _cloneSpaceWarning;
+    private bool _cloneSpaceCritical;
+
+    // Basis + its Unity Library can grow past 20 GB. Warn well before the drive is full, and make
+    // the clone an explicit choice once it's critically low (the clone would likely fail partway).
+    private const long WarnBelowBytes = 10L * 1024 * 1024 * 1024;      // 10 GB
+    private const long CriticalBelowBytes = 3L * 1024 * 1024 * 1024;   //  3 GB
 
     public ObservableCollection<InstallRow> Installs { get; } = new();
     public ObservableCollection<BranchOption> Branches { get; } = new();
 
-    public string ClonePath { get => _clonePath; set => SetField(ref _clonePath, value); }
+    public string ClonePath { get => _clonePath; set { if (SetField(ref _clonePath, value)) UpdateCloneSpaceWarning(); } }
     public string FolderName { get => _folderName; set => SetField(ref _folderName, value); }
+
+    /// <summary>Low-disk-space message for the selected clone path, or null when there's ample room.</summary>
+    public string? CloneSpaceWarning
+    {
+        get => _cloneSpaceWarning;
+        private set { if (SetField(ref _cloneSpaceWarning, value)) OnPropertyChanged(nameof(HasCloneSpaceWarning)); }
+    }
+    public bool HasCloneSpaceWarning => !string.IsNullOrEmpty(_cloneSpaceWarning);
+    /// <summary>True when free space is so low the clone will probably fail (drives the stronger styling).</summary>
+    public bool IsCloneSpaceCritical { get => _cloneSpaceCritical; private set => SetField(ref _cloneSpaceCritical, value); }
     public BranchOption? SelectedBranch { get => _selectedBranch; set => SetField(ref _selectedBranch, value); }
     public string CloneProgress { get => _cloneProgress; set => SetField(ref _cloneProgress, value); }
     public bool IsCloning { get => _isCloning; set { if (SetField(ref _isCloning, value)) OnPropertyChanged(nameof(IsNotCloning)); } }
@@ -203,6 +220,24 @@ public sealed class InstallsViewModel : ObservableObject
             .OrderBy(n => n == BasisInstallService.DefaultBranch ? 0 : n is "main" or "master" ? 1 : 2)
             .ThenBy(n => n, StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>Refreshes the low-disk-space hint for the currently-typed clone path.</summary>
+    private void UpdateCloneSpaceWarning()
+    {
+        var info = DiskSpace.ForPath(_clonePath);
+        if (info is null || info.FreeBytes >= WarnBelowBytes)
+        {
+            IsCloneSpaceCritical = false;
+            CloneSpaceWarning = null;
+            return;
+        }
+
+        IsCloneSpaceCritical = info.FreeBytes < CriticalBelowBytes;
+        var free = DiskSpace.Human(info.FreeBytes);
+        CloneSpaceWarning = IsCloneSpaceCritical
+            ? $"Very low disk space — only {free} free on {info.DriveName}. Cloning Basis will likely fail; free up space or choose another drive."
+            : $"Low disk space — {free} free on {info.DriveName}. Basis plus its Unity Library can use 20 GB or more.";
+    }
+
     private async Task CloneAsync()
     {
         if (!_git.IsAvailable)
@@ -215,6 +250,20 @@ public sealed class InstallsViewModel : ObservableObject
         {
             _shell.SetStatus("Choose a folder to clone into first.", StatusKind.Error);
             return;
+        }
+
+        // Almost out of space on the target drive: make continuing an explicit choice.
+        var space = DiskSpace.ForPath(parent);
+        if (space is not null && space.FreeBytes < CriticalBelowBytes)
+        {
+            var proceed = await BasisPM.App.Services.Dialogs.ConfirmAsync("Low disk space",
+                $"Only {DiskSpace.Human(space.FreeBytes)} is free on {space.DriveName}. Cloning Basis and opening it in Unity " +
+                "can need well over that, and the clone may fail partway.\n\nClone here anyway?");
+            if (!proceed)
+            {
+                _shell.SetStatus("Clone cancelled — low disk space on the target drive.", StatusKind.Info);
+                return;
+            }
         }
         var folder = string.IsNullOrWhiteSpace(FolderName) ? BasisInstallService.DefaultFolderName : FolderName.Trim();
         var dest = Path.Combine(parent, folder);
@@ -393,18 +442,12 @@ public sealed class InstallsViewModel : ObservableObject
     private void OpenFolder(InstallRow? row)
     {
         if (row is null) return;
-        try
+        if (!Directory.Exists(row.RepoRoot))
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-            {
-                FileName = row.RepoRoot,
-                UseShellExecute = true,
-            });
+            _shell.SetStatus($"Folder no longer exists: {row.RepoRoot}", StatusKind.Error);
+            return;
         }
-        catch (Exception ex)
-        {
-            _shell.SetStatus($"Could not open folder: {ex.Message}", StatusKind.Error);
-        }
+        BasisPM.App.Services.ExternalLink.OpenFolder(row.RepoRoot);
     }
 
     private async Task RemoveAsync(InstallRow? row)

@@ -98,6 +98,11 @@
                                                     <Button Content="{Binding ButtonLabel}" Classes="primary" MinWidth="90"
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                                                             CommandParameter="{Binding Entry}"/>
+                                                    <Button Content="Choose version…" MinWidth="90" FontSize="11" Padding="10,6"
+                                                            IsVisible="{Binding HasGit}"
+                                                            ToolTip.Tip="Pick a specific release, beta, or the default branch"
+                                                            Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ChooseVersionCommand}"
+                                                            CommandParameter="{Binding Entry}"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Border>

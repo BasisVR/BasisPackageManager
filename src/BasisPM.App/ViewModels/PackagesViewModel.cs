@@ -14,6 +14,7 @@ public sealed class PackagesViewModel : ObservableObject
     private readonly CatalogService _catalogService;
     private readonly UnityProjectService _projectService;
     private readonly GitHubService _githubService;
+    private readonly VersionService _versionService = new();
     private readonly MainWindowViewModel _shell;
 
     private Catalog _catalog = new();
@@ -60,6 +61,7 @@ public sealed class PackagesViewModel : ObservableObject
     public RelayCommand RefreshCommand { get; }
     public RelayCommand AddFromGitHubCommand { get; }
     public RelayCommand CreateBundleCommand { get; }
+    public RelayCommand<CatalogPackageVersion> ChooseVersionCommand { get; }
 
     public PackagesViewModel(CatalogService catalogService, UnityProjectService projectService, MainWindowViewModel shell)
     {
@@ -73,6 +75,7 @@ public sealed class PackagesViewModel : ObservableObject
         RefreshCommand = new RelayCommand(RefreshAsync);
         AddFromGitHubCommand = new RelayCommand(AddFromGitHubAsync);
         CreateBundleCommand = new RelayCommand(CreateBundleAsync);
+        ChooseVersionCommand = new RelayCommand<CatalogPackageVersion>(ChooseVersionAsync);
     }
 
     public void SetActiveInstall(BasisInstall install)
@@ -255,6 +258,13 @@ public sealed class PackagesViewModel : ObservableObject
             foreach (var (name, ver) in result.Resolved)
                 target.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
 
+            // Prefer the installed package's latest published release (pin #tag); its deps keep their catalog url.
+            if (result.Resolved.TryGetValue(entry.Name, out var mainVer) && mainVer.Url is { } mainUrl)
+            {
+                var pinned = await ResolveLatestReleaseUrlAsync(mainUrl);
+                if (pinned is not null) target.Manifest.Dependencies[entry.Name] = pinned;
+            }
+
             await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
             _shell.SetStatus($"Installed {entry.DisplayName} into {target.DisplayName}.", StatusKind.Success);
             RefreshInstalled();
@@ -263,6 +273,58 @@ public sealed class PackagesViewModel : ObservableObject
         {
             _shell.SetStatus($"Install error: {ex.Message}", StatusKind.Error);
         }
+        finally { IsBusy = false; }
+    }
+
+    /// <summary>Latest published stable release URL (…git#tag) for a catalog git url, or null to leave it as-is.</summary>
+    private async Task<string?> ResolveLatestReleaseUrlAsync(string gitUrl)
+    {
+        var loc = UpmGitUrl.Parse(gitUrl);
+        if (loc is null || loc.Ref is not null) return null;   // unparseable, or the url already pins a ref
+        var versions = await _versionService.GetVersionsAsync(gitUrl, null);
+        return versions.LatestStable?.Ref is { } tag ? loc.ToManifestUrl(tag, loc.Path) : null;
+    }
+
+    /// <summary>Opens the version picker for a package and installs the chosen release/tag/branch.</summary>
+    private async Task ChooseVersionAsync(CatalogPackageVersion? entry)
+    {
+        if (entry is null || _install is null || !_install.HasUnityProject)
+        {
+            _shell.SetStatus("Choose a project first.", StatusKind.Error);
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(entry.Url))
+        {
+            _shell.SetStatus($"{entry.DisplayName} isn't a git package — no versions to choose.", StatusKind.Info);
+            return;
+        }
+        var target = _install;
+
+        IsBusy = true;
+        _shell.SetStatus($"Loading versions for {entry.DisplayName}…");
+        try
+        {
+            var versions = await _versionService.GetVersionsAsync(entry.Url, null);
+            if (versions.Options.Count == 0)
+            {
+                _shell.SetStatus($"Couldn't find any versions for {entry.DisplayName}.", StatusKind.Error);
+                return;
+            }
+
+            var chosen = await Dialogs.PickVersionAsync($"Install {entry.DisplayName}", versions);
+            if (chosen is null) return;
+
+            var loc = UpmGitUrl.Parse(entry.Url);
+            if (loc is null) { _shell.SetStatus("Couldn't parse the package's git URL.", StatusKind.Error); return; }
+
+            target.Manifest.Dependencies[entry.Name] = loc.ToManifestUrl(chosen.Ref, loc.Path);
+            AddCatalogDependencies(target, new[] { (entry.Name, "*") });   // pull in its registry deps too
+            await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
+
+            _shell.SetStatus($"Installed {entry.DisplayName} ({chosen.Ref ?? "default branch"}) into {target.DisplayName}.", StatusKind.Success);
+            RefreshInstalled();
+        }
+        catch (Exception ex) { _shell.SetStatus($"Version install error: {ex.Message}", StatusKind.Error); }
         finally { IsBusy = false; }
     }
 
@@ -493,6 +555,7 @@ public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVe
     public bool HasUnity => !string.IsNullOrWhiteSpace(Entry.Unity);
     public string Owner => PackagesViewModel.OwnerOf(Entry.Name);
     public string Initial => string.IsNullOrWhiteSpace(DisplayName) ? "?" : DisplayName.TrimStart()[..1].ToUpperInvariant();
+    public bool HasGit => !string.IsNullOrWhiteSpace(Entry.Url);
 }
 
 public sealed record InstalledPackageRow(string Name, string DisplayName, string Version, bool IsFromGit);

@@ -85,6 +85,22 @@ public sealed class GitHubApiService
         return await res.Content.ReadFromJsonAsync<GitHubPullRequest>(cancellationToken: ct).ConfigureAwait(false)
                ?? throw new InvalidOperationException("Create-PR returned no body.");
     }
+
+    /// <summary>A repo's releases (newest first per GitHub). Token optional — public repos work unauthenticated
+    /// (just a lower rate limit). Returns empty on any error or if there are no releases.</summary>
+    public async Task<IReadOnlyList<GitHubRelease>> GetReleasesAsync(string owner, string repo, string? token = null, CancellationToken ct = default)
+    {
+        using var req = new HttpRequestMessage(HttpMethod.Get, $"repos/{owner}/{repo}/releases?per_page=100");
+        if (!string.IsNullOrEmpty(token)) req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        try
+        {
+            var res = await _http.SendAsync(req, ct).ConfigureAwait(false);
+            if (!res.IsSuccessStatusCode) return Array.Empty<GitHubRelease>();
+            return await res.Content.ReadFromJsonAsync<List<GitHubRelease>>(cancellationToken: ct).ConfigureAwait(false)
+                   ?? (IReadOnlyList<GitHubRelease>)Array.Empty<GitHubRelease>();
+        }
+        catch { return Array.Empty<GitHubRelease>(); }
+    }
 }
 
 public sealed class GitHubUser
@@ -126,4 +142,13 @@ public sealed class GitHubPullRequest
     [JsonPropertyName("html_url")] public string HtmlUrl { get; set; } = "";
     [JsonPropertyName("number")] public int Number { get; set; }
     [JsonPropertyName("state")] public string? State { get; set; }
+}
+
+public sealed class GitHubRelease
+{
+    [JsonPropertyName("tag_name")] public string TagName { get; set; } = "";
+    [JsonPropertyName("name")] public string? Name { get; set; }
+    [JsonPropertyName("prerelease")] public bool Prerelease { get; set; }
+    [JsonPropertyName("draft")] public bool Draft { get; set; }
+    [JsonPropertyName("published_at")] public DateTimeOffset? PublishedAt { get; set; }
 }
