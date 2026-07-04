@@ -4,4 +4,9 @@
     <Project Path="src/BasisPM.Core/BasisPM.Core.csproj" />
     <Project Path="src/BasisPM.Server/BasisPM.Server.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/BasisPM.Core.Tests/BasisPM.Core.Tests.csproj" />
+    <Project Path="tests/BasisPM.Server.Tests/BasisPM.Server.Tests.csproj" />
+    <Project Path="tests/BasisPM.App.Tests/BasisPM.App.Tests.csproj" />
+  </Folder>
 </Solution>

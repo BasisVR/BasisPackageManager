@@ -195,3 +195,7 @@ static string? ResolveUp(string start, string relative)
     }
     return null;
 }
+
+// Makes the implicit top-level Program class public so the integration-test project can
+// drive the real app through WebApplicationFactory<Program>. Behaviourally inert.
+public partial class Program { }

@@ -1,0 +1,85 @@
+using BasisPM.Core.Models;
+using BasisPM.Core.Services;
+using BasisPM.Core.Tests.TestSupport;
+using Xunit;
+
+namespace BasisPM.Core.Tests;
+
+public sealed class UserSettingsServiceTests
+{
+    [Fact]
+    public async Task Save_then_Load_round_trips_all_fields()
+    {
+        using var t = new TempDir();
+        var svc = new UserSettingsService(t.Combine("settings.json"));
+        var settings = new UserSettings
+        {
+            Installs = { @"C:\Basis", @"D:\Other" },
+            CatalogUrl = "https://example.com/catalog.json",
+            ClonePath = @"C:\Clones",
+            DeveloperMode = true,
+            ShowLocalChanges = true,
+            CompletedOnboarding = true,
+            PrereleaseUpdates = true,
+            SeenAnnouncementIds = { "a", "b" },
+        };
+        settings.InstallAliases[@"C:\Basis"] = "My Basis";
+
+        await svc.SaveAsync(settings);
+        var loaded = await svc.LoadAsync();
+
+        Assert.Equal(new[] { @"C:\Basis", @"D:\Other" }, loaded.Installs);
+        Assert.Equal("https://example.com/catalog.json", loaded.CatalogUrl);
+        Assert.Equal(@"C:\Clones", loaded.ClonePath);
+        Assert.True(loaded.DeveloperMode);
+        Assert.True(loaded.ShowLocalChanges);
+        Assert.True(loaded.PrereleaseUpdates);
+        Assert.Equal("My Basis", loaded.InstallAliases[@"C:\Basis"]);
+        Assert.Equal(new[] { "a", "b" }, loaded.SeenAnnouncementIds);
+    }
+
+    [Fact]
+    public async Task Load_returns_defaults_when_file_missing()
+    {
+        using var t = new TempDir();
+        var svc = new UserSettingsService(t.Combine("does-not-exist.json"));
+
+        var loaded = await svc.LoadAsync();
+
+        Assert.Empty(loaded.Installs);
+        Assert.Equal("", loaded.CatalogUrl);
+        Assert.False(loaded.DeveloperMode);
+    }
+
+    [Fact]
+    public async Task Load_returns_defaults_on_corrupt_json()
+    {
+        using var t = new TempDir();
+        var path = t.WriteFile("settings.json", "{ this is not valid json ");
+        var svc = new UserSettingsService(path);
+
+        var loaded = await svc.LoadAsync();
+        Assert.NotNull(loaded);
+        Assert.Empty(loaded.Installs);
+    }
+
+    [Fact]
+    public async Task Save_creates_the_parent_directory()
+    {
+        using var t = new TempDir();
+        var path = t.Combine("nested/deeper/settings.json");
+        var svc = new UserSettingsService(path);
+
+        await svc.SaveAsync(new UserSettings());
+
+        Assert.True(File.Exists(path));
+    }
+
+    [Fact]
+    public void SettingsPath_reflects_the_override()
+    {
+        using var t = new TempDir();
+        var path = t.Combine("settings.json");
+        Assert.Equal(path, new UserSettingsService(path).SettingsPath);
+    }
+}

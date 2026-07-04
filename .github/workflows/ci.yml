@@ -21,3 +21,6 @@ jobs:
 
       - name: Build
         run: dotnet build BasisPM.slnx -c Release --no-restore
+
+      - name: Test
+        run: dotnet test BasisPM.slnx -c Release --no-build --verbosity normal
