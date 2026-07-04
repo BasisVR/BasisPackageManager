@@ -126,7 +126,8 @@ jobs:
           SIGN=()
           if [ "$SIGN_WINDOWS" = "true" ]; then SIGN=(--signParams "$WINDOWS_SIGN_PARAMS"); fi
           vpk pack -u BasisPackageManager -v "$VERSION" -p publish -e BasisPM.App.exe \
-            --packTitle "Basis Package Manager" --shortcuts StartMenuRoot "${SIGN[@]}"
+            --packTitle "Basis Package Manager" --shortcuts StartMenuRoot \
+            --icon src/BasisPM.App/Assets/BasisLogo.ico "${SIGN[@]}"
 
       - name: Pack (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
