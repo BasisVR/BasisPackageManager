@@ -25,5 +25,8 @@
         <DataTemplate DataType="vm:SettingsViewModel">
             <views:SettingsView />
         </DataTemplate>
+        <DataTemplate DataType="vm:FundingViewModel">
+            <views:FundingView />
+        </DataTemplate>
     </Application.DataTemplates>
 </Application>

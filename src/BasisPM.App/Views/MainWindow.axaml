@@ -71,6 +71,7 @@
                     <Button Classes="nav" Classes.active="{Binding IsChanges}" Tag="changes" Click="OnNavClick" IsVisible="{Binding ShowChangesTab}">Local Changes</Button>
                     <Button Classes="nav" Classes.active="{Binding IsUnity}" Tag="unity" Click="OnNavClick">Unity Editors</Button>
                     <Button Classes="nav" Classes.active="{Binding IsSettings}" Tag="settings" Click="OnNavClick">Settings</Button>
+                    <Button Classes="nav" Classes.active="{Binding IsSupport}" Tag="support" Click="OnNavClick">Support</Button>
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" Margin="22,0,22,22" Spacing="6">

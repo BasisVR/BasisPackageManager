@@ -93,6 +93,41 @@ public sealed class UnityProjectService
         await JsonSerializer.SerializeAsync(fs, manifest, JsonOpts, ct).ConfigureAwait(false);
     }
 
+    private static readonly JsonSerializerOptions ReadOpts = new() { PropertyNameCaseInsensitive = true };
+
+    /// <summary>Enumerates the embedded packages (each <c>Packages/&lt;folder&gt;/package.json</c>) of a Unity project.</summary>
+    public IReadOnlyList<LocalPackage> ListEmbeddedPackages(string unityProjectPath)
+    {
+        var result = new List<LocalPackage>();
+        var packagesDir = Path.Combine(unityProjectPath, "Packages");
+        if (!Directory.Exists(packagesDir)) return result;
+
+        foreach (var dir in Directory.EnumerateDirectories(packagesDir))
+        {
+            var packageJson = Path.Combine(dir, "package.json");
+            if (!File.Exists(packageJson)) continue;
+
+            UpmPackageJson? meta = null;
+            try { meta = JsonSerializer.Deserialize<UpmPackageJson>(File.ReadAllText(packageJson), ReadOpts); }
+            catch { }
+
+            var folder = Path.GetFileName(dir);
+            var id = string.IsNullOrWhiteSpace(meta?.Name) ? folder : meta!.Name;
+            result.Add(new LocalPackage(
+                Id: id,
+                DisplayName: string.IsNullOrWhiteSpace(meta?.DisplayName) ? id : meta!.DisplayName,
+                Version: meta?.Version ?? "",
+                Description: meta?.Description ?? "",
+                FolderName: folder,
+                FolderPath: dir,
+                PackageJsonPath: packageJson,
+                IsGitRepo: Directory.Exists(Path.Combine(dir, ".git")) || File.Exists(Path.Combine(dir, ".git"))));
+        }
+
+        result.Sort((a, b) => string.Compare(a.DisplayName, b.DisplayName, StringComparison.OrdinalIgnoreCase));
+        return result;
+    }
+
     private static async Task<string> ReadProjectVersionAsync(string path, CancellationToken ct)
     {
         var versionPath = Path.Combine(path, "ProjectSettings", "ProjectVersion.txt");

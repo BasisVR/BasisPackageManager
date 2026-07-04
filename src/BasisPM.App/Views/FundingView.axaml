@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             x:Class="BasisPM.App.Views.FundingView"
+             x:DataType="vm:FundingViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="40,32" Spacing="20">
+
+            <Border CornerRadius="14" Padding="32,28"
+                    Background="{StaticResource BasisHeroGradient}"
+                    BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="SUPPORT" Classes="tagline"/>
+                    <TextBlock Text="Fund Basis" Classes="h1"/>
+                    <TextBlock Text="Basis is MIT-licensed and creator-first. Community donations and company collaborations keep a maintainer working full-time and speed up releases."
+                               Classes="muted" FontSize="14" TextWrapping="Wrap" MaxWidth="660" HorizontalAlignment="Left"/>
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
+                        <Button Classes="primary" Content="♥   Support via OpenCollective" Command="{Binding OpenCollectiveCommand}"/>
+                        <Button Content="Join the Discord" Command="{Binding DiscordCommand}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*">
+                <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Community donations" Classes="h3"/>
+                        <TextBlock Text="Individuals back Basis on OpenCollective — monthly or one-time. These funds primarily support full-time maintenance and developer-experience work."
+                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                        <TextBlock Text="•  Monthly &amp; one-time options&#10;•  Public backer wall &amp; transparent ledger"
+                                   Classes="dim" FontSize="12"/>
+                        <Button Content="Back on OpenCollective" Command="{Binding OpenCollectiveCommand}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="Company collaborations" Classes="h3"/>
+                        <TextBlock Text="Companies sponsor roadmap items or co-fund features — networking, avatar systems, tooling. Work lands upstream and stays MIT-licensed by default."
+                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                        <TextBlock Text="•  Shared infrastructure over bespoke forks&#10;•  Clear deliverables, open development"
+                                   Classes="dim" FontSize="12"/>
+                        <Button Content="Sponsor a feature" Command="{Binding FundingPageCommand}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Classes="card">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Where the money goes" Classes="h3"/>
+                    <TextBlock Text="Funds are pooled to tackle shared problems — networking, embodiment, tooling — that benefit everyone. There's a public ledger on OpenCollective, and sponsored work is attributed in release notes. Sponsors don't control the project."
+                               Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                    <Button Content="Read the full funding page  ↗" Command="{Binding FundingPageCommand}" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

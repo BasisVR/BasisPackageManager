@@ -165,7 +165,7 @@ public sealed class PackagesViewModel : ObservableObject
     }
 
     /// <summary>Vendor/owner from a reverse-DNS package id: com.unity.2d.sprite → "Unity".</summary>
-    private static string OwnerOf(string id)
+    internal static string OwnerOf(string id)
     {
         var parts = (id ?? "").Split('.', StringSplitOptions.RemoveEmptyEntries);
         var owner = parts.Length >= 2 ? parts[1] : parts.FirstOrDefault() ?? "";
@@ -481,6 +481,12 @@ public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVe
     public string Description => Entry.Description;
     public bool IsInstalled => !string.IsNullOrEmpty(InstalledVersion);
     public string ButtonLabel => IsInstalled ? "Update" : "Install";
+    public string Author => Entry.Author?.Name ?? "";
+    public bool HasAuthor => !string.IsNullOrWhiteSpace(Entry.Author?.Name);
+    public string? Unity => Entry.Unity;
+    public bool HasUnity => !string.IsNullOrWhiteSpace(Entry.Unity);
+    public string Owner => PackagesViewModel.OwnerOf(Entry.Name);
+    public string Initial => string.IsNullOrWhiteSpace(DisplayName) ? "?" : DisplayName.TrimStart()[..1].ToUpperInvariant();
 }
 
 public sealed record InstalledPackageRow(string Name, string DisplayName, string Version, bool IsFromGit);

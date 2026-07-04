@@ -6,7 +6,7 @@ using Velopack;
 
 namespace BasisPM.App.ViewModels;
 
-public enum NavPage { Installs, Packages, Changes, Unity, Settings }
+public enum NavPage { Installs, Packages, Changes, Unity, Settings, Support }
 
 public enum StatusKind { Info, Success, Error }
 
@@ -40,6 +40,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public ChangesViewModel ChangesVM { get; }
     public UnityViewModel UnityVM { get; }
     public SettingsViewModel SettingsVM { get; }
+    public FundingViewModel FundingVM { get; }
 
     public RelayCommand InstallUpdateCommand { get; }
     public RelayCommand DismissUpdateCommand { get; }
@@ -53,6 +54,7 @@ public sealed class MainWindowViewModel : ObservableObject
         ChangesVM = new ChangesViewModel(_gitService, this);
         UnityVM = new UnityViewModel(_hubService, _releaseService, this);
         SettingsVM = new SettingsViewModel(_settingsService, _gitService, _hubService, this);
+        FundingVM = new FundingViewModel();
 
         InstallUpdateCommand = new RelayCommand(InstallUpdateAsync);
         DismissUpdateCommand = new RelayCommand(() => { UpdateAvailable = false; });
@@ -75,6 +77,7 @@ public sealed class MainWindowViewModel : ObservableObject
                     NavPage.Changes => ChangesVM,
                     NavPage.Unity => UnityVM,
                     NavPage.Settings => SettingsVM,
+                    NavPage.Support => FundingVM,
                     _ => InstallsVM,
                 };
                 OnPropertyChanged(nameof(IsInstalls));
@@ -82,6 +85,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 OnPropertyChanged(nameof(IsChanges));
                 OnPropertyChanged(nameof(IsUnity));
                 OnPropertyChanged(nameof(IsSettings));
+                OnPropertyChanged(nameof(IsSupport));
 
                 if (value == NavPage.Changes) _ = ChangesVM.RefreshAsync();
             }
@@ -95,6 +99,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public bool IsChanges => CurrentPage == NavPage.Changes;
     public bool IsUnity => CurrentPage == NavPage.Unity;
     public bool IsSettings => CurrentPage == NavPage.Settings;
+    public bool IsSupport => CurrentPage == NavPage.Support;
 
     private bool _showChangesTab;
     public bool ShowChangesTab
@@ -345,6 +350,7 @@ public sealed class MainWindowViewModel : ObservableObject
             "changes" => NavPage.Changes,
             "unity" => NavPage.Unity,
             "settings" => NavPage.Settings,
+            "support" => NavPage.Support,
             _ => CurrentPage,
         };
     }

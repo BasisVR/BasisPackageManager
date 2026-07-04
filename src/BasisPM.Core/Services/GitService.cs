@@ -149,6 +149,72 @@ public sealed class GitService
         catch { return false; }
     }
 
+    // ---- write-side operations (publish wizard): init / add / commit / remote / push / tag ----
+
+    public async Task<GitResult> InitAsync(string repoRoot, string defaultBranch = "main", CancellationToken ct = default)
+    {
+        Directory.CreateDirectory(repoRoot);
+        var (code, _, err) = await RunGitAsync(repoRoot, new[] { "init", "-b", defaultBranch }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, err.Trim());
+    }
+
+    public async Task<GitResult> AddAllAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, _, err) = await RunGitAsync(repoRoot, new[] { "add", "-A" }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, err.Trim());
+    }
+
+    /// <summary>Commits staged changes. Passes identity via -c so a fresh install with no global git config still works.</summary>
+    public async Task<GitResult> CommitAsync(string repoRoot, string message, string? authorName = null, string? authorEmail = null, CancellationToken ct = default)
+    {
+        var args = new List<string>();
+        if (!string.IsNullOrWhiteSpace(authorName)) { args.Add("-c"); args.Add($"user.name={authorName.Trim()}"); }
+        if (!string.IsNullOrWhiteSpace(authorEmail)) { args.Add("-c"); args.Add($"user.email={authorEmail.Trim()}"); }
+        args.Add("commit");
+        args.Add("-m");
+        args.Add(message);
+        var (code, outText, err) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<string?> GetRemoteUrlAsync(string repoRoot, string remote = "origin", CancellationToken ct = default)
+    {
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "remote", "get-url", remote }, null, ct).ConfigureAwait(false);
+        return code == 0 ? outText.Trim() : null;
+    }
+
+    /// <summary>Adds the remote, or updates its URL when it already exists.</summary>
+    public async Task<GitResult> SetRemoteAsync(string repoRoot, string remote, string url, CancellationToken ct = default)
+    {
+        var existing = await GetRemoteUrlAsync(repoRoot, remote, ct).ConfigureAwait(false);
+        var args = existing is null ? new[] { "remote", "add", remote, url } : new[] { "remote", "set-url", remote, url };
+        var (code, _, err) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, err.Trim());
+    }
+
+    /// <summary><paramref name="remoteOrUrl"/> may be a token-embedded URL, so credentials never persist in .git/config.</summary>
+    public async Task<GitResult> PushAsync(string repoRoot, string remoteOrUrl, string branch, bool setUpstream = false, Action<string>? onProgress = null, CancellationToken ct = default)
+    {
+        var args = new List<string> { "push", "--progress" };
+        if (setUpstream) args.Add("-u");
+        args.Add(remoteOrUrl);
+        args.Add(branch);
+        var (code, outText, err) = await RunGitAsync(repoRoot, args, onProgress, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<GitResult> TagAsync(string repoRoot, string tag, string? message = null, CancellationToken ct = default)
+    {
+        var args = string.IsNullOrWhiteSpace(message)
+            ? new[] { "tag", tag }
+            : new[] { "tag", "-a", tag, "-m", message };
+        var (code, _, err) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, err.Trim());
+    }
+
+    private static string Combine(string a, string b) =>
+        string.Join('\n', new[] { a.Trim(), b.Trim() }.Where(s => s.Length > 0));
+
     private static string NullDevice => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "NUL" : "/dev/null";
 
     private static GitChangeKind DetermineKind(string xy)
