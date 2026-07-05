@@ -22,6 +22,7 @@ public sealed class UnityViewModel : ObservableObject
     private UnityReleaseRow? _selectedRelease;
     private string _streamFilter = "All";
     private string _requiredVersion = "";
+    private InstalledEditor? _selectedEditor;
 
     public ObservableCollection<InstalledEditor> InstalledEditors { get; } = new();
     public ObservableCollection<ModuleOption> ModuleOptions { get; } = new();
@@ -65,6 +66,15 @@ public sealed class UnityViewModel : ObservableObject
         ? L.Tr("unity.status.requiredVersionNote", _requiredVersion)
         : "";
 
+    // The editor picked in the installed-editors dropdown; Uninstall acts on this one.
+    public InstalledEditor? SelectedEditor
+    {
+        get => _selectedEditor;
+        set { if (SetField(ref _selectedEditor, value)) OnPropertyChanged(nameof(HasSelectedEditor)); }
+    }
+    public bool HasSelectedEditor => _selectedEditor is not null;
+    public bool HasInstalledEditors => InstalledEditors.Count > 0;
+
     public void SetRequiredVersion(string? version)
     {
         RequiredVersion = version ?? "";
@@ -107,6 +117,10 @@ public sealed class UnityViewModel : ObservableObject
             InstalledEditors.Clear();
             var list = await _hubService.ListInstalledAsync();
             foreach (var e in list) InstalledEditors.Add(e);
+            OnPropertyChanged(nameof(HasInstalledEditors));
+            // Default the dropdown to the editor the active project needs, else the first installed.
+            SelectedEditor = InstalledEditors.FirstOrDefault(e => string.Equals(e.Version, _requiredVersion, StringComparison.OrdinalIgnoreCase))
+                             ?? InstalledEditors.FirstOrDefault();
             if (InstalledEditors.Count == 0 && hub is not null)
                 HubStatus += L.Tr("unity.status.noEditorsInstalled");
 

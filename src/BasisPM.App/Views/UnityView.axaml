@@ -38,23 +38,26 @@
                     <Border Grid.Row="0" Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
                         <TextBlock Text="{loc:Tr unity.section.installedEditors}" Classes="h3"/>
                     </Border>
-                    <ItemsControl Grid.Row="1" ItemsSource="{Binding InstalledEditors}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="models:InstalledEditor">
-                                <Border Padding="20,14" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                                    <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                                        <StackPanel Grid.Column="0" Spacing="2">
-                                            <TextBlock Text="{Binding Version}" Classes="h3"/>
-                                            <TextBlock Text="{Binding Path}" Classes="dim" FontSize="11"/>
-                                        </StackPanel>
-                                        <Button Grid.Column="1" Content="{loc:Tr unity.button.uninstall}" Classes="danger"
-                                                Command="{Binding #Root.((vm:UnityViewModel)DataContext).UninstallCommand}"
-                                                CommandParameter="{Binding}"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <StackPanel Grid.Row="1" Margin="20,16" Spacing="12">
+                        <ComboBox ItemsSource="{Binding InstalledEditors}"
+                                  SelectedItem="{Binding SelectedEditor}"
+                                  HorizontalAlignment="Stretch" MaxDropDownHeight="320"
+                                  IsVisible="{Binding HasInstalledEditors}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="models:InstalledEditor">
+                                    <TextBlock Text="{Binding Version}" FontWeight="SemiBold"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center" IsVisible="{Binding HasSelectedEditor}">
+                            <TextBlock Grid.Column="0" Text="{Binding SelectedEditor.Path}" Classes="dim" FontSize="11"
+                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,12,0"/>
+                            <Button Grid.Column="1" Content="{loc:Tr unity.button.uninstall}" Classes="danger"
+                                    Command="{Binding UninstallCommand}" CommandParameter="{Binding SelectedEditor}"/>
+                        </Grid>
+                        <TextBlock Text="{loc:Tr unity.editors.none}" Classes="muted" FontSize="12"
+                                   IsVisible="{Binding !HasInstalledEditors}"/>
+                    </StackPanel>
                 </Grid>
             </Border>
 

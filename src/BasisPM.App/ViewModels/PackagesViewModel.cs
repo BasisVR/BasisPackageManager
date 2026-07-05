@@ -74,6 +74,16 @@ public sealed class PackagesViewModel : ObservableObject
     public bool IsListView => !_isGridView;
     public string LayoutToggleLabel => _isGridView ? L.Tr("packages.button.listView") : L.Tr("packages.button.gridView");
 
+    // The package whose detail panel is open (null = closed). Clicking a row opens it.
+    private PackageRow? _selectedPackage;
+    public PackageRow? SelectedPackage
+    {
+        get => _selectedPackage;
+        private set { if (SetField(ref _selectedPackage, value)) OnPropertyChanged(nameof(ShowDetail)); }
+    }
+    public bool ShowDetail => _selectedPackage is not null;
+    public void OpenDetail(PackageRow row) => SelectedPackage = row;
+
     public RelayCommand<CatalogPackageVersion> InstallCommand { get; }
     public RelayCommand<CatalogPackageVersion> RemoveCommand { get; }
     public RelayCommand<InstalledPackageRow> UninstallCommand { get; }
@@ -83,6 +93,7 @@ public sealed class PackagesViewModel : ObservableObject
     public RelayCommand<CatalogPackageVersion> ChooseVersionCommand { get; }
     public RelayCommand ToggleLayoutCommand { get; }
     public RelayCommand<string> OpenLinkCommand { get; }
+    public RelayCommand CloseDetailCommand { get; }
 
     public PackagesViewModel(UserSettingsService settingsService, CatalogService catalogService, UnityProjectService projectService, MainWindowViewModel shell)
     {
@@ -101,6 +112,7 @@ public sealed class PackagesViewModel : ObservableObject
         ChooseVersionCommand = new RelayCommand<CatalogPackageVersion>(ChooseVersionAsync);
         ToggleLayoutCommand = new RelayCommand(() => IsGridView = !IsGridView);
         OpenLinkCommand = new RelayCommand<string>(url => { if (!string.IsNullOrWhiteSpace(url)) ExternalLink.Open(url!); });
+        CloseDetailCommand = new RelayCommand(() => SelectedPackage = null);
     }
 
     /// <summary>Applies the persisted layout choice at startup without re-saving it.</summary>
@@ -189,6 +201,13 @@ public sealed class PackagesViewModel : ObservableObject
 
             var installedVersion = _install?.Manifest.Dependencies.GetValueOrDefault(v.Name);
             Available.Add(new PackageRow(v, installedVersion));
+        }
+
+        // Keep an open detail panel pointed at the refreshed row so its installed-state stays current.
+        if (_selectedPackage is not null)
+        {
+            var match = Available.FirstOrDefault(r => string.Equals(r.Name, _selectedPackage.Name, StringComparison.Ordinal));
+            if (match is not null) SelectedPackage = match;
         }
     }
 
@@ -631,6 +650,7 @@ public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVe
     public string Version => Entry.Version;
     public string Description => Entry.Description;
     public bool IsInstalled => !string.IsNullOrEmpty(InstalledVersion);
+    public bool IsNotInstalled => !IsInstalled;
     public string ButtonLabel => IsInstalled ? L.Tr("packages.button.update") : L.Tr("packages.button.install");
     public string Author => Entry.Author?.Name ?? "";
     public bool HasAuthor => !string.IsNullOrWhiteSpace(Entry.Author?.Name);
@@ -641,6 +661,12 @@ public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVe
     public string Owner => PackagesViewModel.OwnerOf(Entry.Name);
     public string Initial => string.IsNullOrWhiteSpace(DisplayName) ? "?" : DisplayName.TrimStart()[..1].ToUpperInvariant();
     public bool HasGit => !string.IsNullOrWhiteSpace(Entry.Url);
+    public string? GitUrl => Entry.Url;
+    public bool HasGitUrl => !string.IsNullOrWhiteSpace(Entry.Url);
+    public bool HasDependencies => Entry.Dependencies is { Count: > 0 };
+    public IReadOnlyList<string> DependencyList =>
+        Entry.Dependencies?.Select(d => $"{d.Key}  {d.Value}").ToList() ?? (IReadOnlyList<string>)Array.Empty<string>();
+    public string DependencySummary => string.Join("      ·      ", DependencyList);
     public string? Link => Entry.Link;
     public bool HasLink => !string.IsNullOrWhiteSpace(Entry.Link);
 }

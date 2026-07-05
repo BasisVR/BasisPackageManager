@@ -547,6 +547,18 @@
       "value": "https://github.com/owner/repo  or  owner/repo?path=Packages/com.x#main"
     },
     {
+      "key": "packages.detail.dependencies",
+      "value": "Dependencies"
+    },
+    {
+      "key": "packages.detail.gitUrl",
+      "value": "Git URL (UPM)"
+    },
+    {
+      "key": "packages.detail.website",
+      "value": "Open website  ↗"
+    },
+    {
       "key": "packages.dialog.installTitle",
       "value": "Install {0}"
     },
@@ -747,6 +759,10 @@
       "value": "Switch between list and grid layout"
     },
     {
+      "key": "packages.tooltip.viewDetails",
+      "value": "Click for details"
+    },
+    {
       "key": "unity.button.install",
       "value": "Install via Unity Hub"
     },
@@ -761,6 +777,10 @@
     {
       "key": "unity.button.uninstall",
       "value": "Uninstall"
+    },
+    {
+      "key": "unity.editors.none",
+      "value": "No Unity editors installed yet — add one below."
     },
     {
       "key": "unity.header.subtitle",
@@ -897,6 +917,14 @@
     {
       "key": "develop.button.mountAll",
       "value": "Mount all"
+    },
+    {
+      "key": "develop.owner.label",
+      "value": "Owner"
+    },
+    {
+      "key": "develop.owner.all",
+      "value": "All owners ({0})"
     },
     {
       "key": "develop.button.mountToEdit",

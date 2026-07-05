@@ -27,7 +27,9 @@ public sealed class DevelopViewModel : ObservableObject
     private bool _driftScanning;
     private DispatcherTimer? _driftTimer;
 
-    public ObservableCollection<GitPackageRow> GitPackages { get; } = new();
+    public ObservableCollection<GitPackageRow> GitPackages { get; } = new();   // displayed, filtered by SelectedOwner
+    private readonly List<GitPackageRow> _allGitPackages = new();               // every git package, pre-filter
+    public ObservableCollection<OwnerOption> Owners { get; } = new();
     public ObservableCollection<MountedRow> Mounted { get; } = new();
     public ObservableCollection<CacheDriftRow> DriftPackages { get; } = new();
 
@@ -38,6 +40,16 @@ public sealed class DevelopViewModel : ObservableObject
     public bool HasGitPackages => GitPackages.Count > 0;
     public bool NoGitPackages => HasInstall && GitPackages.Count == 0;
     public bool HasMounted => Mounted.Count > 0;
+
+    // Owner dropdown: filters the git-package list to a single owner (or "All owners"). Only worth
+    // showing when there are at least two distinct owners to pick between.
+    private OwnerOption? _selectedOwner;
+    public OwnerOption? SelectedOwner
+    {
+        get => _selectedOwner;
+        set { if (SetField(ref _selectedOwner, value)) ApplyOwnerFilter(); }
+    }
+    public bool HasOwnerChoices => Owners.Count > 2;
 
     private bool _driftScanned;
     public bool DriftScanned { get => _driftScanned; private set { if (SetField(ref _driftScanned, value)) OnPropertyChanged(nameof(NoDrift)); } }
@@ -114,6 +126,7 @@ public sealed class DevelopViewModel : ObservableObject
             OnPropertyChanged(n);
 
         GitPackages.Clear();
+        _allGitPackages.Clear();
         Mounted.Clear();
         DriftPackages.Clear();
         DriftScanned = false;
@@ -130,15 +143,48 @@ public sealed class DevelopViewModel : ObservableObject
                 if (mounted.Contains(id)) continue;
                 var parsed = UpmGitUrl.Parse(value);
                 if (parsed is null || !(parsed.IsGitHub || parsed.IsGitLab)) continue;
-                GitPackages.Add(new GitPackageRow(id, value, parsed.Host, parsed.Slug, parsed.Path is not null));
+                _allGitPackages.Add(new GitPackageRow(id, value, parsed.Host, parsed.Slug, parsed.Path is not null, parsed.Owner));
             }
         }
+
+        BuildOwners();
 
         OnPropertyChanged(nameof(HasGitPackages));
         OnPropertyChanged(nameof(NoGitPackages));
         OnPropertyChanged(nameof(HasMounted));
         OnPropertyChanged(nameof(HasDrift));
         OnPropertyChanged(nameof(NoDrift));
+    }
+
+    // Rebuild the owner dropdown from the current git packages (most packages first, then A–Z),
+    // reset the selection to "All owners", and refresh the filtered list.
+    private void BuildOwners()
+    {
+        Owners.Clear();
+        Owners.Add(new OwnerOption(null, _allGitPackages.Count));
+        foreach (var group in _allGitPackages
+                     .GroupBy(p => p.Owner, StringComparer.OrdinalIgnoreCase)
+                     .OrderByDescending(g => g.Count())
+                     .ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
+            Owners.Add(new OwnerOption(group.Key, group.Count()));
+
+        _selectedOwner = Owners.Count > 0 ? Owners[0] : null;
+        OnPropertyChanged(nameof(SelectedOwner));
+        OnPropertyChanged(nameof(HasOwnerChoices));
+        ApplyOwnerFilter();
+    }
+
+    // Repopulate the displayed git-package list for the selected owner (a null owner means "All owners").
+    private void ApplyOwnerFilter()
+    {
+        var owner = _selectedOwner?.Owner;
+        GitPackages.Clear();
+        foreach (var pkg in _allGitPackages)
+            if (owner is null || string.Equals(pkg.Owner, owner, StringComparison.OrdinalIgnoreCase))
+                GitPackages.Add(pkg);
+
+        OnPropertyChanged(nameof(HasGitPackages));
+        OnPropertyChanged(nameof(NoGitPackages));
     }
 
     private async Task CheckAuthAsync()
@@ -363,7 +409,12 @@ public sealed class DevelopViewModel : ObservableObject
     private static void OpenUrl(string url) => ExternalLink.Open(url);
 }
 
-public sealed record GitPackageRow(string Id, string GitUrl, string Host, string Slug, bool InSubfolder);
+public sealed record GitPackageRow(string Id, string GitUrl, string Host, string Slug, bool InSubfolder, string Owner);
+
+public sealed record OwnerOption(string? Owner, int Count)
+{
+    public string Display => Owner is null ? L.Tr("develop.owner.all", Count) : $"{Owner} ({Count})";
+}
 
 public sealed record MountedRow(string Id, string FolderPath, string OriginalManifestValue);
 

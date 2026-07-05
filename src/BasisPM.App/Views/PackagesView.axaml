@@ -7,6 +7,7 @@
              x:DataType="vm:PackagesViewModel"
              Name="Root">
 
+    <Grid>
     <ScrollViewer>
         <StackPanel Margin="40,32" Spacing="20">
 
@@ -73,7 +74,8 @@
                             <ItemsControl ItemsSource="{Binding Available}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="vm:PackageRow">
-                                        <Border Classes="glass" Padding="14" Margin="16,7">
+                                        <Border Classes="glass" Padding="14" Margin="16,7" Cursor="Hand" Tapped="OnRowTapped"
+                                                ToolTip.Tip="{loc:Tr packages.tooltip.viewDetails}">
                                             <Grid ColumnDefinitions="Auto,*,Auto">
                                                 <Border Grid.Column="0" Width="46" Height="46" CornerRadius="13" VerticalAlignment="Top"
                                                         Background="{StaticResource BasisBrandGradient}">
@@ -131,7 +133,8 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="vm:PackageRow">
-                                        <Border Classes="glass" Padding="16" Margin="6" Width="234">
+                                        <Border Classes="glass" Padding="16" Margin="6" Width="234" Cursor="Hand" Tapped="OnRowTapped"
+                                                ToolTip.Tip="{loc:Tr packages.tooltip.viewDetails}">
                                             <StackPanel Spacing="10">
                                                 <StackPanel Orientation="Horizontal" Spacing="10">
                                                     <Border Width="40" Height="40" CornerRadius="11" Background="{StaticResource BasisBrandGradient}">
@@ -228,4 +231,76 @@
             </StackPanel>
         </StackPanel>
     </ScrollViewer>
+
+    <!-- Package detail overlay — opened by clicking a package row, closed by ✕ or the backdrop. -->
+    <Border IsVisible="{Binding ShowDetail}" Background="#B4000000" Tapped="OnBackdropTapped">
+        <Border Classes="card" MaxWidth="620" MaxHeight="740" Margin="40"
+                HorizontalAlignment="Center" VerticalAlignment="Center">
+            <ScrollViewer DataContext="{Binding SelectedPackage}">
+                <StackPanel Spacing="16" x:DataType="vm:PackageRow">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <Border Grid.Column="0" Width="56" Height="56" CornerRadius="15" VerticalAlignment="Top"
+                                Background="{StaticResource BasisBrandGradient}">
+                            <TextBlock Text="{Binding Initial}" FontSize="26" FontWeight="Bold" Foreground="#FFFFFF"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="16,0" Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding DisplayName}" Classes="h2"/>
+                            <TextBlock Text="{Binding Name}" Classes="dim" FontSize="12"/>
+                            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,3,0,0">
+                                <TextBlock Text="{Binding Author, StringFormat='by {0}'}" Classes="muted" FontSize="12" IsVisible="{Binding HasAuthor}"/>
+                                <TextBlock Text="{Binding Owner}" Classes="dim" FontSize="12"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <Button Grid.Column="2" Content="✕" FontSize="15" Padding="11,6" VerticalAlignment="Top"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).CloseDetailCommand}"/>
+                    </Grid>
+
+                    <TextBlock Text="{Binding Description}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Border Classes="versionPill"><TextBlock Text="{Binding Version, StringFormat='v{0}'}" FontSize="11" Classes="brand"/></Border>
+                        <Border Classes="versionPill" IsVisible="{Binding HasLicense}"><TextBlock Text="{Binding License, StringFormat='⚖ {0}'}" FontSize="11" Classes="muted"/></Border>
+                        <Border Classes="versionPill" IsVisible="{Binding HasUnity}"><TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" FontSize="11" Classes="muted"/></Border>
+                    </StackPanel>
+
+                    <StackPanel Spacing="6" IsVisible="{Binding HasDependencies}">
+                        <TextBlock Text="{loc:Tr packages.detail.dependencies}" Classes="dim" FontSize="11" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding DependencySummary}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <StackPanel Spacing="6" IsVisible="{Binding HasGitUrl}">
+                        <TextBlock Text="{loc:Tr packages.detail.gitUrl}" Classes="dim" FontSize="11" FontWeight="Bold"/>
+                        <Border Classes="glass" Padding="10,8" CornerRadius="8">
+                            <TextBlock Text="{Binding GitUrl}" FontFamily="Cascadia Mono,Consolas,monospace" FontSize="11" Classes="muted" TextWrapping="Wrap"/>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Spacing="8" Margin="0,4,0,0">
+                        <Button Content="{loc:Tr packages.button.install}" Classes="primary" HorizontalAlignment="Stretch"
+                                IsVisible="{Binding IsNotInstalled}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
+                                CommandParameter="{Binding Entry}"/>
+                        <Button Content="{loc:Tr packages.button.update}" Classes="primary" HorizontalAlignment="Stretch"
+                                IsVisible="{Binding IsInstalled}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
+                                CommandParameter="{Binding Entry}"/>
+                        <Button Content="{loc:Tr packages.button.chooseVersion}" HorizontalAlignment="Stretch"
+                                IsVisible="{Binding HasGit}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ChooseVersionCommand}"
+                                CommandParameter="{Binding Entry}"/>
+                        <Button Content="{loc:Tr packages.button.remove}" Classes="danger" HorizontalAlignment="Stretch"
+                                IsVisible="{Binding IsInstalled}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RemoveCommand}"
+                                CommandParameter="{Binding Entry}"/>
+                        <Button Content="{loc:Tr packages.detail.website}" Classes="link" HorizontalAlignment="Center" Margin="0,4,0,0"
+                                IsVisible="{Binding HasLink}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
+                                CommandParameter="{Binding Link}"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Border>
+    </Grid>
 </UserControl>
