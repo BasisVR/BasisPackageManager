@@ -73,7 +73,8 @@ public sealed class MainWindowViewModel : ObservableObject
         FundingVM = new FundingViewModel();
         var mountService = new MountService(_gitService, _projectService, _mountRegistry);
         var contributeService = new ContributeService(_gitService, _ghApi);
-        DevelopVM = new DevelopViewModel(mountService, contributeService, _ghAuth, _ghApi, _gitService, _mountRegistry, this);
+        var cacheDriftService = new CacheDriftService(_gitService);
+        DevelopVM = new DevelopViewModel(mountService, contributeService, cacheDriftService, _ghAuth, _ghApi, _gitService, _mountRegistry, this);
         AnnouncementsVM = new AnnouncementsViewModel(_announcementService);
         DocumentationVM = new DocumentationViewModel();
         CommunityVM = new CommunityViewModel(AnnouncementsVM, DocumentationVM, FundingVM);

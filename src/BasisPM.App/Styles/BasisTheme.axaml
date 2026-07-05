@@ -80,6 +80,33 @@
                 <GradientStop Offset="0" Color="#FF2C50"/>
                 <GradientStop Offset="1" Color="#A855F7"/>
             </LinearGradientBrush>
+
+            <!-- Expander reskin: the Fluent defaults (opaque header surface, blue-grey chevron)
+                 clash with the glass theme. Override its theme resources to match the cards. -->
+            <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver" Color="{StaticResource BasisSurfaceHover}"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBackgroundPressed" Color="{StaticResource BasisSurfaceHover}"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBackgroundDisabled" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderHeaderForeground" Color="{StaticResource BasisTextPrimary}"/>
+            <SolidColorBrush x:Key="ExpanderHeaderForegroundPointerOver" Color="{StaticResource BasisTextPrimary}"/>
+            <SolidColorBrush x:Key="ExpanderHeaderForegroundPressed" Color="{StaticResource BasisTextPrimary}"/>
+            <SolidColorBrush x:Key="ExpanderHeaderForegroundDisabled" Color="{StaticResource BasisTextDim}"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBorderBrush" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBorderBrushPointerOver" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBorderBrushPressed" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBorderBrushDisabled" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderContentBackground" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="{StaticResource BasisBorder}"/>
+            <SolidColorBrush x:Key="ExpanderChevronForeground" Color="{StaticResource BasisTextMuted}"/>
+            <SolidColorBrush x:Key="ExpanderChevronForegroundPointerOver" Color="{StaticResource BasisBrand}"/>
+            <SolidColorBrush x:Key="ExpanderChevronForegroundPressed" Color="{StaticResource BasisBrand}"/>
+            <SolidColorBrush x:Key="ExpanderChevronForegroundDisabled" Color="{StaticResource BasisTextDim}"/>
+            <SolidColorBrush x:Key="ExpanderChevronBackground" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderChevronBackgroundPointerOver" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderChevronBackgroundPressed" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderChevronBorderBrush" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderChevronBorderBrushPointerOver" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderChevronBorderBrushPressed" Color="Transparent"/>
         </ResourceDictionary>
     </Styles.Resources>
 
@@ -340,5 +367,21 @@
     <Style Selector="Button.bannerGhost:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="#33FFFFFF"/>
         <Setter Property="TextElement.Foreground" Value="#FFFFFF"/>
+    </Style>
+
+    <!-- Expander: a frosted-glass collapsible section that matches Border.card -->
+    <Style Selector="Expander">
+        <Setter Property="Background" Value="{StaticResource BasisGlassBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="14"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Expander /template/ ToggleButton#ExpanderHeader">
+        <Setter Property="Padding" Value="20,14"/>
+        <Setter Property="MinHeight" Value="0"/>
+    </Style>
+    <Style Selector="Expander /template/ Border#ExpanderContent">
+        <Setter Property="Padding" Value="20,6,20,18"/>
     </Style>
 </Styles>

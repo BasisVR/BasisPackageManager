@@ -12,6 +12,7 @@ public sealed class DevelopViewModel : ObservableObject
 {
     private readonly MountService _mount;
     private readonly ContributeService _contribute;
+    private readonly CacheDriftService _drift;
     private readonly GitHubAuthService _auth;
     private readonly GitHubApiService _api;
     private readonly GitService _git;
@@ -26,6 +27,7 @@ public sealed class DevelopViewModel : ObservableObject
 
     public ObservableCollection<GitPackageRow> GitPackages { get; } = new();
     public ObservableCollection<MountedRow> Mounted { get; } = new();
+    public ObservableCollection<CacheDriftRow> DriftPackages { get; } = new();
 
     public string InstallName => _install?.DisplayName ?? L.Tr("develop.install.none");
     public bool HasInstall => _install is not null && _install.HasUnityProject;
@@ -34,6 +36,11 @@ public sealed class DevelopViewModel : ObservableObject
     public bool HasGitPackages => GitPackages.Count > 0;
     public bool NoGitPackages => HasInstall && GitPackages.Count == 0;
     public bool HasMounted => Mounted.Count > 0;
+
+    private bool _driftScanned;
+    public bool DriftScanned { get => _driftScanned; private set { if (SetField(ref _driftScanned, value)) OnPropertyChanged(nameof(NoDrift)); } }
+    public bool HasDrift => DriftPackages.Count > 0;
+    public bool NoDrift => DriftScanned && DriftPackages.Count == 0;
 
     public bool GitAvailable => _git.IsAvailable;
     public bool GitMissing => !_git.IsAvailable;
@@ -58,23 +65,29 @@ public sealed class DevelopViewModel : ObservableObject
     public RelayCommand RecheckCommand { get; }
     public RelayCommand ApplyPatCommand { get; }
     public RelayCommand<GitPackageRow> MountCommand { get; }
+    public RelayCommand MountAllCommand { get; }
     public RelayCommand<MountedRow> SubmitPrCommand { get; }
     public RelayCommand<MountedRow> SwapBackCommand { get; }
     public RelayCommand<MountedRow> OpenInUnityCommand { get; }
+    public RelayCommand ScanDriftCommand { get; }
+    public RelayCommand<CacheDriftRow> OpenDriftPrCommand { get; }
 
-    public DevelopViewModel(MountService mount, ContributeService contribute, GitHubAuthService auth,
+    public DevelopViewModel(MountService mount, ContributeService contribute, CacheDriftService drift, GitHubAuthService auth,
         GitHubApiService api, GitService git, MountRegistry registry, MainWindowViewModel shell)
     {
-        _mount = mount; _contribute = contribute; _auth = auth; _api = api; _git = git; _registry = registry; _shell = shell;
+        _mount = mount; _contribute = contribute; _drift = drift; _auth = auth; _api = api; _git = git; _registry = registry; _shell = shell;
 
         RefreshCommand = new RelayCommand(RefreshAsync);
         InstallGitCommand = new RelayCommand(() => OpenUrl("https://git-scm.com/downloads"));
         RecheckCommand = new RelayCommand(RefreshAsync);
         ApplyPatCommand = new RelayCommand(ApplyPatAsync);
         MountCommand = new RelayCommand<GitPackageRow>(MountAsync);
+        MountAllCommand = new RelayCommand(MountAllAsync);
         SubmitPrCommand = new RelayCommand<MountedRow>(SubmitPrAsync);
         SwapBackCommand = new RelayCommand<MountedRow>(SwapBackAsync);
         OpenInUnityCommand = new RelayCommand<MountedRow>(row => { if (_install is not null) _ = _shell.OpenProjectInUnityAsync(_install); });
+        ScanDriftCommand = new RelayCommand(ScanDriftAsync);
+        OpenDriftPrCommand = new RelayCommand<CacheDriftRow>(OpenDriftPrAsync);
     }
 
     public void SetActiveInstall(BasisInstall install)
@@ -99,6 +112,8 @@ public sealed class DevelopViewModel : ObservableObject
 
         GitPackages.Clear();
         Mounted.Clear();
+        DriftPackages.Clear();
+        DriftScanned = false;
 
         if (_install is not null && _install.HasUnityProject)
         {
@@ -119,6 +134,8 @@ public sealed class DevelopViewModel : ObservableObject
         OnPropertyChanged(nameof(HasGitPackages));
         OnPropertyChanged(nameof(NoGitPackages));
         OnPropertyChanged(nameof(HasMounted));
+        OnPropertyChanged(nameof(HasDrift));
+        OnPropertyChanged(nameof(NoDrift));
     }
 
     private async Task CheckAuthAsync()
@@ -173,6 +190,97 @@ public sealed class DevelopViewModel : ObservableObject
             else _shell.SetStatus(result.Error ?? L.Tr("develop.status.mountFailed"), StatusKind.Error);
         }
         catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.mountError", ex.Message), StatusKind.Error); }
+        finally { IsBusy = false; }
+    }
+
+    // Mount every git package that isn't mounted yet, skipping any whose folder is already present.
+    private async Task MountAllAsync()
+    {
+        if (_install is null) return;
+        if (!_git.IsAvailable) { _shell.SetStatus(L.Tr("develop.status.gitRequiredMount"), StatusKind.Error); return; }
+
+        var rows = GitPackages.ToList();
+        if (rows.Count == 0) return;
+
+        IsBusy = true;
+        int ok = 0, skipped = 0, failed = 0;
+        try
+        {
+            foreach (var row in rows)
+            {
+                _shell.SetStatus(L.Tr("develop.status.mounting", row.Id));
+                var result = await _mount.MountAsync(_install, row.Id, row.GitUrl, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
+                if (result.Ok) ok++;
+                else if (result.Error is not null && result.Error.Contains("already exists", StringComparison.OrdinalIgnoreCase)) skipped++;
+                else failed++;
+            }
+            Refresh();
+            _shell.SetStatus(L.Tr("develop.status.mountedAll", ok, skipped, failed), failed > 0 ? StatusKind.Error : StatusKind.Success);
+        }
+        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.mountError", ex.Message), StatusKind.Error); }
+        finally { IsBusy = false; }
+    }
+
+    // Scan the project's git packages for accidental edits made directly in Library/PackageCache.
+    private async Task ScanDriftAsync()
+    {
+        if (_install is null) return;
+        if (!_git.IsAvailable) { _shell.SetStatus(L.Tr("develop.status.gitRequiredMount"), StatusKind.Error); return; }
+
+        IsBusy = true;
+        DriftPackages.Clear();
+        OnPropertyChanged(nameof(HasDrift));
+        _shell.SetStatus(L.Tr("develop.status.scanningDrift"));
+        try
+        {
+            var drifts = await _drift.ScanAsync(_install, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
+            foreach (var d in drifts)
+            {
+                var summary = string.Join(", ", d.ChangedFiles.Take(6));
+                if (d.ChangedFiles.Count > 6) summary += ", …";
+                DriftPackages.Add(new CacheDriftRow(d.PackageId, d.WorkClonePath, d.GitUrl, d.ChangedFiles.Count, summary));
+            }
+            DriftScanned = true;
+            OnPropertyChanged(nameof(HasDrift));
+            OnPropertyChanged(nameof(NoDrift));
+            _shell.SetStatus(
+                drifts.Count == 0 ? L.Tr("develop.status.noDrift") : L.Tr("develop.status.driftFound", drifts.Count),
+                drifts.Count == 0 ? StatusKind.Success : StatusKind.Info);
+        }
+        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.driftError", ex.Message), StatusKind.Error); }
+        finally { IsBusy = false; }
+    }
+
+    // Turn an accidental cache edit into a pull request, reusing the mounted-package PR flow on the work clone.
+    private async Task OpenDriftPrAsync(CacheDriftRow? row)
+    {
+        if (row is null) return;
+        if (!_git.IsAvailable) { _shell.SetStatus(L.Tr("develop.status.gitRequired"), StatusKind.Error); return; }
+
+        var token = await _auth.GetTokenAsync();
+        if (string.IsNullOrEmpty(token)) { _shell.SetStatus(L.Tr("develop.status.signInFirst"), StatusKind.Error); return; }
+        var user = await _api.GetUserAsync(token);
+        if (user is null) { _shell.SetStatus(L.Tr("develop.status.loginUnverified"), StatusKind.Error); return; }
+
+        var draft = await Dialogs.SubmitPrAsync(row.PackageId);
+        if (draft is null) return;
+
+        IsBusy = true;
+        _shell.SetStatus(L.Tr("develop.status.submittingPr", row.PackageId));
+        try
+        {
+            var result = await _contribute.SubmitPrAsync(row.WorkClonePath, token, user, draft, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
+            if (result.Ok)
+            {
+                _shell.SetStatus(L.Tr("develop.status.prOpened", result.Forked ? L.Tr("develop.status.viaFork") : "", result.PrUrl), StatusKind.Success);
+                if (!string.IsNullOrEmpty(result.PrUrl)) OpenUrl(result.PrUrl!);
+                DriftPackages.Remove(row);
+                OnPropertyChanged(nameof(HasDrift));
+                OnPropertyChanged(nameof(NoDrift));
+            }
+            else _shell.SetStatus(result.Error ?? L.Tr("develop.status.prFailed"), StatusKind.Error);
+        }
+        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.prError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
     }
 
@@ -237,3 +345,5 @@ public sealed class DevelopViewModel : ObservableObject
 public sealed record GitPackageRow(string Id, string GitUrl, string Host, string Slug, bool InSubfolder);
 
 public sealed record MountedRow(string Id, string FolderPath, string OriginalManifestValue);
+
+public sealed record CacheDriftRow(string PackageId, string WorkClonePath, string GitUrl, int ChangedCount, string ChangedSummary);

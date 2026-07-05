@@ -230,6 +230,13 @@ public sealed class GitService
         return code == 0 ? outText.Trim() : null;
     }
 
+    /// <summary>Sets a local git config value (e.g. core.autocrlf) on a repo.</summary>
+    public async Task<GitResult> SetConfigAsync(string repoRoot, string key, string value, CancellationToken ct = default)
+    {
+        var (code, _, err) = await RunGitAsync(repoRoot, new[] { "config", key, value }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, err.Trim());
+    }
+
     /// <summary>Adds the remote, or updates its URL when it already exists.</summary>
     public async Task<GitResult> SetRemoteAsync(string repoRoot, string remote, string url, CancellationToken ct = default)
     {

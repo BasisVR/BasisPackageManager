@@ -891,6 +891,10 @@
       "value": "Install Git"
     },
     {
+      "key": "develop.button.mountAll",
+      "value": "Mount all"
+    },
+    {
       "key": "develop.button.mountToEdit",
       "value": "Mount to edit"
     },
@@ -907,6 +911,14 @@
       "value": "Refresh"
     },
     {
+      "key": "develop.button.reviewOpenPr",
+      "value": "Review & open PR"
+    },
+    {
+      "key": "develop.button.scanCache",
+      "value": "Scan for changes"
+    },
+    {
       "key": "develop.button.signIn",
       "value": "Sign in"
     },
@@ -917,6 +929,34 @@
     {
       "key": "develop.button.swapBack",
       "value": "Swap back"
+    },
+    {
+      "key": "develop.section.cacheChanges",
+      "value": "Accidental cache changes"
+    },
+    {
+      "key": "develop.section.cacheChangesHint",
+      "value": "Unity keeps git packages in Library/PackageCache. If one was edited there by accident, scan to detect it and open a pull request upstream."
+    },
+    {
+      "key": "develop.section.noCacheChanges",
+      "value": "No local changes found in cached packages."
+    },
+    {
+      "key": "develop.status.scanningDrift",
+      "value": "Scanning cached packages for local changes…"
+    },
+    {
+      "key": "develop.status.noDrift",
+      "value": "No local changes in cached packages."
+    },
+    {
+      "key": "develop.status.driftFound",
+      "value": "Found local changes in {0} cached package(s)."
+    },
+    {
+      "key": "develop.status.driftError",
+      "value": "Couldn't scan cached packages: {0}"
     },
     {
       "key": "develop.confirm.alreadyMounted",
@@ -1001,6 +1041,10 @@
     {
       "key": "develop.status.mounted",
       "value": "Mounted {0} into Packages/ — edit it in Unity, then Submit PR."
+    },
+    {
+      "key": "develop.status.mountedAll",
+      "value": "Mounted {0} package(s); skipped {1}; {2} failed."
     },
     {
       "key": "develop.status.mounting",

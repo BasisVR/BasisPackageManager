@@ -68,7 +68,11 @@
                 <Border Classes="card" Padding="0">
                     <StackPanel>
                         <Border Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                            <TextBlock Text="{loc:Tr develop.section.gitPackages}" Classes="h3"/>
+                            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <TextBlock Grid.Column="0" Text="{loc:Tr develop.section.gitPackages}" Classes="h3" VerticalAlignment="Center"/>
+                                <Button Grid.Column="1" Classes="primary" Content="{loc:Tr develop.button.mountAll}"
+                                        Command="{Binding MountAllCommand}" IsVisible="{Binding HasGitPackages}"/>
+                            </Grid>
                         </Border>
                         <ItemsControl ItemsSource="{Binding GitPackages}">
                             <ItemsControl.ItemTemplate>
@@ -89,6 +93,40 @@
                         </ItemsControl>
                         <TextBlock Text="{loc:Tr develop.section.noGitPackages}" Classes="muted" FontSize="12"
                                    Margin="20,16" IsVisible="{Binding NoGitPackages}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Accidental edits in Library/PackageCache -->
+                <Border Classes="card" Padding="0">
+                    <StackPanel>
+                        <Border Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Spacing="3">
+                                    <TextBlock Text="{loc:Tr develop.section.cacheChanges}" Classes="h3"/>
+                                    <TextBlock Text="{loc:Tr develop.section.cacheChangesHint}" Classes="muted" FontSize="11" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" Content="{loc:Tr develop.button.scanCache}" Command="{Binding ScanDriftCommand}" VerticalAlignment="Top"/>
+                            </Grid>
+                        </Border>
+                        <ItemsControl ItemsSource="{Binding DriftPackages}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="vm:CacheDriftRow">
+                                    <Border Padding="20,14" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                                        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                            <StackPanel Grid.Column="0" Spacing="3" ClipToBounds="True">
+                                                <TextBlock Text="{Binding PackageId}" FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding ChangedSummary}" Classes="dim" FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <Button Grid.Column="1" Classes="primary" Content="{loc:Tr develop.button.reviewOpenPr}"
+                                                    Command="{Binding #Root.((vm:DevelopViewModel)DataContext).OpenDriftPrCommand}"
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="{loc:Tr develop.section.noCacheChanges}" Classes="muted" FontSize="12"
+                                   Margin="20,16" IsVisible="{Binding NoDrift}"/>
                     </StackPanel>
                 </Border>
 
