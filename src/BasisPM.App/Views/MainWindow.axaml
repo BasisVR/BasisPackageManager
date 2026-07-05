@@ -22,35 +22,37 @@
                     </Animation>
                 </Style.Animations>
             </Style>
+            <!-- Blobs drift by animating their Canvas anchors (double → built-in animator).
+                 RenderTransform has no default animator in Avalonia and throws at load. -->
             <Style Selector="Ellipse.blobA">
                 <Style.Animations>
                     <Animation Duration="0:0:23" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
-                        <KeyFrame Cue="0%"><Setter Property="RenderTransform" Value="translate(0px,0px)"/></KeyFrame>
-                        <KeyFrame Cue="100%"><Setter Property="RenderTransform" Value="translate(80px,60px)"/></KeyFrame>
+                        <KeyFrame Cue="0%"><Setter Property="Canvas.Left" Value="-60"/><Setter Property="Canvas.Top" Value="-40"/></KeyFrame>
+                        <KeyFrame Cue="100%"><Setter Property="Canvas.Left" Value="20"/><Setter Property="Canvas.Top" Value="30"/></KeyFrame>
                     </Animation>
                 </Style.Animations>
             </Style>
             <Style Selector="Ellipse.blobB">
                 <Style.Animations>
                     <Animation Duration="0:0:29" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
-                        <KeyFrame Cue="0%"><Setter Property="RenderTransform" Value="translate(0px,0px)"/></KeyFrame>
-                        <KeyFrame Cue="100%"><Setter Property="RenderTransform" Value="translate(-70px,50px)"/></KeyFrame>
+                        <KeyFrame Cue="0%"><Setter Property="Canvas.Right" Value="-80"/><Setter Property="Canvas.Top" Value="60"/></KeyFrame>
+                        <KeyFrame Cue="100%"><Setter Property="Canvas.Right" Value="-10"/><Setter Property="Canvas.Top" Value="115"/></KeyFrame>
                     </Animation>
                 </Style.Animations>
             </Style>
             <Style Selector="Ellipse.blobC">
                 <Style.Animations>
                     <Animation Duration="0:0:34" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
-                        <KeyFrame Cue="0%"><Setter Property="RenderTransform" Value="translate(0px,0px)"/></KeyFrame>
-                        <KeyFrame Cue="100%"><Setter Property="RenderTransform" Value="translate(-60px,-45px)"/></KeyFrame>
+                        <KeyFrame Cue="0%"><Setter Property="Canvas.Left" Value="280"/><Setter Property="Canvas.Bottom" Value="-40"/></KeyFrame>
+                        <KeyFrame Cue="100%"><Setter Property="Canvas.Left" Value="210"/><Setter Property="Canvas.Bottom" Value="20"/></KeyFrame>
                     </Animation>
                 </Style.Animations>
             </Style>
             <Style Selector="Ellipse.blobD">
                 <Style.Animations>
                     <Animation Duration="0:0:26" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
-                        <KeyFrame Cue="0%"><Setter Property="RenderTransform" Value="translate(0px,0px)"/></KeyFrame>
-                        <KeyFrame Cue="100%"><Setter Property="RenderTransform" Value="translate(55px,-40px)"/></KeyFrame>
+                        <KeyFrame Cue="0%"><Setter Property="Canvas.Right" Value="120"/><Setter Property="Canvas.Bottom" Value="-30"/></KeyFrame>
+                        <KeyFrame Cue="100%"><Setter Property="Canvas.Right" Value="55"/><Setter Property="Canvas.Bottom" Value="30"/></KeyFrame>
                     </Animation>
                 </Style.Animations>
             </Style>
