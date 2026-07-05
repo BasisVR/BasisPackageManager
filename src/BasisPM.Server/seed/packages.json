@@ -14,9 +14,7 @@
     "basisVersion": "main",
     "license": "MIT AND Unlicense",
     "version": "0.0.1",
-    "icon": "🎱",
-    "discord": "https://discord.gg/v6ve6WT562",
-    "donate": "https://opencollective.com/basis"
+    "icon": "🎱"
   },
   {
     "id": "com.basis.addon.snapcontrols",
