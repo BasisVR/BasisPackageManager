@@ -106,18 +106,13 @@
                                                     </StackPanel>
                                                 </StackPanel>
                                                 <StackPanel Grid.Column="2" Width="160" Spacing="8" VerticalAlignment="Center">
-                                                    <Button Content="{Binding ButtonLabel}" Classes="primary" HorizontalAlignment="Stretch"
+                                                    <!-- Not installed: a single Install. Installed: a Manage menu. -->
+                                                    <Button Content="{loc:Tr packages.button.install}" Classes="primary" HorizontalAlignment="Stretch"
+                                                            IsVisible="{Binding !IsInstalled}"
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                                                             CommandParameter="{Binding Entry}"/>
-                                                    <Button Content="{loc:Tr packages.button.chooseVersion}" HorizontalAlignment="Stretch" FontSize="11" Padding="10,6"
-                                                            IsVisible="{Binding HasGit}"
-                                                            ToolTip.Tip="{loc:Tr packages.tooltip.chooseVersion}"
-                                                            Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ChooseVersionCommand}"
-                                                            CommandParameter="{Binding Entry}"/>
-                                                    <Button Content="{loc:Tr packages.button.remove}" Classes="danger" HorizontalAlignment="Stretch" FontSize="11" Padding="10,6"
-                                                            IsVisible="{Binding IsInstalled}"
-                                                            Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RemoveCommand}"
-                                                            CommandParameter="{Binding Entry}"/>
+                                                    <Button Content="{loc:Tr packages.button.manage}" Classes="primary" HorizontalAlignment="Stretch"
+                                                            IsVisible="{Binding IsInstalled}" Click="OnManageClick"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
@@ -164,18 +159,12 @@
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
                                                             CommandParameter="{Binding Link}"/>
                                                 </StackPanel>
-                                                <Button Content="{Binding ButtonLabel}" Classes="primary" HorizontalAlignment="Stretch"
+                                                <Button Content="{loc:Tr packages.button.install}" Classes="primary" HorizontalAlignment="Stretch"
+                                                        IsVisible="{Binding !IsInstalled}"
                                                         Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                                                         CommandParameter="{Binding Entry}"/>
-                                                <Button Content="{loc:Tr packages.button.chooseVersion}" HorizontalAlignment="Stretch" FontSize="11" Padding="10,6"
-                                                        IsVisible="{Binding HasGit}"
-                                                        ToolTip.Tip="{loc:Tr packages.tooltip.chooseVersion}"
-                                                        Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ChooseVersionCommand}"
-                                                        CommandParameter="{Binding Entry}"/>
-                                                <Button Content="{loc:Tr packages.button.remove}" Classes="danger" HorizontalAlignment="Stretch" FontSize="11" Padding="10,6"
-                                                        IsVisible="{Binding IsInstalled}"
-                                                        Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RemoveCommand}"
-                                                        CommandParameter="{Binding Entry}"/>
+                                                <Button Content="{loc:Tr packages.button.manage}" Classes="primary" HorizontalAlignment="Stretch"
+                                                        IsVisible="{Binding IsInstalled}" Click="OnManageClick"/>
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>

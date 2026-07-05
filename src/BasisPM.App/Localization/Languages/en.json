@@ -523,6 +523,10 @@
       "value": "List view"
     },
     {
+      "key": "packages.button.manage",
+      "value": "Manage"
+    },
+    {
       "key": "packages.button.refresh",
       "value": "Refresh"
     },
