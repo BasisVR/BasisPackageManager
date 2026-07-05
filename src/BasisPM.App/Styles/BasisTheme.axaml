@@ -403,4 +403,39 @@
     <Style Selector="Expander /template/ Border#ExpanderContent">
         <Setter Property="Padding" Value="20,6,20,18"/>
     </Style>
+
+    <!-- Flyout popup (e.g. the package "Manage" menu): a dark panel matching the cards. -->
+    <Style Selector="FlyoutPresenter">
+        <Setter Property="Background" Value="{StaticResource BasisPanelBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBorderStrongBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="MinWidth" Value="0"/>
+    </Style>
+
+    <!-- Menu-style buttons stacked inside a Flyout (the code-built Manage menu). -->
+    <Style Selector="Button.menuItem">
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="12,9"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.menuItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="Button.menuItem.destructive">
+        <Setter Property="Foreground" Value="{StaticResource BasisBrandBrush}"/>
+    </Style>
+    <Style Selector="Button.menuItem.destructive:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandBrush}"/>
+    </Style>
 </Styles>

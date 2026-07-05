@@ -69,7 +69,7 @@
                             <TextBox Watermark="{loc:Tr packages.filter.watermark}" Text="{Binding Filter}"/>
                         </Border>
                         <!-- List layout: one roomy row per package, with a wide action column. -->
-                        <ScrollViewer Grid.Row="2" MaxHeight="360" IsVisible="{Binding IsListView}">
+                        <ScrollViewer Grid.Row="2" MaxHeight="720" IsVisible="{Binding IsListView}">
                             <ItemsControl ItemsSource="{Binding Available}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="vm:PackageRow">
@@ -122,7 +122,7 @@
                         </ScrollViewer>
 
                         <!-- Grid layout: cards that wrap; toggled from the header. -->
-                        <ScrollViewer Grid.Row="2" MaxHeight="420" IsVisible="{Binding IsGridView}">
+                        <ScrollViewer Grid.Row="2" MaxHeight="840" IsVisible="{Binding IsGridView}">
                             <ItemsControl ItemsSource="{Binding Available}" Margin="10,7">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
