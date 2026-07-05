@@ -112,5 +112,21 @@
     "basisVersion": "main",
     "version": "0.0.1",
     "icon": "🚗"
+  },
+  {
+    "id": "com.basis.examples",
+    "name": "Basis Examples",
+    "description": "Example content for the Basis framework: demo scenes, interactable prefabs, a mirror, seats, pickups, and sample scripts to learn from and build on.",
+    "author": "BasisVR",
+    "authorUrl": "https://github.com/BasisVR",
+    "category": "Examples",
+    "tags": [ "examples", "demo", "learning", "prefabs", "scenes" ],
+    "source": "curated",
+    "gitUrl": "https://github.com/BasisVR/BasisExamples.git",
+    "repoUrl": "https://github.com/BasisVR/BasisExamples",
+    "unity": "6000.0",
+    "basisVersion": "main",
+    "version": "0.0.1",
+    "icon": "📚"
   }
 ]
