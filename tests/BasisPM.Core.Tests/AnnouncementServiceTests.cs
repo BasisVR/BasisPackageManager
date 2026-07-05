@@ -7,11 +7,10 @@ namespace BasisPM.Core.Tests;
 public sealed class AnnouncementServiceTests
 {
     [Fact]
-    public void LoadEmbedded_returns_the_baked_in_feed()
+    public void LoadEmbedded_returns_an_empty_feed()
     {
-        var items = AnnouncementService.LoadEmbedded();
-        Assert.NotEmpty(items);
-        Assert.Contains(items, a => a.Id == "2026-07-04-early-preview" && a.Pinned);
+        // No announcements are baked into the app — they come only from the live feed.
+        Assert.Empty(AnnouncementService.LoadEmbedded());
     }
 
     [Fact]
@@ -66,8 +65,9 @@ public sealed class AnnouncementServiceTests
     [Fact]
     public async Task LoadAsync_falls_back_to_embedded_when_offline()
     {
+        // Offline falls back to the embedded feed, which is now empty (no baked-in announcements).
         var svc = new AnnouncementService(StubHttpMessageHandler.AlwaysThrows());
         var items = await svc.LoadAsync("https://example.com/announcements.json");
-        Assert.Contains(items, a => a.Id == "2026-07-04-early-preview");
+        Assert.Empty(items);
     }
 }
