@@ -75,12 +75,14 @@ public sealed class PackagesViewModel : ObservableObject
     public string LayoutToggleLabel => _isGridView ? L.Tr("packages.button.listView") : L.Tr("packages.button.gridView");
 
     public RelayCommand<CatalogPackageVersion> InstallCommand { get; }
+    public RelayCommand<CatalogPackageVersion> RemoveCommand { get; }
     public RelayCommand<InstalledPackageRow> UninstallCommand { get; }
     public RelayCommand RefreshCommand { get; }
     public RelayCommand AddFromGitHubCommand { get; }
     public RelayCommand CreateBundleCommand { get; }
     public RelayCommand<CatalogPackageVersion> ChooseVersionCommand { get; }
     public RelayCommand ToggleLayoutCommand { get; }
+    public RelayCommand<string> OpenLinkCommand { get; }
 
     public PackagesViewModel(UserSettingsService settingsService, CatalogService catalogService, UnityProjectService projectService, MainWindowViewModel shell)
     {
@@ -91,12 +93,14 @@ public sealed class PackagesViewModel : ObservableObject
         _shell = shell;
 
         InstallCommand = new RelayCommand<CatalogPackageVersion>(InstallCuratedAsync);
+        RemoveCommand = new RelayCommand<CatalogPackageVersion>(RemoveAvailableAsync);
         UninstallCommand = new RelayCommand<InstalledPackageRow>(UninstallAsync);
         RefreshCommand = new RelayCommand(RefreshAsync);
         AddFromGitHubCommand = new RelayCommand(AddFromGitHubAsync);
         CreateBundleCommand = new RelayCommand(CreateBundleAsync);
         ChooseVersionCommand = new RelayCommand<CatalogPackageVersion>(ChooseVersionAsync);
         ToggleLayoutCommand = new RelayCommand(() => IsGridView = !IsGridView);
+        OpenLinkCommand = new RelayCommand<string>(url => { if (!string.IsNullOrWhiteSpace(url)) ExternalLink.Open(url!); });
     }
 
     /// <summary>Applies the persisted layout choice at startup without re-saving it.</summary>
@@ -372,11 +376,24 @@ public sealed class PackagesViewModel : ObservableObject
 
     private async Task UninstallAsync(InstalledPackageRow? row)
     {
-        if (row is null || _install is null) return;
-        if (_install.Manifest.Dependencies.Remove(row.Name))
+        if (row is null) return;
+        await RemoveByNameAsync(row.Name, row.DisplayName);
+    }
+
+    /// <summary>Removes an already-installed package straight from the "Available" list.</summary>
+    private async Task RemoveAvailableAsync(CatalogPackageVersion? entry)
+    {
+        if (entry is null) return;
+        await RemoveByNameAsync(entry.Name, entry.DisplayName);
+    }
+
+    private async Task RemoveByNameAsync(string name, string displayName)
+    {
+        if (_install is null) return;
+        if (_install.Manifest.Dependencies.Remove(name))
         {
             await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
-            _shell.SetStatus(L.Tr("packages.status.removed", row.DisplayName), StatusKind.Success);
+            _shell.SetStatus(L.Tr("packages.status.removed", displayName), StatusKind.Success);
             RefreshInstalled();
         }
     }
@@ -624,6 +641,8 @@ public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVe
     public string Owner => PackagesViewModel.OwnerOf(Entry.Name);
     public string Initial => string.IsNullOrWhiteSpace(DisplayName) ? "?" : DisplayName.TrimStart()[..1].ToUpperInvariant();
     public bool HasGit => !string.IsNullOrWhiteSpace(Entry.Url);
+    public string? Link => Entry.Link;
+    public bool HasLink => !string.IsNullOrWhiteSpace(Entry.Link);
 }
 
 public sealed record InstalledPackageRow(string Name, string DisplayName, string Version, bool IsFromGit);

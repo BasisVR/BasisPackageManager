@@ -30,6 +30,8 @@ public sealed class CatalogPackageVersion
     [JsonPropertyName("author")] public CatalogAuthor? Author { get; set; }
     // Optional self-hosted promo image URL (served from the registry's icons/ folder).
     [JsonPropertyName("image")] public string? Image { get; set; }
+    // Optional author-provided link (homepage / showcase / docs), surfaced in the desktop client.
+    [JsonPropertyName("link")] public string? Link { get; set; }
 }
 
 public sealed class CatalogAuthor

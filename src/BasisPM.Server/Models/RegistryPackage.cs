@@ -37,6 +37,8 @@ public sealed class RegistryPackage
     // Optional per-package community + funding links, shown on the package's registry page.
     [JsonPropertyName("discord")] public string? Discord { get; set; }
     [JsonPropertyName("donate")] public string? Donate { get; set; }
+    // Optional author-provided link (homepage / showcase / docs / video), shown on the package's page.
+    [JsonPropertyName("link")] public string? Link { get; set; }
 }
 
 public sealed class RegistrySubmission
@@ -58,4 +60,5 @@ public sealed class RegistrySubmission
     [JsonPropertyName("dependencies")] public Dictionary<string, string>? Dependencies { get; set; }
     [JsonPropertyName("discord")] public string? Discord { get; set; }
     [JsonPropertyName("donate")] public string? Donate { get; set; }
+    [JsonPropertyName("link")] public string? Link { get; set; }
 }

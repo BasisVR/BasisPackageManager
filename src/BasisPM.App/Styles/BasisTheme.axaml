@@ -369,6 +369,25 @@
         <Setter Property="TextElement.Foreground" Value="#FFFFFF"/>
     </Style>
 
+    <!-- Small inline text link (brand-coloured, no chrome) -->
+    <Style Selector="Button.link">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.link /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandBrush}"/>
+    </Style>
+    <Style Selector="Button.link:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandHoverBrush}"/>
+    </Style>
+
     <!-- Expander: a frosted-glass collapsible section that matches Border.card -->
     <Style Selector="Expander">
         <Setter Property="Background" Value="{StaticResource BasisGlassBrush}"/>

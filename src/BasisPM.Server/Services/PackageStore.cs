@@ -149,9 +149,11 @@ public sealed class PackageStore
             throw new ArgumentException("discord must be an http(s) URL.");
         if (!string.IsNullOrWhiteSpace(sub.Donate) && !GitUrlPolicy.IsWebUrl(sub.Donate))
             throw new ArgumentException("donate must be an http(s) URL.");
+        if (!string.IsNullOrWhiteSpace(sub.Link) && !GitUrlPolicy.IsWebUrl(sub.Link))
+            throw new ArgumentException("link must be an http(s) URL.");
         if (TooLong(sub.Name) || TooLong(sub.Description) || TooLong(sub.Author) || TooLong(sub.Category)
             || TooLong(sub.Version) || TooLong(sub.Unity) || TooLong(sub.GitUrl) || TooLong(sub.RepoUrl) || TooLong(sub.AuthorUrl)
-            || TooLong(sub.BasisVersion) || TooLong(sub.License) || TooLong(sub.Discord) || TooLong(sub.Donate))
+            || TooLong(sub.BasisVersion) || TooLong(sub.License) || TooLong(sub.Discord) || TooLong(sub.Donate) || TooLong(sub.Link))
             throw new ArgumentException("One or more fields exceed the length limit.");
         if (sub.Dependencies is { Count: > MaxDependencies })
             throw new ArgumentException("Too many dependencies.");
@@ -192,6 +194,7 @@ public sealed class PackageStore
                 Icon = "📦",
                 Discord = sub.Discord?.Trim(),
                 Donate = sub.Donate?.Trim(),
+                Link = sub.Link?.Trim(),
             };
 
             _packages.Add(pkg);
@@ -228,6 +231,7 @@ public sealed class PackageStore
                         Dependencies = p.Dependencies,
                         Author = new CatalogAuthor { Name = p.Author, Url = p.AuthorUrl },
                         Image = p.Image,
+                        Link = p.Link,
                     },
                 },
             };
