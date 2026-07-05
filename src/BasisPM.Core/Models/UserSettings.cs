@@ -47,4 +47,8 @@ public sealed class UserSettings
     // UI language code (e.g. "en", "ja", "zh-Hans"). Null/blank = English.
     [JsonPropertyName("language")]
     public string? Language { get; set; }
+
+    // Packages tab: show the "Available" list as a grid of cards instead of rows.
+    [JsonPropertyName("packagesGridView")]
+    public bool PackagesGridView { get; set; }
 }

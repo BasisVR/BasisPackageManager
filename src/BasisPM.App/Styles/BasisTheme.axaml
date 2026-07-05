@@ -12,6 +12,11 @@
             <Color x:Key="BasisBorder">#1AFFFFFF</Color>
             <Color x:Key="BasisBorderStrong">#33FFFFFF</Color>
 
+            <!-- Translucent "glass" fills: a frosted light film over the animated background,
+                 mirroring the website's bg-white/5 cards. -->
+            <Color x:Key="BasisGlass">#14FFFFFF</Color>
+            <Color x:Key="BasisGlassStrong">#1FFFFFFF</Color>
+
             <Color x:Key="BasisTextPrimary">#F4F2FF</Color>
             <Color x:Key="BasisTextMuted">#B7B3D6</Color>
             <Color x:Key="BasisTextSecondary">#9C97C2</Color>
@@ -36,6 +41,8 @@
             <SolidColorBrush x:Key="BasisSurfaceMutedBrush" Color="{StaticResource BasisSurfaceMuted}"/>
             <SolidColorBrush x:Key="BasisBorderBrush" Color="{StaticResource BasisBorder}"/>
             <SolidColorBrush x:Key="BasisBorderStrongBrush" Color="{StaticResource BasisBorderStrong}"/>
+            <SolidColorBrush x:Key="BasisGlassBrush" Color="{StaticResource BasisGlass}"/>
+            <SolidColorBrush x:Key="BasisGlassStrongBrush" Color="{StaticResource BasisGlassStrong}"/>
             <SolidColorBrush x:Key="BasisTextPrimaryBrush" Color="{StaticResource BasisTextPrimary}"/>
             <SolidColorBrush x:Key="BasisTextMutedBrush" Color="{StaticResource BasisTextMuted}"/>
             <SolidColorBrush x:Key="BasisTextSecondaryBrush" Color="{StaticResource BasisTextSecondary}"/>
@@ -121,12 +128,22 @@
         <Setter Property="Foreground" Value="{StaticResource BasisBrandBrush}"/>
     </Style>
 
+    <!-- Frosted "glass" card: a translucent film that lets the animated background wash through,
+         matching the website's bg-white/5 backdrop-blur cards. -->
     <Style Selector="Border.card">
-        <Setter Property="Background" Value="{StaticResource BasisSurfaceBrush}"/>
+        <Setter Property="Background" Value="{StaticResource BasisGlassBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BasisBorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="16"/>
+        <Setter Property="CornerRadius" Value="18"/>
         <Setter Property="Padding" Value="22"/>
+    </Style>
+
+    <!-- Opt-in glass surface for panels / rows nested inside a card. -->
+    <Style Selector="Border.glass">
+        <Setter Property="Background" Value="{StaticResource BasisGlassStrongBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="12"/>
     </Style>
 
     <Style Selector="Border.panel">

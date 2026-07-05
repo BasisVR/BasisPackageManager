@@ -22,6 +22,8 @@ public sealed class RegistryPackage
     [JsonPropertyName("unity")] public string? Unity { get; set; }
     // The Basis version this package was built/tested against (free-form: branch, tag or version — e.g. "main" or "1.2.0").
     [JsonPropertyName("basisVersion")] public string? BasisVersion { get; set; }
+    // SPDX license string or expression (e.g. "MIT", "MIT AND Unlicense"). Read from the package's package.json.
+    [JsonPropertyName("license")] public string? License { get; set; }
     [JsonPropertyName("version")] public string Version { get; set; } = "0.0.0";
     [JsonPropertyName("stars")] public int Stars { get; set; }
     [JsonPropertyName("forks")] public int Forks { get; set; }
@@ -51,6 +53,7 @@ public sealed class RegistrySubmission
     [JsonPropertyName("repoUrl")] public string? RepoUrl { get; set; }
     [JsonPropertyName("unity")] public string? Unity { get; set; }
     [JsonPropertyName("basisVersion")] public string? BasisVersion { get; set; }
+    [JsonPropertyName("license")] public string? License { get; set; }
     [JsonPropertyName("version")] public string? Version { get; set; }
     [JsonPropertyName("dependencies")] public Dictionary<string, string>? Dependencies { get; set; }
     [JsonPropertyName("discord")] public string? Discord { get; set; }

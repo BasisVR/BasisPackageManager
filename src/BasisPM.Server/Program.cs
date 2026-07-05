@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BasisPM.Core.Models;
 using BasisPM.Core.Services;
 using BasisPM.Server.Models;
 using BasisPM.Server.Services;
@@ -113,9 +114,11 @@ static async Task GenerateStaticSiteAsync(string outDir)
     {
         var s = await stats.FetchAsync(p.RepoUrl ?? p.GitUrl);
 
-        // Version: the package.json version (authoritative for UPM); otherwise keep the seed value.
-        var ver = await FetchUpmVersionAsync(github, p.GitUrl ?? p.RepoUrl);
-        if (!string.IsNullOrWhiteSpace(ver)) p.Version = ver!;
+        // Read the package's package.json once (authoritative for UPM): version + license.
+        var upm = await FetchUpmPackageAsync(github, p.GitUrl ?? p.RepoUrl);
+        if (!string.IsNullOrWhiteSpace(upm?.Version)) p.Version = upm!.Version;
+        // License: an explicit seed value wins; otherwise take what the package declares.
+        if (string.IsNullOrWhiteSpace(p.License) && !string.IsNullOrWhiteSpace(upm?.License)) p.License = upm!.License;
 
         if (s is not null)
         {
@@ -126,7 +129,7 @@ static async Task GenerateStaticSiteAsync(string outDir)
             if (string.IsNullOrWhiteSpace(p.Description) && !string.IsNullOrWhiteSpace(s.Description))
                 p.Description = s.Description!;
         }
-        Console.WriteLine($"  · {p.Id}: {p.Stars} stars, {p.Forks} forks, v{p.Version}");
+        Console.WriteLine($"  · {p.Id}: {p.Stars} stars, {p.Forks} forks, v{p.Version}, {p.License ?? "no license"}");
     }
 
     Directory.CreateDirectory(outDir);
@@ -161,14 +164,13 @@ static async Task GenerateStaticSiteAsync(string outDir)
     Console.WriteLine($"Generated static registry ({packages.Count} packages, {bundles.Count} bundles) → {Path.GetFullPath(outDir)}");
 }
 
-static async Task<string?> FetchUpmVersionAsync(GitHubService github, string? gitOrRepoUrl)
+static async Task<UpmPackageJson?> FetchUpmPackageAsync(GitHubService github, string? gitOrRepoUrl)
 {
     if (string.IsNullOrWhiteSpace(gitOrRepoUrl)) return null;
     try
     {
         var loc = GitHubService.Parse(gitOrRepoUrl);
-        var pkg = await github.FetchPackageJsonAsync(loc);
-        return string.IsNullOrWhiteSpace(pkg?.Version) ? null : pkg!.Version;
+        return await github.FetchPackageJsonAsync(loc);
     }
     catch { return null; }
 }

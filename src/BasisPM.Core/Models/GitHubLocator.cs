@@ -11,5 +11,7 @@ public sealed class UpmPackageJson
     [JsonPropertyName("version")] public string Version { get; set; } = "";
     [JsonPropertyName("description")] public string Description { get; set; } = "";
     [JsonPropertyName("unity")] public string? Unity { get; set; }
+    // SPDX license string or expression (e.g. "MIT", "MIT AND Unlicense"), as declared for UPM.
+    [JsonPropertyName("license")] public string? License { get; set; }
     [JsonPropertyName("dependencies")] public Dictionary<string, string>? Dependencies { get; set; }
 }

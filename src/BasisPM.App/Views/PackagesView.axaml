@@ -57,28 +57,30 @@
                         <Border Grid.Row="0" Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
                             <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
                                 <TextBlock Grid.Column="0" Text="{loc:Tr packages.header.available}" Classes="h3" VerticalAlignment="Center"/>
-                                <Border Grid.Column="1" Classes="brandBadge" HorizontalAlignment="Left" Margin="10,0,0,0">
+                                <Border Grid.Column="1" Classes="brandBadge" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center">
                                     <TextBlock Text="{loc:Tr packages.badge.basisRegistry}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
                                 </Border>
+                                <Button Grid.Column="2" Content="{Binding LayoutToggleLabel}" Command="{Binding ToggleLayoutCommand}"
+                                        FontSize="12" Padding="14,7" VerticalAlignment="Center"
+                                        ToolTip.Tip="{loc:Tr packages.tooltip.toggleLayout}"/>
                             </Grid>
                         </Border>
                         <Border Grid.Row="1" Padding="20,12" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
                             <TextBox Watermark="{loc:Tr packages.filter.watermark}" Text="{Binding Filter}"/>
                         </Border>
-                        <ScrollViewer Grid.Row="2" MaxHeight="320">
+                        <!-- List layout: one roomy row per package, with a wide action column. -->
+                        <ScrollViewer Grid.Row="2" MaxHeight="360" IsVisible="{Binding IsListView}">
                             <ItemsControl ItemsSource="{Binding Available}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="vm:PackageRow">
-                                        <Border Background="{StaticResource BasisSurfaceMutedBrush}"
-                                                BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1"
-                                                CornerRadius="12" Padding="14" Margin="16,7">
+                                        <Border Classes="glass" Padding="14" Margin="16,7">
                                             <Grid ColumnDefinitions="Auto,*,Auto">
                                                 <Border Grid.Column="0" Width="46" Height="46" CornerRadius="13" VerticalAlignment="Top"
                                                         Background="{StaticResource BasisBrandGradient}">
                                                     <TextBlock Text="{Binding Initial}" FontSize="22" FontWeight="Bold" Foreground="#FFFFFF"
                                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                 </Border>
-                                                <StackPanel Grid.Column="1" Margin="14,0,12,0" Spacing="2" VerticalAlignment="Center">
+                                                <StackPanel Grid.Column="1" Margin="14,0,16,0" Spacing="3" VerticalAlignment="Center">
                                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                                         <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
                                                         <Border Background="{StaticResource BasisSurfaceHoverBrush}" CornerRadius="999" Padding="8,2" VerticalAlignment="Center">
@@ -87,25 +89,78 @@
                                                     </StackPanel>
                                                     <TextBlock Text="{Binding Name}" Classes="dim" FontSize="11"/>
                                                     <TextBlock Text="{Binding Description}" Classes="muted" FontSize="12" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
-                                                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
-                                                        <TextBlock Text="{Binding Author, StringFormat='by {0}'}" Classes="dim" FontSize="11" IsVisible="{Binding HasAuthor}"/>
-                                                        <TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" Classes="dim" FontSize="11" IsVisible="{Binding HasUnity}"/>
+                                                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                                                        <Border Classes="versionPill" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding Version}" FontSize="11" Classes="brand"/>
+                                                        </Border>
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasLicense}"
+                                                                ToolTip.Tip="{loc:Tr packages.label.license}">
+                                                            <TextBlock Text="{Binding License, StringFormat='⚖ {0}'}" FontSize="11" Classes="muted"/>
+                                                        </Border>
+                                                        <TextBlock Text="{Binding Author, StringFormat='by {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center" IsVisible="{Binding HasAuthor}"/>
+                                                        <TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center" IsVisible="{Binding HasUnity}"/>
                                                     </StackPanel>
                                                 </StackPanel>
-                                                <StackPanel Grid.Column="2" Spacing="8" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                                    <Border Classes="versionPill" HorizontalAlignment="Right">
-                                                        <TextBlock Text="{Binding Version}" FontSize="11" Classes="brand"/>
-                                                    </Border>
-                                                    <Button Content="{Binding ButtonLabel}" Classes="primary" MinWidth="90"
+                                                <StackPanel Grid.Column="2" Width="160" Spacing="8" VerticalAlignment="Center">
+                                                    <Button Content="{Binding ButtonLabel}" Classes="primary" HorizontalAlignment="Stretch"
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                                                             CommandParameter="{Binding Entry}"/>
-                                                    <Button Content="{loc:Tr packages.button.chooseVersion}" MinWidth="90" FontSize="11" Padding="10,6"
+                                                    <Button Content="{loc:Tr packages.button.chooseVersion}" HorizontalAlignment="Stretch" FontSize="11" Padding="10,6"
                                                             IsVisible="{Binding HasGit}"
                                                             ToolTip.Tip="{loc:Tr packages.tooltip.chooseVersion}"
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ChooseVersionCommand}"
                                                             CommandParameter="{Binding Entry}"/>
                                                 </StackPanel>
                                             </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+
+                        <!-- Grid layout: cards that wrap; toggled from the header. -->
+                        <ScrollViewer Grid.Row="2" MaxHeight="420" IsVisible="{Binding IsGridView}">
+                            <ItemsControl ItemsSource="{Binding Available}" Margin="10,7">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="vm:PackageRow">
+                                        <Border Classes="glass" Padding="16" Margin="6" Width="234">
+                                            <StackPanel Spacing="10">
+                                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                                    <Border Width="40" Height="40" CornerRadius="11" Background="{StaticResource BasisBrandGradient}">
+                                                        <TextBlock Text="{Binding Initial}" FontSize="19" FontWeight="Bold" Foreground="#FFFFFF"
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                                                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="13"
+                                                                   TextTrimming="CharacterEllipsis" MaxWidth="150"/>
+                                                        <TextBlock Text="{Binding Owner}" Classes="dim" FontSize="10"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Description}" Classes="muted" FontSize="11" TextWrapping="Wrap"
+                                                           MaxLines="3" TextTrimming="CharacterEllipsis" Height="50"/>
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <Border Classes="versionPill" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Version}" FontSize="10" Classes="brand"/>
+                                                    </Border>
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasLicense}"
+                                                            ToolTip.Tip="{loc:Tr packages.label.license}">
+                                                        <TextBlock Text="{Binding License, StringFormat='⚖ {0}'}" FontSize="10" Classes="muted"/>
+                                                    </Border>
+                                                </StackPanel>
+                                                <Button Content="{Binding ButtonLabel}" Classes="primary" HorizontalAlignment="Stretch"
+                                                        Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
+                                                        CommandParameter="{Binding Entry}"/>
+                                                <Button Content="{loc:Tr packages.button.chooseVersion}" HorizontalAlignment="Stretch" FontSize="11" Padding="10,6"
+                                                        IsVisible="{Binding HasGit}"
+                                                        ToolTip.Tip="{loc:Tr packages.tooltip.chooseVersion}"
+                                                        Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ChooseVersionCommand}"
+                                                        CommandParameter="{Binding Entry}"/>
+                                            </StackPanel>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

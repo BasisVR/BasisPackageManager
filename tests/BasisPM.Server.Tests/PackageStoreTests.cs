@@ -153,6 +153,7 @@ public sealed class PackageStoreTests
     {
         var withGit = Pkg("com.a", "Alpha", gitUrl: "https://github.com/x/a.git");
         withGit.Version = "1.2.3";
+        withGit.License = "MIT AND Unlicense";
         var noGit = new RegistryPackage { Id = "com.b", Name = "Beta", GitUrl = null };
 
         var catalog = PackageStore.BuildCatalog(new[] { withGit, noGit });
@@ -162,6 +163,7 @@ public sealed class PackageStoreTests
         var version = catalog.Packages["com.a"].Versions["1.2.3"];
         Assert.Equal("https://github.com/x/a.git", version.Url);
         Assert.Equal("Alpha", version.DisplayName);
+        Assert.Equal("MIT AND Unlicense", version.License);
     }
 
     [Fact]

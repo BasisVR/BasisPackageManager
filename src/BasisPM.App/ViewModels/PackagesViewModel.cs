@@ -12,11 +12,13 @@ namespace BasisPM.App.ViewModels;
 
 public sealed class PackagesViewModel : ObservableObject
 {
+    private readonly UserSettingsService _settingsService;
     private readonly CatalogService _catalogService;
     private readonly UnityProjectService _projectService;
     private readonly GitHubService _githubService;
     private readonly VersionService _versionService = new();
     private readonly MainWindowViewModel _shell;
+    private bool _isGridView;
 
     private Catalog _catalog = new();
     private BasisInstall? _install;
@@ -57,15 +59,32 @@ public sealed class PackagesViewModel : ObservableObject
     public bool HasInstall => _install is not null && _install.HasUnityProject;
     public bool HasInstalls => InstallOptions.Count > 0;
 
+    // Packages "Available" list layout: false = rows (default), true = a grid of cards. Persisted.
+    public bool IsGridView
+    {
+        get => _isGridView;
+        set
+        {
+            if (!SetField(ref _isGridView, value)) return;
+            OnPropertyChanged(nameof(IsListView));
+            OnPropertyChanged(nameof(LayoutToggleLabel));
+            _ = PersistGridViewAsync(value);
+        }
+    }
+    public bool IsListView => !_isGridView;
+    public string LayoutToggleLabel => _isGridView ? L.Tr("packages.button.listView") : L.Tr("packages.button.gridView");
+
     public RelayCommand<CatalogPackageVersion> InstallCommand { get; }
     public RelayCommand<InstalledPackageRow> UninstallCommand { get; }
     public RelayCommand RefreshCommand { get; }
     public RelayCommand AddFromGitHubCommand { get; }
     public RelayCommand CreateBundleCommand { get; }
     public RelayCommand<CatalogPackageVersion> ChooseVersionCommand { get; }
+    public RelayCommand ToggleLayoutCommand { get; }
 
-    public PackagesViewModel(CatalogService catalogService, UnityProjectService projectService, MainWindowViewModel shell)
+    public PackagesViewModel(UserSettingsService settingsService, CatalogService catalogService, UnityProjectService projectService, MainWindowViewModel shell)
     {
+        _settingsService = settingsService;
         _catalogService = catalogService;
         _projectService = projectService;
         _githubService = new GitHubService();
@@ -77,6 +96,28 @@ public sealed class PackagesViewModel : ObservableObject
         AddFromGitHubCommand = new RelayCommand(AddFromGitHubAsync);
         CreateBundleCommand = new RelayCommand(CreateBundleAsync);
         ChooseVersionCommand = new RelayCommand<CatalogPackageVersion>(ChooseVersionAsync);
+        ToggleLayoutCommand = new RelayCommand(() => IsGridView = !IsGridView);
+    }
+
+    /// <summary>Applies the persisted layout choice at startup without re-saving it.</summary>
+    public void SetInitialGridView(bool grid)
+    {
+        if (_isGridView == grid) return;
+        _isGridView = grid;
+        OnPropertyChanged(nameof(IsGridView));
+        OnPropertyChanged(nameof(IsListView));
+        OnPropertyChanged(nameof(LayoutToggleLabel));
+    }
+
+    private async Task PersistGridViewAsync(bool grid)
+    {
+        try
+        {
+            var settings = await _settingsService.LoadAsync();
+            settings.PackagesGridView = grid;
+            await _settingsService.SaveAsync(settings);
+        }
+        catch { /* a view preference isn't worth surfacing a settings-write error */ }
     }
 
     public void SetActiveInstall(BasisInstall install)
@@ -554,6 +595,8 @@ public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVe
     public bool HasAuthor => !string.IsNullOrWhiteSpace(Entry.Author?.Name);
     public string? Unity => Entry.Unity;
     public bool HasUnity => !string.IsNullOrWhiteSpace(Entry.Unity);
+    public string? License => Entry.License;
+    public bool HasLicense => !string.IsNullOrWhiteSpace(Entry.License);
     public string Owner => PackagesViewModel.OwnerOf(Entry.Name);
     public string Initial => string.IsNullOrWhiteSpace(DisplayName) ? "?" : DisplayName.TrimStart()[..1].ToUpperInvariant();
     public bool HasGit => !string.IsNullOrWhiteSpace(Entry.Url);

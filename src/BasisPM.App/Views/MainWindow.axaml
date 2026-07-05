@@ -11,7 +11,52 @@
         Background="{StaticResource BasisBackgroundBrush}">
 
     <Panel ClipToBounds="True">
-        <Border Opacity="0.14">
+        <!-- Animated background: a base brand gradient that slowly breathes, plus colored blobs
+             that drift on independent loops — the desktop equivalent of the website's moving gradient. -->
+        <Panel.Styles>
+            <Style Selector="Border.bgGradient">
+                <Style.Animations>
+                    <Animation Duration="0:0:20" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                        <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.10"/></KeyFrame>
+                        <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.18"/></KeyFrame>
+                    </Animation>
+                </Style.Animations>
+            </Style>
+            <Style Selector="Ellipse.blobA">
+                <Style.Animations>
+                    <Animation Duration="0:0:23" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                        <KeyFrame Cue="0%"><Setter Property="RenderTransform" Value="translate(0px,0px)"/></KeyFrame>
+                        <KeyFrame Cue="100%"><Setter Property="RenderTransform" Value="translate(80px,60px)"/></KeyFrame>
+                    </Animation>
+                </Style.Animations>
+            </Style>
+            <Style Selector="Ellipse.blobB">
+                <Style.Animations>
+                    <Animation Duration="0:0:29" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                        <KeyFrame Cue="0%"><Setter Property="RenderTransform" Value="translate(0px,0px)"/></KeyFrame>
+                        <KeyFrame Cue="100%"><Setter Property="RenderTransform" Value="translate(-70px,50px)"/></KeyFrame>
+                    </Animation>
+                </Style.Animations>
+            </Style>
+            <Style Selector="Ellipse.blobC">
+                <Style.Animations>
+                    <Animation Duration="0:0:34" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                        <KeyFrame Cue="0%"><Setter Property="RenderTransform" Value="translate(0px,0px)"/></KeyFrame>
+                        <KeyFrame Cue="100%"><Setter Property="RenderTransform" Value="translate(-60px,-45px)"/></KeyFrame>
+                    </Animation>
+                </Style.Animations>
+            </Style>
+            <Style Selector="Ellipse.blobD">
+                <Style.Animations>
+                    <Animation Duration="0:0:26" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                        <KeyFrame Cue="0%"><Setter Property="RenderTransform" Value="translate(0px,0px)"/></KeyFrame>
+                        <KeyFrame Cue="100%"><Setter Property="RenderTransform" Value="translate(55px,-40px)"/></KeyFrame>
+                    </Animation>
+                </Style.Animations>
+            </Style>
+        </Panel.Styles>
+
+        <Border Classes="bgGradient" Opacity="0.14">
             <Border.Background>
                 <LinearGradientBrush StartPoint="100%,0%" EndPoint="0%,100%">
                     <GradientStop Offset="0" Color="#EF1237"/>
@@ -23,25 +68,25 @@
         </Border>
 
         <Canvas IsHitTestVisible="False" ClipToBounds="True">
-            <Ellipse Width="260" Height="260" Canvas.Left="-60" Canvas.Top="-40"
+            <Ellipse Classes="blobA" Width="260" Height="260" Canvas.Left="-60" Canvas.Top="-40"
                      Fill="#26EF1237">
                 <Ellipse.Effect>
                     <BlurEffect Radius="120"/>
                 </Ellipse.Effect>
             </Ellipse>
-            <Ellipse Width="320" Height="320" Canvas.Right="-80" Canvas.Top="60"
+            <Ellipse Classes="blobB" Width="320" Height="320" Canvas.Right="-80" Canvas.Top="60"
                      Fill="#269333EA">
                 <Ellipse.Effect>
                     <BlurEffect Radius="140"/>
                 </Ellipse.Effect>
             </Ellipse>
-            <Ellipse Width="220" Height="220" Canvas.Left="280" Canvas.Bottom="-40"
+            <Ellipse Classes="blobC" Width="220" Height="220" Canvas.Left="280" Canvas.Bottom="-40"
                      Fill="#1F3B82F6">
                 <Ellipse.Effect>
                     <BlurEffect Radius="120"/>
                 </Ellipse.Effect>
             </Ellipse>
-            <Ellipse Width="200" Height="200" Canvas.Right="120" Canvas.Bottom="-30"
+            <Ellipse Classes="blobD" Width="200" Height="200" Canvas.Right="120" Canvas.Bottom="-30"
                      Fill="#26F43F5E">
                 <Ellipse.Effect>
                     <BlurEffect Radius="100"/>

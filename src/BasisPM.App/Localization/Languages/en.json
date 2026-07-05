@@ -503,8 +503,16 @@
       "value": "Create bundle"
     },
     {
+      "key": "packages.button.gridView",
+      "value": "Grid view"
+    },
+    {
       "key": "packages.button.install",
       "value": "Install"
+    },
+    {
+      "key": "packages.button.listView",
+      "value": "List view"
     },
     {
       "key": "packages.button.refresh",
@@ -577,6 +585,10 @@
     {
       "key": "packages.hero.title",
       "value": "Packages"
+    },
+    {
+      "key": "packages.label.license",
+      "value": "License"
     },
     {
       "key": "packages.label.project",
@@ -709,6 +721,10 @@
     {
       "key": "packages.tooltip.filterByOwner",
       "value": "Filter installed packages by owner (from the package id)"
+    },
+    {
+      "key": "packages.tooltip.toggleLayout",
+      "value": "Switch between list and grid layout"
     },
     {
       "key": "unity.button.install",

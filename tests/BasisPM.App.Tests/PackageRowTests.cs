@@ -8,7 +8,7 @@ public sealed class PackageRowTests
 {
     private static CatalogPackageVersion Entry(
         string name = "com.basis.sdk", string display = "Basis SDK", string version = "1.0.0",
-        string? unity = "6000.0", string? author = "BasisVR")
+        string? unity = "6000.0", string? author = "BasisVR", string? license = null)
         => new()
         {
             Name = name,
@@ -16,6 +16,7 @@ public sealed class PackageRowTests
             Version = version,
             Description = "A package.",
             Unity = unity,
+            License = license,
             Author = author is null ? null : new CatalogAuthor { Name = author },
         };
 
@@ -57,6 +58,17 @@ public sealed class PackageRowTests
         Assert.False(withNeither.HasAuthor);
         Assert.Equal("", withNeither.Author);
         Assert.False(withNeither.HasUnity);
+    }
+
+    [Fact]
+    public void License_presence_flag_and_passthrough()
+    {
+        var withLicense = new PackageRow(Entry(license: "MIT AND Unlicense"), null);
+        Assert.True(withLicense.HasLicense);
+        Assert.Equal("MIT AND Unlicense", withLicense.License);
+
+        var noLicense = new PackageRow(Entry(license: null), null);
+        Assert.False(noLicense.HasLicense);
     }
 
     [Theory]

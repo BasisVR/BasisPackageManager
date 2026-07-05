@@ -23,6 +23,8 @@ public sealed class CatalogPackageVersion
     [JsonPropertyName("version")] public string Version { get; set; } = "0.0.0";
     [JsonPropertyName("description")] public string Description { get; set; } = "";
     [JsonPropertyName("unity")] public string? Unity { get; set; }
+    // SPDX license string or expression (e.g. "MIT"), surfaced in the desktop client.
+    [JsonPropertyName("license")] public string? License { get; set; }
     [JsonPropertyName("dependencies")] public Dictionary<string, string>? Dependencies { get; set; }
     [JsonPropertyName("url")] public string? Url { get; set; }
     [JsonPropertyName("author")] public CatalogAuthor? Author { get; set; }
