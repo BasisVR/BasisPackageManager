@@ -107,6 +107,13 @@ static async Task GenerateStaticSiteAsync(string outDir)
 
     var packages = PackageStore.LoadSeed(seedPath);
 
+    // Packages present in the Basis developer-branch manifest ship with Basis → mark them "built-in".
+    // This wins over the curated/community derivation for the source badge.
+    var builtInIds = await FetchBuiltInIdsAsync(Environment.GetEnvironmentVariable("GITHUB_TOKEN"));
+    foreach (var p in packages)
+        if (builtInIds.Contains(p.Id)) p.Source = "built-in";
+    Console.WriteLine($"  built-in (in developer manifest): {packages.Count(p => p.Source == "built-in")} of {packages.Count}");
+
     // Bake real stars / forks / last-updated from GitHub/GitLab into the static bundle.
     var stats = new RepoStatsService(Environment.GetEnvironmentVariable("GITHUB_TOKEN"));
     var github = new GitHubService();
@@ -181,6 +188,35 @@ static async Task<UpmPackageJson?> FetchUpmPackageAsync(GitHubService github, st
         return await github.FetchPackageJsonAsync(loc);
     }
     catch { return null; }
+}
+
+// The set of package ids declared in the Basis developer-branch Packages/manifest.json — these ship
+// with Basis and are badged "built-in". Repo/branch/path are overridable via env for forks/renames.
+static async Task<HashSet<string>> FetchBuiltInIdsAsync(string? token)
+{
+    var repo = Environment.GetEnvironmentVariable("BASIS_MANIFEST_REPO") ?? "BasisVR/Basis";
+    var branch = Environment.GetEnvironmentVariable("BASIS_MANIFEST_BRANCH") ?? "developer";
+    var path = Environment.GetEnvironmentVariable("BASIS_MANIFEST_PATH") ?? "Basis/Packages/manifest.json";
+    var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    try
+    {
+        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("BasisPackageManager/1.0");
+        http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github.raw");
+        if (!string.IsNullOrWhiteSpace(token))
+            http.DefaultRequestHeaders.Authorization = new("Bearer", token.Trim());
+        var url = $"https://api.github.com/repos/{repo}/contents/{Uri.EscapeDataString(path).Replace("%2F", "/")}?ref={Uri.EscapeDataString(branch)}";
+        var json = await http.GetStringAsync(url);
+        using var doc = JsonDocument.Parse(json);
+        if (doc.RootElement.TryGetProperty("dependencies", out var deps) && deps.ValueKind == JsonValueKind.Object)
+            foreach (var dep in deps.EnumerateObject())
+                ids.Add(dep.Name);
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"  (built-in detection skipped — could not read {repo}@{branch}: {ex.Message})");
+    }
+    return ids;
 }
 
 static bool IsTrue(string? v) =>
