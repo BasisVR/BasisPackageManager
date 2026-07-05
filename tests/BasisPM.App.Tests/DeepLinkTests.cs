@@ -54,8 +54,8 @@ public sealed class DeepLinkTests
     [Fact]
     public void TryParseBundle_extracts_the_id()
     {
-        Assert.True(DeepLink.TryParseBundle("basispm://bundle?id=basis-starter", out var id));
-        Assert.Equal("basis-starter", id);
+        Assert.True(DeepLink.TryParseBundle("basispm://bundle?id=basis-recommended", out var id));
+        Assert.Equal("basis-recommended", id);
     }
 
     [Fact]

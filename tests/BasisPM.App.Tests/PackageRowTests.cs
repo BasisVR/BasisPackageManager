@@ -1,3 +1,4 @@
+using Avalonia.Headless.XUnit;
 using BasisPM.App.ViewModels;
 using BasisPM.Core.Models;
 using Xunit;
@@ -20,7 +21,7 @@ public sealed class PackageRowTests
             Author = author is null ? null : new CatalogAuthor { Name = author },
         };
 
-    [Fact]
+    [AvaloniaFact]
     public void Not_installed_row_shows_install()
     {
         var row = new PackageRow(Entry(), InstalledVersion: null);
@@ -28,7 +29,7 @@ public sealed class PackageRowTests
         Assert.Equal("Install", row.ButtonLabel);
     }
 
-    [Fact]
+    [AvaloniaFact]
     public void Installed_row_shows_update()
     {
         var row = new PackageRow(Entry(), InstalledVersion: "1.0.0");
@@ -36,7 +37,7 @@ public sealed class PackageRowTests
         Assert.Equal("Update", row.ButtonLabel);
     }
 
-    [Fact]
+    [AvaloniaFact]
     public void Passes_through_catalog_fields()
     {
         var row = new PackageRow(Entry(display: "Basis SDK", version: "2.1.0"), null);
@@ -46,7 +47,7 @@ public sealed class PackageRowTests
         Assert.Equal("A package.", row.Description);
     }
 
-    [Fact]
+    [AvaloniaFact]
     public void Author_and_unity_presence_flags()
     {
         var withBoth = new PackageRow(Entry(unity: "6000.0", author: "BasisVR"), null);
@@ -60,7 +61,7 @@ public sealed class PackageRowTests
         Assert.False(withNeither.HasUnity);
     }
 
-    [Fact]
+    [AvaloniaFact]
     public void License_presence_flag_and_passthrough()
     {
         var withLicense = new PackageRow(Entry(license: "MIT AND Unlicense"), null);
@@ -71,7 +72,7 @@ public sealed class PackageRowTests
         Assert.False(noLicense.HasLicense);
     }
 
-    [Theory]
+    [AvaloniaTheory]
     [InlineData("Basis SDK", "B")]
     [InlineData("  spaced name", "S")]
     [InlineData("", "?")]
@@ -80,7 +81,7 @@ public sealed class PackageRowTests
         Assert.Equal(expected, new PackageRow(Entry(display: display), null).Initial);
     }
 
-    [Theory]
+    [AvaloniaTheory]
     [InlineData("com.unity.2d.sprite", "Unity")]
     [InlineData("com.basis.sdk", "Basis")]
     [InlineData("foo", "Foo")]
@@ -90,7 +91,7 @@ public sealed class PackageRowTests
         Assert.Equal(expectedOwner, new PackageRow(Entry(name: name), null).Owner);
     }
 
-    [Fact]
+    [AvaloniaFact]
     public void InstalledPackageRow_exposes_its_fields()
     {
         var row = new InstalledPackageRow("com.x", "X Package", "https://github.com/x/x.git", IsFromGit: true);

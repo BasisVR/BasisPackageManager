@@ -154,9 +154,17 @@ static async Task GenerateStaticSiteAsync(string outDir)
     File.WriteAllText(Path.Combine(outDir, "packages.json"), JsonSerializer.Serialize(packages, opts));
     File.WriteAllText(Path.Combine(outDir, "catalog.json"), JsonSerializer.Serialize(PackageStore.BuildCatalog(packages), opts));
 
-    // Curated bundles — copied through as-is for the website's Bundles view + install-back.
+    // Curated bundles for the website's Bundles view + install-back.
     var bundleSeed = ResolveUp(baseDir, Path.Combine("seed", "bundles.json"));
     var bundles = BundleStore.LoadSeed(bundleSeed);
+    // "Basis Recommended" always holds every registry package — refill it from the current list so
+    // it can never drift behind newly-added packages.
+    var recommended = bundles.FirstOrDefault(b => b.Id == "basis-recommended");
+    if (recommended is not null)
+        recommended.Packages = packages
+            .Where(p => !string.IsNullOrWhiteSpace(p.GitUrl))
+            .Select(p => new BundlePackage { Id = p.Id, Name = p.Name, GitUrl = p.GitUrl })
+            .ToList();
     File.WriteAllText(Path.Combine(outDir, "bundles.json"), JsonSerializer.Serialize(bundles, opts));
 
     File.Copy(indexPath, Path.Combine(outDir, "index.html"), overwrite: true);

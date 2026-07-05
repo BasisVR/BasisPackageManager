@@ -10,7 +10,7 @@ namespace BasisPM.Server.Tests;
 public sealed class ApiGetTests : IClassFixture<DisabledSubmissionsFactory>
 {
     private const string SeedPackageId = "com.basis.pooltable";
-    private const string SeedBundleId = "basis-starter";
+    private const string SeedBundleId = "basis-recommended";
     private readonly HttpClient _client;
 
     public ApiGetTests(DisabledSubmissionsFactory factory) => _client = factory.CreateClient();

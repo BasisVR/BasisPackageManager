@@ -305,12 +305,29 @@ public sealed class InstallsViewModel : ObservableObject
                 ? L.Tr("installs.status.requiresUnityNote", install.UnityVersion)
                 : "";
             _shell.SetStatus(L.Tr("installs.status.clonedInto", dest, versionNote), StatusKind.Success);
+
+            // Fresh clone: offer the one-click "Basis Recommended" pack.
+            await OfferRecommendedAsync(install);
         }
         catch (Exception ex)
         {
             _shell.SetStatus(L.Tr("installs.status.cloneError", ex.Message), StatusKind.Error);
         }
         finally { IsCloning = false; }
+    }
+
+    /// <summary>After a fresh clone, offers to add the full "Basis Recommended" package set in one press.</summary>
+    private async Task OfferRecommendedAsync(BasisInstall install)
+    {
+        if (!install.HasUnityProject) return;            // no Unity project to add packages to
+        var count = _shell.PackagesVM.RecommendedCount;
+        if (count == 0) return;                          // catalog unavailable (e.g. offline)
+        var yes = await BasisPM.App.Services.Dialogs.ConfirmAsync(
+            L.Tr("installs.dialog.recommendedTitle"),
+            L.Tr("installs.dialog.recommendedBody", count));
+        if (!yes) return;
+        _shell.NavigateTo("packages");
+        await _shell.PackagesVM.InstallRecommendedAsync(install);
     }
 
     private async Task UpdateCoreAsync(InstallRow? row)

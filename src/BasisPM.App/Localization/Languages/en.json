@@ -291,6 +291,14 @@
       "value": "Name this install"
     },
     {
+      "key": "installs.dialog.recommendedBody",
+      "value": "Add all {0} recommended Basis packages to this project now? You can manage them anytime on the Packages tab."
+    },
+    {
+      "key": "installs.dialog.recommendedTitle",
+      "value": "Install the Basis Recommended pack?"
+    },
+    {
       "key": "installs.empty.body",
       "value": "Use Clone Basis above to pull down BasisVR/Basis, or Add existing to register a clone you already have."
     },
@@ -595,6 +603,10 @@
       "value": "Project"
     },
     {
+      "key": "packages.recommended.name",
+      "value": "Basis Recommended"
+    },
+    {
       "key": "packages.status.added",
       "value": "Added"
     },
@@ -693,6 +705,10 @@
     {
       "key": "packages.status.pasteGitHub",
       "value": "Paste a GitHub URL or owner/repo."
+    },
+    {
+      "key": "packages.status.recommendedEmpty",
+      "value": "No packages available to install — check your connection, then try Refresh on the Packages tab."
     },
     {
       "key": "packages.status.refusedUnsafeUrl",
