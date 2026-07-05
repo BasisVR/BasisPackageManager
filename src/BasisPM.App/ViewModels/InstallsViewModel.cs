@@ -61,7 +61,7 @@ public sealed class InstallsViewModel : ObservableObject
     public RelayCommand RefreshCommand { get; }
     public RelayCommand<InstallRow> UpdateCoreCommand { get; }
     public RelayCommand<InstallRow> CheckUpdatesCommand { get; }
-    public RelayCommand<InstallRow> OpenFolderCommand { get; }
+    public RelayCommand<InstallRow> OpenInUnityCommand { get; }
     public RelayCommand<InstallRow> ManagePackagesCommand { get; }
     public RelayCommand<InstallRow> ViewChangesCommand { get; }
     public RelayCommand<InstallRow> RemoveCommand { get; }
@@ -82,7 +82,7 @@ public sealed class InstallsViewModel : ObservableObject
         RefreshCommand = new RelayCommand(RefreshAsync);
         UpdateCoreCommand = new RelayCommand<InstallRow>(UpdateCoreAsync);
         CheckUpdatesCommand = new RelayCommand<InstallRow>(r => RefreshGitInfoAsync(r, fetch: true));
-        OpenFolderCommand = new RelayCommand<InstallRow>(OpenFolder);
+        OpenInUnityCommand = new RelayCommand<InstallRow>(OpenInUnity);
         ManagePackagesCommand = new RelayCommand<InstallRow>(r => Activate(r, "packages"));
         ViewChangesCommand = new RelayCommand<InstallRow>(r => Activate(r, "changes"));
         RemoveCommand = new RelayCommand<InstallRow>(RemoveAsync);
@@ -455,15 +455,13 @@ public sealed class InstallsViewModel : ObservableObject
         }
     }
 
-    private void OpenFolder(InstallRow? row)
+    // Launches the install's Unity project — the resolved Basis/Basis subfolder (install.UnityProjectPath) —
+    // in the editor matching its ProjectVersion, falling back to Unity Hub when that version isn't installed.
+    // The shell method reports its own status and handles the "no Unity project" case.
+    private void OpenInUnity(InstallRow? row)
     {
         if (row is null) return;
-        if (!Directory.Exists(row.RepoRoot))
-        {
-            _shell.SetStatus(L.Tr("installs.status.folderMissing", row.RepoRoot), StatusKind.Error);
-            return;
-        }
-        BasisPM.App.Services.ExternalLink.OpenFolder(row.RepoRoot);
+        _ = _shell.OpenProjectInUnityAsync(row.Install);
     }
 
     private async Task RemoveAsync(InstallRow? row)

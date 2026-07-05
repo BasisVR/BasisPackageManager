@@ -130,8 +130,8 @@
                                     <Button Content="{loc:Tr installs.button.changes}"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ViewChangesCommand}"
                                             CommandParameter="{Binding}"/>
-                                    <Button Content="{loc:Tr installs.button.open}"
-                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenFolderCommand}"
+                                    <Button Content="{loc:Tr develop.button.openInUnity}" IsVisible="{Binding HasUnityProject}"
+                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenInUnityCommand}"
                                             CommandParameter="{Binding}"/>
                                     <Button Content="{loc:Tr installs.button.backup}" IsVisible="{Binding HasUnityProject}"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).BackupCommand}"
