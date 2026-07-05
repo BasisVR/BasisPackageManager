@@ -128,5 +128,53 @@
     "basisVersion": "main",
     "version": "0.0.1",
     "icon": "📚"
+  },
+  {
+    "id": "com.basis.mediaplayer",
+    "name": "Basis Media Player",
+    "description": "Permissively-licensed live/on-demand video for Basis: decodes RTSP/RTMP/RIST/HLS/MPEG-TS/fMP4 with OS hardware codecs (Media Foundation / MediaCodec) zero-copy into a Unity texture. No transcode server.",
+    "author": "BasisVR",
+    "authorUrl": "https://github.com/BasisVR",
+    "category": "Media",
+    "tags": [ "media", "video", "streaming", "player" ],
+    "source": "curated",
+    "gitUrl": "https://github.com/BasisVR/BasisMediaPlayer.git",
+    "repoUrl": "https://github.com/BasisVR/BasisMediaPlayer",
+    "unity": "6000.0",
+    "basisVersion": "main",
+    "version": "0.0.1",
+    "icon": "🎬"
+  },
+  {
+    "id": "com.basis.integration.ytdlp",
+    "name": "Basis yt-dlp Integration",
+    "description": "Resolves page URLs (YouTube, Twitch, …) to playable streams via the in-process yt-dlp plugin and hands them to Basis Media Player. Optional bolt-on.",
+    "author": "BasisVR",
+    "authorUrl": "https://github.com/BasisVR",
+    "category": "Media",
+    "tags": [ "media", "video", "youtube", "integration" ],
+    "source": "curated",
+    "gitUrl": "https://github.com/BasisVR/BasisYtDlpIntegration.git",
+    "repoUrl": "https://github.com/BasisVR/BasisYtDlpIntegration",
+    "unity": "6000.0",
+    "basisVersion": "main",
+    "version": "0.0.1",
+    "icon": "📺"
+  },
+  {
+    "id": "com.basis.integration.audiolink",
+    "name": "Basis AudioLink Integration",
+    "description": "Reactive components that drive lights and materials from AudioLink audio bands, plus a republisher that keeps AudioLink globals resolving across Desktop/VR mode switches. Optional bolt-on.",
+    "author": "BasisVR",
+    "authorUrl": "https://github.com/BasisVR",
+    "category": "Integrations",
+    "tags": [ "integration", "audiolink", "audio", "reactive" ],
+    "source": "curated",
+    "gitUrl": "https://github.com/BasisVR/BasisAudioLinkIntegration.git",
+    "repoUrl": "https://github.com/BasisVR/BasisAudioLinkIntegration",
+    "unity": "6000.0",
+    "basisVersion": "main",
+    "version": "0.0.1",
+    "icon": "🎵"
   }
 ]
