@@ -24,6 +24,8 @@ public sealed class DevelopViewModel : ObservableObject
     private bool _authOk;
     private string _authLogin = "";
     private string _patInput = "";
+    private bool _driftScanning;
+    private DispatcherTimer? _driftTimer;
 
     public ObservableCollection<GitPackageRow> GitPackages { get; } = new();
     public ObservableCollection<MountedRow> Mounted { get; } = new();
@@ -86,7 +88,7 @@ public sealed class DevelopViewModel : ObservableObject
         SubmitPrCommand = new RelayCommand<MountedRow>(SubmitPrAsync);
         SwapBackCommand = new RelayCommand<MountedRow>(SwapBackAsync);
         OpenInUnityCommand = new RelayCommand<MountedRow>(row => { if (_install is not null) _ = _shell.OpenProjectInUnityAsync(_install); });
-        ScanDriftCommand = new RelayCommand(ScanDriftAsync);
+        ScanDriftCommand = new RelayCommand(() => ScanDriftAsync());
         OpenDriftPrCommand = new RelayCommand<CacheDriftRow>(OpenDriftPrAsync);
     }
 
@@ -97,6 +99,7 @@ public sealed class DevelopViewModel : ObservableObject
         OnPropertyChanged(nameof(HasInstall));
         Refresh();
         _ = CheckAuthAsync();
+        StartDriftAutoScan();
     }
 
     public async Task RefreshAsync()
@@ -222,18 +225,17 @@ public sealed class DevelopViewModel : ObservableObject
     }
 
     // Scan the project's git packages for accidental edits made directly in Library/PackageCache.
-    private async Task ScanDriftAsync()
+    private async Task ScanDriftAsync(bool quiet = false)
     {
-        if (_install is null) return;
-        if (!_git.IsAvailable) { _shell.SetStatus(L.Tr("develop.status.gitRequiredMount"), StatusKind.Error); return; }
+        if (_install is null || _driftScanning) return;
+        if (!_git.IsAvailable) { if (!quiet) _shell.SetStatus(L.Tr("develop.status.gitRequiredMount"), StatusKind.Error); return; }
 
-        IsBusy = true;
-        DriftPackages.Clear();
-        OnPropertyChanged(nameof(HasDrift));
-        _shell.SetStatus(L.Tr("develop.status.scanningDrift"));
+        _driftScanning = true;
+        if (!quiet) { IsBusy = true; _shell.SetStatus(L.Tr("develop.status.scanningDrift")); }
         try
         {
-            var drifts = await _drift.ScanAsync(_install, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
+            var drifts = await _drift.ScanAsync(_install, line => { if (!quiet) Dispatcher.UIThread.Post(() => _shell.SetStatus(line)); });
+            DriftPackages.Clear();
             foreach (var d in drifts)
             {
                 var summary = string.Join(", ", d.ChangedFiles.Take(6));
@@ -243,12 +245,31 @@ public sealed class DevelopViewModel : ObservableObject
             DriftScanned = true;
             OnPropertyChanged(nameof(HasDrift));
             OnPropertyChanged(nameof(NoDrift));
-            _shell.SetStatus(
-                drifts.Count == 0 ? L.Tr("develop.status.noDrift") : L.Tr("develop.status.driftFound", drifts.Count),
-                drifts.Count == 0 ? StatusKind.Success : StatusKind.Info);
+            if (!quiet)
+                _shell.SetStatus(
+                    drifts.Count == 0 ? L.Tr("develop.status.noDrift") : L.Tr("develop.status.driftFound", drifts.Count),
+                    drifts.Count == 0 ? StatusKind.Success : StatusKind.Info);
+            else if (drifts.Count > 0)
+                _shell.SetStatus(L.Tr("develop.status.driftFound", drifts.Count), StatusKind.Info);
         }
-        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.driftError", ex.Message), StatusKind.Error); }
-        finally { IsBusy = false; }
+        catch (Exception ex) { if (!quiet) _shell.SetStatus(L.Tr("develop.status.driftError", ex.Message), StatusKind.Error); }
+        finally { _driftScanning = false; if (!quiet) IsBusy = false; }
+    }
+
+    // Quietly scan for cache drift now, then keep re-checking every few minutes while this install is active.
+    // The service bails out cheaply when nothing has changed, so the periodic run is nearly free.
+    private void StartDriftAutoScan()
+    {
+        _driftTimer ??= new DispatcherTimer { Interval = TimeSpan.FromMinutes(5) };
+        _driftTimer.Tick -= OnDriftTimerTick;
+        _driftTimer.Tick += OnDriftTimerTick;
+        _driftTimer.Start();
+        _ = ScanDriftAsync(quiet: true);
+    }
+
+    private void OnDriftTimerTick(object? sender, EventArgs e)
+    {
+        if (!IsBusy && !_driftScanning) _ = ScanDriftAsync(quiet: true);
     }
 
     // Turn an accidental cache edit into a pull request, reusing the mounted-package PR flow on the work clone.

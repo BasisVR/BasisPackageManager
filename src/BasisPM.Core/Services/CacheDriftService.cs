@@ -19,6 +19,10 @@ public sealed class CacheDriftService
 
     private static string WorkRoot => Path.Combine(Path.GetTempPath(), "BasisPM", "cachedrift");
 
+    // A git checkout writes all of a package's files at ~one instant, so an untouched cache folder has a tiny
+    // mtime spread. Under this threshold we skip the (expensive) clone+diff entirely — that's the fast bail-out.
+    private static readonly TimeSpan CheckoutSpreadThreshold = TimeSpan.FromSeconds(60);
+
     public async Task<IReadOnlyList<CacheDrift>> ScanAsync(BasisInstall install, Action<string>? onProgress = null, CancellationToken ct = default)
     {
         var results = new List<CacheDrift>();
@@ -44,6 +48,9 @@ public sealed class CacheDriftService
             if (at < 0) continue;
             var hash = folderName[(at + 1)..];
             if (!GitUrlPolicy.IsSafeRef(hash)) continue;
+
+            // Fast bail-out: skip packages whose cache files all still sit at their checkout time.
+            if (!LooksTouched(cacheFolder)) continue;
 
             onProgress?.Invoke($"Checking {id}…");
             var workClone = Path.Combine(WorkRoot, Sanitize(id));
@@ -80,6 +87,23 @@ public sealed class CacheDriftService
     {
         try { return Directory.EnumerateDirectories(dir, pattern); }
         catch { return Array.Empty<string>(); }
+    }
+
+    // True if a file looks edited after checkout (mtime spread over the threshold). Cheap: file metadata only, no clone.
+    private static bool LooksTouched(string folder)
+    {
+        DateTime min = DateTime.MaxValue, max = DateTime.MinValue;
+        try
+        {
+            foreach (var f in Directory.EnumerateFiles(folder, "*", SearchOption.AllDirectories))
+            {
+                var t = File.GetLastWriteTimeUtc(f);
+                if (t < min) min = t;
+                if (t > max) max = t;
+            }
+        }
+        catch { return true; } // can't tell → don't skip it
+        return min != DateTime.MaxValue && (max - min) > CheckoutSpreadThreshold;
     }
 
     private static string Sanitize(string id) =>
