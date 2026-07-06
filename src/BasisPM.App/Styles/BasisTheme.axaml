@@ -391,8 +391,15 @@
         <Setter Property="Background" Value="Transparent"/>
     </Style>
 
+    <!-- Scrollbars: keep them visible and grabbable. The Fluent default auto-hides them (a thin line
+         that only fades/expands in on hover), so a user often clicks before the bar has appeared and
+         misses it. AllowAutoHide=False keeps each ScrollViewer's bars expanded at all times. -->
+    <Style Selector="ScrollViewer">
+        <Setter Property="AllowAutoHide" Value="False"/>
+    </Style>
     <Style Selector="ScrollBar">
         <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="AllowAutoHide" Value="False"/>
     </Style>
 
     <Style Selector="TextBlock.statusError">
