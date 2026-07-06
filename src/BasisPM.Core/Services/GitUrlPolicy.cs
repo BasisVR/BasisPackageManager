@@ -4,7 +4,7 @@ namespace BasisPM.Core.Services;
 
 /// <summary>
 /// Central validation for the untrusted URLs, refs and sub-paths that flow in from deep links,
-/// the package registry, bundles and Unity manifests before they reach <c>git</c> or get written
+/// the package registry, package lists and Unity manifests before they reach <c>git</c> or get written
 /// back into a project. The goal is to block:
 /// <list type="bullet">
 ///   <item>git's remote-command transports — above all <c>ext::</c>, which runs an arbitrary shell

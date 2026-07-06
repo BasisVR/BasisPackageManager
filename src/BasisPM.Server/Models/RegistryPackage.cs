@@ -12,7 +12,7 @@ public sealed class RegistryPackage
     [JsonPropertyName("category")] public string Category { get; set; } = "Misc";
     [JsonPropertyName("tags")] public List<string> Tags { get; set; } = new();
 
-    // curated | community
+    // official | community
     [JsonPropertyName("source")] public string Source { get; set; } = "community";
 
     // UPM git dependency URL — works for both GitHub and GitLab.

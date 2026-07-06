@@ -54,6 +54,7 @@ public sealed class MountService
             install.Manifest = info.Manifest;
 
             _registry.Add(new MountRecord(install.UnityProjectPath, packageId, dest, manifestGitValue));
+            GitExclude.Add(install.RepoRoot, dest, _git.GetCommonGitDir);
             return MountResult.Success(dest);
         }
 
@@ -81,6 +82,7 @@ public sealed class MountService
         install.Manifest = info.Manifest;
 
         _registry.Add(new MountRecord(install.UnityProjectPath, packageId, workspace, manifestGitValue));
+        GitExclude.Add(install.RepoRoot, workspace, _git.GetCommonGitDir);
         return MountResult.Success(workspace);
     }
 
@@ -108,6 +110,7 @@ public sealed class MountService
         catch (Exception ex) { return MountResult.Fail($"Restored the manifest, but couldn't delete {dest}: {ex.Message}"); }
 
         _registry.Remove(install.UnityProjectPath, packageId);
+        GitExclude.Remove(install.RepoRoot, dest, _git.GetCommonGitDir);
         return MountResult.Success(dest);
     }
 

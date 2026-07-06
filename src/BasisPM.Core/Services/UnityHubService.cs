@@ -75,10 +75,15 @@ public sealed partial class UnityHubService
         return list;
     }
 
-    /// <summary>Launches the installed Unity editor matching <paramref name="unityVersion"/> on the project. False if that editor isn't installed.</summary>
-    public async Task<bool> OpenProjectAsync(string projectPath, string? unityVersion, string? hubOverride = null, CancellationToken ct = default)
+    /// <summary>
+    /// Launches the editor matching <paramref name="unityVersion"/> on the project. Considers both the
+    /// Hub-installed editors and any <paramref name="extraEditors"/> the user registered by hand (so it
+    /// works with no Unity Hub). False if no matching editor is found.
+    /// </summary>
+    public async Task<bool> OpenProjectAsync(string projectPath, string? unityVersion, string? hubOverride = null, IEnumerable<InstalledEditor>? extraEditors = null, CancellationToken ct = default)
     {
-        var editors = await ListInstalledAsync(hubOverride, ct).ConfigureAwait(false);
+        var editors = new List<InstalledEditor>(await ListInstalledAsync(hubOverride, ct).ConfigureAwait(false));
+        if (extraEditors is not null) editors.AddRange(extraEditors);
         var editor = editors.FirstOrDefault(e => string.Equals(e.Version, unityVersion, StringComparison.OrdinalIgnoreCase));
         // editor.Path is an executable on Windows/Linux, but on macOS Hub may report a .app bundle
         // (a directory) — accept either, and let GuiAppSpec `open` the bundle there.
@@ -122,41 +127,21 @@ public sealed partial class UnityHubService
         return code;
     }
 
-    public async Task<int> UninstallEditorAsync(string version, string? hubOverride = null, CancellationToken ct = default)
+    public async Task<int> InstallModulesAsync(string version, IEnumerable<string> modules, string? hubOverride = null, CancellationToken ct = default)
     {
         var hub = FindHubPath(hubOverride);
         if (hub is null) throw new InvalidOperationException("Unity Hub not found.");
 
-        var (code, _, _) = await RunAsync(hub,
-            new[] { "--", "--headless", "uninstall", "--version", version },
-            ct).ConfigureAwait(false);
-
-        if (code == 0) return 0;
-
-        var installs = await ListInstalledAsync(hubOverride, ct).ConfigureAwait(false);
-        var match = installs.FirstOrDefault(e => string.Equals(e.Version, version, StringComparison.Ordinal));
-        if (match is not null && Directory.Exists(match.Path))
+        var args = new List<string> { "--", "--headless", "install-modules", "--version", version };
+        foreach (var m in modules)
         {
-            var editorRoot = ResolveEditorRoot(match.Path);
-            if (editorRoot is not null && Directory.Exists(editorRoot))
-            {
-                Directory.Delete(editorRoot, recursive: true);
-                return 0;
-            }
+            args.Add("-m");
+            args.Add(m);
         }
+        args.Add("--childModules");
+
+        var (code, _, _) = await RunAsync(hub, args, ct).ConfigureAwait(false);
         return code;
-    }
-
-    private static string? ResolveEditorRoot(string path)
-    {
-        var dir = new DirectoryInfo(path);
-        while (dir is not null)
-        {
-            if (string.Equals(dir.Name, "Editor", StringComparison.OrdinalIgnoreCase) && dir.Parent is not null)
-                return dir.Parent.FullName;
-            dir = dir.Parent;
-        }
-        return null;
     }
 
     private static async Task<(int Code, string Stdout, string Stderr)> RunAsync(string exe, IEnumerable<string> args, CancellationToken ct)

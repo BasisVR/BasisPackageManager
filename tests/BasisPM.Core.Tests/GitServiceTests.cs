@@ -136,4 +136,38 @@ public sealed class GitServiceTests
         Assert.False(result.Ok);
         Assert.Contains("unsupported or unsafe", result.Output);
     }
+
+    [GitFact]
+    public async Task ListBranches_returns_local_branches_including_slashed_names()
+    {
+        using var t = new TempDir();
+        var (git, repo) = await InitRepoAsync(t);
+        await CommitFileAsync(git, repo, "a.txt", "hello\n", "initial");
+
+        Assert.True((await git.CheckoutNewBranchAsync(repo, "develop")).Ok);
+        Assert.True((await git.CheckoutNewBranchAsync(repo, "feature/cool-thing")).Ok);
+
+        var branches = await git.ListBranchesAsync(repo);
+
+        Assert.Contains("main", branches);
+        Assert.Contains("develop", branches);
+        Assert.Contains("feature/cool-thing", branches);   // slash preserved, not truncated to "cool-thing"
+    }
+
+    [GitFact]
+    public async Task Checkout_switches_to_an_existing_branch_and_rejects_bad_names()
+    {
+        using var t = new TempDir();
+        var (git, repo) = await InitRepoAsync(t);
+        await CommitFileAsync(git, repo, "a.txt", "hello\n", "initial");
+        Assert.True((await git.CheckoutNewBranchAsync(repo, "develop")).Ok);
+
+        // Switch back to main, then to the existing branch by name.
+        Assert.True((await git.CheckoutAsync(repo, "main")).Ok);
+        Assert.Equal("main", await git.GetBranchAsync(repo));
+        Assert.True((await git.CheckoutAsync(repo, "develop")).Ok);
+        Assert.Equal("develop", await git.GetBranchAsync(repo));
+
+        Assert.False((await git.CheckoutAsync(repo, "--evil")).Ok);
+    }
 }

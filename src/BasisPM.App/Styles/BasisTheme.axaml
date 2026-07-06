@@ -603,6 +603,20 @@
         <Setter Property="BorderBrush" Value="{StaticResource BasisBorderStrongBrush}"/>
     </Style>
 
+    <!-- Locally-mounted package with uncommitted edits: an amber wash (the BasisWarning token
+         #F59E0B at low alpha) so the row reads as "changed" instead of the plain glass. Declared
+         AFTER Border.interactive so it wins the fill/border over the glass + hover styles; the
+         matching :pointerover keeps the amber (a touch brighter) on hover instead of reverting to
+         the neutral glass-strong hover. Literal ARGB matches the mounted-blue pills' convention. -->
+    <Style Selector="Border.glass.edited">
+        <Setter Property="Background" Value="#26F59E0B"/>
+        <Setter Property="BorderBrush" Value="#80F59E0B"/>
+    </Style>
+    <Style Selector="Border.glass.edited:pointerover">
+        <Setter Property="Background" Value="#33F59E0B"/>
+        <Setter Property="BorderBrush" Value="#B3F59E0B"/>
+    </Style>
+
     <!-- Soft fade-in for panels/overlays that toggle via IsVisible (update banner, clone form,
          install cards). Opacity has a built-in keyframe animator, so this is safe; it replays each
          time the element re-enters the visual tree. -->

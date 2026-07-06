@@ -47,21 +47,54 @@
                                   IsVisible="{Binding HasInstalledEditors}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate DataType="models:InstalledEditor">
-                                    <TextBlock Text="{Binding Version}" FontWeight="SemiBold"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Text="{Binding Version}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{loc:Tr unity.tag.manual}" Classes="dim" FontSize="11"
+                                                   VerticalAlignment="Center" IsVisible="{Binding IsManual}"/>
+                                    </StackPanel>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                         <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center" IsVisible="{Binding HasSelectedEditor}">
                             <TextBlock Grid.Column="0" Text="{Binding SelectedEditor.Path}" Classes="dim" FontSize="11"
                                        VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,12,0"/>
-                            <Button Grid.Column="1" Classes="iconBtn danger"
-                                    Command="{Binding UninstallCommand}" CommandParameter="{Binding SelectedEditor}"
-                                    ToolTip.Tip="{loc:Tr unity.button.uninstall}">
-                                <PathIcon Width="16" Height="16" Data="{StaticResource IconDelete}"/>
+                            <Button Grid.Column="1" Classes="iconBtn"
+                                    IsVisible="{Binding SelectedEditorIsManual}"
+                                    Command="{Binding RemoveEditorCommand}" CommandParameter="{Binding SelectedEditor}"
+                                    ToolTip.Tip="{loc:Tr unity.button.removeEditor}">
+                                <PathIcon Width="16" Height="16" Data="{StaticResource IconClose}"/>
                             </Button>
                         </Grid>
+                        <StackPanel Spacing="10" IsVisible="{Binding SelectedEditorIsHub}">
+                            <TextBlock Text="{loc:Tr unity.editors.modulesHint}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                            <ItemsControl ItemsSource="{Binding EditorModuleOptions}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="vm:ModuleOption">
+                                        <CheckBox Content="{Binding Name}" IsChecked="{Binding Selected}" Margin="0,0,16,8"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Classes="secondary" Command="{Binding InstallModulesCommand}" HorizontalAlignment="Left">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr unity.button.installModules}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                         <TextBlock Text="{loc:Tr unity.editors.none}" Classes="muted" FontSize="12"
                                    IsVisible="{Binding !HasInstalledEditors}"/>
+                        <TextBlock Text="{loc:Tr unity.editors.addHint}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                        <Button Classes="secondary" Command="{Binding AddEditorCommand}" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr unity.button.addFromFolder}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>

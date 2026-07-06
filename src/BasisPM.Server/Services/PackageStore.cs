@@ -55,7 +55,7 @@ public sealed class PackageStore
         return new List<RegistryPackage>();
     }
 
-    /// <summary>Curated = hosted under github.com/BasisVR; anything else is community.</summary>
+    /// <summary>Official = hosted under github.com/BasisVR; anything else is community.</summary>
     public static string DeriveSource(string? repoUrl, string? gitUrl)
     {
         var u = (repoUrl ?? gitUrl ?? "").ToLowerInvariant();
@@ -63,7 +63,7 @@ public sealed class PackageStore
         if (idx < 0) return "community";
         var owner = u[(idx + "github.com".Length)..].TrimStart('/', ':')
             .Split('/', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        return string.Equals(owner, "basisvr", StringComparison.OrdinalIgnoreCase) ? "curated" : "community";
+        return string.Equals(owner, "basisvr", StringComparison.OrdinalIgnoreCase) ? "official" : "community";
     }
 
     public IReadOnlyList<RegistryPackage> All()
@@ -125,7 +125,7 @@ public sealed class PackageStore
 
     /// <summary>
     /// Adds a community-submitted package. Validated and <b>create-only</b>: it will not overwrite an
-    /// existing entry, so a submission can never repoint a curated (or any prior) package's git URL.
+    /// existing entry, so a submission can never repoint an official (or any prior) package's git URL.
     /// Real updates go through a pull request to the seed. Throws <see cref="ArgumentException"/> for
     /// bad input and <see cref="InvalidOperationException"/> for a conflicting id / full registry.
     /// </summary>
@@ -183,7 +183,7 @@ public sealed class PackageStore
                 Tags = tags,
                 GitUrl = sub.GitUrl.Trim(),
                 RepoUrl = sub.RepoUrl?.Trim(),
-                // Always community: "curated" is reserved for the PR-reviewed seed, so a submitter can't
+                // Always community: "official" is reserved for the PR-reviewed seed, so a submitter can't
                 // mint a trusted-looking badge by pointing at a github.com/BasisVR URL they don't own.
                 Source = "community",
                 Unity = sub.Unity?.Trim(),

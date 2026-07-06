@@ -6,7 +6,7 @@ using BasisPM.Server.Models;
 using BasisPM.Server.Services;
 
 // Static-site generator mode: `dotnet run --project src/BasisPM.Server -- generate <outDir>`
-// Emits index.html + packages.json + catalog.json + bundles.json for GitHub Pages (no server required).
+// Emits index.html + packages.json + catalog.json + packagelists.json (+ legacy bundles.json) for GitHub Pages (no server required).
 if (args.Length >= 1 && args[0].Equals("generate", StringComparison.OrdinalIgnoreCase))
 {
     await GenerateStaticSiteAsync(args.Length >= 2 ? args[1] : "dist");
@@ -21,8 +21,10 @@ var store = new PackageStore(dataDir, seedPath);
 store.ResolveImages(Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "icons"));
 builder.Services.AddSingleton(store);
 
-var bundleSeed = Path.Combine(builder.Environment.ContentRootPath, "seed", "bundles.json");
-builder.Services.AddSingleton(new BundleStore(bundleSeed));
+var packageListSeed = Path.Combine(builder.Environment.ContentRootPath, "seed", "packagelists.json");
+if (!File.Exists(packageListSeed))
+    packageListSeed = Path.Combine(builder.Environment.ContentRootPath, "seed", "bundles.json"); // legacy seed name
+builder.Services.AddSingleton(new PackageListStore(packageListSeed));
 
 var app = builder.Build();
 
@@ -33,7 +35,8 @@ app.UseStaticFiles();
 // so the browse UI works identically whether hosted live or as static files.
 app.MapGet("/packages.json", (PackageStore store) => Results.Ok(store.All()));
 app.MapGet("/catalog.json", (PackageStore store) => Results.Ok(store.ToCatalog()));
-app.MapGet("/bundles.json", (BundleStore bundles) => Results.Ok(bundles.All()));
+app.MapGet("/packagelists.json", (PackageListStore packageLists) => Results.Ok(packageLists.All()));
+app.MapGet("/bundles.json", (PackageListStore packageLists) => Results.Ok(packageLists.All())); // legacy alias
 
 var api = app.MapGroup("/api");
 
@@ -51,11 +54,18 @@ api.MapGet("/categories", (PackageStore store) => Results.Ok(store.Categories())
 // Core.Catalog-compatible feed consumed by the desktop Basis Package Manager (Settings → Catalog URL).
 api.MapGet("/catalog", (PackageStore store) => Results.Ok(store.ToCatalog()));
 
-api.MapGet("/bundles", (BundleStore bundles) => Results.Ok(bundles.All()));
-api.MapGet("/bundles/{id}", (BundleStore bundles, string id) =>
+api.MapGet("/packagelists", (PackageListStore packageLists) => Results.Ok(packageLists.All()));
+api.MapGet("/packagelists/{id}", (PackageListStore packageLists, string id) =>
 {
-    var b = bundles.Get(id);
-    return b is null ? Results.NotFound() : Results.Ok(b);
+    var pl = packageLists.Get(id);
+    return pl is null ? Results.NotFound() : Results.Ok(pl);
+});
+// Legacy aliases — pre-rename desktop apps and shared links still hit /api/bundles.
+api.MapGet("/bundles", (PackageListStore packageLists) => Results.Ok(packageLists.All()));
+api.MapGet("/bundles/{id}", (PackageListStore packageLists, string id) =>
+{
+    var pl = packageLists.Get(id);
+    return pl is null ? Results.NotFound() : Results.Ok(pl);
 });
 
 // The write endpoint is OFF by default: it persists to disk and its data is served to every client
@@ -108,7 +118,7 @@ static async Task GenerateStaticSiteAsync(string outDir)
     var packages = PackageStore.LoadSeed(seedPath);
 
     // Packages present in the Basis developer-branch manifest ship with Basis → mark them "built-in".
-    // This wins over the curated/community derivation for the source badge.
+    // This wins over the official/community derivation for the source badge.
     var builtInIds = await FetchBuiltInIdsAsync(Environment.GetEnvironmentVariable("GITHUB_TOKEN"));
     foreach (var p in packages)
         if (builtInIds.Contains(p.Id)) p.Source = "built-in";
@@ -161,22 +171,25 @@ static async Task GenerateStaticSiteAsync(string outDir)
     File.WriteAllText(Path.Combine(outDir, "packages.json"), JsonSerializer.Serialize(packages, opts));
     File.WriteAllText(Path.Combine(outDir, "catalog.json"), JsonSerializer.Serialize(PackageStore.BuildCatalog(packages), opts));
 
-    // Curated bundles for the website's Bundles view + install-back.
-    var bundleSeed = ResolveUp(baseDir, Path.Combine("seed", "bundles.json"));
-    var bundles = BundleStore.LoadSeed(bundleSeed);
+    // Curated package lists for the website's Package Lists view + install-back.
+    var packageListSeed = ResolveUp(baseDir, Path.Combine("seed", "packagelists.json"))
+                       ?? ResolveUp(baseDir, Path.Combine("seed", "bundles.json")); // legacy seed name
+    var packageLists = PackageListStore.LoadSeed(packageListSeed);
     // "Basis Recommended" always holds every registry package — refill it from the current list so
     // it can never drift behind newly-added packages.
-    var recommended = bundles.FirstOrDefault(b => b.Id == "basis-recommended");
+    var recommended = packageLists.FirstOrDefault(pl => pl.Id == "basis-recommended");
     if (recommended is not null)
         recommended.Packages = packages
             .Where(p => !string.IsNullOrWhiteSpace(p.GitUrl))
-            .Select(p => new BundlePackage { Id = p.Id, Name = p.Name, GitUrl = p.GitUrl })
+            .Select(p => new PackageListEntry { Id = p.Id, Name = p.Name, GitUrl = p.GitUrl })
             .ToList();
-    File.WriteAllText(Path.Combine(outDir, "bundles.json"), JsonSerializer.Serialize(bundles, opts));
+    var packageListsJson = JsonSerializer.Serialize(packageLists, opts);
+    File.WriteAllText(Path.Combine(outDir, "packagelists.json"), packageListsJson);
+    File.WriteAllText(Path.Combine(outDir, "bundles.json"), packageListsJson); // legacy filename for pre-rename clients
 
     File.Copy(indexPath, Path.Combine(outDir, "index.html"), overwrite: true);
 
-    Console.WriteLine($"Generated static registry ({packages.Count} packages, {bundles.Count} bundles) → {Path.GetFullPath(outDir)}");
+    Console.WriteLine($"Generated static registry ({packages.Count} packages, {packageLists.Count} package lists) → {Path.GetFullPath(outDir)}");
 }
 
 static async Task<UpmPackageJson?> FetchUpmPackageAsync(GitHubService github, string? gitOrRepoUrl)

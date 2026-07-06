@@ -44,6 +44,9 @@ public partial class PackagesView : UserControl
         panel.Children.Add(MenuButton(L.Tr("packages.button.update"), false, flyout, () => vm.InstallCommand.Execute(row.Entry)));
         if (row.HasGit)
             panel.Children.Add(MenuButton(L.Tr("packages.button.chooseVersion"), false, flyout, () => vm.ChooseVersionCommand.Execute(row.Entry)));
+        // A git package installed but not yet mounted can be mounted for editing straight from here.
+        if (row.CanMountToEdit)
+            panel.Children.Add(MenuButton(L.Tr("develop.button.mountToEdit"), false, flyout, () => vm.MountCommand.Execute(row)));
         panel.Children.Add(MenuButton(L.Tr("packages.button.remove"), true, flyout, () => vm.RemoveCommand.Execute(row.Entry)));
 
         // The Fluent FlyoutPresenter fill is translucent, so draw the menu's own opaque, themed

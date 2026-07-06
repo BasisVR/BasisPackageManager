@@ -187,6 +187,51 @@ public sealed class GitService
         catch { return false; }
     }
 
+    /// <summary>
+    /// The repository's <b>common</b> git directory (absolute) via <c>git rev-parse --git-common-dir</c>.
+    /// That's where shared state such as <c>info/exclude</c> lives, and — unlike the <c>.git</c> pointer
+    /// inside a linked worktree, which names the per-worktree dir — it resolves to the shared dir. Null
+    /// when git isn't available, <paramref name="repoRoot"/> isn't a repo, or the command fails.
+    /// Runs synchronously: its one caller (best-effort <see cref="GitExclude"/>) is itself synchronous,
+    /// and the output is a single short line so draining the pipes inline can't deadlock.
+    /// </summary>
+    public string? GetCommonGitDir(string repoRoot)
+    {
+        var git = FindGit();
+        if (git is null || string.IsNullOrWhiteSpace(repoRoot) || !Directory.Exists(repoRoot)) return null;
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = git,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+                StandardOutputEncoding = Encoding.UTF8,
+                WorkingDirectory = repoRoot,
+            };
+            psi.ArgumentList.Add("rev-parse");
+            psi.ArgumentList.Add("--git-common-dir");
+            psi.Environment["GIT_TERMINAL_PROMPT"] = "0";
+
+            using var p = Process.Start(psi);
+            if (p is null) return null;
+            var outText = p.StandardOutput.ReadToEnd();
+            p.StandardError.ReadToEnd();
+            p.WaitForExit();
+            if (p.ExitCode != 0) return null;
+
+            var printed = outText.Trim();
+            if (printed.Length == 0) return null;
+            // git prints ".git" (or another relative path) for the main worktree and an absolute path
+            // for a linked one; resolve against repoRoot so both become a concrete directory.
+            var full = Path.IsPathRooted(printed) ? printed : Path.GetFullPath(Path.Combine(repoRoot, printed));
+            return Directory.Exists(full) ? full : null;
+        }
+        catch { return null; }
+    }
+
     // ---- write-side operations (publish wizard): init / add / commit / remote / push / tag ----
 
     public async Task<GitResult> InitAsync(string repoRoot, string defaultBranch = "main", CancellationToken ct = default)
@@ -222,6 +267,47 @@ public sealed class GitService
             return new GitResult(false, -1, $"Refused to create branch '{branch}': the name is not valid.");
         var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "checkout", "-b", branch }, null, ct).ConfigureAwait(false);
         return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    /// <summary>Switches to an existing branch (a local branch, or a remote one git can check out and track).</summary>
+    public async Task<GitResult> CheckoutAsync(string repoRoot, string branch, CancellationToken ct = default)
+    {
+        if (!GitUrlPolicy.IsSafeRef(branch))
+            return new GitResult(false, -1, $"Refused to switch to '{branch}': the name is not valid.");
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "checkout", branch }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    /// <summary>
+    /// Branches this repo can switch to: local heads plus remote-tracking branches (remote prefix
+    /// stripped, deduped against locals). Fetch first if you want branches added on the remote since clone.
+    /// </summary>
+    public async Task<IReadOnlyList<string>> ListBranchesAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, _) = await RunGitAsync(repoRoot,
+            new[] { "for-each-ref", "--format=%(refname)", "refs/heads", "refs/remotes" }, null, ct).ConfigureAwait(false);
+        if (code != 0) return Array.Empty<string>();
+
+        var names = new List<string>();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var line in outText.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var refName = line.Trim();
+            string? branch = null;
+            if (refName.StartsWith("refs/heads/", StringComparison.Ordinal))
+                branch = refName["refs/heads/".Length..];
+            else if (refName.StartsWith("refs/remotes/", StringComparison.Ordinal))
+            {
+                var rest = refName["refs/remotes/".Length..];        // "<remote>/<branch...>"
+                var slash = rest.IndexOf('/');
+                if (slash < 0) continue;
+                branch = rest[(slash + 1)..];
+                if (branch is "HEAD") continue;                       // the remote's symbolic default ref
+            }
+            if (!string.IsNullOrEmpty(branch) && seen.Add(branch)) names.Add(branch);
+        }
+        names.Sort(StringComparer.OrdinalIgnoreCase);
+        return names;
     }
 
     public async Task<string?> GetRemoteUrlAsync(string repoRoot, string remote = "origin", CancellationToken ct = default)

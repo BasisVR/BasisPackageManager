@@ -3,6 +3,14 @@
   "nativeName": "हिन्दी",
   "entries": [
     {
+      "key": "packages.version.installed",
+      "value": "इंस्टॉल किया गया {0}"
+    },
+    {
+      "key": "packages.version.defaultBranch",
+      "value": "डिफ़ॉल्ट ब्रांच"
+    },
+    {
       "key": "nav.changes",
       "value": "स्थानीय बदलाव"
     },
@@ -31,7 +39,7 @@
       "value": "Unity एडिटर"
     },
     {
-      "key": "shell.bundle.pickerLabel",
+      "key": "shell.packageList.pickerLabel",
       "value": "{0} ({1} पैकेज)"
     },
     {
@@ -63,7 +71,7 @@
       "value": "“{0}” को किस प्रोजेक्ट में जोड़ें?"
     },
     {
-      "key": "shell.status.bundleNotFound",
+      "key": "shell.status.packageListNotFound",
       "value": "रजिस्ट्री में बंडल “{0}” नहीं मिला।"
     },
     {
@@ -107,7 +115,7 @@
       "value": "{0} के इंस्टॉल लिंक में उसका git URL मौजूद नहीं था।"
     },
     {
-      "key": "shell.status.loadingBundle",
+      "key": "shell.status.loadingPackageList",
       "value": "बंडल लोड हो रहा है…"
     },
     {
@@ -483,11 +491,11 @@
       "value": "github"
     },
     {
-      "key": "packages.bundle.basisLine",
+      "key": "packages.packageList.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
     {
-      "key": "packages.bundle.unknownCommit",
+      "key": "packages.packageList.unknownCommit",
       "value": "अज्ञात"
     },
     {
@@ -499,7 +507,7 @@
       "value": "संस्करण चुनें…"
     },
     {
-      "key": "packages.button.createBundle",
+      "key": "packages.button.createPackageList",
       "value": "बंडल बनाएँ"
     },
     {
@@ -587,7 +595,7 @@
       "value": "जोड़ा गया"
     },
     {
-      "key": "packages.status.addedBundle",
+      "key": "packages.status.addedPackageList",
       "value": "बंडल “{0}” ({1} पैकेज){2} → {3} जोड़ा गया।"
     },
     {
@@ -599,7 +607,7 @@
       "value": "GitHub से {0} {1}{2}।"
     },
     {
-      "key": "packages.status.bundleInstallFailed",
+      "key": "packages.status.packageListInstallFailed",
       "value": "बंडल इंस्टॉल विफल: {0}"
     },
     {
@@ -723,10 +731,6 @@
       "value": "सूची फिर से लोड करें"
     },
     {
-      "key": "unity.button.uninstall",
-      "value": "अनइंस्टॉल करें"
-    },
-    {
       "key": "unity.header.subtitle",
       "value": "इंस्टॉल किए गए Unity एडिटर का पता लगाएँ और Basis के लिए आवश्यक संस्करण इंस्टॉल करें।"
     },
@@ -811,28 +815,40 @@
       "value": "आपका Basis इंस्टॉल Unity {0} को लक्षित करता है। साफ़-सुथरे ढंग से खोलने के लिए नीचे ठीक वही संस्करण इंस्टॉल करें।"
     },
     {
-      "key": "unity.status.uninstallError",
-      "value": "अनइंस्टॉल त्रुटि: {0}"
-    },
-    {
-      "key": "unity.status.uninstallFailed",
-      "value": "अनइंस्टॉल विफल (एग्ज़िट कोड {0})।"
-    },
-    {
-      "key": "unity.status.uninstalled",
-      "value": "Unity {0} अनइंस्टॉल किया गया।"
-    },
-    {
-      "key": "unity.status.uninstalling",
-      "value": "Unity {0} अनइंस्टॉल हो रहा है..."
-    },
-    {
       "key": "unity.tag.installed",
       "value": "इंस्टॉल"
     },
     {
       "key": "unity.tag.recommended",
       "value": "अनुशंसित"
+    },
+    {
+      "key": "unity.button.installModules",
+      "value": "मॉड्यूल इंस्टॉल करें"
+    },
+    {
+      "key": "unity.editors.modulesHint",
+      "value": "Unity Hub के माध्यम से इस एडिटर में बिल्ड-सपोर्ट मॉड्यूल जोड़ें। पहले से इंस्टॉल किए गए मॉड्यूल छोड़ दिए जाते हैं।"
+    },
+    {
+      "key": "unity.status.installingModules",
+      "value": "Unity {0} के लिए मॉड्यूल इंस्टॉल किए जा रहे हैं…"
+    },
+    {
+      "key": "unity.status.modulesError",
+      "value": "मॉड्यूल इंस्टॉल त्रुटि: {0}"
+    },
+    {
+      "key": "unity.status.modulesFailed",
+      "value": "मॉड्यूल इंस्टॉल विफल रहा (एग्ज़िट कोड {0})।"
+    },
+    {
+      "key": "unity.status.modulesInstalled",
+      "value": "Unity {0} के लिए मॉड्यूल इंस्टॉल किए गए।"
+    },
+    {
+      "key": "unity.status.noModulesSelected",
+      "value": "इंस्टॉल करने के लिए कम से कम एक मॉड्यूल चुनें।"
     },
     {
       "key": "develop.auth.cliNotLoggedIn",
@@ -1463,43 +1479,43 @@
       "value": "हाँ"
     },
     {
-      "key": "dialog.createBundle.cancel",
+      "key": "dialog.createPackageList.cancel",
       "value": "रद्द करें"
     },
     {
-      "key": "dialog.createBundle.create",
+      "key": "dialog.createPackageList.create",
       "value": "सबमिशन बनाएँ"
     },
     {
-      "key": "dialog.createBundle.descriptionLabel",
+      "key": "dialog.createPackageList.descriptionLabel",
       "value": "विवरण"
     },
     {
-      "key": "dialog.createBundle.errorNoName",
+      "key": "dialog.createPackageList.errorNoName",
       "value": "अपने बंडल को एक नाम दें।"
     },
     {
-      "key": "dialog.createBundle.errorNoPackages",
+      "key": "dialog.createPackageList.errorNoPackages",
       "value": "शामिल करने के लिए कम से कम एक पैकेज चुनें।"
     },
     {
-      "key": "dialog.createBundle.heading",
+      "key": "dialog.createPackageList.heading",
       "value": "एक बंडल बनाएँ"
     },
     {
-      "key": "dialog.createBundle.intro",
+      "key": "dialog.createPackageList.intro",
       "value": "अपने Basis + पैकेज को एक इंस्टॉल-योग्य बंडल के रूप में साझा करें। सबमिट करने के लिए यह एक GitHub इश्यू खोलता है।"
     },
     {
-      "key": "dialog.createBundle.nameLabel",
+      "key": "dialog.createPackageList.nameLabel",
       "value": "नाम"
     },
     {
-      "key": "dialog.createBundle.packagesLabel",
+      "key": "dialog.createPackageList.packagesLabel",
       "value": "शामिल करने के लिए पैकेज"
     },
     {
-      "key": "dialog.createBundle.title",
+      "key": "dialog.createPackageList.title",
       "value": "बंडल बनाएँ"
     },
     {

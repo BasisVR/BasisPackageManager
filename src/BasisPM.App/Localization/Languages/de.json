@@ -3,6 +3,14 @@
   "nativeName": "Deutsch",
   "entries": [
     {
+      "key": "packages.version.installed",
+      "value": "Installiert {0}"
+    },
+    {
+      "key": "packages.version.defaultBranch",
+      "value": "Standard-Branch"
+    },
+    {
       "key": "nav.changes",
       "value": "Lokale Änderungen"
     },
@@ -31,7 +39,7 @@
       "value": "Unity-Editoren"
     },
     {
-      "key": "shell.bundle.pickerLabel",
+      "key": "shell.packageList.pickerLabel",
       "value": "{0} ({1} Pakete)"
     },
     {
@@ -63,8 +71,8 @@
       "value": "„{0}“ zu welchem Projekt hinzufügen?"
     },
     {
-      "key": "shell.status.bundleNotFound",
-      "value": "Bundle „{0}“ wurde in der Registry nicht gefunden."
+      "key": "shell.status.packageListNotFound",
+      "value": "Paketliste „{0}“ wurde in der Registry nicht gefunden."
     },
     {
       "key": "shell.status.checkingForUpdates",
@@ -107,8 +115,8 @@
       "value": "Dem Installationslink für {0} fehlte die Git-URL."
     },
     {
-      "key": "shell.status.loadingBundle",
-      "value": "Bundle wird geladen…"
+      "key": "shell.status.loadingPackageList",
+      "value": "Paketliste wird geladen…"
     },
     {
       "key": "shell.status.noUnityProject",
@@ -483,11 +491,11 @@
       "value": "github"
     },
     {
-      "key": "packages.bundle.basisLine",
+      "key": "packages.packageList.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
     {
-      "key": "packages.bundle.unknownCommit",
+      "key": "packages.packageList.unknownCommit",
       "value": "unbekannt"
     },
     {
@@ -499,8 +507,8 @@
       "value": "Version wählen…"
     },
     {
-      "key": "packages.button.createBundle",
-      "value": "Bundle erstellen"
+      "key": "packages.button.createPackageList",
+      "value": "Paketliste erstellen"
     },
     {
       "key": "packages.button.install",
@@ -587,8 +595,8 @@
       "value": "Hinzugefügt"
     },
     {
-      "key": "packages.status.addedBundle",
-      "value": "Bundle „{0}“ ({1} Paket(e)){2} → {3} hinzugefügt."
+      "key": "packages.status.addedPackageList",
+      "value": "Paketliste „{0}“ ({1} Paket(e)){2} → {3} hinzugefügt."
     },
     {
       "key": "packages.status.addedDeepLink",
@@ -599,8 +607,8 @@
       "value": "{0} {1}{2} von GitHub."
     },
     {
-      "key": "packages.status.bundleInstallFailed",
-      "value": "Bundle-Installation fehlgeschlagen: {0}"
+      "key": "packages.status.packageListInstallFailed",
+      "value": "Installation der Paketliste fehlgeschlagen: {0}"
     },
     {
       "key": "packages.status.chooseProject",
@@ -723,10 +731,6 @@
       "value": "Liste neu laden"
     },
     {
-      "key": "unity.button.uninstall",
-      "value": "Deinstallieren"
-    },
-    {
       "key": "unity.header.subtitle",
       "value": "Installierte Unity-Editoren erkennen und die von Basis benötigte Version installieren."
     },
@@ -811,28 +815,40 @@
       "value": "Deine Basis-Installation ist auf Unity {0} ausgelegt. Installiere unten genau diese Version für ein sauberes Öffnen."
     },
     {
-      "key": "unity.status.uninstallError",
-      "value": "Deinstallationsfehler: {0}"
-    },
-    {
-      "key": "unity.status.uninstallFailed",
-      "value": "Deinstallation fehlgeschlagen (Exit-Code {0})."
-    },
-    {
-      "key": "unity.status.uninstalled",
-      "value": "Unity {0} deinstalliert."
-    },
-    {
-      "key": "unity.status.uninstalling",
-      "value": "Unity {0} wird deinstalliert..."
-    },
-    {
       "key": "unity.tag.installed",
       "value": "installiert"
     },
     {
       "key": "unity.tag.recommended",
       "value": "empfohlen"
+    },
+    {
+      "key": "unity.button.installModules",
+      "value": "Module installieren"
+    },
+    {
+      "key": "unity.editors.modulesHint",
+      "value": "Fügen Sie diesem Editor über den Unity Hub Build-Support-Module hinzu. Bereits installierte Module werden übersprungen."
+    },
+    {
+      "key": "unity.status.installingModules",
+      "value": "Module für Unity {0} werden installiert …"
+    },
+    {
+      "key": "unity.status.modulesError",
+      "value": "Fehler bei der Modulinstallation: {0}"
+    },
+    {
+      "key": "unity.status.modulesFailed",
+      "value": "Modulinstallation fehlgeschlagen (Exit-Code {0})."
+    },
+    {
+      "key": "unity.status.modulesInstalled",
+      "value": "Module für Unity {0} installiert."
+    },
+    {
+      "key": "unity.status.noModulesSelected",
+      "value": "Wählen Sie mindestens ein Modul zum Installieren aus."
     },
     {
       "key": "develop.auth.cliNotLoggedIn",
@@ -1463,44 +1479,44 @@
       "value": "Ja"
     },
     {
-      "key": "dialog.createBundle.cancel",
+      "key": "dialog.createPackageList.cancel",
       "value": "Abbrechen"
     },
     {
-      "key": "dialog.createBundle.create",
+      "key": "dialog.createPackageList.create",
       "value": "Einreichung erstellen"
     },
     {
-      "key": "dialog.createBundle.descriptionLabel",
+      "key": "dialog.createPackageList.descriptionLabel",
       "value": "Beschreibung"
     },
     {
-      "key": "dialog.createBundle.errorNoName",
-      "value": "Gib deinem Bundle einen Namen."
+      "key": "dialog.createPackageList.errorNoName",
+      "value": "Gib deiner Paketliste einen Namen."
     },
     {
-      "key": "dialog.createBundle.errorNoPackages",
+      "key": "dialog.createPackageList.errorNoPackages",
       "value": "Wähle mindestens ein Paket zum Einschließen."
     },
     {
-      "key": "dialog.createBundle.heading",
-      "value": "Ein Bundle erstellen"
+      "key": "dialog.createPackageList.heading",
+      "value": "Eine Paketliste erstellen"
     },
     {
-      "key": "dialog.createBundle.intro",
-      "value": "Teile dein Basis + Pakete als installierbares Bundle. Es öffnet ein GitHub-Issue zum Einreichen."
+      "key": "dialog.createPackageList.intro",
+      "value": "Teile dein Basis + Pakete als installierbare Paketliste. Es öffnet ein GitHub-Issue zum Einreichen."
     },
     {
-      "key": "dialog.createBundle.nameLabel",
+      "key": "dialog.createPackageList.nameLabel",
       "value": "Name"
     },
     {
-      "key": "dialog.createBundle.packagesLabel",
+      "key": "dialog.createPackageList.packagesLabel",
       "value": "Einzuschließende Pakete"
     },
     {
-      "key": "dialog.createBundle.title",
-      "value": "Bundle erstellen"
+      "key": "dialog.createPackageList.title",
+      "value": "Paketliste erstellen"
     },
     {
       "key": "dialog.installPicker.addHere",

@@ -97,9 +97,9 @@ public sealed class ModelsTests
     }
 
     [Fact]
-    public void Bundle_has_sensible_defaults()
+    public void PackageList_has_sensible_defaults()
     {
-        var b = new Bundle();
+        var b = new PackageList();
         Assert.Equal("", b.Id);
         Assert.NotNull(b.Tags);
         Assert.NotNull(b.Packages);

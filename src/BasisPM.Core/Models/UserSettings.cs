@@ -26,6 +26,11 @@ public sealed class UserSettings
     [JsonPropertyName("unityHubPath")]
     public string? UnityHubPath { get; set; }
 
+    // Unity editors the user added by hand (pointed at a folder) — the path lets people without
+    // Unity Hub still open projects. Merged with the Hub-detected editors in the Unity tab.
+    [JsonPropertyName("manualEditors")]
+    public List<ManualUnityEditor> ManualEditors { get; set; } = new();
+
     // The Local Changes tab is hidden until the user opts in.
     [JsonPropertyName("showLocalChanges")]
     public bool ShowLocalChanges { get; set; }

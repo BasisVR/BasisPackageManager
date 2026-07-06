@@ -35,7 +35,7 @@
                         ToolTip.Tip="{Binding MountedHint}">
                     <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
                         <PathIcon Width="15" Height="15" Data="{StaticResource IconEdit}" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding MountedLabel}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding MountedStateLabel}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -102,15 +102,15 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </StackPanel>
-                        <Button Command="{Binding CreateBundleCommand}" VerticalAlignment="Bottom" IsVisible="{Binding HasInstall}">
+                        <Button Command="{Binding CreatePackageListCommand}" VerticalAlignment="Bottom" IsVisible="{Binding HasInstall}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr packages.button.createBundle}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.createPackageList}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Classes="iconBtn" Command="{Binding InstallBundleFromFileCommand}" VerticalAlignment="Bottom"
+                        <Button Classes="iconBtn" Command="{Binding InstallPackageListFromFileCommand}" VerticalAlignment="Bottom"
                                 IsVisible="{Binding HasInstalls}"
-                                ToolTip.Tip="{loc:Tr packages.button.installBundleFile}">
+                                ToolTip.Tip="{loc:Tr packages.button.installPackageListFile}">
                             <PathIcon Width="16" Height="16" Data="{StaticResource IconFolderOpen}"/>
                         </Button>
                         <Button Classes="iconBtn" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom"
@@ -130,6 +130,21 @@
             </Border>
 
             <StackPanel Spacing="20" IsVisible="{Binding HasInstall}">
+
+                <!-- Git preflight: mounting and PRs shell out to git, so nudge the user to install it. -->
+                <Border Classes="card" Padding="16,12" IsVisible="{Binding GitMissing}"
+                        Background="#26F59E0B" BorderBrush="#80F59E0B">
+                    <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                        <TextBlock Grid.Column="0" Margin="0,0,12,0" Text="{loc:Tr develop.git.requiredDescription}"
+                                   Classes="muted" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        <Button Grid.Column="1" Classes="primary" Command="{Binding InstallGitCommand}" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr develop.button.installGit}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
 
                 <!-- Available to install (Basis registry / basisvr.org/packages) -->
                 <Border Classes="card" Padding="0">
@@ -153,7 +168,7 @@
                             <ItemsControl ItemsSource="{Binding Available}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="vm:PackageRow">
-                                        <Border Classes="glass interactive" Padding="14" Margin="16,7" Cursor="Hand" Tapped="OnRowTapped"
+                                        <Border Classes="glass interactive" Classes.edited="{Binding IsChanged}" Padding="14" Margin="16,7" Cursor="Hand" Tapped="OnRowTapped"
                                                 ToolTip.Tip="{loc:Tr packages.tooltip.viewDetails}">
                                             <Grid ColumnDefinitions="Auto,*,Auto">
                                                 <Border Grid.Column="0" Width="46" Height="46" CornerRadius="13" VerticalAlignment="Top"
@@ -187,6 +202,13 @@
                                                         </WrapPanel.Styles>
                                                         <Border Classes="versionPill" VerticalAlignment="Center">
                                                             <TextBlock Text="{Binding Version}" FontSize="11" Classes="brand"/>
+                                                        </Border>
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasInstalledVersion}"
+                                                                Background="#2622C55E" BorderBrush="#8022C55E">
+                                                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconCheck}" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{Binding InstalledVersionText}" FontSize="11" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                                                            </StackPanel>
                                                         </Border>
                                                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasLicense}"
                                                                 ToolTip.Tip="{loc:Tr packages.label.license}">
@@ -224,7 +246,7 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="vm:PackageRow">
-                                        <Border Classes="glass interactive" Padding="16" Margin="6" Width="234" Cursor="Hand" Tapped="OnRowTapped"
+                                        <Border Classes="glass interactive" Classes.edited="{Binding IsChanged}" Padding="16" Margin="6" Width="234" Cursor="Hand" Tapped="OnRowTapped"
                                                 ToolTip.Tip="{loc:Tr packages.tooltip.viewDetails}">
                                             <StackPanel Spacing="10">
                                                 <StackPanel Orientation="Horizontal" Spacing="10">
@@ -249,9 +271,21 @@
                                                 </StackPanel>
                                                 <TextBlock Text="{Binding Description}" Classes="muted" FontSize="11" TextWrapping="Wrap"
                                                            MaxLines="3" TextTrimming="CharacterEllipsis" Height="50"/>
-                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <WrapPanel>
+                                                    <WrapPanel.Styles>
+                                                        <Style Selector="WrapPanel > Border, WrapPanel > Button">
+                                                            <Setter Property="Margin" Value="0,0,6,4"/>
+                                                        </Style>
+                                                    </WrapPanel.Styles>
                                                     <Border Classes="versionPill" VerticalAlignment="Center">
                                                         <TextBlock Text="{Binding Version}" FontSize="10" Classes="brand"/>
+                                                    </Border>
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasInstalledVersion}"
+                                                            Background="#2622C55E" BorderBrush="#8022C55E">
+                                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                                            <PathIcon Width="10" Height="10" Data="{StaticResource IconCheck}" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding InstalledVersionText}" FontSize="10" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                                                        </StackPanel>
                                                     </Border>
                                                     <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasLicense}"
                                                             ToolTip.Tip="{loc:Tr packages.label.license}">
@@ -266,7 +300,7 @@
                                                             CommandParameter="{Binding Link}">
                                                         <PathIcon Width="14" Height="14" Data="{StaticResource IconOpenExternal}"/>
                                                     </Button>
-                                                </StackPanel>
+                                                </WrapPanel>
                                                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource PackageActions}"/>
                                             </StackPanel>
                                         </Border>
@@ -388,6 +422,13 @@
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Border Classes="versionPill"><TextBlock Text="{Binding Version, StringFormat='v{0}'}" FontSize="11" Classes="brand"/></Border>
+                        <Border Classes="versionPill" IsVisible="{Binding HasInstalledVersion}"
+                                Background="#2622C55E" BorderBrush="#8022C55E">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <PathIcon Width="11" Height="11" Data="{StaticResource IconCheck}" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding InstalledVersionText}" FontSize="11" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
                         <Border Classes="versionPill" IsVisible="{Binding HasLicense}">
                             <StackPanel Orientation="Horizontal" Spacing="4">
                                 <PathIcon Width="11" Height="11" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
@@ -410,15 +451,16 @@
                     </StackPanel>
 
                     <StackPanel Spacing="8" Margin="0,4,0,0">
-                        <!-- Mounted for editing: it's the local Packages/ folder, not the registry git URL. -->
+                        <!-- Locally mounted for editing: it's the local Packages/ folder, not the registry
+                             git URL. The label flips to "Local edits" once the working clone is dirty. -->
                         <Border IsVisible="{Binding IsMounted}"
                                 Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="10" Padding="12,10">
                             <StackPanel Spacing="4">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <PathIcon Width="16" Height="16" Data="{StaticResource IconEdit}" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding MountedLabel}" FontWeight="SemiBold" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding MountedStateLabel}" FontWeight="SemiBold" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
                                 </StackPanel>
-                                <TextBlock Text="{Binding MountedHint}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding MountFolder}" Classes="dim" FontSize="11" TextWrapping="Wrap" IsVisible="{Binding HasMountFolder}"/>
                             </StackPanel>
                         </Border>
                         <Button Classes="primary" HorizontalAlignment="Stretch"
@@ -446,6 +488,54 @@
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconTag}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr packages.button.chooseVersion}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- Mount to edit: clone this git package into the project and swap the manifest to it. -->
+                        <Button HorizontalAlignment="Stretch"
+                                IsVisible="{Binding CanMountToEdit}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).MountCommand}"
+                                CommandParameter="{Binding}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconEdit}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr develop.button.mountToEdit}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- Mounted-package actions: open the folder, submit a PR, or swap back to the registry. -->
+                        <Button HorizontalAlignment="Stretch"
+                                IsVisible="{Binding IsMounted}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenFolderCommand}"
+                                CommandParameter="{Binding}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.openFolder}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="primary" HorizontalAlignment="Stretch"
+                                IsVisible="{Binding IsMounted}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SubmitPrCommand}"
+                                CommandParameter="{Binding}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr develop.button.submitPr}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button HorizontalAlignment="Stretch"
+                                IsVisible="{Binding IsMounted}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SwapBackCommand}"
+                                CommandParameter="{Binding}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconUndo}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr develop.button.swapBack}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- Accidental edits made directly in Library/PackageCache → turn them into a PR. -->
+                        <Button Classes="primary" HorizontalAlignment="Stretch"
+                                IsVisible="{Binding HasDrift}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ReviewDriftCommand}"
+                                CommandParameter="{Binding}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.reviewDrift}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <Button Classes="danger" HorizontalAlignment="Stretch"

@@ -25,7 +25,7 @@ public sealed class PackageRowTests
     [AvaloniaFact]
     public void Not_installed_row_shows_install()
     {
-        var row = new PackageRow(Entry(), InstalledVersion: null);
+        var row = new PackageRow(Entry(), installedVersion: null);
         Assert.False(row.IsInstalled);
         Assert.Equal("Install", row.ButtonLabel);
     }
@@ -33,7 +33,7 @@ public sealed class PackageRowTests
     [AvaloniaFact]
     public void Installed_row_shows_update()
     {
-        var row = new PackageRow(Entry(), InstalledVersion: "1.0.0");
+        var row = new PackageRow(Entry(), installedVersion: "1.0.0");
         Assert.True(row.IsInstalled);
         Assert.Equal("Update", row.ButtonLabel);
     }
@@ -108,7 +108,7 @@ public sealed class PackageRowTests
     [AvaloniaFact]
     public void Root_mounted_row_is_locally_mounted_not_installable()
     {
-        var row = new PackageRow(Entry(), InstalledVersion: null, IsUnofficial: false, IsMounted: true);
+        var row = new PackageRow(Entry(), installedVersion: null, isUnofficial: false, isMounted: true);
         Assert.True(row.IsMounted);
         Assert.False(row.IsAvailableToInstall);
         Assert.False(row.IsManageable);
@@ -120,7 +120,7 @@ public sealed class PackageRowTests
     [AvaloniaFact]
     public void File_mounted_row_is_mounted_not_manageable()
     {
-        var row = new PackageRow(Entry(), InstalledVersion: "file:../pkg", IsUnofficial: false, IsMounted: true);
+        var row = new PackageRow(Entry(), installedVersion: "file:../pkg", isUnofficial: false, isMounted: true);
         Assert.True(row.IsInstalled);
         Assert.True(row.IsMounted);
         Assert.False(row.IsManageable);
@@ -130,7 +130,7 @@ public sealed class PackageRowTests
     [AvaloniaFact]
     public void Mounted_row_hides_choose_version_even_with_a_git_url()
     {
-        var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), InstalledVersion: null, IsMounted: true);
+        var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), installedVersion: null, isMounted: true);
         Assert.True(row.HasGit);
         Assert.False(row.CanChooseVersion);
     }
@@ -138,13 +138,99 @@ public sealed class PackageRowTests
     [AvaloniaFact]
     public void Unmounted_rows_keep_install_and_manage_states()
     {
-        var notInstalled = new PackageRow(Entry(), InstalledVersion: null);
+        var notInstalled = new PackageRow(Entry(), installedVersion: null);
         Assert.True(notInstalled.IsAvailableToInstall);
         Assert.False(notInstalled.IsManageable);
         Assert.False(notInstalled.IsMounted);
 
-        var installed = new PackageRow(Entry(), InstalledVersion: "https://github.com/x/x.git");
+        var installed = new PackageRow(Entry(), installedVersion: "https://github.com/x/x.git");
         Assert.True(installed.IsManageable);
         Assert.False(installed.IsAvailableToInstall);
+    }
+
+    [AvaloniaFact]
+    public void InstalledLabel_extracts_the_pinned_git_ref()
+    {
+        var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), installedVersion: "https://github.com/x/x.git#v1.2.0");
+        Assert.Equal("v1.2.0", row.InstalledLabel);
+        Assert.True(row.HasInstalledVersion);
+        Assert.Equal("Installed v1.2.0", row.InstalledVersionText);
+    }
+
+    [AvaloniaFact]
+    public void InstalledLabel_extracts_the_ref_past_a_path_query()
+    {
+        var row = new PackageRow(Entry(), installedVersion: "https://github.com/x/x.git?path=Packages/com.x#v2.0.0");
+        Assert.Equal("v2.0.0", row.InstalledLabel);
+    }
+
+    [AvaloniaFact]
+    public void InstalledLabel_reads_default_branch_for_a_git_url_without_a_ref()
+    {
+        var row = new PackageRow(Entry(), installedVersion: "https://github.com/x/x.git");
+        Assert.Equal("default branch", row.InstalledLabel);
+        Assert.True(row.HasInstalledVersion);
+    }
+
+    [AvaloniaFact]
+    public void InstalledLabel_passes_through_a_registry_semver_range()
+    {
+        Assert.Equal("1.2.0", new PackageRow(Entry(), installedVersion: "1.2.0").InstalledLabel);
+        Assert.Equal("^1.0.0", new PackageRow(Entry(), installedVersion: "^1.0.0").InstalledLabel);
+    }
+
+    [AvaloniaFact]
+    public void InstalledLabel_is_absent_when_not_installed_or_mounted()
+    {
+        var notInstalled = new PackageRow(Entry(), installedVersion: null);
+        Assert.Null(notInstalled.InstalledLabel);
+        Assert.False(notInstalled.HasInstalledVersion);
+
+        var mounted = new PackageRow(Entry(), installedVersion: "file:../pkg", isMounted: true);
+        Assert.Null(mounted.InstalledLabel);
+        Assert.False(mounted.HasInstalledVersion);
+    }
+
+    // A package installed straight from git and not yet mounted can be mounted for editing; a semver
+    // (registry) install, a not-installed row, or an already-mounted package cannot.
+    [AvaloniaFact]
+    public void CanMountToEdit_only_for_installed_git_packages_not_yet_mounted()
+    {
+        Assert.True(new PackageRow(Entry(), installedVersion: "https://github.com/x/x.git").CanMountToEdit);
+        Assert.False(new PackageRow(Entry(), installedVersion: "1.2.0").CanMountToEdit);
+        Assert.False(new PackageRow(Entry(), installedVersion: null).CanMountToEdit);
+        Assert.False(new PackageRow(Entry(), installedVersion: "https://github.com/x/x.git", isMounted: true).CanMountToEdit);
+    }
+
+    // The amber "edited" state and its label are driven by MountedHasEdits, which the background git
+    // scan flips on after the row is built.
+    [AvaloniaFact]
+    public void MountedHasEdits_drives_the_changed_flag_and_label()
+    {
+        var row = new PackageRow(Entry(), installedVersion: null, isMounted: true);
+        Assert.False(row.IsChanged);
+        Assert.Equal("Locally mounted", row.MountedStateLabel);
+
+        row.MountedHasEdits = true;
+        Assert.True(row.IsChanged);
+        Assert.Equal("Local edits", row.MountedStateLabel);
+    }
+
+    // Cache drift (accidental Library/PackageCache edits) also turns the row amber, without a mount.
+    [AvaloniaFact]
+    public void HasDrift_also_marks_the_row_changed()
+    {
+        var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), installedVersion: "https://github.com/x/x.git#v1") { HasDrift = true };
+        Assert.True(row.IsChanged);
+    }
+
+    // The mounted working-clone folder is surfaced for the Open-folder action.
+    [AvaloniaFact]
+    public void MountFolder_is_exposed_when_provided()
+    {
+        var row = new PackageRow(Entry(), installedVersion: null, isMounted: true, mountFolder: "C:/proj/Packages/com.x");
+        Assert.True(row.HasMountFolder);
+        Assert.Equal("C:/proj/Packages/com.x", row.MountFolder);
+        Assert.False(new PackageRow(Entry(), installedVersion: null).HasMountFolder);
     }
 }

@@ -32,13 +32,13 @@ public sealed class PackageStoreTests
     }
 
     [Theory]
-    [InlineData("https://github.com/BasisVR/Basis", null, "curated")]
-    [InlineData("https://github.com/basisvr/basis.git", null, "curated")]
+    [InlineData("https://github.com/BasisVR/Basis", null, "official")]
+    [InlineData("https://github.com/basisvr/basis.git", null, "official")]
     [InlineData("https://github.com/someone/repo", null, "community")]
-    [InlineData(null, "https://github.com/BasisVR/x.git", "curated")]
+    [InlineData(null, "https://github.com/BasisVR/x.git", "official")]
     [InlineData("https://gitlab.com/group/repo", null, "community")]
     [InlineData(null, null, "community")]
-    public void DeriveSource_marks_only_basisvr_github_as_curated(string? repoUrl, string? gitUrl, string expected)
+    public void DeriveSource_marks_only_basisvr_github_as_official(string? repoUrl, string? gitUrl, string expected)
     {
         Assert.Equal(expected, PackageStore.DeriveSource(repoUrl, gitUrl));
     }
@@ -100,7 +100,7 @@ public sealed class PackageStoreTests
         using var t = new TempDir();
         var store = QueryStore(t);
 
-        Assert.Equal(new[] { "com.a.one" }, store.Query(null, "curated", null, null).Select(p => p.Id).ToArray());
+        Assert.Equal(new[] { "com.a.one" }, store.Query(null, "official", null, null).Select(p => p.Id).ToArray());
         Assert.Equal(new[] { "com.b.two", "com.c.three" }.ToHashSet(),
             store.Query(null, "community", null, null).Select(p => p.Id).ToHashSet());
         Assert.Equal(3, store.Query(null, "all", null, null).Count);

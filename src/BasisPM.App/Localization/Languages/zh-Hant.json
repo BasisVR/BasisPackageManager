@@ -3,6 +3,14 @@
   "nativeName": "繁體中文",
   "entries": [
     {
+      "key": "packages.version.installed",
+      "value": "已安裝 {0}"
+    },
+    {
+      "key": "packages.version.defaultBranch",
+      "value": "預設分支"
+    },
+    {
       "key": "nav.changes",
       "value": "本機變更"
     },
@@ -31,7 +39,7 @@
       "value": "Unity 編輯器"
     },
     {
-      "key": "shell.bundle.pickerLabel",
+      "key": "shell.packageList.pickerLabel",
       "value": "{0}（{1} 個套件）"
     },
     {
@@ -63,7 +71,7 @@
       "value": "要將“{0}”新增到哪個專案？"
     },
     {
-      "key": "shell.status.bundleNotFound",
+      "key": "shell.status.packageListNotFound",
       "value": "在登錄檔中找不到組合包“{0}”。"
     },
     {
@@ -107,7 +115,7 @@
       "value": "{0} 的安裝連結缺少其 git URL。"
     },
     {
-      "key": "shell.status.loadingBundle",
+      "key": "shell.status.loadingPackageList",
       "value": "正在載入組合包…"
     },
     {
@@ -483,11 +491,11 @@
       "value": "github"
     },
     {
-      "key": "packages.bundle.basisLine",
+      "key": "packages.packageList.basisLine",
       "value": "Basis：{0}  ·  Unity {1}"
     },
     {
-      "key": "packages.bundle.unknownCommit",
+      "key": "packages.packageList.unknownCommit",
       "value": "未知"
     },
     {
@@ -499,7 +507,7 @@
       "value": "選擇版本…"
     },
     {
-      "key": "packages.button.createBundle",
+      "key": "packages.button.createPackageList",
       "value": "建立組合包"
     },
     {
@@ -587,7 +595,7 @@
       "value": "已新增"
     },
     {
-      "key": "packages.status.addedBundle",
+      "key": "packages.status.addedPackageList",
       "value": "已新增組合包“{0}”（{1} 個套件）{2} → {3}。"
     },
     {
@@ -599,7 +607,7 @@
       "value": "{0} {1}{2}，來自 GitHub。"
     },
     {
-      "key": "packages.status.bundleInstallFailed",
+      "key": "packages.status.packageListInstallFailed",
       "value": "組合包安裝失敗：{0}"
     },
     {
@@ -723,10 +731,6 @@
       "value": "重新載入清單"
     },
     {
-      "key": "unity.button.uninstall",
-      "value": "解除安裝"
-    },
-    {
       "key": "unity.header.subtitle",
       "value": "偵測已安裝的 Unity 編輯器，並安裝 Basis 所需的版本。"
     },
@@ -811,28 +815,40 @@
       "value": "你的 Basis 安裝項目以 Unity {0} 為目標。請在下方安裝該確切版本以順利開啟。"
     },
     {
-      "key": "unity.status.uninstallError",
-      "value": "解除安裝錯誤：{0}"
-    },
-    {
-      "key": "unity.status.uninstallFailed",
-      "value": "解除安裝失敗（結束碼 {0}）。"
-    },
-    {
-      "key": "unity.status.uninstalled",
-      "value": "已解除安裝 Unity {0}。"
-    },
-    {
-      "key": "unity.status.uninstalling",
-      "value": "正在解除安裝 Unity {0}..."
-    },
-    {
       "key": "unity.tag.installed",
       "value": "已安裝"
     },
     {
       "key": "unity.tag.recommended",
       "value": "建議"
+    },
+    {
+      "key": "unity.button.installModules",
+      "value": "安裝模組"
+    },
+    {
+      "key": "unity.editors.modulesHint",
+      "value": "透過 Unity Hub 為此編輯器新增建置支援模組。已安裝的模組將略過。"
+    },
+    {
+      "key": "unity.status.installingModules",
+      "value": "正在為 Unity {0} 安裝模組…"
+    },
+    {
+      "key": "unity.status.modulesError",
+      "value": "模組安裝錯誤：{0}"
+    },
+    {
+      "key": "unity.status.modulesFailed",
+      "value": "模組安裝失敗（結束代碼 {0}）。"
+    },
+    {
+      "key": "unity.status.modulesInstalled",
+      "value": "已為 Unity {0} 安裝模組。"
+    },
+    {
+      "key": "unity.status.noModulesSelected",
+      "value": "請至少選擇一個要安裝的模組。"
     },
     {
       "key": "develop.auth.cliNotLoggedIn",
@@ -1463,43 +1479,43 @@
       "value": "是"
     },
     {
-      "key": "dialog.createBundle.cancel",
+      "key": "dialog.createPackageList.cancel",
       "value": "取消"
     },
     {
-      "key": "dialog.createBundle.create",
+      "key": "dialog.createPackageList.create",
       "value": "建立提交"
     },
     {
-      "key": "dialog.createBundle.descriptionLabel",
+      "key": "dialog.createPackageList.descriptionLabel",
       "value": "說明"
     },
     {
-      "key": "dialog.createBundle.errorNoName",
+      "key": "dialog.createPackageList.errorNoName",
       "value": "請為你的組合包命名。"
     },
     {
-      "key": "dialog.createBundle.errorNoPackages",
+      "key": "dialog.createPackageList.errorNoPackages",
       "value": "請至少選擇一個要包含的套件。"
     },
     {
-      "key": "dialog.createBundle.heading",
+      "key": "dialog.createPackageList.heading",
       "value": "建立組合包"
     },
     {
-      "key": "dialog.createBundle.intro",
+      "key": "dialog.createPackageList.intro",
       "value": "將你的 Basis 與套件分享為可安裝的組合包。它會開啟一個 GitHub issue 以供提交。"
     },
     {
-      "key": "dialog.createBundle.nameLabel",
+      "key": "dialog.createPackageList.nameLabel",
       "value": "名稱"
     },
     {
-      "key": "dialog.createBundle.packagesLabel",
+      "key": "dialog.createPackageList.packagesLabel",
       "value": "要包含的套件"
     },
     {
-      "key": "dialog.createBundle.title",
+      "key": "dialog.createPackageList.title",
       "value": "建立組合包"
     },
     {

@@ -39,7 +39,7 @@ Running from source (`dotnet run`) skips the in-app updater — update with `git
 - **Installs** — clone `BasisVR/Basis` (choose folder + branch), or register an existing
   clone. Each install shows its branch, commit, required Unity version, and whether it is
   behind upstream or has local changes. One-click **Update Core** runs `git pull --ff-only`.
-- **Packages** — install curated Basis packages, or add any community UPM package from a
+- **Packages** — install official Basis packages, or add any community UPM package from a
   **GitHub or GitLab** git URL. Discovery is powered by the registry (below).
 - **Local Changes** — a `git status` of your install with a per-file unified diff, so you
   can see what you have modified in the Basis source.

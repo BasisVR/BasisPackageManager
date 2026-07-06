@@ -7,7 +7,7 @@ using Velopack;
 
 namespace BasisPM.App.ViewModels;
 
-public enum NavPage { Installs, Packages, Changes, Unity, Settings, Support, Develop, Announcements, Documentation, Logs, Community }
+public enum NavPage { Installs, Packages, Changes, Unity, Settings, Support, Announcements, Documentation, Logs, Community }
 
 public enum StatusKind { Info, Success, Error }
 
@@ -19,7 +19,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly BasisInstallService _installService;
     private readonly CatalogService _catalogService = new();
     private readonly AnnouncementService _announcementService = new();
-    private readonly BundleService _bundleService = new();
+    private readonly PackageListService _packageListService = new();
     private readonly UnityHubService _hubService = new();
     private readonly UnityReleaseService _releaseService = new();
     private readonly UpdateService _updateService = new();
@@ -49,7 +49,6 @@ public sealed class MainWindowViewModel : ObservableObject
     public UnityViewModel UnityVM { get; }
     public SettingsViewModel SettingsVM { get; }
     public FundingViewModel FundingVM { get; }
-    public DevelopViewModel DevelopVM { get; }
     public AnnouncementsViewModel AnnouncementsVM { get; }
     public LogsViewModel LogsVM { get; }
     public DocumentationViewModel DocumentationVM { get; }
@@ -64,17 +63,18 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         _installService = new BasisInstallService(_projectService, _gitService);
         InstallsVM = new InstallsViewModel(_settingsService, _installService, _gitService, this);
-        PackagesVM = new PackagesViewModel(_settingsService, _catalogService, _projectService, _mountRegistry, this);
+        var mountService = new MountService(_gitService, _projectService, _mountRegistry);
+        var contributeService = new ContributeService(_gitService, _ghApi);
+        var cacheDriftService = new CacheDriftService(_gitService);
+        // The mount / contribute / cache-drift workflow (formerly the Develop tab) now lives on the Packages page.
+        PackagesVM = new PackagesViewModel(_settingsService, _catalogService, _projectService, _mountRegistry,
+            mountService, contributeService, cacheDriftService, _ghAuth, _ghApi, _gitService, this);
         ChangesVM = new ChangesViewModel(_gitService, this);
-        UnityVM = new UnityViewModel(_hubService, _releaseService, this);
+        UnityVM = new UnityViewModel(_hubService, _releaseService, _settingsService, this);
         LogsVM = new LogsViewModel(_log);
         // Logs live inside the Settings page (merged), so Settings gets a reference to the logs view-model.
         SettingsVM = new SettingsViewModel(_settingsService, _gitService, _hubService, this, LogsVM);
         FundingVM = new FundingViewModel();
-        var mountService = new MountService(_gitService, _projectService, _mountRegistry);
-        var contributeService = new ContributeService(_gitService, _ghApi);
-        var cacheDriftService = new CacheDriftService(_gitService);
-        DevelopVM = new DevelopViewModel(mountService, contributeService, cacheDriftService, _ghAuth, _ghApi, _gitService, _mountRegistry, this);
         AnnouncementsVM = new AnnouncementsViewModel(_announcementService);
         DocumentationVM = new DocumentationViewModel();
         CommunityVM = new CommunityViewModel(AnnouncementsVM, DocumentationVM, FundingVM);
@@ -104,7 +104,6 @@ public sealed class MainWindowViewModel : ObservableObject
                     NavPage.Unity => UnityVM,
                     NavPage.Settings => SettingsVM,
                     NavPage.Support => FundingVM,
-                    NavPage.Develop => DevelopVM,
                     NavPage.Announcements => AnnouncementsVM,
                     NavPage.Documentation => DocumentationVM,
                     NavPage.Community => CommunityVM,
@@ -116,7 +115,6 @@ public sealed class MainWindowViewModel : ObservableObject
                 OnPropertyChanged(nameof(IsUnity));
                 OnPropertyChanged(nameof(IsSettings));
                 OnPropertyChanged(nameof(IsSupport));
-                OnPropertyChanged(nameof(IsDevelop));
                 OnPropertyChanged(nameof(IsAnnouncements));
                 OnPropertyChanged(nameof(IsDocumentation));
                 OnPropertyChanged(nameof(IsCommunity));
@@ -135,7 +133,6 @@ public sealed class MainWindowViewModel : ObservableObject
     public bool IsUnity => CurrentPage == NavPage.Unity;
     public bool IsSettings => CurrentPage == NavPage.Settings;
     public bool IsSupport => CurrentPage == NavPage.Support;
-    public bool IsDevelop => CurrentPage == NavPage.Develop;
     public bool IsAnnouncements => CurrentPage == NavPage.Announcements;
     public bool IsDocumentation => CurrentPage == NavPage.Documentation;
     public bool IsCommunity => CurrentPage == NavPage.Community;
@@ -148,17 +145,6 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             // If it's turned off while the user is looking at it, send them back to Installs.
             if (SetField(ref _showChangesTab, value) && !value && CurrentPage == NavPage.Changes)
-                CurrentPage = NavPage.Installs;
-        }
-    }
-
-    private bool _showDevelopTab;
-    public bool ShowDevelopTab
-    {
-        get => _showDevelopTab;
-        set
-        {
-            if (SetField(ref _showDevelopTab, value) && !value && CurrentPage == NavPage.Develop)
                 CurrentPage = NavPage.Installs;
         }
     }
@@ -195,7 +181,6 @@ public sealed class MainWindowViewModel : ObservableObject
         ActiveInstall = install;
         PackagesVM.SetActiveInstall(install);
         ChangesVM.SetActiveInstall(install);
-        DevelopVM.SetActiveInstall(install);
         UnityVM.SetRequiredVersion(install.UnityVersion);
     }
 
@@ -309,7 +294,6 @@ public sealed class MainWindowViewModel : ObservableObject
         _updateService.SetPrerelease(settings.PrereleaseUpdates);
         SettingsVM.Apply(settings);
         ShowChangesTab = settings.ShowLocalChanges;
-        ShowDevelopTab = settings.DeveloperMode;
         PackagesVM.SetInitialGridView(settings.PackagesGridView);
         await InstallsVM.LoadAsync(settings);
         await PackagesVM.LoadCatalogAsync(settings.CatalogUrl, settings.ExtraCatalogUrls);
@@ -370,7 +354,6 @@ public sealed class MainWindowViewModel : ObservableObject
             settings.CompletedOnboarding = true;
             await _settingsService.SaveAsync(settings);
 
-            ShowDevelopTab = isDeveloper;
             SettingsVM.Apply(settings);
         }
         catch { }
@@ -443,9 +426,9 @@ public sealed class MainWindowViewModel : ObservableObject
 
     private async Task HandleDeepLinkAsync(string uri)
     {
-        if (DeepLink.TryParseBundle(uri, out var bundleId))
+        if (DeepLink.TryParsePackageList(uri, out var packageListId))
         {
-            await HandleBundleLinkAsync(bundleId!);
+            await HandlePackageListLinkAsync(packageListId!);
             return;
         }
         if (!DeepLink.TryParseInstall(uri, out var req)) return;
@@ -465,24 +448,24 @@ public sealed class MainWindowViewModel : ObservableObject
         await PackagesVM.AddGitPackageAsync(req.Id, req.Name, req.Git, req.Repo);
     }
 
-    /// <summary>Handles a <c>basispm://bundle?id=…</c> link: fetch the bundle and add all its packages to a chosen install.</summary>
-    private async Task HandleBundleLinkAsync(string bundleId)
+    /// <summary>Handles a <c>basispm://packagelist?id=…</c> link: fetch the package list and add all its packages to a chosen install.</summary>
+    private async Task HandlePackageListLinkAsync(string packageListId)
     {
         NavigateTo("packages");
-        SetStatus(L.Tr("shell.status.loadingBundle"));
-        var bundles = await _bundleService.LoadAsync(_catalogUrl);
-        var bundle = bundles.FirstOrDefault(b => string.Equals(b.Id, bundleId, StringComparison.OrdinalIgnoreCase));
-        if (bundle is null)
+        SetStatus(L.Tr("shell.status.loadingPackageList"));
+        var packageLists = await _packageListService.LoadAsync(_catalogUrl);
+        var packageList = packageLists.FirstOrDefault(pl => string.Equals(pl.Id, packageListId, StringComparison.OrdinalIgnoreCase));
+        if (packageList is null)
         {
-            SetStatus(L.Tr("shell.status.bundleNotFound", bundleId), StatusKind.Error);
+            SetStatus(L.Tr("shell.status.packageListNotFound", packageListId), StatusKind.Error);
             return;
         }
 
-        var target = await ChooseInstallTargetAsync(L.Tr("shell.bundle.pickerLabel", bundle.Name, bundle.Packages.Count));
+        var target = await ChooseInstallTargetAsync(L.Tr("shell.packageList.pickerLabel", packageList.Name, packageList.Packages.Count));
         if (target is null) return;
 
         SetActiveInstall(target);
-        await PackagesVM.AddBundleAsync(bundle, target);
+        await PackagesVM.AddPackageListAsync(packageList, target);
     }
 
     /// <summary>
@@ -517,7 +500,8 @@ public sealed class MainWindowViewModel : ObservableObject
         try
         {
             var settings = await _settingsService.LoadAsync();
-            if (await _hubService.OpenProjectAsync(install.UnityProjectPath, install.UnityVersion, settings.UnityHubPath))
+            var manualEditors = settings.ManualEditors.Select(m => m.ToInstalledEditor());
+            if (await _hubService.OpenProjectAsync(install.UnityProjectPath, install.UnityVersion, settings.UnityHubPath, manualEditors))
             {
                 SetStatus(L.Tr("shell.status.openedInUnity", install.DisplayName, install.UnityVersion), StatusKind.Success);
                 return;
@@ -641,7 +625,6 @@ public sealed class MainWindowViewModel : ObservableObject
             "unity" => NavPage.Unity,
             "settings" => NavPage.Settings,
             "support" => NavPage.Support,
-            "develop" => NavPage.Develop,
             "announcements" => NavPage.Announcements,
             "documentation" => NavPage.Documentation,
             "community" => NavPage.Community,

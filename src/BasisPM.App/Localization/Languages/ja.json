@@ -3,6 +3,14 @@
   "nativeName": "日本語",
   "entries": [
     {
+      "key": "packages.version.installed",
+      "value": "インストール済み {0}"
+    },
+    {
+      "key": "packages.version.defaultBranch",
+      "value": "デフォルトブランチ"
+    },
+    {
       "key": "nav.changes",
       "value": "ローカルの変更"
     },
@@ -31,7 +39,7 @@
       "value": "Unity エディター"
     },
     {
-      "key": "shell.bundle.pickerLabel",
+      "key": "shell.packageList.pickerLabel",
       "value": "{0}（{1} パッケージ）"
     },
     {
@@ -63,7 +71,7 @@
       "value": "“{0}” をどのプロジェクトに追加しますか？"
     },
     {
-      "key": "shell.status.bundleNotFound",
+      "key": "shell.status.packageListNotFound",
       "value": "レジストリにバンドル “{0}” が見つかりませんでした。"
     },
     {
@@ -107,7 +115,7 @@
       "value": "{0} のインストールリンクに git URL がありませんでした。"
     },
     {
-      "key": "shell.status.loadingBundle",
+      "key": "shell.status.loadingPackageList",
       "value": "バンドルを読み込み中…"
     },
     {
@@ -483,11 +491,11 @@
       "value": "github"
     },
     {
-      "key": "packages.bundle.basisLine",
+      "key": "packages.packageList.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
     {
-      "key": "packages.bundle.unknownCommit",
+      "key": "packages.packageList.unknownCommit",
       "value": "不明"
     },
     {
@@ -499,7 +507,7 @@
       "value": "バージョンを選択…"
     },
     {
-      "key": "packages.button.createBundle",
+      "key": "packages.button.createPackageList",
       "value": "バンドルを作成"
     },
     {
@@ -587,7 +595,7 @@
       "value": "追加済み"
     },
     {
-      "key": "packages.status.addedBundle",
+      "key": "packages.status.addedPackageList",
       "value": "バンドル “{0}”（{1} パッケージ）{2} を追加しました → {3}。"
     },
     {
@@ -599,7 +607,7 @@
       "value": "{0} {1}{2} を GitHub から追加しました。"
     },
     {
-      "key": "packages.status.bundleInstallFailed",
+      "key": "packages.status.packageListInstallFailed",
       "value": "バンドルのインストールに失敗しました: {0}"
     },
     {
@@ -723,10 +731,6 @@
       "value": "一覧を再読み込み"
     },
     {
-      "key": "unity.button.uninstall",
-      "value": "アンインストール"
-    },
-    {
       "key": "unity.header.subtitle",
       "value": "インストール済みの Unity エディターを検出し、Basis が必要とするバージョンをインストールします。"
     },
@@ -811,28 +815,40 @@
       "value": "この Basis インストールは Unity {0} を対象としています。問題なく開くには、下でそのバージョンをインストールしてください。"
     },
     {
-      "key": "unity.status.uninstallError",
-      "value": "アンインストールエラー: {0}"
-    },
-    {
-      "key": "unity.status.uninstallFailed",
-      "value": "アンインストールに失敗しました（終了コード {0}）。"
-    },
-    {
-      "key": "unity.status.uninstalled",
-      "value": "Unity {0} をアンインストールしました。"
-    },
-    {
-      "key": "unity.status.uninstalling",
-      "value": "Unity {0} をアンインストール中..."
-    },
-    {
       "key": "unity.tag.installed",
       "value": "インストール済み"
     },
     {
       "key": "unity.tag.recommended",
       "value": "推奨"
+    },
+    {
+      "key": "unity.button.installModules",
+      "value": "モジュールをインストール"
+    },
+    {
+      "key": "unity.editors.modulesHint",
+      "value": "Unity Hub を使ってこのエディターにビルドサポートモジュールを追加します。すでにインストールされているモジュールはスキップされます。"
+    },
+    {
+      "key": "unity.status.installingModules",
+      "value": "Unity {0} のモジュールをインストールしています…"
+    },
+    {
+      "key": "unity.status.modulesError",
+      "value": "モジュールのインストールエラー: {0}"
+    },
+    {
+      "key": "unity.status.modulesFailed",
+      "value": "モジュールのインストールに失敗しました (終了コード {0})。"
+    },
+    {
+      "key": "unity.status.modulesInstalled",
+      "value": "Unity {0} のモジュールをインストールしました。"
+    },
+    {
+      "key": "unity.status.noModulesSelected",
+      "value": "インストールするモジュールを 1 つ以上選択してください。"
     },
     {
       "key": "develop.auth.cliNotLoggedIn",
@@ -1463,43 +1479,43 @@
       "value": "はい"
     },
     {
-      "key": "dialog.createBundle.cancel",
+      "key": "dialog.createPackageList.cancel",
       "value": "キャンセル"
     },
     {
-      "key": "dialog.createBundle.create",
+      "key": "dialog.createPackageList.create",
       "value": "提出物を作成"
     },
     {
-      "key": "dialog.createBundle.descriptionLabel",
+      "key": "dialog.createPackageList.descriptionLabel",
       "value": "説明"
     },
     {
-      "key": "dialog.createBundle.errorNoName",
+      "key": "dialog.createPackageList.errorNoName",
       "value": "バンドルに名前を付けてください。"
     },
     {
-      "key": "dialog.createBundle.errorNoPackages",
+      "key": "dialog.createPackageList.errorNoPackages",
       "value": "含めるパッケージを少なくとも 1 つ選択してください。"
     },
     {
-      "key": "dialog.createBundle.heading",
+      "key": "dialog.createPackageList.heading",
       "value": "バンドルを作成"
     },
     {
-      "key": "dialog.createBundle.intro",
+      "key": "dialog.createPackageList.intro",
       "value": "Basis とパッケージをインストール可能なバンドルとして共有します。提出のため GitHub issue を開きます。"
     },
     {
-      "key": "dialog.createBundle.nameLabel",
+      "key": "dialog.createPackageList.nameLabel",
       "value": "名前"
     },
     {
-      "key": "dialog.createBundle.packagesLabel",
+      "key": "dialog.createPackageList.packagesLabel",
       "value": "含めるパッケージ"
     },
     {
-      "key": "dialog.createBundle.title",
+      "key": "dialog.createPackageList.title",
       "value": "バンドルを作成"
     },
     {

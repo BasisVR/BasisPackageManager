@@ -147,6 +147,14 @@
                                     <WrapPanel.Styles>
                                         <Style Selector="Button"><Setter Property="Margin" Value="0,0,8,8"/></Style>
                                     </WrapPanel.Styles>
+                                    <Button Classes="primary" IsVisible="{Binding HasUnityProject}"
+                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenInUnityCommand}"
+                                            CommandParameter="{Binding}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
                                     <Button Classes.primary="{Binding CoreHasUpdate}"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).UpdateCoreCommand}"
                                             CommandParameter="{Binding}"
@@ -154,6 +162,15 @@
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
                                             <TextBlock Text="{loc:Tr installs.button.updateCore}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button IsVisible="{Binding IsGitRepo}"
+                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ChangeBranchCommand}"
+                                            CommandParameter="{Binding}"
+                                            ToolTip.Tip="{loc:Tr installs.tooltip.changeBranch}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr installs.button.changeBranch}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ManagePackagesCommand}"
@@ -168,14 +185,6 @@
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconChanges}" VerticalAlignment="Center"/>
                                             <TextBlock Text="{loc:Tr installs.button.changes}" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button IsVisible="{Binding HasUnityProject}"
-                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenInUnityCommand}"
-                                            CommandParameter="{Binding}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <Button IsVisible="{Binding HasUnityProject}"

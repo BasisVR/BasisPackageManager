@@ -3,6 +3,14 @@
   "nativeName": "Español",
   "entries": [
     {
+      "key": "packages.version.installed",
+      "value": "Instalado {0}"
+    },
+    {
+      "key": "packages.version.defaultBranch",
+      "value": "rama predeterminada"
+    },
+    {
       "key": "nav.changes",
       "value": "Cambios locales"
     },
@@ -31,7 +39,7 @@
       "value": "Editores de Unity"
     },
     {
-      "key": "shell.bundle.pickerLabel",
+      "key": "shell.packageList.pickerLabel",
       "value": "{0} ({1} paquetes)"
     },
     {
@@ -63,7 +71,7 @@
       "value": "¿A qué proyecto añadir “{0}”?"
     },
     {
-      "key": "shell.status.bundleNotFound",
+      "key": "shell.status.packageListNotFound",
       "value": "No se encontró el conjunto “{0}” en el registro."
     },
     {
@@ -107,7 +115,7 @@
       "value": "Al enlace de instalación de {0} le faltaba su URL de git."
     },
     {
-      "key": "shell.status.loadingBundle",
+      "key": "shell.status.loadingPackageList",
       "value": "Cargando conjunto…"
     },
     {
@@ -483,11 +491,11 @@
       "value": "github"
     },
     {
-      "key": "packages.bundle.basisLine",
+      "key": "packages.packageList.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
     {
-      "key": "packages.bundle.unknownCommit",
+      "key": "packages.packageList.unknownCommit",
       "value": "desconocido"
     },
     {
@@ -499,7 +507,7 @@
       "value": "Elegir versión…"
     },
     {
-      "key": "packages.button.createBundle",
+      "key": "packages.button.createPackageList",
       "value": "Crear conjunto"
     },
     {
@@ -587,7 +595,7 @@
       "value": "Añadido"
     },
     {
-      "key": "packages.status.addedBundle",
+      "key": "packages.status.addedPackageList",
       "value": "Se añadió el conjunto “{0}” ({1} paquete(s)){2} → {3}."
     },
     {
@@ -599,7 +607,7 @@
       "value": "{0} {1}{2} desde GitHub."
     },
     {
-      "key": "packages.status.bundleInstallFailed",
+      "key": "packages.status.packageListInstallFailed",
       "value": "Error al instalar el conjunto: {0}"
     },
     {
@@ -723,10 +731,6 @@
       "value": "Recargar lista"
     },
     {
-      "key": "unity.button.uninstall",
-      "value": "Desinstalar"
-    },
-    {
       "key": "unity.header.subtitle",
       "value": "Detecta los Editores de Unity instalados e instala la versión que Basis requiere."
     },
@@ -811,28 +815,40 @@
       "value": "Tu instalación de Basis apunta a Unity {0}. Instala esa versión exacta abajo para abrirlo sin problemas."
     },
     {
-      "key": "unity.status.uninstallError",
-      "value": "Error de desinstalación: {0}"
-    },
-    {
-      "key": "unity.status.uninstallFailed",
-      "value": "La desinstalación falló (código de salida {0})."
-    },
-    {
-      "key": "unity.status.uninstalled",
-      "value": "Unity {0} desinstalado."
-    },
-    {
-      "key": "unity.status.uninstalling",
-      "value": "Desinstalando Unity {0}..."
-    },
-    {
       "key": "unity.tag.installed",
       "value": "instalado"
     },
     {
       "key": "unity.tag.recommended",
       "value": "recomendado"
+    },
+    {
+      "key": "unity.button.installModules",
+      "value": "Instalar módulos"
+    },
+    {
+      "key": "unity.editors.modulesHint",
+      "value": "Añade módulos de compatibilidad de compilación a este editor mediante Unity Hub. Los módulos ya instalados se omiten."
+    },
+    {
+      "key": "unity.status.installingModules",
+      "value": "Instalando módulos para Unity {0}…"
+    },
+    {
+      "key": "unity.status.modulesError",
+      "value": "Error al instalar los módulos: {0}"
+    },
+    {
+      "key": "unity.status.modulesFailed",
+      "value": "La instalación de módulos falló (código de salida {0})."
+    },
+    {
+      "key": "unity.status.modulesInstalled",
+      "value": "Módulos instalados para Unity {0}."
+    },
+    {
+      "key": "unity.status.noModulesSelected",
+      "value": "Elige al menos un módulo para instalar."
     },
     {
       "key": "develop.auth.cliNotLoggedIn",
@@ -1463,43 +1479,43 @@
       "value": "Sí"
     },
     {
-      "key": "dialog.createBundle.cancel",
+      "key": "dialog.createPackageList.cancel",
       "value": "Cancelar"
     },
     {
-      "key": "dialog.createBundle.create",
+      "key": "dialog.createPackageList.create",
       "value": "Crear envío"
     },
     {
-      "key": "dialog.createBundle.descriptionLabel",
+      "key": "dialog.createPackageList.descriptionLabel",
       "value": "Descripción"
     },
     {
-      "key": "dialog.createBundle.errorNoName",
+      "key": "dialog.createPackageList.errorNoName",
       "value": "Ponle un nombre a tu conjunto."
     },
     {
-      "key": "dialog.createBundle.errorNoPackages",
+      "key": "dialog.createPackageList.errorNoPackages",
       "value": "Elige al menos un paquete para incluir."
     },
     {
-      "key": "dialog.createBundle.heading",
+      "key": "dialog.createPackageList.heading",
       "value": "Crear un conjunto"
     },
     {
-      "key": "dialog.createBundle.intro",
+      "key": "dialog.createPackageList.intro",
       "value": "Comparte tu Basis y sus paquetes como un conjunto instalable. Se abre una incidencia de GitHub para enviarlo."
     },
     {
-      "key": "dialog.createBundle.nameLabel",
+      "key": "dialog.createPackageList.nameLabel",
       "value": "Nombre"
     },
     {
-      "key": "dialog.createBundle.packagesLabel",
+      "key": "dialog.createPackageList.packagesLabel",
       "value": "Paquetes que incluir"
     },
     {
-      "key": "dialog.createBundle.title",
+      "key": "dialog.createPackageList.title",
       "value": "Crear conjunto"
     },
     {

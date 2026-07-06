@@ -1,4 +1,7 @@
 using System.Collections.ObjectModel;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Platform.Storage;
 using BasisPM.App.Localization;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
@@ -14,6 +17,8 @@ public sealed class UnityViewModel : ObservableObject
 
     private readonly UnityHubService _hubService;
     private readonly UnityReleaseService _releaseService;
+    private readonly UserSettingsService _settingsService;
+    private readonly UnityEditorLocator _locator = new();
     private readonly MainWindowViewModel _shell;
 
     private string _hubStatus = "";
@@ -26,6 +31,7 @@ public sealed class UnityViewModel : ObservableObject
 
     public ObservableCollection<InstalledEditor> InstalledEditors { get; } = new();
     public ObservableCollection<ModuleOption> ModuleOptions { get; } = new();
+    public ObservableCollection<ModuleOption> EditorModuleOptions { get; } = new();
     public ObservableCollection<UnityReleaseRow> AvailableReleases { get; } = new();
     public ObservableCollection<string> StreamFilters { get; } = new() { "All", "LTS", "SUPPORTED", "TECH", "BETA", "ALPHA" };
 
@@ -66,13 +72,24 @@ public sealed class UnityViewModel : ObservableObject
         ? L.Tr("unity.status.requiredVersionNote", _requiredVersion)
         : "";
 
-    // The editor picked in the installed-editors dropdown; Uninstall acts on this one.
+    // The editor picked in the installed-editors dropdown; Uninstall/Remove acts on this one.
     public InstalledEditor? SelectedEditor
     {
         get => _selectedEditor;
-        set { if (SetField(ref _selectedEditor, value)) OnPropertyChanged(nameof(HasSelectedEditor)); }
+        set
+        {
+            if (SetField(ref _selectedEditor, value))
+            {
+                OnPropertyChanged(nameof(HasSelectedEditor));
+                OnPropertyChanged(nameof(SelectedEditorIsManual));
+                OnPropertyChanged(nameof(SelectedEditorIsHub));
+            }
+        }
     }
     public bool HasSelectedEditor => _selectedEditor is not null;
+    // A manually-added editor is "removed" (forgotten); a Hub-installed one is "uninstalled" (deleted).
+    public bool SelectedEditorIsManual => _selectedEditor?.IsManual ?? false;
+    public bool SelectedEditorIsHub => _selectedEditor is not null && !_selectedEditor.IsManual;
     public bool HasInstalledEditors => InstalledEditors.Count > 0;
 
     public void SetRequiredVersion(string? version)
@@ -91,19 +108,27 @@ public sealed class UnityViewModel : ObservableObject
     public RelayCommand RefreshCommand { get; }
     public RelayCommand InstallCommand { get; }
     public RelayCommand ReloadReleasesCommand { get; }
-    public RelayCommand<InstalledEditor> UninstallCommand { get; }
+    public RelayCommand InstallModulesCommand { get; }
+    public RelayCommand AddEditorCommand { get; }
+    public RelayCommand<InstalledEditor> RemoveEditorCommand { get; }
 
-    public UnityViewModel(UnityHubService hubService, UnityReleaseService releaseService, MainWindowViewModel shell)
+    public UnityViewModel(UnityHubService hubService, UnityReleaseService releaseService, UserSettingsService settingsService, MainWindowViewModel shell)
     {
         _hubService = hubService;
         _releaseService = releaseService;
+        _settingsService = settingsService;
         _shell = shell;
         RefreshCommand = new RelayCommand(RefreshAsync);
         InstallCommand = new RelayCommand(InstallAsync);
         ReloadReleasesCommand = new RelayCommand(LoadReleasesAsync);
-        UninstallCommand = new RelayCommand<InstalledEditor>(UninstallAsync);
+        InstallModulesCommand = new RelayCommand(InstallSelectedEditorModulesAsync);
+        AddEditorCommand = new RelayCommand(AddEditorFromFolderAsync);
+        RemoveEditorCommand = new RelayCommand<InstalledEditor>(RemoveManualAsync);
         foreach (var m in DefaultModuleOptions)
+        {
             ModuleOptions.Add(new ModuleOption(m, false));
+            EditorModuleOptions.Add(new ModuleOption(m, false));
+        }
     }
 
     public async Task RefreshAsync()
@@ -117,6 +142,7 @@ public sealed class UnityViewModel : ObservableObject
             InstalledEditors.Clear();
             var list = await _hubService.ListInstalledAsync();
             foreach (var e in list) InstalledEditors.Add(e);
+            await MergeManualEditorsAsync();
             OnPropertyChanged(nameof(HasInstalledEditors));
             // Default the dropdown to the editor the active project needs, else the first installed.
             SelectedEditor = InstalledEditors.FirstOrDefault(e => string.Equals(e.Version, _requiredVersion, StringComparison.OrdinalIgnoreCase))
@@ -206,26 +232,101 @@ public sealed class UnityViewModel : ObservableObject
         finally { IsBusy = false; }
     }
 
-    private async Task UninstallAsync(InstalledEditor? editor)
+    private async Task InstallSelectedEditorModulesAsync()
     {
-        if (editor is null) return;
+        var editor = SelectedEditor;
+        if (editor is null || editor.IsManual) return;
+        var modules = EditorModuleOptions.Where(m => m.Selected).Select(m => m.Name).ToList();
+        if (modules.Count == 0)
+        {
+            _shell.SetStatus(L.Tr("unity.status.noModulesSelected"), StatusKind.Error);
+            return;
+        }
+
         IsBusy = true;
         try
         {
-            _shell.SetStatus(L.Tr("unity.status.uninstalling", editor.Version));
-            var code = await _hubService.UninstallEditorAsync(editor.Version);
+            _shell.SetStatus(L.Tr("unity.status.installingModules", editor.Version));
+            var code = await _hubService.InstallModulesAsync(editor.Version, modules);
             if (code == 0)
-                _shell.SetStatus(L.Tr("unity.status.uninstalled", editor.Version), StatusKind.Success);
+            {
+                _shell.SetStatus(L.Tr("unity.status.modulesInstalled", editor.Version), StatusKind.Success);
+                foreach (var m in EditorModuleOptions) m.Selected = false;
+            }
             else
-                _shell.SetStatus(L.Tr("unity.status.uninstallFailed", code), StatusKind.Error);
+                _shell.SetStatus(L.Tr("unity.status.modulesFailed", code), StatusKind.Error);
             await RefreshAsync();
         }
         catch (Exception ex)
         {
-            _shell.SetStatus(L.Tr("unity.status.uninstallError", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("unity.status.modulesError", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }
+
+    // Fold the user's hand-added editors into the list, skipping any the Hub already reports
+    // (same version or same folder) so nothing shows twice.
+    private async Task MergeManualEditorsAsync()
+    {
+        var settings = await _settingsService.LoadAsync();
+        foreach (var m in settings.ManualEditors)
+        {
+            if (string.IsNullOrWhiteSpace(m.Path)) continue;
+            if (InstalledEditors.Any(e => string.Equals(e.Version, m.Version, StringComparison.OrdinalIgnoreCase)
+                                          || Platform.PathsEqual(e.Path, m.Path)))
+                continue;
+            InstalledEditors.Add(m.ToInstalledEditor());
+        }
+    }
+
+    // "Add from folder" — the no-Hub path: point at a Unity editor folder, detect its version, persist it.
+    private async Task AddEditorFromFolderAsync()
+    {
+        var window = GetMainWindow();
+        if (window is null) return;
+
+        var folders = await window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = L.Tr("unity.picker.selectEditorFolder"),
+            AllowMultiple = false,
+        });
+        var picked = folders?.FirstOrDefault()?.TryGetLocalPath();
+        if (string.IsNullOrEmpty(picked)) return;
+
+        if (!_locator.TryResolve(picked, out var editor))
+        {
+            _shell.SetStatus(L.Tr("unity.status.editorNotDetected"), StatusKind.Error);
+            return;
+        }
+
+        var settings = await _settingsService.LoadAsync();
+        if (settings.ManualEditors.Any(m => Platform.PathsEqual(m.Path, editor.Path)))
+        {
+            _shell.SetStatus(L.Tr("unity.status.editorAlreadyAdded", editor.Version), StatusKind.Info);
+            return;
+        }
+        settings.ManualEditors.Add(new ManualUnityEditor { Version = editor.Version, Path = editor.Path });
+        await _settingsService.SaveAsync(settings);
+        _shell.SetStatus(L.Tr("unity.status.editorAdded", editor.Version), StatusKind.Success);
+        await RefreshAsync();
+    }
+
+    // Forget a hand-added editor. Only its list entry goes — the actual Unity install is never touched.
+    private async Task RemoveManualAsync(InstalledEditor? editor)
+    {
+        if (editor is null || !editor.IsManual) return;
+        var settings = await _settingsService.LoadAsync();
+        var removed = settings.ManualEditors.RemoveAll(m => Platform.PathsEqual(m.Path, editor.Path));
+        if (removed > 0)
+        {
+            await _settingsService.SaveAsync(settings);
+            _shell.SetStatus(L.Tr("unity.status.editorRemoved", editor.Version), StatusKind.Success);
+        }
+        await RefreshAsync();
+    }
+
+    private static Window? GetMainWindow() =>
+        Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime d ? d.MainWindow : null;
 }
 
 public sealed class UnityReleaseRow : ObservableObject

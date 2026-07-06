@@ -14,7 +14,7 @@ public static class Dialogs
     private static Window? Owner =>
         Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime d ? d.MainWindow : null;
 
-    private static FilePickerFileType BundleFileType => new("Basis bundle")
+    private static FilePickerFileType PackageListFileType => new("Basis package list")
     {
         Patterns = new[] { "*.json" },
         MimeTypes = new[] { "application/json" },
@@ -44,25 +44,25 @@ public static class Dialogs
         return await new ConfirmWindow(title, message).ShowDialog<bool>(owner);
     }
 
-    /// <summary>Shows the create-bundle dialog; returns the draft, or null if cancelled.</summary>
-    public static async Task<BundleDraft?> CreateBundleAsync(string suggestedName, string basisLine, IReadOnlyList<BundlePackage> candidates)
+    /// <summary>Shows the create-package-list dialog; returns the draft, or null if cancelled.</summary>
+    public static async Task<PackageListDraft?> CreatePackageListAsync(string suggestedName, string basisLine, IReadOnlyList<PackageListEntry> candidates)
     {
         var owner = Owner;
         if (owner is null) return null;
-        return await new CreateBundleWindow(suggestedName, basisLine, candidates).ShowDialog<BundleDraft?>(owner);
+        return await new CreatePackageListWindow(suggestedName, basisLine, candidates).ShowDialog<PackageListDraft?>(owner);
     }
 
-    /// <summary>Prompts for a save location and writes the bundle JSON there; returns the saved path, or null if cancelled.</summary>
-    public static async Task<string?> SaveBundleFileAsync(string suggestedFileName, string json)
+    /// <summary>Prompts for a save location and writes the package-list JSON there; returns the saved path, or null if cancelled.</summary>
+    public static async Task<string?> SavePackageListFileAsync(string suggestedFileName, string json)
     {
         var owner = Owner;
         if (owner is null) return null;
         var file = await owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = L.Tr("packages.picker.saveBundle"),
+            Title = L.Tr("packages.picker.savePackageList"),
             SuggestedFileName = suggestedFileName,
             DefaultExtension = "json",
-            FileTypeChoices = new[] { BundleFileType },
+            FileTypeChoices = new[] { PackageListFileType },
         });
         var path = file?.TryGetLocalPath();
         if (string.IsNullOrEmpty(path)) return null;
@@ -70,16 +70,16 @@ public static class Dialogs
         return path;
     }
 
-    /// <summary>Prompts the user to pick a local bundle file; returns its path, or null if cancelled.</summary>
-    public static async Task<string?> OpenBundleFileAsync()
+    /// <summary>Prompts the user to pick a local package-list file; returns its path, or null if cancelled.</summary>
+    public static async Task<string?> OpenPackageListFileAsync()
     {
         var owner = Owner;
         if (owner is null) return null;
         var files = await owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = L.Tr("packages.picker.openBundle"),
+            Title = L.Tr("packages.picker.openPackageList"),
             AllowMultiple = false,
-            FileTypeFilter = new[] { BundleFileType },
+            FileTypeFilter = new[] { PackageListFileType },
         });
         return files?.FirstOrDefault()?.TryGetLocalPath();
     }
@@ -92,6 +92,14 @@ public static class Dialogs
         var id = string.IsNullOrWhiteSpace(packageId) ? "package" : packageId;
         var slug = new string(id.Select(c => char.IsLetterOrDigit(c) ? char.ToLowerInvariant(c) : '-').ToArray()).Trim('-');
         return await new SubmitPrWindow(id, $"basis-edit-{slug}").ShowDialog<PrRequest?>(owner);
+    }
+
+    /// <summary>Prompts for a GitHub personal access token (used on demand when a PR needs one); returns it, or null if cancelled.</summary>
+    public static async Task<string?> SignInAsync()
+    {
+        var owner = Owner;
+        if (owner is null) return null;
+        return await new SignInPromptWindow().ShowDialog<string?>(owner);
     }
 
     /// <summary>The first-run role wizard; true = developer (reveals the Develop tab).</summary>
@@ -108,5 +116,13 @@ public static class Dialogs
         var owner = Owner;
         if (owner is null) return null;
         return await new VersionPickerWindow(title, versions).ShowDialog<PackageVersionOption?>(owner);
+    }
+
+    /// <summary>Shows the branch picker; returns the chosen branch, or null if cancelled.</summary>
+    public static async Task<string?> PickBranchAsync(string title, IReadOnlyList<string> branches, string current)
+    {
+        var owner = Owner;
+        if (owner is null) return null;
+        return await new BranchPickerWindow(title, branches, current).ShowDialog<string?>(owner);
     }
 }

@@ -67,7 +67,7 @@
       "value": "Unity Editors"
     },
     {
-      "key": "shell.bundle.pickerLabel",
+      "key": "shell.packageList.pickerLabel",
       "value": "{0} ({1} packages)"
     },
     {
@@ -99,8 +99,8 @@
       "value": "Add “{0}” to which project?"
     },
     {
-      "key": "shell.status.bundleNotFound",
-      "value": "Couldn't find bundle “{0}” in the registry."
+      "key": "shell.status.packageListNotFound",
+      "value": "Couldn't find package list “{0}” in the registry."
     },
     {
       "key": "shell.status.checkingForUpdates",
@@ -143,8 +143,8 @@
       "value": "Install link for {0} was missing its git URL."
     },
     {
-      "key": "shell.status.loadingBundle",
-      "value": "Loading bundle…"
+      "key": "shell.status.loadingPackageList",
+      "value": "Loading package list…"
     },
     {
       "key": "shell.status.noUnityProject",
@@ -249,6 +249,66 @@
     {
       "key": "installs.badge.active",
       "value": "ACTIVE"
+    },
+    {
+      "key": "installs.button.changeBranch",
+      "value": "Change branch"
+    },
+    {
+      "key": "installs.tooltip.changeBranch",
+      "value": "Switch this project to a different git branch"
+    },
+    {
+      "key": "installs.action.changeBranch",
+      "value": "Change branch"
+    },
+    {
+      "key": "installs.dialog.pickBranchTitle",
+      "value": "Switch branch — {0}"
+    },
+    {
+      "key": "installs.status.loadingBranches",
+      "value": "Loading branches for {0}…"
+    },
+    {
+      "key": "installs.status.branchListFailed",
+      "value": "Couldn't list branches: {0}"
+    },
+    {
+      "key": "installs.status.noBranches",
+      "value": "No branches found for {0}."
+    },
+    {
+      "key": "installs.status.switchingBranch",
+      "value": "Switching {0} to {1}…"
+    },
+    {
+      "key": "installs.status.switchedBranch",
+      "value": "Switched {0} to {1}."
+    },
+    {
+      "key": "installs.status.switchBranchFailed",
+      "value": "Couldn't switch {0}: {1}"
+    },
+    {
+      "key": "installs.status.switchBranchError",
+      "value": "Branch switch error: {0}"
+    },
+    {
+      "key": "dialog.branchPicker.title",
+      "value": "Switch branch"
+    },
+    {
+      "key": "dialog.branchPicker.sub",
+      "value": "Currently on {0}. Pick a branch to switch to."
+    },
+    {
+      "key": "dialog.branchPicker.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key": "dialog.branchPicker.switch",
+      "value": "Switch"
     },
     {
       "key": "installs.branch.default",
@@ -551,15 +611,27 @@
       "value": "Locally mounted"
     },
     {
-      "key": "packages.mounted.hint",
-      "value": "Cloned into Packages/ for editing — it uses the local folder, not the registry git URL. Manage it on the Develop tab; Swap back restores the git version."
+      "key": "packages.state.mountedEdited",
+      "value": "Local edits"
     },
     {
-      "key": "packages.bundle.basisLine",
+      "key": "packages.mounted.hint",
+      "value": "Cloned into Packages/ for editing — it uses the local folder, not the registry git URL. Open the folder, submit a PR, or Swap back to restore the git version."
+    },
+    {
+      "key": "packages.version.installed",
+      "value": "Installed {0}"
+    },
+    {
+      "key": "packages.version.defaultBranch",
+      "value": "default branch"
+    },
+    {
+      "key": "packages.packageList.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
     {
-      "key": "packages.bundle.unknownCommit",
+      "key": "packages.packageList.unknownCommit",
       "value": "unknown"
     },
     {
@@ -571,16 +643,16 @@
       "value": "Choose version…"
     },
     {
-      "key": "packages.button.createBundle",
-      "value": "Create bundle"
+      "key": "packages.button.createPackageList",
+      "value": "Create package list"
     },
     {
       "key": "packages.button.gridView",
       "value": "Grid view"
     },
     {
-      "key": "packages.button.installBundleFile",
-      "value": "Install bundle from file…"
+      "key": "packages.button.installPackageListFile",
+      "value": "Install package list from file…"
     },
     {
       "key": "packages.button.install",
@@ -601,6 +673,14 @@
     {
       "key": "packages.button.remove",
       "value": "Remove"
+    },
+    {
+      "key": "packages.button.openFolder",
+      "value": "Open folder"
+    },
+    {
+      "key": "packages.button.reviewDrift",
+      "value": "Review changes & open PR"
     },
     {
       "key": "packages.button.update",
@@ -687,12 +767,12 @@
       "value": "Project"
     },
     {
-      "key": "packages.picker.openBundle",
-      "value": "Open bundle file"
+      "key": "packages.picker.openPackageList",
+      "value": "Open package list file"
     },
     {
-      "key": "packages.picker.saveBundle",
-      "value": "Save bundle"
+      "key": "packages.picker.savePackageList",
+      "value": "Save package list"
     },
     {
       "key": "packages.recommended.name",
@@ -703,8 +783,8 @@
       "value": "Added"
     },
     {
-      "key": "packages.status.addedBundle",
-      "value": "Added bundle “{0}” ({1} package(s)){2} → {3}."
+      "key": "packages.status.addedPackageList",
+      "value": "Added package list “{0}” ({1} package(s)){2} → {3}."
     },
     {
       "key": "packages.status.addedDeepLink",
@@ -715,20 +795,20 @@
       "value": "{0} {1}{2} from GitHub."
     },
     {
-      "key": "packages.status.bundleFileEmpty",
-      "value": "That bundle file has no packages."
+      "key": "packages.status.packageListFileEmpty",
+      "value": "That package list file has no packages."
     },
     {
-      "key": "packages.status.bundleFileInvalid",
-      "value": "That file isn’t a valid bundle: {0}"
+      "key": "packages.status.packageListFileInvalid",
+      "value": "That file isn’t a valid package list: {0}"
     },
     {
-      "key": "packages.status.bundleInstallFailed",
-      "value": "Bundle install failed: {0}"
+      "key": "packages.status.packageListInstallFailed",
+      "value": "Package list install failed: {0}"
     },
     {
-      "key": "packages.status.bundleSaved",
-      "value": "Saved bundle “{0}” ({1} package(s)) → {2}"
+      "key": "packages.status.packageListSaved",
+      "value": "Saved package list “{0}” ({1} package(s)) → {2}"
     },
     {
       "key": "packages.status.chooseProject",
@@ -784,7 +864,7 @@
     },
     {
       "key": "packages.status.noAddonPackages",
-      "value": "This project has no add-on packages to bundle yet."
+      "value": "This project has no add-on packages to add to a package list yet."
     },
     {
       "key": "packages.status.noVersionsFound",
@@ -793,6 +873,10 @@
     {
       "key": "packages.status.notGitPackage",
       "value": "{0} isn't a git package — no versions to choose."
+    },
+    {
+      "key": "packages.status.mountFolderMissing",
+      "value": "Couldn't find the mounted folder for {0}."
     },
     {
       "key": "packages.status.openInstallFirst",
@@ -851,6 +935,10 @@
       "value": "Click for details"
     },
     {
+      "key": "unity.button.addFromFolder",
+      "value": "Add from folder"
+    },
+    {
       "key": "unity.button.install",
       "value": "Install via Unity Hub"
     },
@@ -863,8 +951,12 @@
       "value": "Reload list"
     },
     {
-      "key": "unity.button.uninstall",
-      "value": "Uninstall"
+      "key": "unity.button.removeEditor",
+      "value": "Remove from list"
+    },
+    {
+      "key": "unity.editors.addHint",
+      "value": "No Unity Hub? Add an editor by pointing at its folder — the version-named folder that holds the Editor app, or that Editor folder itself."
     },
     {
       "key": "unity.editors.none",
@@ -899,6 +991,10 @@
       "value": "Stream filter"
     },
     {
+      "key": "unity.picker.selectEditorFolder",
+      "value": "Select a Unity editor folder"
+    },
+    {
       "key": "unity.section.installNew",
       "value": "Install a new Editor"
     },
@@ -909,6 +1005,22 @@
     {
       "key": "unity.status.alreadyInstalled",
       "value": "Unity {0} is already installed."
+    },
+    {
+      "key": "unity.status.editorAdded",
+      "value": "Added Unity {0}."
+    },
+    {
+      "key": "unity.status.editorAlreadyAdded",
+      "value": "Unity {0} is already in your list."
+    },
+    {
+      "key": "unity.status.editorNotDetected",
+      "value": "Couldn't detect a Unity editor there. Pick the version-named editor folder (the one containing the Editor app)."
+    },
+    {
+      "key": "unity.status.editorRemoved",
+      "value": "Removed Unity {0} from the list."
     },
     {
       "key": "unity.status.error",
@@ -955,28 +1067,44 @@
       "value": "Your Basis install targets Unity {0}. Install that exact version below for a clean open."
     },
     {
-      "key": "unity.status.uninstallError",
-      "value": "Uninstall error: {0}"
-    },
-    {
-      "key": "unity.status.uninstallFailed",
-      "value": "Uninstall failed (exit code {0})."
-    },
-    {
-      "key": "unity.status.uninstalled",
-      "value": "Uninstalled Unity {0}."
-    },
-    {
-      "key": "unity.status.uninstalling",
-      "value": "Uninstalling Unity {0}..."
-    },
-    {
       "key": "unity.tag.installed",
       "value": "installed"
     },
     {
+      "key": "unity.tag.manual",
+      "value": "manual"
+    },
+    {
       "key": "unity.tag.recommended",
       "value": "recommended"
+    },
+    {
+      "key": "unity.button.installModules",
+      "value": "Install modules"
+    },
+    {
+      "key": "unity.editors.modulesHint",
+      "value": "Add build-support modules to this editor through Unity Hub. Modules that are already installed are skipped."
+    },
+    {
+      "key": "unity.status.installingModules",
+      "value": "Installing modules for Unity {0}..."
+    },
+    {
+      "key": "unity.status.modulesError",
+      "value": "Module install error: {0}"
+    },
+    {
+      "key": "unity.status.modulesFailed",
+      "value": "Module install failed (exit code {0})."
+    },
+    {
+      "key": "unity.status.modulesInstalled",
+      "value": "Modules installed for Unity {0}."
+    },
+    {
+      "key": "unity.status.noModulesSelected",
+      "value": "Pick at least one module to install."
     },
     {
       "key": "develop.auth.cliNotLoggedIn",
@@ -1683,6 +1811,14 @@
       "value": "Name this install"
     },
     {
+      "key": "dialog.signIn.title",
+      "value": "Sign in to GitHub"
+    },
+    {
+      "key": "dialog.signIn.body",
+      "value": "Submitting a pull request needs a GitHub token. Paste a personal access token with repo scope, or run \"gh auth login\" and reopen."
+    },
+    {
       "key": "dialog.alias.watermark",
       "value": "e.g. My Basis project"
     },
@@ -1743,48 +1879,48 @@
       "value": "Delete from disk"
     },
     {
-      "key": "dialog.createBundle.cancel",
+      "key": "dialog.createPackageList.cancel",
       "value": "Cancel"
     },
     {
-      "key": "dialog.createBundle.create",
+      "key": "dialog.createPackageList.create",
       "value": "Submit"
     },
     {
-      "key": "dialog.createBundle.descriptionLabel",
+      "key": "dialog.createPackageList.descriptionLabel",
       "value": "Description"
     },
     {
-      "key": "dialog.createBundle.errorNoName",
-      "value": "Give your bundle a name."
+      "key": "dialog.createPackageList.errorNoName",
+      "value": "Give your package list a name."
     },
     {
-      "key": "dialog.createBundle.errorNoPackages",
+      "key": "dialog.createPackageList.errorNoPackages",
       "value": "Pick at least one package to include."
     },
     {
-      "key": "dialog.createBundle.heading",
-      "value": "Create a bundle"
+      "key": "dialog.createPackageList.heading",
+      "value": "Create a package list"
     },
     {
-      "key": "dialog.createBundle.intro",
-      "value": "Bundle your Basis + packages. Save it to a file to keep or share locally, or submit it to the public registry."
+      "key": "dialog.createPackageList.intro",
+      "value": "Group your Basis + packages into a package list. Save it to a file to keep or share locally, or submit it to the public registry."
     },
     {
-      "key": "dialog.createBundle.nameLabel",
+      "key": "dialog.createPackageList.nameLabel",
       "value": "Name"
     },
     {
-      "key": "dialog.createBundle.packagesLabel",
+      "key": "dialog.createPackageList.packagesLabel",
       "value": "Packages to include"
     },
     {
-      "key": "dialog.createBundle.saveLocal",
+      "key": "dialog.createPackageList.saveLocal",
       "value": "Save to file"
     },
     {
-      "key": "dialog.createBundle.title",
-      "value": "Create bundle"
+      "key": "dialog.createPackageList.title",
+      "value": "Create package list"
     },
     {
       "key": "dialog.installPicker.addHere",

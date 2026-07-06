@@ -60,6 +60,7 @@ public sealed class InstallsViewModel : ObservableObject
     public RelayCommand AddExistingCommand { get; }
     public RelayCommand RefreshCommand { get; }
     public RelayCommand<InstallRow> UpdateCoreCommand { get; }
+    public RelayCommand<InstallRow> ChangeBranchCommand { get; }
     public RelayCommand<InstallRow> CheckUpdatesCommand { get; }
     public RelayCommand<InstallRow> OpenInUnityCommand { get; }
     public RelayCommand<InstallRow> ManagePackagesCommand { get; }
@@ -81,6 +82,7 @@ public sealed class InstallsViewModel : ObservableObject
         AddExistingCommand = new RelayCommand(AddExistingAsync);
         RefreshCommand = new RelayCommand(RefreshAsync);
         UpdateCoreCommand = new RelayCommand<InstallRow>(UpdateCoreAsync);
+        ChangeBranchCommand = new RelayCommand<InstallRow>(ChangeBranchAsync);
         CheckUpdatesCommand = new RelayCommand<InstallRow>(r => RefreshGitInfoAsync(r, fetch: true));
         OpenInUnityCommand = new RelayCommand<InstallRow>(OpenInUnity);
         ManagePackagesCommand = new RelayCommand<InstallRow>(r => Activate(r, "packages"));
@@ -368,6 +370,64 @@ public sealed class InstallsViewModel : ObservableObject
         finally { row.IsBusy = false; }
     }
 
+    private async Task ChangeBranchAsync(InstallRow? row)
+    {
+        if (row is null) return;
+        if (!row.Install.IsGitRepo) { _shell.SetStatus(L.Tr("installs.status.notGitRepo", row.Name), StatusKind.Error); return; }
+        if (!_git.IsAvailable) { _shell.SetStatus(L.Tr("installs.status.gitNotFound"), StatusKind.Error); return; }
+
+        // Fetch first so branches added on the remote since clone show up, then list what we can switch to.
+        row.IsBusy = true;
+        _shell.SetStatus(L.Tr("installs.status.loadingBranches", row.Name));
+        IReadOnlyList<string> branches;
+        string current;
+        try
+        {
+            await _git.FetchAsync(row.RepoRoot);
+            branches = await _git.ListBranchesAsync(row.RepoRoot);
+            current = await _git.GetBranchAsync(row.RepoRoot);
+        }
+        catch (Exception ex)
+        {
+            _shell.SetStatus(L.Tr("installs.status.branchListFailed", ex.Message), StatusKind.Error);
+            return;
+        }
+        finally { row.IsBusy = false; }
+
+        if (branches.Count == 0) { _shell.SetStatus(L.Tr("installs.status.noBranches", row.Name), StatusKind.Info); return; }
+
+        var picked = await BasisPM.App.Services.Dialogs.PickBranchAsync(L.Tr("installs.dialog.pickBranchTitle", row.Name), branches, current);
+        if (string.IsNullOrEmpty(picked) || string.Equals(picked, current, StringComparison.OrdinalIgnoreCase)) return;
+
+        // Switching branches rewrites working-tree files, so offer a backup first, like Update Core.
+        if (!await PromptBackupAsync(row, L.Tr("installs.action.changeBranch")))
+            return;
+
+        row.IsBusy = true;
+        _shell.SetStatus(L.Tr("installs.status.switchingBranch", row.Name, picked));
+        try
+        {
+            var result = await _git.CheckoutAsync(row.RepoRoot, picked);
+            if (result.Ok)
+            {
+                var reloaded = await _installService.LoadAsync(row.RepoRoot, row.Install.Alias);
+                row.UpdateInstall(reloaded);
+                if (row.IsActive) _shell.SetActiveInstall(reloaded);
+                await RefreshGitInfoAsync(row, fetch: false);
+                _shell.SetStatus(L.Tr("installs.status.switchedBranch", row.Name, picked), StatusKind.Success);
+            }
+            else
+            {
+                _shell.SetStatus(L.Tr("installs.status.switchBranchFailed", row.Name, Tail(result.Output)), StatusKind.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            _shell.SetStatus(L.Tr("installs.status.switchBranchError", ex.Message), StatusKind.Error);
+        }
+        finally { row.IsBusy = false; }
+    }
+
     private async Task BackupAsync(InstallRow? row)
     {
         if (row is null) return;
@@ -556,6 +616,7 @@ public sealed class InstallRow : ObservableObject
     public string UnityProjectPath => Install.UnityProjectPath;
     public string UnityVersion => Install.UnityVersion;
     public bool HasUnityProject => Install.HasUnityProject;
+    public bool IsGitRepo => Install.IsGitRepo;
     public string UnityVersionLabel => Install.HasUnityProject ? L.Tr("installs.row.unityVersion", Install.UnityVersion) : L.Tr("installs.row.noUnityProject");
 
     public string Branch { get => _branch; set => SetField(ref _branch, value); }

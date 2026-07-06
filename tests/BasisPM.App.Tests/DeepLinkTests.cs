@@ -40,9 +40,10 @@ public sealed class DeepLinkTests
     }
 
     [Fact]
-    public void TryParseInstall_rejects_a_bundle_link()
+    public void TryParseInstall_rejects_a_package_list_link()
     {
         Assert.False(DeepLink.TryParseInstall("basispm://bundle?id=starter", out _));
+        Assert.False(DeepLink.TryParseInstall("basispm://packagelist?id=starter", out _));
     }
 
     [Fact]
@@ -52,21 +53,25 @@ public sealed class DeepLinkTests
     }
 
     [Fact]
-    public void TryParseBundle_extracts_the_id()
+    public void TryParsePackageList_extracts_the_id()
     {
-        Assert.True(DeepLink.TryParseBundle("basispm://bundle?id=basis-recommended", out var id));
-        Assert.Equal("basis-recommended", id);
+        Assert.True(DeepLink.TryParsePackageList("basispm://packagelist?id=basis-recommended", out var id1));
+        Assert.Equal("basis-recommended", id1);
+
+        Assert.True(DeepLink.TryParsePackageList("basispm://bundle?id=basis-recommended", out var id2));
+        Assert.Equal("basis-recommended", id2);
     }
 
     [Fact]
-    public void TryParseBundle_requires_an_id()
+    public void TryParsePackageList_requires_an_id()
     {
-        Assert.False(DeepLink.TryParseBundle("basispm://bundle", out _));
+        Assert.False(DeepLink.TryParsePackageList("basispm://packagelist", out _));
+        Assert.False(DeepLink.TryParsePackageList("basispm://bundle", out _));
     }
 
     [Fact]
-    public void TryParseBundle_rejects_an_install_link()
+    public void TryParsePackageList_rejects_an_install_link()
     {
-        Assert.False(DeepLink.TryParseBundle("basispm://install?id=x", out _));
+        Assert.False(DeepLink.TryParsePackageList("basispm://install?id=x", out _));
     }
 }

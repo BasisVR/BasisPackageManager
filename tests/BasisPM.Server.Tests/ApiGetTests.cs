@@ -10,7 +10,7 @@ namespace BasisPM.Server.Tests;
 public sealed class ApiGetTests : IClassFixture<DisabledSubmissionsFactory>
 {
     private const string SeedPackageId = "com.basis.pooltable";
-    private const string SeedBundleId = "basis-recommended";
+    private const string SeedPackageListId = "basis-recommended";
     private readonly HttpClient _client;
 
     public ApiGetTests(DisabledSubmissionsFactory factory) => _client = factory.CreateClient();
@@ -81,22 +81,25 @@ public sealed class ApiGetTests : IClassFixture<DisabledSubmissionsFactory>
     }
 
     [Fact]
-    public async Task Bundle_feeds_list_the_seed_bundle()
+    public async Task PackageList_feeds_list_the_seed_package_list()
     {
-        foreach (var url in new[] { "/bundles.json", "/api/bundles" })
+        foreach (var url in new[] { "/packagelists.json", "/api/packagelists", "/bundles.json", "/api/bundles" })
         {
-            var bundles = await _client.GetFromJsonAsync<List<Bundle>>(url);
-            Assert.Contains(bundles!, b => b.Id == SeedBundleId);
+            var packageLists = await _client.GetFromJsonAsync<List<PackageList>>(url);
+            Assert.Contains(packageLists!, pl => pl.Id == SeedPackageListId);
         }
     }
 
     [Fact]
-    public async Task Api_bundle_by_id_found_and_not_found()
+    public async Task Api_package_list_by_id_found_and_not_found()
     {
-        var found = await _client.GetAsync($"/api/bundles/{SeedBundleId}");
+        var found = await _client.GetAsync($"/api/packagelists/{SeedPackageListId}");
         Assert.Equal(HttpStatusCode.OK, found.StatusCode);
 
-        var missing = await _client.GetAsync("/api/bundles/no-such-bundle");
+        var legacy = await _client.GetAsync($"/api/bundles/{SeedPackageListId}");
+        Assert.Equal(HttpStatusCode.OK, legacy.StatusCode);
+
+        var missing = await _client.GetAsync("/api/packagelists/no-such-id");
         Assert.Equal(HttpStatusCode.NotFound, missing.StatusCode);
     }
 

@@ -3,6 +3,14 @@
   "nativeName": "اردو",
   "entries": [
     {
+      "key": "packages.version.installed",
+      "value": "انسٹال شدہ {0}"
+    },
+    {
+      "key": "packages.version.defaultBranch",
+      "value": "ڈیفالٹ برانچ"
+    },
+    {
       "key": "nav.changes",
       "value": "مقامی تبدیلیاں"
     },
@@ -31,7 +39,7 @@
       "value": "Unity ایڈیٹرز"
     },
     {
-      "key": "shell.bundle.pickerLabel",
+      "key": "shell.packageList.pickerLabel",
       "value": "{0} ({1} پیکجز)"
     },
     {
@@ -63,7 +71,7 @@
       "value": "“{0}” کو کس پروجیکٹ میں شامل کریں؟"
     },
     {
-      "key": "shell.status.bundleNotFound",
+      "key": "shell.status.packageListNotFound",
       "value": "رجسٹری میں بنڈل “{0}” نہیں مل سکا۔"
     },
     {
@@ -107,7 +115,7 @@
       "value": "{0} کے انسٹال لنک میں اس کا git URL موجود نہیں تھا۔"
     },
     {
-      "key": "shell.status.loadingBundle",
+      "key": "shell.status.loadingPackageList",
       "value": "بنڈل لوڈ ہو رہا ہے…"
     },
     {
@@ -483,11 +491,11 @@
       "value": "github"
     },
     {
-      "key": "packages.bundle.basisLine",
+      "key": "packages.packageList.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
     {
-      "key": "packages.bundle.unknownCommit",
+      "key": "packages.packageList.unknownCommit",
       "value": "نامعلوم"
     },
     {
@@ -499,7 +507,7 @@
       "value": "ورژن منتخب کریں…"
     },
     {
-      "key": "packages.button.createBundle",
+      "key": "packages.button.createPackageList",
       "value": "بنڈل بنائیں"
     },
     {
@@ -587,7 +595,7 @@
       "value": "شامل کر دیا"
     },
     {
-      "key": "packages.status.addedBundle",
+      "key": "packages.status.addedPackageList",
       "value": "بنڈل “{0}” ({1} پیکج) شامل کر دیا{2} → {3}۔"
     },
     {
@@ -599,7 +607,7 @@
       "value": "{0} {1}{2} GitHub سے۔"
     },
     {
-      "key": "packages.status.bundleInstallFailed",
+      "key": "packages.status.packageListInstallFailed",
       "value": "بنڈل انسٹال ناکام: {0}"
     },
     {
@@ -723,10 +731,6 @@
       "value": "فہرست دوبارہ لوڈ کریں"
     },
     {
-      "key": "unity.button.uninstall",
-      "value": "ان انسٹال کریں"
-    },
-    {
       "key": "unity.header.subtitle",
       "value": "انسٹال شدہ Unity ایڈیٹرز کا پتہ لگائیں اور وہ ورژن انسٹال کریں جو Basis کو درکار ہے۔"
     },
@@ -811,28 +815,40 @@
       "value": "آپ کا Basis انسٹال Unity {0} کو ہدف بناتا ہے۔ صاف طور پر کھولنے کے لیے نیچے بالکل وہی ورژن انسٹال کریں۔"
     },
     {
-      "key": "unity.status.uninstallError",
-      "value": "ان انسٹال خرابی: {0}"
-    },
-    {
-      "key": "unity.status.uninstallFailed",
-      "value": "ان انسٹال ناکام (exit code {0})۔"
-    },
-    {
-      "key": "unity.status.uninstalled",
-      "value": "Unity {0} ان انسٹال ہو گیا۔"
-    },
-    {
-      "key": "unity.status.uninstalling",
-      "value": "Unity {0} ان انسٹال ہو رہا ہے..."
-    },
-    {
       "key": "unity.tag.installed",
       "value": "انسٹال شدہ"
     },
     {
       "key": "unity.tag.recommended",
       "value": "تجویز کردہ"
+    },
+    {
+      "key": "unity.button.installModules",
+      "value": "ماڈیولز انسٹال کریں"
+    },
+    {
+      "key": "unity.editors.modulesHint",
+      "value": "Unity Hub کے ذریعے اس ایڈیٹر میں بلڈ سپورٹ ماڈیولز شامل کریں۔ پہلے سے انسٹال شدہ ماڈیولز کو چھوڑ دیا جاتا ہے۔"
+    },
+    {
+      "key": "unity.status.installingModules",
+      "value": "Unity {0} کے لیے ماڈیولز انسٹال ہو رہے ہیں…"
+    },
+    {
+      "key": "unity.status.modulesError",
+      "value": "ماڈیول انسٹال کرنے میں خرابی: {0}"
+    },
+    {
+      "key": "unity.status.modulesFailed",
+      "value": "ماڈیولز کی انسٹالیشن ناکام ہو گئی (ایگزٹ کوڈ {0})۔"
+    },
+    {
+      "key": "unity.status.modulesInstalled",
+      "value": "Unity {0} کے لیے ماڈیولز انسٹال ہو گئے۔"
+    },
+    {
+      "key": "unity.status.noModulesSelected",
+      "value": "انسٹال کرنے کے لیے کم از کم ایک ماڈیول منتخب کریں۔"
     },
     {
       "key": "develop.auth.cliNotLoggedIn",
@@ -1463,43 +1479,43 @@
       "value": "ہاں"
     },
     {
-      "key": "dialog.createBundle.cancel",
+      "key": "dialog.createPackageList.cancel",
       "value": "منسوخ کریں"
     },
     {
-      "key": "dialog.createBundle.create",
+      "key": "dialog.createPackageList.create",
       "value": "درخواست بنائیں"
     },
     {
-      "key": "dialog.createBundle.descriptionLabel",
+      "key": "dialog.createPackageList.descriptionLabel",
       "value": "تفصیل"
     },
     {
-      "key": "dialog.createBundle.errorNoName",
+      "key": "dialog.createPackageList.errorNoName",
       "value": "اپنے بنڈل کو ایک نام دیں۔"
     },
     {
-      "key": "dialog.createBundle.errorNoPackages",
+      "key": "dialog.createPackageList.errorNoPackages",
       "value": "شامل کرنے کے لیے کم از کم ایک پیکج منتخب کریں۔"
     },
     {
-      "key": "dialog.createBundle.heading",
+      "key": "dialog.createPackageList.heading",
       "value": "ایک بنڈل بنائیں"
     },
     {
-      "key": "dialog.createBundle.intro",
+      "key": "dialog.createPackageList.intro",
       "value": "اپنے Basis + پیکجز کو ایک قابلِ انسٹال بنڈل کے طور پر شیئر کریں۔ یہ جمع کرانے کے لیے ایک GitHub issue کھولتا ہے۔"
     },
     {
-      "key": "dialog.createBundle.nameLabel",
+      "key": "dialog.createPackageList.nameLabel",
       "value": "نام"
     },
     {
-      "key": "dialog.createBundle.packagesLabel",
+      "key": "dialog.createPackageList.packagesLabel",
       "value": "شامل کرنے کے لیے پیکجز"
     },
     {
-      "key": "dialog.createBundle.title",
+      "key": "dialog.createPackageList.title",
       "value": "بنڈل بنائیں"
     },
     {

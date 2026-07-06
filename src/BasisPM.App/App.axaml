@@ -38,9 +38,6 @@
         <DataTemplate DataType="vm:FundingViewModel">
             <views:FundingView />
         </DataTemplate>
-        <DataTemplate DataType="vm:DevelopViewModel">
-            <views:DevelopView />
-        </DataTemplate>
         <DataTemplate DataType="vm:AnnouncementsViewModel">
             <views:AnnouncementsView />
         </DataTemplate>

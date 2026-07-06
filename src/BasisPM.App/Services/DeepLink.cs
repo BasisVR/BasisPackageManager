@@ -18,22 +18,25 @@ public static class DeepLink
     public static bool TryParseInstall(string? uri, out DeepLinkRequest request)
     {
         request = new DeepLinkRequest(null, null, null, null);
-        if (!TryParse(uri, "install", out var get)) return false;
+        if (!TryParse(uri, out var get, "install")) return false;
         request = new DeepLinkRequest(get("id"), get("name"), get("git"), get("repo"));
         return true;
     }
 
-    /// <summary>Parses <c>basispm://bundle?id=…</c> (the website's "Install bundle in app" button).</summary>
-    public static bool TryParseBundle(string? uri, out string? id)
+    /// <summary>
+    /// Parses <c>basispm://packagelist?id=…</c> (the website's "Install package list in app" button).
+    /// The legacy <c>basispm://bundle?id=…</c> host is still accepted so links shared before the rename keep working.
+    /// </summary>
+    public static bool TryParsePackageList(string? uri, out string? id)
     {
         id = null;
-        if (!TryParse(uri, "bundle", out var get)) return false;
+        if (!TryParse(uri, out var get, "packagelist", "bundle")) return false;
         id = get("id");
         return !string.IsNullOrWhiteSpace(id);
     }
 
-    // Strips the scheme, checks the host, and returns a query accessor — shared by the link parsers.
-    private static bool TryParse(string? uri, string expectedHost, out Func<string, string?> get)
+    // Strips the scheme, checks the host (any of expectedHosts), and returns a query accessor — shared by the link parsers.
+    private static bool TryParse(string? uri, out Func<string, string?> get, params string[] expectedHosts)
     {
         get = _ => null;
         if (!IsDeepLink(uri)) return false;
@@ -41,7 +44,10 @@ public static class DeepLink
         var rest = uri!.Trim()[(Scheme.Length + 3)..];               // strip "basispm://"
         var q = rest.IndexOf('?');
         var host = (q >= 0 ? rest[..q] : rest).Trim('/');
-        if (!string.Equals(host, expectedHost, StringComparison.OrdinalIgnoreCase)) return false;
+        var hostMatches = false;
+        foreach (var h in expectedHosts)
+            if (string.Equals(host, h, StringComparison.OrdinalIgnoreCase)) { hostMatches = true; break; }
+        if (!hostMatches) return false;
 
         var query = q >= 0 ? rest[(q + 1)..] : "";
         get = key =>

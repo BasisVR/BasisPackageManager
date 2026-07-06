@@ -16,6 +16,12 @@ public sealed class PackagesViewModel : ObservableObject
     private readonly CatalogService _catalogService;
     private readonly UnityProjectService _projectService;
     private readonly MountRegistry _mountRegistry;
+    private readonly MountService _mountService;
+    private readonly ContributeService _contributeService;
+    private readonly CacheDriftService _driftService;
+    private readonly GitHubAuthService _ghAuth;
+    private readonly GitHubApiService _ghApi;
+    private readonly GitService _gitService;
     private readonly GitHubService _githubService;
     private readonly VersionService _versionService = new();
     private readonly MainWindowViewModel _shell;
@@ -39,6 +45,17 @@ public sealed class PackagesViewModel : ObservableObject
     // (or a "file:" manifest dep), not the registry git URL, so they read as "Locally mounted" rather
     // than "available to install".
     private readonly HashSet<string> _mountedIds = new(StringComparer.OrdinalIgnoreCase);
+    // Mount records for the active project (id → folder + original manifest value) so a package row
+    // can Open folder / Swap back / Submit PR without re-reading the registry each time.
+    private readonly Dictionary<string, MountRecord> _mounts = new(StringComparer.OrdinalIgnoreCase);
+    // Ids whose local working copy has uncommitted changes — a dirty mounted clone, or accidental
+    // edits in Library/PackageCache (cache drift). Drives the amber "edited" row; filled in by a
+    // background git pass so it stays out of the synchronous list build.
+    private readonly HashSet<string> _mountEditedIds = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, CacheDrift> _drift = new(StringComparer.OrdinalIgnoreCase);
+    private Avalonia.Threading.DispatcherTimer? _editTimer;
+    private bool _scanningEdits;
+    private bool _scanningDrift;
 
     private static string AllOwnersLabel => L.Tr("packages.filter.allOwners");
 
@@ -99,19 +116,34 @@ public sealed class PackagesViewModel : ObservableObject
     public RelayCommand<InstalledPackageRow> UninstallCommand { get; }
     public RelayCommand RefreshCommand { get; }
     public RelayCommand AddFromGitHubCommand { get; }
-    public RelayCommand CreateBundleCommand { get; }
-    public RelayCommand InstallBundleFromFileCommand { get; }
+    public RelayCommand CreatePackageListCommand { get; }
+    public RelayCommand InstallPackageListFromFileCommand { get; }
     public RelayCommand<CatalogPackageVersion> ChooseVersionCommand { get; }
     public RelayCommand ToggleLayoutCommand { get; }
     public RelayCommand<string> OpenLinkCommand { get; }
     public RelayCommand CloseDetailCommand { get; }
+    // Mount workflow (formerly the Develop tab): act on a package straight from its row/detail.
+    public RelayCommand<PackageRow> MountCommand { get; }
+    public RelayCommand<PackageRow> SwapBackCommand { get; }
+    public RelayCommand<PackageRow> SubmitPrCommand { get; }
+    public RelayCommand<PackageRow> OpenFolderCommand { get; }
+    public RelayCommand<PackageRow> ReviewDriftCommand { get; }
+    public RelayCommand InstallGitCommand { get; }
 
-    public PackagesViewModel(UserSettingsService settingsService, CatalogService catalogService, UnityProjectService projectService, MountRegistry mountRegistry, MainWindowViewModel shell)
+    public PackagesViewModel(UserSettingsService settingsService, CatalogService catalogService, UnityProjectService projectService,
+        MountRegistry mountRegistry, MountService mountService, ContributeService contributeService, CacheDriftService driftService,
+        GitHubAuthService ghAuth, GitHubApiService ghApi, GitService gitService, MainWindowViewModel shell)
     {
         _settingsService = settingsService;
         _catalogService = catalogService;
         _projectService = projectService;
         _mountRegistry = mountRegistry;
+        _mountService = mountService;
+        _contributeService = contributeService;
+        _driftService = driftService;
+        _ghAuth = ghAuth;
+        _ghApi = ghApi;
+        _gitService = gitService;
         _githubService = new GitHubService();
         _shell = shell;
 
@@ -120,12 +152,18 @@ public sealed class PackagesViewModel : ObservableObject
         UninstallCommand = new RelayCommand<InstalledPackageRow>(UninstallAsync);
         RefreshCommand = new RelayCommand(RefreshAsync);
         AddFromGitHubCommand = new RelayCommand(AddFromGitHubAsync);
-        CreateBundleCommand = new RelayCommand(CreateBundleAsync);
-        InstallBundleFromFileCommand = new RelayCommand(InstallBundleFromFileAsync);
+        CreatePackageListCommand = new RelayCommand(CreatePackageListAsync);
+        InstallPackageListFromFileCommand = new RelayCommand(InstallPackageListFromFileAsync);
         ChooseVersionCommand = new RelayCommand<CatalogPackageVersion>(ChooseVersionAsync);
         ToggleLayoutCommand = new RelayCommand(() => IsGridView = !IsGridView);
         OpenLinkCommand = new RelayCommand<string>(url => { if (!string.IsNullOrWhiteSpace(url)) ExternalLink.Open(url!); });
         CloseDetailCommand = new RelayCommand(() => SelectedPackage = null);
+        MountCommand = new RelayCommand<PackageRow>(MountAsync);
+        SwapBackCommand = new RelayCommand<PackageRow>(SwapBackAsync);
+        SubmitPrCommand = new RelayCommand<PackageRow>(SubmitPrAsync);
+        OpenFolderCommand = new RelayCommand<PackageRow>(OpenMountFolder);
+        ReviewDriftCommand = new RelayCommand<PackageRow>(ReviewDriftAsync);
+        InstallGitCommand = new RelayCommand(() => ExternalLink.Open("https://git-scm.com/downloads"));
     }
 
     /// <summary>Applies the persisted layout choice at startup without re-saving it.</summary>
@@ -228,18 +266,42 @@ public sealed class PackagesViewModel : ObservableObject
     {
         Available.Clear();
         var f = _filter?.Trim() ?? "";
+        bool Matches(string display, string name) => f.Length == 0
+            || display.Contains(f, StringComparison.OrdinalIgnoreCase)
+            || name.Contains(f, StringComparison.OrdinalIgnoreCase);
+
+        var shown = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var v in _catalogService.AllLatest(_catalog))
         {
-            if (f.Length > 0 &&
-                !v.DisplayName.Contains(f, StringComparison.OrdinalIgnoreCase) &&
-                !v.Name.Contains(f, StringComparison.OrdinalIgnoreCase))
-                continue;
-
+            if (!Matches(v.DisplayName, v.Name)) continue;
             var installedVersion = _install?.Manifest.Dependencies.GetValueOrDefault(v.Name);
-            Available.Add(new PackageRow(v, installedVersion, _unofficialIds.Contains(v.Name), _mountedIds.Contains(v.Name)));
+            _mounts.TryGetValue(v.Name, out var rec);
+            Available.Add(new PackageRow(v, installedVersion, _unofficialIds.Contains(v.Name),
+                _mountedIds.Contains(v.Name), rec?.FolderPath, _mountEditedIds.Contains(v.Name)));
+            shown.Add(v.Name);
         }
 
-        // Keep an open detail panel pointed at the refreshed row so its installed-state stays current.
+        // Packages the catalog doesn't list but the project mounts or pulls straight from git still get
+        // a row — so mounting, Open folder / Swap back / Submit PR and the amber "edited" state work for
+        // community git deps too, not just registry packages. (These ids are kept out of the Installed
+        // expander in RefreshInstalled, so a package never shows in both places.)
+        foreach (var id in SyntheticRowIds())
+        {
+            if (shown.Contains(id) || !Matches(id, id)) continue;
+            var installedVersion = _install?.Manifest.Dependencies.GetValueOrDefault(id);
+            var gitUrl = installedVersion is not null && UpmGitUrl.Parse(installedVersion) is not null
+                ? installedVersion
+                : _mounts.TryGetValue(id, out var r) ? r.OriginalManifestValue : null;
+            var entry = new CatalogPackageVersion { Name = id, DisplayName = id, Version = "local", Description = "", Url = gitUrl };
+            Available.Add(new PackageRow(entry, installedVersion, isUnofficial: false, isMounted: _mountedIds.Contains(id),
+                mountFolder: _mounts.TryGetValue(id, out var rec2) ? rec2.FolderPath : null, mountedHasEdits: _mountEditedIds.Contains(id)));
+            shown.Add(id);
+        }
+
+        // Re-apply the drift flag (a separate, async signal) after the rows are rebuilt.
+        foreach (var row in Available) row.HasDrift = _drift.ContainsKey(row.Name);
+
+        // Keep an open detail panel pointed at the refreshed row so its state stays current.
         if (_selectedPackage is not null)
         {
             var match = Available.FirstOrDefault(r => string.Equals(r.Name, _selectedPackage.Name, StringComparison.Ordinal));
@@ -247,33 +309,57 @@ public sealed class PackagesViewModel : ObservableObject
         }
     }
 
+    // Ids that deserve an Available row despite not being in the catalog: every mounted package, plus
+    // any manifest dependency pulled straight from git (or a local file:) — the community packages the
+    // former Develop tab let you mount.
+    private IEnumerable<string> SyntheticRowIds()
+    {
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var id in _mounts.Keys)
+            if (!_catalog.Packages.ContainsKey(id) && seen.Add(id)) yield return id;
+        if (_install is null || !_install.HasUnityProject) yield break;
+        foreach (var (id, val) in _install.Manifest.Dependencies)
+            if (!_catalog.Packages.ContainsKey(id) && LooksMountable(val) && seen.Add(id)) yield return id;
+    }
+
     private void RefreshInstalled()
     {
         _allInstalled.Clear();
         Installed.Clear();
         _mountedIds.Clear();
-        if (_install is null || !_install.HasUnityProject) { RebuildInstalledOwners(); Refilter(); return; }
+        _mounts.Clear();
+        if (_install is null || !_install.HasUnityProject) { RebuildInstalledOwners(); Refilter(); OnPropertyChanged(nameof(GitMissing)); return; }
 
         // Packages mounted for editing are present as a local folder, not the registry git URL: a
         // root-level mount drops the manifest line entirely (cloned into Packages/<id>/), and a
         // subfolder mount rewrites it to a "file:" dep. Track both from the mount registry (+ any
-        // stray file: dep) so the "Available" list marks them "Locally mounted".
+        // stray file: dep) so they surface as mounted rows in the Available list.
         foreach (var rec in _mountRegistry.ForInstall(_install.UnityProjectPath))
+        {
+            _mounts[rec.PackageId] = rec;
             _mountedIds.Add(rec.PackageId);
+        }
 
         foreach (var (name, version) in _install.Manifest.Dependencies)
         {
+            if (version.StartsWith("file:", StringComparison.OrdinalIgnoreCase)) _mountedIds.Add(name);
+            // Mounted packages and non-catalog git deps get their own row in the Available list (with
+            // the mount actions), so keep them out of the raw Installed list to avoid showing the same
+            // package twice.
+            if (_mountedIds.Contains(name) || (!_catalog.Packages.ContainsKey(name) && LooksMountable(version)))
+                continue;
             var displayName = _catalog.Packages.TryGetValue(name, out var pkg) && pkg.Versions.Count > 0
                 ? pkg.Versions.Values.First().DisplayName
                 : name;
             var isGit = version.Contains("github.com", StringComparison.OrdinalIgnoreCase) || version.StartsWith("git", StringComparison.OrdinalIgnoreCase);
-            if (version.StartsWith("file:", StringComparison.OrdinalIgnoreCase)) _mountedIds.Add(name);
             _allInstalled.Add(new InstalledPackageRow(name, displayName, version, isGit));
         }
 
         RebuildInstalledOwners();
         ApplyInstalledFilter();
         Refilter();
+        OnPropertyChanged(nameof(GitMissing));
+        StartEditScan();
     }
 
     /// <summary>Vendor/owner from a reverse-DNS package id: com.unity.2d.sprite → "Unity".</summary>
@@ -552,10 +638,230 @@ public sealed class PackagesViewModel : ObservableObject
         }
     }
 
-    // ===== Bundles =====
+    // ===== Mount workflow (absorbed from the former Develop tab) =====
 
-    /// <summary>Builds a bundle from the current project's Basis + added packages and opens a GitHub issue to submit it.</summary>
-    private async Task CreateBundleAsync()
+    /// <summary>True when git isn't on PATH — mounting and PRs won't work, so a banner offers to install it.</summary>
+    public bool GitMissing => !_gitService.IsAvailable;
+
+    // A manifest value we can mount: a git URL (clone + swap) or an existing local "file:" dep.
+    private static bool LooksMountable(string? manifestValue) =>
+        !string.IsNullOrWhiteSpace(manifestValue) &&
+        (manifestValue!.StartsWith("file:", StringComparison.OrdinalIgnoreCase) || UpmGitUrl.Parse(manifestValue) is not null);
+
+    /// <summary>Clones a git package into the project for editing and swaps the manifest over to it.</summary>
+    private async Task MountAsync(PackageRow? row)
+    {
+        if (row is null || _install is null || !_install.HasUnityProject) return;
+        if (!_gitService.IsAvailable) { _shell.SetStatus(L.Tr("develop.status.gitRequiredMount"), StatusKind.Error); return; }
+        if (!_install.Manifest.Dependencies.TryGetValue(row.Name, out var gitValue) || !LooksMountable(gitValue))
+        {
+            _shell.SetStatus(L.Tr("packages.status.notGitPackage", row.DisplayName), StatusKind.Info);
+            return;
+        }
+
+        // If Packages/<id> already exists (a leftover or a local copy), ask before replacing it.
+        var dest = Path.Combine(_install.UnityProjectPath, "Packages", row.Name);
+        if (Directory.Exists(dest) && Directory.EnumerateFileSystemEntries(dest).Any())
+        {
+            if (!await Dialogs.ConfirmAsync(L.Tr("develop.confirm.packageThereTitle"), L.Tr("develop.confirm.packageExists", row.Name)))
+            {
+                _shell.SetStatus(L.Tr("develop.status.mountCancelled", row.Name), StatusKind.Info);
+                return;
+            }
+            try { TryForceDelete(dest); }
+            catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.clearFailed", row.Name, ex.Message), StatusKind.Error); return; }
+        }
+
+        IsBusy = true;
+        _shell.SetStatus(L.Tr("develop.status.mounting", row.Name));
+        try
+        {
+            var result = await _mountService.MountAsync(_install, row.Name, gitValue,
+                line => Avalonia.Threading.Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
+            if (result.Ok) { _shell.SetStatus(L.Tr("develop.status.mounted", row.Name), StatusKind.Success); await ReloadInstalledAsync(); }
+            else _shell.SetStatus(result.Error ?? L.Tr("develop.status.mountFailed"), StatusKind.Error);
+        }
+        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.mountError", ex.Message), StatusKind.Error); }
+        finally { IsBusy = false; }
+    }
+
+    /// <summary>Restores a mounted package's original manifest entry and removes the working clone.</summary>
+    private async Task SwapBackAsync(PackageRow? row)
+    {
+        if (row is null || _install is null) return;
+        IsBusy = true;
+        _shell.SetStatus(L.Tr("develop.status.swapping", row.Name));
+        try
+        {
+            var result = await _mountService.SwapBackAsync(_install, row.Name);
+            if (result.Ok) { _shell.SetStatus(L.Tr("develop.status.swappedBack", row.Name), StatusKind.Success); await ReloadInstalledAsync(); }
+            else _shell.SetStatus(result.Error ?? L.Tr("develop.status.swapBackFailed"), StatusKind.Error);
+        }
+        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.swapBackError", ex.Message), StatusKind.Error); }
+        finally { IsBusy = false; }
+    }
+
+    /// <summary>Reveals a mounted package's working-clone folder in the OS file manager.</summary>
+    private void OpenMountFolder(PackageRow? row)
+    {
+        var folder = row?.MountFolder;
+        if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder)) ExternalLink.OpenFolder(folder);
+        else if (row is not null) _shell.SetStatus(L.Tr("packages.status.mountFolderMissing", row.DisplayName), StatusKind.Error);
+    }
+
+    /// <summary>Opens a pull request from a mounted package's working clone.</summary>
+    private async Task SubmitPrAsync(PackageRow? row)
+    {
+        if (row is null) return;
+        if (string.IsNullOrEmpty(row.MountFolder)) { _shell.SetStatus(L.Tr("packages.status.mountFolderMissing", row.DisplayName), StatusKind.Error); return; }
+        await SubmitPrFromFolderAsync(row.Name, row.MountFolder);
+    }
+
+    /// <summary>Turns accidental Library/PackageCache edits into a PR, reusing the mounted-package PR flow.</summary>
+    private async Task ReviewDriftAsync(PackageRow? row)
+    {
+        if (row is null || !_drift.TryGetValue(row.Name, out var drift)) return;
+        await SubmitPrFromFolderAsync(row.Name, drift.WorkClonePath);
+    }
+
+    private async Task SubmitPrFromFolderAsync(string packageId, string folderPath)
+    {
+        if (!_gitService.IsAvailable) { _shell.SetStatus(L.Tr("develop.status.gitRequired"), StatusKind.Error); return; }
+
+        // Nothing to PR if the working clone is clean — bail before sign-in and a fork.
+        var status = await _gitService.GetStatusAsync(folderPath);
+        if (status.ChangeCount == 0) { _shell.SetStatus(L.Tr("develop.status.noChangesToSubmit", packageId), StatusKind.Info); return; }
+
+        var token = await GetOrPromptTokenAsync();
+        if (string.IsNullOrEmpty(token)) { _shell.SetStatus(L.Tr("develop.status.signInFirst"), StatusKind.Error); return; }
+        var user = await _ghApi.GetUserAsync(token);
+        if (user is null) { _shell.SetStatus(L.Tr("develop.status.loginUnverified"), StatusKind.Error); return; }
+
+        var draft = await Dialogs.SubmitPrAsync(packageId);
+        if (draft is null) return;
+
+        IsBusy = true;
+        _shell.SetStatus(L.Tr("develop.status.submittingPr", packageId));
+        try
+        {
+            var result = await _contributeService.SubmitPrAsync(folderPath, token, user, draft,
+                line => Avalonia.Threading.Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
+            if (result.Ok)
+            {
+                _shell.SetStatus(L.Tr("develop.status.prOpened", result.Forked ? L.Tr("develop.status.viaFork") : "", result.PrUrl), StatusKind.Success);
+                if (!string.IsNullOrEmpty(result.PrUrl)) ExternalLink.Open(result.PrUrl!);
+            }
+            else _shell.SetStatus(result.Error ?? L.Tr("develop.status.prFailed"), StatusKind.Error);
+        }
+        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.prError", ex.Message), StatusKind.Error); }
+        finally { IsBusy = false; }
+    }
+
+    // Uses the gh CLI token if the user is signed in there; otherwise prompts once for a PAT.
+    private async Task<string?> GetOrPromptTokenAsync()
+    {
+        var token = await _ghAuth.GetTokenAsync();
+        if (!string.IsNullOrEmpty(token)) return token;
+        var pat = await Dialogs.SignInAsync();
+        if (string.IsNullOrWhiteSpace(pat)) return null;
+        _ghAuth.SetPersonalAccessToken(pat);
+        return await _ghAuth.GetTokenAsync();
+    }
+
+    // Re-reads the manifest from disk (mount/swap rewrote it) before rebuilding the lists.
+    private async Task ReloadInstalledAsync()
+    {
+        if (_install is not null && _install.HasUnityProject)
+        {
+            try { var reloaded = await _projectService.LoadAsync(_install.UnityProjectPath); _install.Manifest = reloaded.Manifest; }
+            catch { }
+        }
+        RefreshInstalled();
+    }
+
+    // git marks objects under .git read-only; clear attributes before deleting the clone.
+    private static void TryForceDelete(string path)
+    {
+        if (!Directory.Exists(path)) return;
+        foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+        {
+            try { File.SetAttributes(file, FileAttributes.Normal); } catch { }
+        }
+        Directory.Delete(path, recursive: true);
+    }
+
+    // Kick off the background change scans and keep the cheap one polling so rows go amber as the user
+    // edits mounted packages in Unity.
+    private void StartEditScan()
+    {
+        _ = ScanMountEditsAsync();
+        _ = ScanDriftAsync();
+        if (_editTimer is null)
+        {
+            _editTimer = new Avalonia.Threading.DispatcherTimer { Interval = TimeSpan.FromMinutes(2) };
+            _editTimer.Tick += (_, _) => { if (!_scanningEdits) _ = ScanMountEditsAsync(); };
+        }
+        _editTimer.Start();
+    }
+
+    // Cheap pass (a git status per mount): flags mounted clones with uncommitted edits so their rows
+    // turn amber. Safe to run on the timer.
+    private async Task ScanMountEditsAsync()
+    {
+        if (_scanningEdits || _install is null || !_gitService.IsAvailable || _mounts.Count == 0) return;
+        _scanningEdits = true;
+        try
+        {
+            var install = _install;
+            var edited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var rec in _mounts.Values.ToList())
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(rec.FolderPath) || !Directory.Exists(rec.FolderPath)) continue;
+                    var status = await _gitService.GetStatusAsync(rec.FolderPath);
+                    if (status.ChangeCount > 0) edited.Add(rec.PackageId);
+                }
+                catch { }
+            }
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (!ReferenceEquals(install, _install)) return;   // project switched mid-scan
+                _mountEditedIds.Clear();
+                foreach (var id in edited) _mountEditedIds.Add(id);
+                foreach (var r in Available) if (r.IsMounted) r.MountedHasEdits = _mountEditedIds.Contains(r.Name);
+            });
+        }
+        finally { _scanningEdits = false; }
+    }
+
+    // Heavier pass (clones changed packages to temp), so it runs on activate/refresh only, not the
+    // timer: surfaces accidental edits made directly in Library/PackageCache as an amber row + a
+    // "Review changes & open PR" action.
+    private async Task ScanDriftAsync()
+    {
+        if (_scanningDrift || _install is null || !_install.HasUnityProject || !_gitService.IsAvailable) return;
+        _scanningDrift = true;
+        try
+        {
+            var install = _install;
+            var drifts = await _driftService.ScanAsync(install);
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (!ReferenceEquals(install, _install)) return;
+                _drift.Clear();
+                foreach (var d in drifts) _drift[d.PackageId] = d;
+                foreach (var r in Available) r.HasDrift = _drift.ContainsKey(r.Name);
+            });
+        }
+        catch { }
+        finally { _scanningDrift = false; }
+    }
+
+    // ===== Package lists =====
+
+    /// <summary>Builds a package list from the current project's Basis + added packages and opens a GitHub issue to submit it.</summary>
+    private async Task CreatePackageListAsync()
     {
         if (_install is null || !_install.HasUnityProject)
         {
@@ -570,12 +876,12 @@ public sealed class PackagesViewModel : ObservableObject
         var commit = string.IsNullOrWhiteSpace(row?.Commit) ? null : row!.Commit;
 
         // Candidates = packages added on top of vanilla Basis: git deps + anything not com.unity.*.
-        var candidates = new List<BundlePackage>();
+        var candidates = new List<PackageListEntry>();
         foreach (var (id, val) in target.Manifest.Dependencies)
         {
             var isVersion = IsSemverRange(val);
             if (isVersion && id.StartsWith("com.unity", StringComparison.OrdinalIgnoreCase)) continue;
-            candidates.Add(new BundlePackage
+            candidates.Add(new PackageListEntry
             {
                 Id = id,
                 GitUrl = isVersion ? null : val,
@@ -588,12 +894,12 @@ public sealed class PackagesViewModel : ObservableObject
             return;
         }
 
-        var basisLine = L.Tr("packages.bundle.basisLine", row?.BranchCommit is { Length: > 0 } bc ? bc : L.Tr("packages.bundle.unknownCommit"), target.UnityVersion);
-        var draft = await Dialogs.CreateBundleAsync(target.DisplayName, basisLine,
+        var basisLine = L.Tr("packages.packageList.basisLine", row?.BranchCommit is { Length: > 0 } bc ? bc : L.Tr("packages.packageList.unknownCommit"), target.UnityVersion);
+        var draft = await Dialogs.CreatePackageListAsync(target.DisplayName, basisLine,
             candidates.OrderByDescending(c => c.GitUrl != null).ThenBy(c => c.Id, StringComparer.OrdinalIgnoreCase).ToList());
         if (draft is null) return;
 
-        var bundle = new Bundle
+        var packageList = new PackageList
         {
             Id = Slugify(draft.Name),
             Name = draft.Name,
@@ -606,68 +912,68 @@ public sealed class PackagesViewModel : ObservableObject
             Packages = draft.Packages,
         };
 
-        var json = JsonSerializer.Serialize(bundle, new JsonSerializerOptions
+        var json = JsonSerializer.Serialize(packageList, new JsonSerializerOptions
         {
             WriteIndented = true,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         });
 
-        // Local: write the bundle JSON to a file the user keeps — no submission.
-        if (draft.Destination == BundleDestination.SaveToFile)
+        // Local: write the package-list JSON to a file the user keeps — no submission.
+        if (draft.Destination == PackageListDestination.SaveToFile)
         {
-            var savedPath = await Dialogs.SaveBundleFileAsync(bundle.Id, json);
+            var savedPath = await Dialogs.SavePackageListFileAsync(packageList.Id, json);
             if (savedPath is not null)
-                _shell.SetStatus(L.Tr("packages.status.bundleSaved", draft.Name, draft.Packages.Count, savedPath), StatusKind.Success);
+                _shell.SetStatus(L.Tr("packages.status.packageListSaved", draft.Name, draft.Packages.Count, savedPath), StatusKind.Success);
             return;
         }
 
-        var body = "### Bundle submission\n\nAdd this entry to `src/BasisPM.Server/seed/bundles.json`:\n\n```json\n" + json + "\n```\n";
-        var url = "https://github.com/BasisVR/BasisPackageManager/issues/new?labels=bundle-submission"
-                + "&title=" + Uri.EscapeDataString("Add bundle: " + draft.Name)
+        var body = "### Package list submission\n\nAdd this entry to `src/BasisPM.Server/seed/packagelists.json`:\n\n```json\n" + json + "\n```\n";
+        var url = "https://github.com/BasisVR/BasisPackageManager/issues/new?labels=packagelist-submission"
+                + "&title=" + Uri.EscapeDataString("Add package list: " + draft.Name)
                 + "&body=" + Uri.EscapeDataString(body);
         OpenUrl(url);
         _shell.SetStatus(L.Tr("packages.status.openingIssue", draft.Name, draft.Packages.Count), StatusKind.Success);
     }
 
-    /// <summary>Reads a local bundle file (as saved by "Save to file") and installs its packages into a chosen project.</summary>
-    private async Task InstallBundleFromFileAsync()
+    /// <summary>Reads a local package-list file (as saved by "Save to file") and installs its packages into a chosen project.</summary>
+    private async Task InstallPackageListFromFileAsync()
     {
-        var path = await Dialogs.OpenBundleFileAsync();
+        var path = await Dialogs.OpenPackageListFileAsync();
         if (string.IsNullOrEmpty(path)) return;
 
-        Bundle? bundle;
+        PackageList? packageList;
         try
         {
             var json = await File.ReadAllTextAsync(path);
-            bundle = JsonSerializer.Deserialize<Bundle>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            packageList = JsonSerializer.Deserialize<PackageList>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
         catch (Exception ex)
         {
-            _shell.SetStatus(L.Tr("packages.status.bundleFileInvalid", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.packageListFileInvalid", ex.Message), StatusKind.Error);
             return;
         }
 
-        if (bundle is null || bundle.Packages.Count == 0)
+        if (packageList is null || packageList.Packages.Count == 0)
         {
-            _shell.SetStatus(L.Tr("packages.status.bundleFileEmpty"), StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.packageListFileEmpty"), StatusKind.Error);
             return;
         }
 
-        var target = await _shell.ChooseInstallTargetAsync(L.Tr("shell.bundle.pickerLabel", bundle.Name, bundle.Packages.Count));
+        var target = await _shell.ChooseInstallTargetAsync(L.Tr("shell.packageList.pickerLabel", packageList.Name, packageList.Packages.Count));
         if (target is null) return;
 
         _shell.SetActiveInstall(target);
-        await AddBundleAsync(bundle, target);
+        await AddPackageListAsync(packageList, target);
     }
 
-    /// <summary>Adds every package in a bundle to the target project's manifest (used by the bundle deep link).</summary>
-    public async Task AddBundleAsync(Bundle bundle, BasisInstall target)
+    /// <summary>Adds every package in a package list to the target project's manifest (used by the package-list deep link).</summary>
+    public async Task AddPackageListAsync(PackageList packageList, BasisInstall target)
     {
         IsBusy = true;
         try
         {
             var skipped = 0;
-            foreach (var p in bundle.Packages)
+            foreach (var p in packageList.Packages)
             {
                 if (string.IsNullOrWhiteSpace(p.Id)) continue;
                 if (!string.IsNullOrWhiteSpace(p.GitUrl))
@@ -683,13 +989,13 @@ public sealed class PackagesViewModel : ObservableObject
             }
             await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
             var skipNote = skipped > 0 ? L.Tr("packages.status.skipNote", skipped) : "";
-            _shell.SetStatus(L.Tr("packages.status.addedBundle", bundle.Name, bundle.Packages.Count, skipNote, target.DisplayName),
+            _shell.SetStatus(L.Tr("packages.status.addedPackageList", packageList.Name, packageList.Packages.Count, skipNote, target.DisplayName),
                 skipped > 0 ? StatusKind.Info : StatusKind.Success);
             RefreshInstalled();
         }
         catch (Exception ex)
         {
-            _shell.SetStatus(L.Tr("packages.status.bundleInstallFailed", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.packageListInstallFailed", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }
@@ -702,20 +1008,20 @@ public sealed class PackagesViewModel : ObservableObject
     {
         var packages = _catalogService.AllLatest(_catalog)
             .Where(v => !string.IsNullOrWhiteSpace(v.Url))
-            .Select(v => new BundlePackage { Id = v.Name, Name = v.DisplayName, GitUrl = v.Url })
+            .Select(v => new PackageListEntry { Id = v.Name, Name = v.DisplayName, GitUrl = v.Url })
             .ToList();
         if (packages.Count == 0)
         {
             _shell.SetStatus(L.Tr("packages.status.recommendedEmpty"), StatusKind.Info);
             return;
         }
-        var bundle = new Bundle
+        var packageList = new PackageList
         {
             Id = "basis-recommended",
             Name = L.Tr("packages.recommended.name"),
             Packages = packages,
         };
-        await AddBundleAsync(bundle, target);
+        await AddPackageListAsync(packageList, target);
     }
 
     private static string Slugify(string s)
@@ -723,27 +1029,80 @@ public sealed class PackagesViewModel : ObservableObject
         var slug = new string(s.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-').ToArray());
         while (slug.Contains("--")) slug = slug.Replace("--", "-");
         slug = slug.Trim('-');
-        return slug.Length == 0 ? "bundle" : slug;
+        return slug.Length == 0 ? "packagelist" : slug;
     }
 
     private static void OpenUrl(string url) => ExternalLink.Open(url);
 }
 
-public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVersion, bool IsUnofficial = false, bool IsMounted = false)
+public sealed class PackageRow : ObservableObject
 {
+    public PackageRow(CatalogPackageVersion entry, string? installedVersion, bool isUnofficial = false,
+        bool isMounted = false, string? mountFolder = null, bool mountedHasEdits = false)
+    {
+        Entry = entry;
+        InstalledVersion = installedVersion;
+        IsUnofficial = isUnofficial;
+        IsMounted = isMounted;
+        MountFolder = mountFolder;
+        _mountedHasEdits = mountedHasEdits;
+    }
+
+    public CatalogPackageVersion Entry { get; }
+    public string? InstalledVersion { get; }
+    public bool IsUnofficial { get; }
+    public bool IsMounted { get; }
+    // The mounted working-clone folder (Packages/<id> or .basisdev/<id>); null when not mounted.
+    public string? MountFolder { get; }
+    public bool HasMountFolder => !string.IsNullOrWhiteSpace(MountFolder);
+
+    // Uncommitted edits in the mounted working clone, and accidental Library/PackageCache edits — both
+    // observable, set by a background scan after the list is built, so the row re-tints amber live.
+    private bool _mountedHasEdits;
+    public bool MountedHasEdits
+    {
+        get => _mountedHasEdits;
+        set { if (SetField(ref _mountedHasEdits, value)) { OnPropertyChanged(nameof(IsChanged)); OnPropertyChanged(nameof(MountedStateLabel)); } }
+    }
+    private bool _hasDrift;
+    public bool HasDrift
+    {
+        get => _hasDrift;
+        set { if (SetField(ref _hasDrift, value)) OnPropertyChanged(nameof(IsChanged)); }
+    }
+    // The row goes amber when the local copy has changes (a dirty mount or cache drift).
+    public bool IsChanged => MountedHasEdits || HasDrift;
+
     public string DisplayName => Entry.DisplayName;
     public string Name => Entry.Name;
     public string Version => Entry.Version;
     public string Description => Entry.Description;
     public bool IsInstalled => !string.IsNullOrEmpty(InstalledVersion);
     public bool IsNotInstalled => !IsInstalled;
+    public string? InstalledLabel
+    {
+        get
+        {
+            var v = InstalledVersion;
+            if (string.IsNullOrEmpty(v) || v.StartsWith("file:", StringComparison.OrdinalIgnoreCase)) return null;
+            var git = UpmGitUrl.Parse(v);
+            if (git is not null) return git.Ref ?? L.Tr("packages.version.defaultBranch");
+            return v;
+        }
+    }
+    public bool HasInstalledVersion => !IsMounted && !string.IsNullOrEmpty(InstalledLabel);
+    public string InstalledVersionText => L.Tr("packages.version.installed", InstalledLabel ?? "");
     // The action-area states are mutually exclusive. A package mounted for editing is present as a
-    // local folder (not the registry git URL), so it's neither "install" nor "manage" — it shows
-    // "Locally mounted" and points the user at the Develop tab.
+    // local folder (not the registry git URL), so it's neither "install" nor "manage" — it shows the
+    // mount actions (Open folder / Swap back / Submit PR) and goes amber once it has local edits.
     public bool IsAvailableToInstall => !IsInstalled && !IsMounted;
     public bool IsManageable => IsInstalled && !IsMounted;
+    // Installed straight from git (there's a URL to clone + swap) and not already mounted → mountable.
+    public bool CanMountToEdit => IsInstalled && !IsMounted && InstalledVersion is not null && UpmGitUrl.Parse(InstalledVersion) is not null;
     public bool CanChooseVersion => HasGit && !IsMounted;
     public string MountedLabel => L.Tr("packages.state.mounted");
+    // The inline mounted pill: "Locally mounted", or "Local edits" once the working clone is dirty.
+    public string MountedStateLabel => MountedHasEdits ? L.Tr("packages.state.mountedEdited") : L.Tr("packages.state.mounted");
     public string MountedHint => L.Tr("packages.mounted.hint");
     public string ButtonLabel => IsInstalled ? L.Tr("packages.button.update") : L.Tr("packages.button.install");
     public string Author => Entry.Author?.Name ?? "";

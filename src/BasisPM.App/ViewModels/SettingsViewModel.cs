@@ -131,7 +131,6 @@ public sealed class SettingsViewModel : ObservableObject
 
         await _shell.PackagesVM.LoadCatalogAsync(settings.CatalogUrl, settings.ExtraCatalogUrls);
         _shell.ShowChangesTab = settings.ShowLocalChanges;
-        _shell.ShowDevelopTab = settings.DeveloperMode;
         _shell.ApplyPrerelease(settings.PrereleaseUpdates);
         RefreshDetected();
         _shell.SetStatus(L.Tr("settings.status.saved"), StatusKind.Success);

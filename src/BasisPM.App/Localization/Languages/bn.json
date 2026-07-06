@@ -3,6 +3,14 @@
   "nativeName": "বাংলা",
   "entries": [
     {
+      "key": "packages.version.installed",
+      "value": "ইনস্টল করা হয়েছে {0}"
+    },
+    {
+      "key": "packages.version.defaultBranch",
+      "value": "ডিফল্ট ব্রাঞ্চ"
+    },
+    {
       "key": "nav.changes",
       "value": "স্থানীয় পরিবর্তন"
     },
@@ -31,7 +39,7 @@
       "value": "Unity এডিটর"
     },
     {
-      "key": "shell.bundle.pickerLabel",
+      "key": "shell.packageList.pickerLabel",
       "value": "{0} ({1}টি প্যাকেজ)"
     },
     {
@@ -63,7 +71,7 @@
       "value": "“{0}” কোন প্রকল্পে যোগ করবেন?"
     },
     {
-      "key": "shell.status.bundleNotFound",
+      "key": "shell.status.packageListNotFound",
       "value": "রেজিস্ট্রিতে “{0}” বান্ডেলটি খুঁজে পাওয়া যায়নি।"
     },
     {
@@ -107,7 +115,7 @@
       "value": "{0}-এর ইনস্টল লিঙ্কে এর git URL ছিল না।"
     },
     {
-      "key": "shell.status.loadingBundle",
+      "key": "shell.status.loadingPackageList",
       "value": "বান্ডেল লোড হচ্ছে…"
     },
     {
@@ -483,11 +491,11 @@
       "value": "github"
     },
     {
-      "key": "packages.bundle.basisLine",
+      "key": "packages.packageList.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
     {
-      "key": "packages.bundle.unknownCommit",
+      "key": "packages.packageList.unknownCommit",
       "value": "অজানা"
     },
     {
@@ -499,7 +507,7 @@
       "value": "সংস্করণ বেছে নিন…"
     },
     {
-      "key": "packages.button.createBundle",
+      "key": "packages.button.createPackageList",
       "value": "বান্ডেল তৈরি করুন"
     },
     {
@@ -587,7 +595,7 @@
       "value": "যোগ করা হয়েছে"
     },
     {
-      "key": "packages.status.addedBundle",
+      "key": "packages.status.addedPackageList",
       "value": "“{0}” বান্ডেল ({1}টি প্যাকেজ){2} যোগ করা হয়েছে → {3}।"
     },
     {
@@ -599,7 +607,7 @@
       "value": "GitHub থেকে {0} {1}{2}।"
     },
     {
-      "key": "packages.status.bundleInstallFailed",
+      "key": "packages.status.packageListInstallFailed",
       "value": "বান্ডেল ইনস্টল ব্যর্থ হয়েছে: {0}"
     },
     {
@@ -723,10 +731,6 @@
       "value": "তালিকা পুনরায় লোড করুন"
     },
     {
-      "key": "unity.button.uninstall",
-      "value": "আনইনস্টল"
-    },
-    {
       "key": "unity.header.subtitle",
       "value": "ইনস্টলকৃত Unity এডিটর সনাক্ত করুন এবং Basis-এর প্রয়োজনীয় সংস্করণ ইনস্টল করুন।"
     },
@@ -811,28 +815,40 @@
       "value": "আপনার Basis ইনস্টল Unity {0} লক্ষ্য করে। পরিষ্কারভাবে খোলার জন্য নিচে ঠিক সেই সংস্করণটি ইনস্টল করুন।"
     },
     {
-      "key": "unity.status.uninstallError",
-      "value": "আনইনস্টল ত্রুটি: {0}"
-    },
-    {
-      "key": "unity.status.uninstallFailed",
-      "value": "আনইনস্টল ব্যর্থ হয়েছে (exit code {0})।"
-    },
-    {
-      "key": "unity.status.uninstalled",
-      "value": "Unity {0} আনইনস্টল করা হয়েছে।"
-    },
-    {
-      "key": "unity.status.uninstalling",
-      "value": "Unity {0} আনইনস্টল করা হচ্ছে..."
-    },
-    {
       "key": "unity.tag.installed",
       "value": "ইনস্টলকৃত"
     },
     {
       "key": "unity.tag.recommended",
       "value": "প্রস্তাবিত"
+    },
+    {
+      "key": "unity.button.installModules",
+      "value": "মডিউল ইনস্টল করুন"
+    },
+    {
+      "key": "unity.editors.modulesHint",
+      "value": "Unity Hub-এর মাধ্যমে এই এডিটরে বিল্ড-সাপোর্ট মডিউল যোগ করুন। ইতিমধ্যে ইনস্টল করা মডিউলগুলি এড়িয়ে যাওয়া হয়।"
+    },
+    {
+      "key": "unity.status.installingModules",
+      "value": "Unity {0}-এর জন্য মডিউল ইনস্টল করা হচ্ছে…"
+    },
+    {
+      "key": "unity.status.modulesError",
+      "value": "মডিউল ইনস্টল ত্রুটি: {0}"
+    },
+    {
+      "key": "unity.status.modulesFailed",
+      "value": "মডিউল ইনস্টল ব্যর্থ হয়েছে (এক্সিট কোড {0})।"
+    },
+    {
+      "key": "unity.status.modulesInstalled",
+      "value": "Unity {0}-এর জন্য মডিউল ইনস্টল করা হয়েছে।"
+    },
+    {
+      "key": "unity.status.noModulesSelected",
+      "value": "ইনস্টল করার জন্য অন্তত একটি মডিউল বেছে নিন।"
     },
     {
       "key": "develop.auth.cliNotLoggedIn",
@@ -1463,43 +1479,43 @@
       "value": "হ্যাঁ"
     },
     {
-      "key": "dialog.createBundle.cancel",
+      "key": "dialog.createPackageList.cancel",
       "value": "বাতিল"
     },
     {
-      "key": "dialog.createBundle.create",
+      "key": "dialog.createPackageList.create",
       "value": "সাবমিশন তৈরি করুন"
     },
     {
-      "key": "dialog.createBundle.descriptionLabel",
+      "key": "dialog.createPackageList.descriptionLabel",
       "value": "বিবরণ"
     },
     {
-      "key": "dialog.createBundle.errorNoName",
+      "key": "dialog.createPackageList.errorNoName",
       "value": "আপনার বান্ডেলের একটি নাম দিন।"
     },
     {
-      "key": "dialog.createBundle.errorNoPackages",
+      "key": "dialog.createPackageList.errorNoPackages",
       "value": "অন্তর্ভুক্ত করতে অন্তত একটি প্যাকেজ বেছে নিন।"
     },
     {
-      "key": "dialog.createBundle.heading",
+      "key": "dialog.createPackageList.heading",
       "value": "একটি বান্ডেল তৈরি করুন"
     },
     {
-      "key": "dialog.createBundle.intro",
+      "key": "dialog.createPackageList.intro",
       "value": "আপনার Basis + প্যাকেজ একটি ইনস্টলযোগ্য বান্ডেল হিসেবে শেয়ার করুন। জমা দিতে এটি একটি GitHub ইস্যু খোলে।"
     },
     {
-      "key": "dialog.createBundle.nameLabel",
+      "key": "dialog.createPackageList.nameLabel",
       "value": "নাম"
     },
     {
-      "key": "dialog.createBundle.packagesLabel",
+      "key": "dialog.createPackageList.packagesLabel",
       "value": "অন্তর্ভুক্ত করার প্যাকেজ"
     },
     {
-      "key": "dialog.createBundle.title",
+      "key": "dialog.createPackageList.title",
       "value": "বান্ডেল তৈরি করুন"
     },
     {

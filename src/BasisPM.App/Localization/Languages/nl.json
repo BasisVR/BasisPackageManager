@@ -3,6 +3,14 @@
   "nativeName": "Nederlands",
   "entries": [
     {
+      "key": "packages.version.installed",
+      "value": "Geïnstalleerd {0}"
+    },
+    {
+      "key": "packages.version.defaultBranch",
+      "value": "standaardbranch"
+    },
+    {
       "key": "nav.changes",
       "value": "Lokale wijzigingen"
     },
@@ -31,7 +39,7 @@
       "value": "Unity-editors"
     },
     {
-      "key": "shell.bundle.pickerLabel",
+      "key": "shell.packageList.pickerLabel",
       "value": "{0} ({1} pakketten)"
     },
     {
@@ -63,7 +71,7 @@
       "value": "Aan welk project wil je “{0}” toevoegen?"
     },
     {
-      "key": "shell.status.bundleNotFound",
+      "key": "shell.status.packageListNotFound",
       "value": "Bundel “{0}” niet gevonden in het register."
     },
     {
@@ -107,7 +115,7 @@
       "value": "De installatielink voor {0} miste de git-URL."
     },
     {
-      "key": "shell.status.loadingBundle",
+      "key": "shell.status.loadingPackageList",
       "value": "Bundel laden…"
     },
     {
@@ -483,11 +491,11 @@
       "value": "github"
     },
     {
-      "key": "packages.bundle.basisLine",
+      "key": "packages.packageList.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
     {
-      "key": "packages.bundle.unknownCommit",
+      "key": "packages.packageList.unknownCommit",
       "value": "onbekend"
     },
     {
@@ -499,7 +507,7 @@
       "value": "Versie kiezen…"
     },
     {
-      "key": "packages.button.createBundle",
+      "key": "packages.button.createPackageList",
       "value": "Bundel maken"
     },
     {
@@ -587,7 +595,7 @@
       "value": "Toegevoegd"
     },
     {
-      "key": "packages.status.addedBundle",
+      "key": "packages.status.addedPackageList",
       "value": "Bundel “{0}” toegevoegd ({1} pakket(ten)){2} → {3}."
     },
     {
@@ -599,7 +607,7 @@
       "value": "{0} {1}{2} vanaf GitHub."
     },
     {
-      "key": "packages.status.bundleInstallFailed",
+      "key": "packages.status.packageListInstallFailed",
       "value": "Bundelinstallatie mislukt: {0}"
     },
     {
@@ -723,10 +731,6 @@
       "value": "Lijst herladen"
     },
     {
-      "key": "unity.button.uninstall",
-      "value": "Deïnstalleren"
-    },
-    {
       "key": "unity.header.subtitle",
       "value": "Detecteer geïnstalleerde Unity-editors en installeer de versie die Basis vereist."
     },
@@ -811,28 +815,40 @@
       "value": "Je Basis-installatie is gericht op Unity {0}. Installeer hieronder precies die versie voor een probleemloze opening."
     },
     {
-      "key": "unity.status.uninstallError",
-      "value": "Deïnstallatiefout: {0}"
-    },
-    {
-      "key": "unity.status.uninstallFailed",
-      "value": "Deïnstallatie mislukt (afsluitcode {0})."
-    },
-    {
-      "key": "unity.status.uninstalled",
-      "value": "Unity {0} gedeïnstalleerd."
-    },
-    {
-      "key": "unity.status.uninstalling",
-      "value": "Unity {0} deïnstalleren..."
-    },
-    {
       "key": "unity.tag.installed",
       "value": "geïnstalleerd"
     },
     {
       "key": "unity.tag.recommended",
       "value": "aanbevolen"
+    },
+    {
+      "key": "unity.button.installModules",
+      "value": "Modules installeren"
+    },
+    {
+      "key": "unity.editors.modulesHint",
+      "value": "Voeg build-ondersteuningsmodules toe aan deze editor via Unity Hub. Al geïnstalleerde modules worden overgeslagen."
+    },
+    {
+      "key": "unity.status.installingModules",
+      "value": "Modules voor Unity {0} installeren…"
+    },
+    {
+      "key": "unity.status.modulesError",
+      "value": "Fout bij installeren van modules: {0}"
+    },
+    {
+      "key": "unity.status.modulesFailed",
+      "value": "Installeren van modules mislukt (afsluitcode {0})."
+    },
+    {
+      "key": "unity.status.modulesInstalled",
+      "value": "Modules geïnstalleerd voor Unity {0}."
+    },
+    {
+      "key": "unity.status.noModulesSelected",
+      "value": "Kies minstens één module om te installeren."
     },
     {
       "key": "develop.auth.cliNotLoggedIn",
@@ -1463,43 +1479,43 @@
       "value": "Ja"
     },
     {
-      "key": "dialog.createBundle.cancel",
+      "key": "dialog.createPackageList.cancel",
       "value": "Annuleren"
     },
     {
-      "key": "dialog.createBundle.create",
+      "key": "dialog.createPackageList.create",
       "value": "Inzending maken"
     },
     {
-      "key": "dialog.createBundle.descriptionLabel",
+      "key": "dialog.createPackageList.descriptionLabel",
       "value": "Beschrijving"
     },
     {
-      "key": "dialog.createBundle.errorNoName",
+      "key": "dialog.createPackageList.errorNoName",
       "value": "Geef je bundel een naam."
     },
     {
-      "key": "dialog.createBundle.errorNoPackages",
+      "key": "dialog.createPackageList.errorNoPackages",
       "value": "Kies ten minste één pakket om op te nemen."
     },
     {
-      "key": "dialog.createBundle.heading",
+      "key": "dialog.createPackageList.heading",
       "value": "Een bundel maken"
     },
     {
-      "key": "dialog.createBundle.intro",
+      "key": "dialog.createPackageList.intro",
       "value": "Deel je Basis + pakketten als een installeerbare bundel. Het opent een GitHub-issue om in te dienen."
     },
     {
-      "key": "dialog.createBundle.nameLabel",
+      "key": "dialog.createPackageList.nameLabel",
       "value": "Naam"
     },
     {
-      "key": "dialog.createBundle.packagesLabel",
+      "key": "dialog.createPackageList.packagesLabel",
       "value": "Op te nemen pakketten"
     },
     {
-      "key": "dialog.createBundle.title",
+      "key": "dialog.createPackageList.title",
       "value": "Bundel maken"
     },
     {

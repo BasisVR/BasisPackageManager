@@ -45,7 +45,7 @@ body:
       label: Source
       options:
         - community
-        - curated
+        - official
   - type: input
     id: category
     attributes:

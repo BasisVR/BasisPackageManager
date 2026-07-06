@@ -3,6 +3,14 @@
   "nativeName": "العربية",
   "entries": [
     {
+      "key": "packages.version.installed",
+      "value": "تم تثبيت {0}"
+    },
+    {
+      "key": "packages.version.defaultBranch",
+      "value": "الفرع الافتراضي"
+    },
+    {
       "key": "nav.changes",
       "value": "التغييرات المحلية"
     },
@@ -31,7 +39,7 @@
       "value": "محرّرات Unity"
     },
     {
-      "key": "shell.bundle.pickerLabel",
+      "key": "shell.packageList.pickerLabel",
       "value": "{0} ({1} حزمة)"
     },
     {
@@ -63,7 +71,7 @@
       "value": "إلى أي مشروع تريد إضافة “{0}”؟"
     },
     {
-      "key": "shell.status.bundleNotFound",
+      "key": "shell.status.packageListNotFound",
       "value": "تعذّر العثور على الحزمة المجمّعة “{0}” في السجلّ."
     },
     {
@@ -107,7 +115,7 @@
       "value": "رابط تثبيت {0} كان يفتقد عنوان git الخاص به."
     },
     {
-      "key": "shell.status.loadingBundle",
+      "key": "shell.status.loadingPackageList",
       "value": "جارٍ تحميل الحزمة المجمّعة…"
     },
     {
@@ -483,11 +491,11 @@
       "value": "github"
     },
     {
-      "key": "packages.bundle.basisLine",
+      "key": "packages.packageList.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
     {
-      "key": "packages.bundle.unknownCommit",
+      "key": "packages.packageList.unknownCommit",
       "value": "غير معروف"
     },
     {
@@ -499,7 +507,7 @@
       "value": "اختيار الإصدار…"
     },
     {
-      "key": "packages.button.createBundle",
+      "key": "packages.button.createPackageList",
       "value": "إنشاء حزمة مجمّعة"
     },
     {
@@ -587,7 +595,7 @@
       "value": "تمت الإضافة"
     },
     {
-      "key": "packages.status.addedBundle",
+      "key": "packages.status.addedPackageList",
       "value": "تمت إضافة الحزمة المجمّعة “{0}” ({1} حزمة){2} → {3}."
     },
     {
@@ -599,7 +607,7 @@
       "value": "{0} {1}{2} من GitHub."
     },
     {
-      "key": "packages.status.bundleInstallFailed",
+      "key": "packages.status.packageListInstallFailed",
       "value": "فشل تثبيت الحزمة المجمّعة: {0}"
     },
     {
@@ -723,10 +731,6 @@
       "value": "إعادة تحميل القائمة"
     },
     {
-      "key": "unity.button.uninstall",
-      "value": "إلغاء التثبيت"
-    },
-    {
       "key": "unity.header.subtitle",
       "value": "اكتشف محرّرات Unity المثبّتة وثبّت الإصدار الذي يتطلّبه Basis."
     },
@@ -811,28 +815,40 @@
       "value": "يستهدف تثبيت Basis الخاص بك إصدار Unity {0}. ثبّت هذا الإصدار بالتحديد أدناه لفتح نظيف."
     },
     {
-      "key": "unity.status.uninstallError",
-      "value": "خطأ في إلغاء التثبيت: {0}"
-    },
-    {
-      "key": "unity.status.uninstallFailed",
-      "value": "فشل إلغاء التثبيت (رمز الخروج {0})."
-    },
-    {
-      "key": "unity.status.uninstalled",
-      "value": "تم إلغاء تثبيت Unity {0}."
-    },
-    {
-      "key": "unity.status.uninstalling",
-      "value": "جارٍ إلغاء تثبيت Unity {0}..."
-    },
-    {
       "key": "unity.tag.installed",
       "value": "مثبّت"
     },
     {
       "key": "unity.tag.recommended",
       "value": "موصى به"
+    },
+    {
+      "key": "unity.button.installModules",
+      "value": "تثبيت الوحدات"
+    },
+    {
+      "key": "unity.editors.modulesHint",
+      "value": "أضف وحدات دعم البناء إلى هذا المحرر عبر Unity Hub. يتم تخطي الوحدات المثبتة بالفعل."
+    },
+    {
+      "key": "unity.status.installingModules",
+      "value": "جارٍ تثبيت الوحدات لـ Unity {0}…"
+    },
+    {
+      "key": "unity.status.modulesError",
+      "value": "خطأ في تثبيت الوحدات: {0}"
+    },
+    {
+      "key": "unity.status.modulesFailed",
+      "value": "فشل تثبيت الوحدات (رمز الخروج {0})."
+    },
+    {
+      "key": "unity.status.modulesInstalled",
+      "value": "تم تثبيت الوحدات لـ Unity {0}."
+    },
+    {
+      "key": "unity.status.noModulesSelected",
+      "value": "اختر وحدة واحدة على الأقل للتثبيت."
     },
     {
       "key": "develop.auth.cliNotLoggedIn",
@@ -1463,43 +1479,43 @@
       "value": "نعم"
     },
     {
-      "key": "dialog.createBundle.cancel",
+      "key": "dialog.createPackageList.cancel",
       "value": "إلغاء"
     },
     {
-      "key": "dialog.createBundle.create",
+      "key": "dialog.createPackageList.create",
       "value": "إنشاء التقديم"
     },
     {
-      "key": "dialog.createBundle.descriptionLabel",
+      "key": "dialog.createPackageList.descriptionLabel",
       "value": "الوصف"
     },
     {
-      "key": "dialog.createBundle.errorNoName",
+      "key": "dialog.createPackageList.errorNoName",
       "value": "امنح حزمتك المجمّعة اسمًا."
     },
     {
-      "key": "dialog.createBundle.errorNoPackages",
+      "key": "dialog.createPackageList.errorNoPackages",
       "value": "اختر حزمة واحدة على الأقل لتضمينها."
     },
     {
-      "key": "dialog.createBundle.heading",
+      "key": "dialog.createPackageList.heading",
       "value": "إنشاء حزمة مجمّعة"
     },
     {
-      "key": "dialog.createBundle.intro",
+      "key": "dialog.createPackageList.intro",
       "value": "شارِك Basis مع حزمك كحزمة مجمّعة قابلة للتثبيت. يفتح ذلك مشكلة GitHub لإرسالها."
     },
     {
-      "key": "dialog.createBundle.nameLabel",
+      "key": "dialog.createPackageList.nameLabel",
       "value": "الاسم"
     },
     {
-      "key": "dialog.createBundle.packagesLabel",
+      "key": "dialog.createPackageList.packagesLabel",
       "value": "الحزم المراد تضمينها"
     },
     {
-      "key": "dialog.createBundle.title",
+      "key": "dialog.createPackageList.title",
       "value": "إنشاء حزمة مجمّعة"
     },
     {

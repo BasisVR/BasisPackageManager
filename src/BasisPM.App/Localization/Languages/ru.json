@@ -3,6 +3,14 @@
   "nativeName": "Русский",
   "entries": [
     {
+      "key": "packages.version.installed",
+      "value": "Установлено {0}"
+    },
+    {
+      "key": "packages.version.defaultBranch",
+      "value": "ветка по умолчанию"
+    },
+    {
       "key": "nav.changes",
       "value": "Локальные изменения"
     },
@@ -31,7 +39,7 @@
       "value": "Редакторы Unity"
     },
     {
-      "key": "shell.bundle.pickerLabel",
+      "key": "shell.packageList.pickerLabel",
       "value": "{0} ({1} пакетов)"
     },
     {
@@ -63,7 +71,7 @@
       "value": "В какой проект добавить “{0}”?"
     },
     {
-      "key": "shell.status.bundleNotFound",
+      "key": "shell.status.packageListNotFound",
       "value": "Не удалось найти набор “{0}” в реестре."
     },
     {
@@ -107,7 +115,7 @@
       "value": "В ссылке для установки {0} отсутствовал git-URL."
     },
     {
-      "key": "shell.status.loadingBundle",
+      "key": "shell.status.loadingPackageList",
       "value": "Загрузка набора…"
     },
     {
@@ -483,11 +491,11 @@
       "value": "github"
     },
     {
-      "key": "packages.bundle.basisLine",
+      "key": "packages.packageList.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
     {
-      "key": "packages.bundle.unknownCommit",
+      "key": "packages.packageList.unknownCommit",
       "value": "неизвестно"
     },
     {
@@ -499,7 +507,7 @@
       "value": "Выбрать версию…"
     },
     {
-      "key": "packages.button.createBundle",
+      "key": "packages.button.createPackageList",
       "value": "Создать набор"
     },
     {
@@ -587,7 +595,7 @@
       "value": "Добавлено"
     },
     {
-      "key": "packages.status.addedBundle",
+      "key": "packages.status.addedPackageList",
       "value": "Добавлен набор “{0}” ({1} пакет(ов)){2} → {3}."
     },
     {
@@ -599,7 +607,7 @@
       "value": "{0} {1}{2} из GitHub."
     },
     {
-      "key": "packages.status.bundleInstallFailed",
+      "key": "packages.status.packageListInstallFailed",
       "value": "Не удалось установить набор: {0}"
     },
     {
@@ -723,10 +731,6 @@
       "value": "Перезагрузить список"
     },
     {
-      "key": "unity.button.uninstall",
-      "value": "Удалить"
-    },
-    {
       "key": "unity.header.subtitle",
       "value": "Обнаружьте установленные редакторы Unity и установите версию, требуемую Basis."
     },
@@ -811,28 +815,40 @@
       "value": "Ваша установка Basis рассчитана на Unity {0}. Установите именно эту версию ниже для корректного открытия."
     },
     {
-      "key": "unity.status.uninstallError",
-      "value": "Ошибка удаления: {0}"
-    },
-    {
-      "key": "unity.status.uninstallFailed",
-      "value": "Удаление не удалось (код выхода {0})."
-    },
-    {
-      "key": "unity.status.uninstalled",
-      "value": "Unity {0} удалён."
-    },
-    {
-      "key": "unity.status.uninstalling",
-      "value": "Удаление Unity {0}..."
-    },
-    {
       "key": "unity.tag.installed",
       "value": "установлен"
     },
     {
       "key": "unity.tag.recommended",
       "value": "рекомендуется"
+    },
+    {
+      "key": "unity.button.installModules",
+      "value": "Установить модули"
+    },
+    {
+      "key": "unity.editors.modulesHint",
+      "value": "Добавьте модули поддержки сборки в этот редактор через Unity Hub. Уже установленные модули пропускаются."
+    },
+    {
+      "key": "unity.status.installingModules",
+      "value": "Установка модулей для Unity {0}…"
+    },
+    {
+      "key": "unity.status.modulesError",
+      "value": "Ошибка установки модулей: {0}"
+    },
+    {
+      "key": "unity.status.modulesFailed",
+      "value": "Не удалось установить модули (код выхода {0})."
+    },
+    {
+      "key": "unity.status.modulesInstalled",
+      "value": "Модули установлены для Unity {0}."
+    },
+    {
+      "key": "unity.status.noModulesSelected",
+      "value": "Выберите хотя бы один модуль для установки."
     },
     {
       "key": "develop.auth.cliNotLoggedIn",
@@ -1463,43 +1479,43 @@
       "value": "Да"
     },
     {
-      "key": "dialog.createBundle.cancel",
+      "key": "dialog.createPackageList.cancel",
       "value": "Отмена"
     },
     {
-      "key": "dialog.createBundle.create",
+      "key": "dialog.createPackageList.create",
       "value": "Создать заявку"
     },
     {
-      "key": "dialog.createBundle.descriptionLabel",
+      "key": "dialog.createPackageList.descriptionLabel",
       "value": "Описание"
     },
     {
-      "key": "dialog.createBundle.errorNoName",
+      "key": "dialog.createPackageList.errorNoName",
       "value": "Дайте набору имя."
     },
     {
-      "key": "dialog.createBundle.errorNoPackages",
+      "key": "dialog.createPackageList.errorNoPackages",
       "value": "Выберите хотя бы один пакет для включения."
     },
     {
-      "key": "dialog.createBundle.heading",
+      "key": "dialog.createPackageList.heading",
       "value": "Создать набор"
     },
     {
-      "key": "dialog.createBundle.intro",
+      "key": "dialog.createPackageList.intro",
       "value": "Поделитесь своим Basis и пакетами в виде устанавливаемого набора. Для отправки откроется обращение на GitHub."
     },
     {
-      "key": "dialog.createBundle.nameLabel",
+      "key": "dialog.createPackageList.nameLabel",
       "value": "Имя"
     },
     {
-      "key": "dialog.createBundle.packagesLabel",
+      "key": "dialog.createPackageList.packagesLabel",
       "value": "Пакеты для включения"
     },
     {
-      "key": "dialog.createBundle.title",
+      "key": "dialog.createPackageList.title",
       "value": "Создать набор"
     },
     {
