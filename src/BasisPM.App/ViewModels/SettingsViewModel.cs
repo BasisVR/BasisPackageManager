@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using BasisPM.App.Localization;
+using BasisPM.App.Services;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
 
@@ -56,6 +57,7 @@ public sealed class SettingsViewModel : ObservableObject
     public RelayCommand AddCatalogCommand { get; }
     public RelayCommand<CatalogUrlItem> RemoveCatalogCommand { get; }
     public RelayCommand CheckForUpdatesCommand => _shell.CheckForUpdatesCommand;
+    public RelayCommand ResetCommand { get; }
 
     public SettingsViewModel(UserSettingsService settingsService, GitService gitService, UnityHubService hubService, MainWindowViewModel shell, LogsViewModel logs)
     {
@@ -68,6 +70,7 @@ public sealed class SettingsViewModel : ObservableObject
         SaveCommand = new RelayCommand(SaveAsync);
         AddCatalogCommand = new RelayCommand(AddCatalog);
         RemoveCatalogCommand = new RelayCommand<CatalogUrlItem>(item => { if (item is not null) ExtraCatalogs.Remove(item); });
+        ResetCommand = new RelayCommand(ResetAsync);
         _selectedLanguage = FindLanguage(Localizer.Instance.CurrentCode);
         // Re-pull the localized "detected tooling" fallbacks when the language changes.
         Localizer.Instance.LanguageChanged += _ => RefreshDetected();
@@ -132,6 +135,15 @@ public sealed class SettingsViewModel : ObservableObject
         _shell.ApplyPrerelease(settings.PrereleaseUpdates);
         RefreshDetected();
         _shell.SetStatus(L.Tr("settings.status.saved"), StatusKind.Success);
+    }
+
+    // Danger zone: confirm, then hand off to the shell to wipe all app data and return to a first-run state.
+    private async Task ResetAsync()
+    {
+        var confirmed = await Dialogs.ConfirmAsync(
+            L.Tr("settings.reset.dialogTitle"), L.Tr("settings.reset.dialogMessage"));
+        if (!confirmed) return;
+        await _shell.ResetEverythingAsync();
     }
 
     private void AddCatalog()

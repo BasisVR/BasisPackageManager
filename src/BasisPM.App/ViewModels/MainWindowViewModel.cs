@@ -285,14 +285,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public async Task InitializeAsync()
     {
         var settings = await _settingsService.LoadAsync();
-        _catalogUrl = settings.CatalogUrl;
-        _updateService.SetPrerelease(settings.PrereleaseUpdates);
-        SettingsVM.Apply(settings);
-        ShowChangesTab = settings.ShowLocalChanges;
-        ShowDevelopTab = settings.DeveloperMode;
-        PackagesVM.SetInitialGridView(settings.PackagesGridView);
-        await InstallsVM.LoadAsync(settings);
-        await PackagesVM.LoadCatalogAsync(settings.CatalogUrl, settings.ExtraCatalogUrls);
+        await ApplySettingsAsync(settings);
 
         // Handle a launch-time deep link now (active install + packages are ready) — don't wait on the slower Unity refresh.
         if (DeepLinkDispatcher.Pending is { } pending)
@@ -306,6 +299,20 @@ public sealed class MainWindowViewModel : ObservableObject
         _ = CheckForUpdatesAsync(manual: false);
         _ = LoadAnnouncementsAsync();
         _ = RunFirstRunPromptsAsync();
+    }
+
+    // Pushes a settings snapshot into every tab / view-model. Shared by first launch (InitializeAsync)
+    // and the Settings "Reset everything" flow, so both leave the app in exactly the same state.
+    private async Task ApplySettingsAsync(UserSettings settings)
+    {
+        _catalogUrl = settings.CatalogUrl;
+        _updateService.SetPrerelease(settings.PrereleaseUpdates);
+        SettingsVM.Apply(settings);
+        ShowChangesTab = settings.ShowLocalChanges;
+        ShowDevelopTab = settings.DeveloperMode;
+        PackagesVM.SetInitialGridView(settings.PackagesGridView);
+        await InstallsVM.LoadAsync(settings);
+        await PackagesVM.LoadCatalogAsync(settings.CatalogUrl, settings.ExtraCatalogUrls);
     }
 
     // First-run prompts, one after another so two dialogs never open at once.
@@ -391,6 +398,44 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             SetStatus(L.Tr("shell.status.desktopShortcutFailed", ex.Message), StatusKind.Error);
         }
+    }
+
+    /// <summary>
+    /// Wipes every persisted trace of the app — settings, mounted-package records, activity logs and
+    /// crash markers (the whole <c>%AppData%/BasisPM</c> folder) — then reloads defaults and re-runs the
+    /// first-run role wizard, so it behaves like a brand-new install. Basis clones on disk are untouched.
+    /// </summary>
+    public async Task ResetEverythingAsync()
+    {
+        try
+        {
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BasisPM");
+            if (Directory.Exists(dir)) Directory.Delete(dir, recursive: true);
+        }
+        catch (Exception ex)
+        {
+            SetStatus(L.Tr("settings.reset.failed", ex.Message), StatusKind.Error);
+            return;
+        }
+
+        // Recreate what the still-running session relies on, so nothing silently breaks before a restart:
+        // re-arm the crash marker and re-make the log folder that file logging appends into.
+        CrashReporter.ArmSession();
+        try { Directory.CreateDirectory(_log.LogDirectory); } catch { }
+
+        // Reset the live, in-memory state to what a fresh launch would show.
+        LogsVM.ClearCommand.Execute(null);
+        _breadcrumbs.Clear();
+        Localizer.Instance.SetLanguage("en");
+        CurrentPage = NavPage.Installs;
+
+        var settings = await _settingsService.LoadAsync();   // the file is gone → default settings
+        await ApplySettingsAsync(settings);
+
+        SetStatus(L.Tr("settings.reset.done"), StatusKind.Success);
+
+        // Behave like a first launch: offer the role wizard again (CompletedOnboarding is now false).
+        await MaybeRunOnboardingAsync();
     }
 
     /// <summary>Handles a <c>basispm://install?…</c> link: choose a target install and add the git package to it.</summary>

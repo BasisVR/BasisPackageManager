@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "पूरा फंडिंग पेज पढ़ें"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "ख़तरनाक क्षेत्र"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "इस कंप्यूटर पर Basis Package Manager की सभी सेटिंग्स और डेटा मिटाकर इसे पहली बार खोलने जैसी बिल्कुल नई स्थिति में लौटा देता है। आपके असली Basis क्लोन और डिस्क की फ़ाइलों को कुछ नहीं होता।"
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "सब कुछ रीसेट करें"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "Basis Package Manager रीसेट करें?"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "यह आपकी सभी सेटिंग्स और डेटा को स्थायी रूप से मिटा देगा — आपकी प्रोजेक्ट सूची, कैटलॉग URL, प्राथमिकताएँ, भाषा, गतिविधि लॉग और माउंट किए गए पैकेज के रिकॉर्ड — और Basis Package Manager को पहली बार खोलने जैसी बिल्कुल नई स्थिति में लौटा देगा। आपके Basis क्लोन और डिस्क की फ़ाइलें नहीं हटाई जाएँगी। इसे पूर्ववत नहीं किया जा सकता।"
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "सब कुछ रीसेट हो गया — एक नई शुरुआत।"
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "रीसेट नहीं हो सका: {0}"
     }
   ]
 }

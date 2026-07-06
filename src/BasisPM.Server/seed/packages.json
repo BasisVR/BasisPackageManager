@@ -310,5 +310,21 @@
     "license": "MIT",
     "version": "0.5.6",
     "icon": "🌫️"
+  },
+  {
+    "id": "jp.lilxyzw.liltoon",
+    "name": "lilToon",
+    "description": "Feature-rich toon shader.",
+    "author": "lilxyzw",
+    "authorUrl": "https://github.com/lilxyzw",
+    "category": "Shaders",
+    "tags": [ "toon", "shader", "material" ],
+    "source": "community",
+    "gitUrl": "https://github.com/lilxyzw/lilToon.git?path=Assets/lilToon",
+    "repoUrl": "https://github.com/lilxyzw/lilToon",
+    "unity": "2022.3",
+    "license": "MIT",
+    "version": "2.3.4",
+    "icon": "🎨"
   }
 ]

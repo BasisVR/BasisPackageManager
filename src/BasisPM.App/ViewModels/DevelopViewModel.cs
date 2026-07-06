@@ -397,6 +397,11 @@ public sealed class DevelopViewModel : ObservableObject
         if (row is null) return;
         if (!_git.IsAvailable) { _shell.SetStatus(L.Tr("develop.status.gitRequired"), StatusKind.Error); return; }
 
+        // Nothing to PR if the mounted working clone is clean — bail before sign-in, the PR dialog and a
+        // fork, so a stray press on an unedited package doesn't open an empty pull request.
+        var status = await _git.GetStatusAsync(row.FolderPath);
+        if (status.ChangeCount == 0) { _shell.SetStatus(L.Tr("develop.status.noChangesToSubmit", row.Id), StatusKind.Info); return; }
+
         var token = await _auth.GetTokenAsync();
         if (string.IsNullOrEmpty(token)) { _shell.SetStatus(L.Tr("develop.status.signInFirst"), StatusKind.Error); return; }
         var user = await _api.GetUserAsync(token);

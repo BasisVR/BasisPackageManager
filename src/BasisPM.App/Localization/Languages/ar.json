@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "اقرأ صفحة التمويل الكاملة"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "منطقة الخطر"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "يمسح جميع إعدادات وبيانات Basis Package Manager على هذا الكمبيوتر ويعيده إلى حالته الأولى كأنه جديد. لا يتم المساس بنسخ Basis الفعلية أو الملفات الموجودة على القرص."
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "إعادة تعيين كل شيء"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "إعادة تعيين Basis Package Manager؟"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "سيؤدي هذا إلى مسح جميع إعداداتك وبياناتك نهائيًا — قائمة مشاريعك وعناوين URL للكتالوجات والتفضيلات واللغة وسجلات النشاط وسجلات الحزم المُركَّبة — وإعادة Basis Package Manager إلى حالته الأولى كأنه جديد. لن يتم حذف نسخ Basis أو الملفات الموجودة على القرص. لا يمكن التراجع عن هذا الإجراء."
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "تمت إعادة تعيين كل شيء — بداية جديدة."
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "تعذّرت إعادة التعيين: {0}"
     }
   ]
 }

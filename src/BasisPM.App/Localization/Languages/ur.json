@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "مکمل فنڈنگ صفحہ پڑھیں"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "خطرناک زون"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "اس کمپیوٹر پر Basis Package Manager کی تمام ترتیبات اور ڈیٹا مٹا کر اسے پہلی بار کھولنے جیسی بالکل نئی حالت میں واپس لے آتا ہے۔ آپ کے اصل Basis کلونز اور ڈسک پر موجود فائلوں کو کچھ نہیں ہوتا۔"
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "سب کچھ ری سیٹ کریں"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "Basis Package Manager ری سیٹ کریں؟"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "یہ آپ کی تمام ترتیبات اور ڈیٹا کو مستقل طور پر مٹا دے گا — آپ کی پروجیکٹ فہرست، کیٹلاگ URLs، ترجیحات، زبان، سرگرمی کے لاگز اور ماؤنٹ شدہ پیکجز کے ریکارڈ — اور Basis Package Manager کو پہلی بار کھولنے جیسی بالکل نئی حالت میں واپس لے آئے گا۔ آپ کے Basis کلونز اور ڈسک پر موجود فائلیں حذف نہیں ہوں گی۔ اسے واپس نہیں کیا جا سکتا۔"
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "سب کچھ ری سیٹ ہو گیا — ایک نئی شروعات۔"
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "ری سیٹ نہیں ہو سکا: {0}"
     }
   ]
 }

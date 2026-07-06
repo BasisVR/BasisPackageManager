@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "Vollständige Förderseite lesen"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "Gefahrenzone"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "Löscht alle Einstellungen und Daten des Basis Package Manager auf diesem Computer und setzt ihn in einen frischen Erstzustand zurück. Deine eigentlichen Basis-Klone und Dateien auf der Festplatte bleiben unangetastet."
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "Alles zurücksetzen"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "Basis Package Manager zurücksetzen?"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "Dies löscht dauerhaft alle deine Einstellungen und Daten – deine Projektliste, Katalog-URLs, Einstellungen, Sprache, Aktivitätsprotokolle und Einträge zu eingebundenen Paketen – und setzt den Basis Package Manager in einen frischen Erstzustand zurück. Deine Basis-Klone und Dateien auf der Festplatte werden NICHT gelöscht. Dies kann nicht rückgängig gemacht werden."
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "Alles wurde zurückgesetzt – ein frischer Start."
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "Zurücksetzen fehlgeschlagen: {0}"
     }
   ]
 }

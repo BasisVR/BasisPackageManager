@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "Ler a página completa de financiamento"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "Zona de perigo"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "Apaga todas as configurações e dados do Basis Package Manager neste computador e o retorna a um estado inicial, como recém-instalado. Seus clones do Basis e os arquivos no disco não são tocados."
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "Redefinir tudo"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "Redefinir o Basis Package Manager?"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "Isto apaga permanentemente todas as suas configurações e dados — sua lista de projetos, URLs de catálogo, preferências, idioma, registros de atividade e registros de pacotes montados — e retorna o Basis Package Manager a um estado inicial, como recém-instalado. Seus clones do Basis e os arquivos no disco NÃO são excluídos. Isto não pode ser desfeito."
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "Tudo foi redefinido — um novo começo."
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "Não foi possível redefinir: {0}"
     }
   ]
 }

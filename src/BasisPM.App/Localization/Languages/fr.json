@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "Lire la page de financement complète"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "Zone de danger"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "Efface tous les paramètres et données de Basis Package Manager sur cet ordinateur et le rétablit dans son état initial, comme une nouvelle installation. Vos clones Basis et les fichiers sur le disque ne sont pas touchés."
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "Tout réinitialiser"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "Réinitialiser Basis Package Manager ?"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "Cela efface définitivement tous vos paramètres et données — votre liste de projets, les URL de catalogue, les préférences, la langue, les journaux d'activité et les enregistrements de paquets montés — et rétablit Basis Package Manager dans son état initial, comme une nouvelle installation. Vos clones Basis et les fichiers sur le disque ne sont PAS supprimés. Cette action est irréversible."
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "Tout a été réinitialisé — un nouveau départ."
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "Échec de la réinitialisation : {0}"
     }
   ]
 }

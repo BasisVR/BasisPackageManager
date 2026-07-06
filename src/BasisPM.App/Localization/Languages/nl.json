@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "Lees de volledige financieringspagina"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "Gevarenzone"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "Wist alle instellingen en gegevens van Basis Package Manager op deze computer en zet het terug naar een verse begintoestand. Je eigenlijke Basis-klonen en bestanden op schijf blijven ongemoeid."
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "Alles resetten"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "Basis Package Manager resetten?"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "Dit wist permanent al je instellingen en gegevens — je projectlijst, catalogus-URL's, voorkeuren, taal, activiteitenlogboeken en records van gekoppelde pakketten — en zet Basis Package Manager terug naar een verse begintoestand. Je Basis-klonen en bestanden op schijf worden NIET verwijderd. Dit kan niet ongedaan worden gemaakt."
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "Alles is gereset — een frisse start."
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "Resetten mislukt: {0}"
     }
   ]
 }

@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "Читать полную страницу финансирования"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "Опасная зона"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "Удаляет все настройки и данные Basis Package Manager на этом компьютере и возвращает его в исходное состояние, как при первом запуске. Ваши клоны Basis и файлы на диске остаются нетронутыми."
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "Сбросить всё"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "Сбросить Basis Package Manager?"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "Это безвозвратно удалит все ваши настройки и данные — список проектов, URL-адреса каталогов, параметры, язык, журналы активности и записи о подключённых пакетах — и вернёт Basis Package Manager в исходное состояние, как при первом запуске. Ваши клоны Basis и файлы на диске НЕ будут удалены. Это действие нельзя отменить."
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "Всё сброшено — начинаем с чистого листа."
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "Не удалось выполнить сброс: {0}"
     }
   ]
 }

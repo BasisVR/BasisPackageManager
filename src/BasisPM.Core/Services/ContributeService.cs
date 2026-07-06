@@ -42,8 +42,13 @@ public sealed class ContributeService
         await _git.AddAllAsync(folderPath, ct).ConfigureAwait(false);
         onProgress?.Invoke("Committing…");
         var commit = await _git.CommitAsync(folderPath, pr.CommitMessage ?? pr.Title, user.Name ?? user.Login, user.NoReplyEmail, ct).ConfigureAwait(false);
-        if (!commit.Ok && !commit.Output.Contains("nothing to commit", StringComparison.OrdinalIgnoreCase))
+        if (!commit.Ok)
+        {
+            // An empty commit means there was nothing to submit; pushing it would open a PR with no diff.
+            if (commit.Output.Contains("nothing to commit", StringComparison.OrdinalIgnoreCase))
+                return ContributeResult.Fail("No changes to submit — edit the package in Unity first.");
             return ContributeResult.Fail($"Commit failed: {commit.Output}");
+        }
 
         // Push to the upstream if we can, otherwise fork and push there.
         string pushOwner, pushRepo, head;

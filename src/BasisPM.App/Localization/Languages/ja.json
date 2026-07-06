@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "資金支援ページ全文を読む"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "危険な操作"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "このコンピューター上の Basis Package Manager のすべての設定とデータを消去し、初回起動時の状態に戻します。実際の Basis のクローンやディスク上のファイルには影響しません。"
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "すべてリセット"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "Basis Package Manager をリセットしますか？"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "すべての設定とデータ（プロジェクト一覧、カタログ URL、各種設定、言語、アクティビティログ、マウント済みパッケージの記録）を完全に削除し、Basis Package Manager を初回起動時の状態に戻します。Basis のクローンやディスク上のファイルは削除されません。この操作は取り消せません。"
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "すべてリセットされました。新しい状態から始められます。"
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "リセットできませんでした: {0}"
     }
   ]
 }

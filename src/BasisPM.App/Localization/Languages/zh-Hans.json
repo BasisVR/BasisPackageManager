@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "阅读完整的资助页面"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "危险区域"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "清除此计算机上 Basis Package Manager 的所有设置和数据，并将其恢复到首次使用时的全新状态。你实际的 Basis 克隆和磁盘上的文件不会受到影响。"
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "重置所有内容"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "重置 Basis Package Manager？"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "此操作将永久清除你的所有设置和数据（项目列表、目录 URL、偏好设置、语言、活动日志以及已挂载软件包的记录），并将 Basis Package Manager 恢复到首次使用时的全新状态。你的 Basis 克隆和磁盘上的文件不会被删除。此操作无法撤消。"
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "已重置所有内容——全新开始。"
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "无法重置：{0}"
     }
   ]
 }

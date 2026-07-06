@@ -1159,6 +1159,10 @@
       "value": "Mount failed."
     },
     {
+      "key": "develop.status.noChangesToSubmit",
+      "value": "No changes to submit for {0} — edit it in Unity first."
+    },
+    {
       "key": "develop.status.mounted",
       "value": "Mounted {0} into Packages/ — edit it in Unity, then Submit PR."
     },
@@ -1401,6 +1405,34 @@
     {
       "key": "settings.status.saved",
       "value": "Settings saved."
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "Danger zone"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "Erase all Basis Package Manager settings and data on this computer and return it to a fresh, first-time state. Your actual Basis clones and files on disk are not touched."
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "Reset everything"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "Reset Basis Package Manager?"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "This permanently erases all your settings and data — your project list, catalog URLs, preferences, language, activity logs and mounted-package records — and returns Basis Package Manager to a fresh, first-time state. Your Basis clones and files on disk are NOT deleted. This can't be undone."
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "Everything was reset — this is a fresh start."
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "Couldn't reset: {0}"
     },
     {
       "key": "settings.toggle.developer",

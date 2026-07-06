@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "Leggi la pagina di finanziamento completa"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "Zona pericolosa"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "Cancella tutte le impostazioni e i dati di Basis Package Manager su questo computer e lo riporta a uno stato iniziale, come appena installato. I tuoi cloni di Basis e i file su disco non vengono toccati."
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "Reimposta tutto"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "Reimpostare Basis Package Manager?"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "Questa operazione cancella definitivamente tutte le tue impostazioni e i tuoi dati — l'elenco dei progetti, gli URL dei cataloghi, le preferenze, la lingua, i log delle attività e i record dei pacchetti montati — e riporta Basis Package Manager a uno stato iniziale, come appena installato. I tuoi cloni di Basis e i file su disco NON vengono eliminati. L'operazione non può essere annullata."
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "Tutto è stato reimpostato: un nuovo inizio."
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "Impossibile reimpostare: {0}"
     }
   ]
 }

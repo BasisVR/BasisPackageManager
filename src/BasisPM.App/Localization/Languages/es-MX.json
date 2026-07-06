@@ -1753,6 +1753,34 @@
     {
       "key": "community.support.fundingPage",
       "value": "Leer la página completa de financiamiento"
+    },
+    {
+      "key": "settings.reset.title",
+      "value": "Zona de peligro"
+    },
+    {
+      "key": "settings.reset.description",
+      "value": "Borra todas las configuraciones y datos de Basis Package Manager en esta computadora y lo regresa a un estado inicial, como recién instalado. Tus clones de Basis y los archivos en el disco no se tocan."
+    },
+    {
+      "key": "settings.reset.button",
+      "value": "Restablecer todo"
+    },
+    {
+      "key": "settings.reset.dialogTitle",
+      "value": "¿Restablecer Basis Package Manager?"
+    },
+    {
+      "key": "settings.reset.dialogMessage",
+      "value": "Esto borra permanentemente todas tus configuraciones y datos —tu lista de proyectos, URLs de catálogo, preferencias, idioma, registros de actividad y registros de paquetes montados— y regresa Basis Package Manager a un estado inicial, como recién instalado. Tus clones de Basis y los archivos en el disco NO se eliminan. Esto no se puede deshacer."
+    },
+    {
+      "key": "settings.reset.done",
+      "value": "Se restableció todo: un nuevo comienzo."
+    },
+    {
+      "key": "settings.reset.failed",
+      "value": "No se pudo restablecer: {0}"
     }
   ]
 }
