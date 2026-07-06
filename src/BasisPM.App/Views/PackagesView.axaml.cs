@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.VisualTree;
 using BasisPM.App.Localization;
 using BasisPM.App.ViewModels;
@@ -37,16 +38,36 @@ public partial class PackagesView : UserControl
         if (sender is not Control control || control.DataContext is not PackageRow row) return;
         if (DataContext is not PackagesViewModel vm) return;
 
-        var panel = new StackPanel { Spacing = 2, MinWidth = 168 };
-        var flyout = new Flyout { Content = panel };
+        var panel = new StackPanel { Spacing = 2 };
+        var flyout = new Flyout();
 
         panel.Children.Add(MenuButton(L.Tr("packages.button.update"), false, flyout, () => vm.InstallCommand.Execute(row.Entry)));
         if (row.HasGit)
             panel.Children.Add(MenuButton(L.Tr("packages.button.chooseVersion"), false, flyout, () => vm.ChooseVersionCommand.Execute(row.Entry)));
         panel.Children.Add(MenuButton(L.Tr("packages.button.remove"), true, flyout, () => vm.RemoveCommand.Execute(row.Entry)));
 
+        // The Fluent FlyoutPresenter fill is translucent, so draw the menu's own opaque, themed
+        // panel here; the presenter is left chrome-less (see BasisTheme.axaml FlyoutPresenter style).
+        flyout.Content = new Border
+        {
+            Child = panel,
+            MinWidth = 168,
+            Padding = new Thickness(5),
+            CornerRadius = new CornerRadius(12),
+            BorderThickness = new Thickness(1),
+            Background = FindBrush("BasisSurfaceBrush", "#1A1937"),
+            BorderBrush = FindBrush("BasisBorderStrongBrush", "#33FFFFFF"),
+        };
+
         flyout.ShowAt(control);
     }
+
+    // Resolve a themed brush resource, falling back to an opaque literal so the popup is never
+    // see-through even if lookup misses.
+    private IBrush FindBrush(string key, string fallbackHex)
+        => this.TryFindResource(key, out var v) && v is IBrush b
+            ? b
+            : new SolidColorBrush(Color.Parse(fallbackHex));
 
     private static Button MenuButton(string text, bool destructive, Flyout flyout, Action action)
     {

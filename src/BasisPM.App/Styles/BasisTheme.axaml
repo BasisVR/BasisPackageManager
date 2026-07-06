@@ -425,13 +425,15 @@
         <Setter Property="Padding" Value="20,6,20,18"/>
     </Style>
 
-    <!-- Flyout popup (e.g. the package "Manage" menu): a dark panel matching the cards. -->
+    <!-- Flyout popup (the package "Manage" menu — the app's only flyout). The Fluent theme's
+         default FlyoutPresenterBackground is translucent, and overriding Background on a bare-type
+         style doesn't reliably beat the ControlTheme in 11.2.3, so the animated background bled
+         through the menu. Leave the presenter chrome-less; an inner opaque Border built in
+         PackagesView code-behind draws the panel, so the popup is reliably solid. -->
     <Style Selector="FlyoutPresenter">
-        <Setter Property="Background" Value="{StaticResource BasisPanelBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBorderStrongBrush}"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="12"/>
-        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="MinWidth" Value="0"/>
     </Style>
 
