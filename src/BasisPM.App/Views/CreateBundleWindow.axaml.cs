@@ -8,8 +8,11 @@ using BasisPM.Core.Models;
 
 namespace BasisPM.App.Views;
 
-/// <summary>Result of the create-bundle dialog: a name, description, and the chosen packages.</summary>
-public sealed record BundleDraft(string Name, string Description, List<BundlePackage> Packages);
+/// <summary>Where a created bundle goes: a local file the user keeps, or a GitHub submission.</summary>
+public enum BundleDestination { SaveToFile, Submit }
+
+/// <summary>Result of the create-bundle dialog: a name, description, the chosen packages, and where it's headed.</summary>
+public sealed record BundleDraft(string Name, string Description, List<BundlePackage> Packages, BundleDestination Destination);
 
 /// <summary>One selectable candidate package in the create-bundle dialog.</summary>
 public sealed class PackagePick
@@ -48,13 +51,18 @@ public partial class CreateBundleWindow : Window
 
     private void OnCancel(object? sender, RoutedEventArgs e) => Close(null);
 
-    private void OnCreate(object? sender, RoutedEventArgs e)
+    private void OnSaveLocal(object? sender, RoutedEventArgs e) => TryClose(BundleDestination.SaveToFile);
+
+    private void OnSubmit(object? sender, RoutedEventArgs e) => TryClose(BundleDestination.Submit);
+
+    // Validates the form, then closes with the draft bound for the chosen destination.
+    private void TryClose(BundleDestination destination)
     {
         var name = (NameBox.Text ?? "").Trim();
         var chosen = _picks.Where(p => p.Include).Select(p => p.Package).ToList();
         if (string.IsNullOrWhiteSpace(name)) { ShowError(L.Tr("dialog.createBundle.errorNoName")); return; }
         if (chosen.Count == 0) { ShowError(L.Tr("dialog.createBundle.errorNoPackages")); return; }
-        Close(new BundleDraft(name, (DescBox.Text ?? "").Trim(), chosen));
+        Close(new BundleDraft(name, (DescBox.Text ?? "").Trim(), chosen, destination));
     }
 
     private void ShowError(string msg)

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using BasisPM.Core.Models;
 
@@ -18,6 +19,25 @@ public sealed partial class UnityHubService
         "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub",
     };
 
+    /// <summary>
+    /// Well-known Linux Unity Hub locations. The apt/.deb package drops a <c>/usr/bin/unityhub</c>
+    /// wrapper (found via PATH), but the official Linux Hub also ships as an AppImage that isn't on
+    /// PATH — so probe the common AppImage / opt locations too.
+    /// </summary>
+    private static IEnumerable<string> LinuxHubCandidates()
+    {
+        yield return "/usr/bin/unityhub";
+        yield return "/opt/unityhub/unityhub";
+        yield return "/opt/unityhub/UnityHub.AppImage";
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (!string.IsNullOrEmpty(home))
+        {
+            yield return Path.Combine(home, "Applications", "Unity Hub.AppImage");
+            yield return Path.Combine(home, "Applications", "UnityHub.AppImage");
+            yield return Path.Combine(home, ".local", "bin", "unityhub");
+        }
+    }
+
     public string? FindHubPath(string? overridePath = null)
     {
         if (!string.IsNullOrEmpty(overridePath) && File.Exists(overridePath))
@@ -29,7 +49,8 @@ public sealed partial class UnityHubService
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             return MacHubPaths.FirstOrDefault(File.Exists);
 
-        return WhichOnPath("unityhub");
+        // Linux: the PATH wrapper first, then the well-known deb/AppImage locations.
+        return ExecutableFinder.Locate("unityhub") ?? LinuxHubCandidates().FirstOrDefault(File.Exists);
     }
 
     public async Task<IReadOnlyList<InstalledEditor>> ListInstalledAsync(string? hubOverride = null, CancellationToken ct = default)
@@ -59,9 +80,11 @@ public sealed partial class UnityHubService
     {
         var editors = await ListInstalledAsync(hubOverride, ct).ConfigureAwait(false);
         var editor = editors.FirstOrDefault(e => string.Equals(e.Version, unityVersion, StringComparison.OrdinalIgnoreCase));
-        if (editor is null || !File.Exists(editor.Path)) return false;
-        Process.Start(new ProcessStartInfo { FileName = editor.Path, UseShellExecute = false, ArgumentList = { "-projectPath", projectPath } });
-        return true;
+        // editor.Path is an executable on Windows/Linux, but on macOS Hub may report a .app bundle
+        // (a directory) — accept either, and let GuiAppSpec `open` the bundle there.
+        if (editor is null || (!File.Exists(editor.Path) && !Directory.Exists(editor.Path))) return false;
+        var spec = AppLauncher.GuiAppSpec(Platform.Current, editor.Path, new[] { "-projectPath", projectPath });
+        return Process.Start(spec.ToStartInfo()) is not null;
     }
 
     /// <summary>Opens the Unity Hub GUI — the fallback when the matching editor isn't installed. False if Hub isn't found.</summary>
@@ -69,8 +92,10 @@ public sealed partial class UnityHubService
     {
         var hub = FindHubPath(hubOverride);
         if (hub is null) return false;
-        Process.Start(new ProcessStartInfo { FileName = hub, UseShellExecute = true });
-        return true;
+        // FindHubPath returns the executable (on macOS, the inner Mach-O binary). LaunchGuiApp opens it
+        // correctly per-OS: on macOS it `open`s the enclosing .app rather than the inner binary (which
+        // UseShellExecute=true would hand to `open` and silently fail).
+        return AppLauncher.LaunchGuiApp(hub);
     }
 
     public async Task<int> InstallEditorAsync(string version, string changeset, IEnumerable<string>? modules, string? hubOverride = null, CancellationToken ct = default)
@@ -143,6 +168,8 @@ public sealed partial class UnityHubService
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             CreateNoWindow = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8,
         };
         foreach (var a in args) psi.ArgumentList.Add(a);
 
@@ -151,22 +178,6 @@ public sealed partial class UnityHubService
         var stderrTask = p.StandardError.ReadToEndAsync(ct);
         await p.WaitForExitAsync(ct).ConfigureAwait(false);
         return (p.ExitCode, await stdoutTask, await stderrTask);
-    }
-
-    private static string? WhichOnPath(string exe)
-    {
-        var path = Environment.GetEnvironmentVariable("PATH");
-        if (path is null) return null;
-        foreach (var dir in path.Split(Path.PathSeparator))
-        {
-            try
-            {
-                var candidate = Path.Combine(dir, exe);
-                if (File.Exists(candidate)) return candidate;
-            }
-            catch { }
-        }
-        return null;
     }
 
     [GeneratedRegex(@"^(?<ver>\S+)\s*(?:\((?<arch>[^)]+)\))?\s*,?\s*installed at\s+(?<path>.+)$")]

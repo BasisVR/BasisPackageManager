@@ -15,9 +15,9 @@
                 <Grid ColumnDefinitions="*,Auto">
                     <StackPanel Grid.Column="0" Spacing="6">
                         <TextBlock Text="{loc:Tr unity.header.tagline}" Classes="tagline"/>
-                        <TextBlock Text="{loc:Tr unity.header.title}" Classes="h1"/>
+                        <TextBlock Text="{loc:Tr unity.header.title}" Classes="h1" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr unity.header.subtitle}"
-                                   Classes="muted" FontSize="14"/>
+                                   Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                     </StackPanel>
                     <Button Grid.Column="1" Classes="iconBtn" Command="{Binding RefreshCommand}" ToolTip.Tip="{loc:Tr unity.button.refresh}">
                         <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
@@ -26,7 +26,7 @@
             </Border>
 
             <Border Classes="card" Padding="20,16">
-                <TextBlock Text="{Binding HubStatus}" Classes="muted"/>
+                <TextBlock Text="{Binding HubStatus}" Classes="muted" TextWrapping="Wrap"/>
             </Border>
 
             <Border CornerRadius="12" Padding="20,14" Background="{StaticResource BasisSurfaceHoverBrush}"

@@ -63,6 +63,12 @@
 
             <SolidColorBrush x:Key="BasisAccentBrush" Color="{StaticResource BasisBrand}"/>
 
+            <!-- Monospace stack for code / logs / git URLs / diffs. Avalonia doesn't resolve the CSS
+                 generic "monospace", so real family names for all three desktop OSes are listed: Windows
+                 (Cascadia/Consolas), macOS (Menlo/Monaco), Linux (DejaVu/Liberation/Ubuntu/Noto). Without
+                 this, those fields fall back to the proportional UI font on Linux. -->
+            <FontFamily x:Key="MonoFontFamily">Cascadia Mono, Cascadia Code, Consolas, Menlo, Monaco, DejaVu Sans Mono, Liberation Mono, Ubuntu Mono, Noto Sans Mono, Courier New, monospace</FontFamily>
+
             <LinearGradientBrush x:Key="BasisAnimatedGradient" StartPoint="100%,0%" EndPoint="0%,100%">
                 <GradientStop Offset="0" Color="#EF1237"/>
                 <GradientStop Offset="0.33" Color="#9333EA"/>

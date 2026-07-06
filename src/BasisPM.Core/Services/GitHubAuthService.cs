@@ -28,7 +28,7 @@ public sealed class GitHubAuthService
     public string? FindGh()
     {
         if (_cachedGh is not null && File.Exists(_cachedGh)) return _cachedGh;
-        var onPath = WhichOnPath(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "gh.exe" : "gh");
+        var onPath = ExecutableFinder.Locate("gh");
         if (onPath is not null) return _cachedGh = onPath;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
@@ -65,6 +65,8 @@ public sealed class GitHubAuthService
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             CreateNoWindow = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8,
         };
         foreach (var a in args) psi.ArgumentList.Add(a);
 
@@ -82,17 +84,5 @@ public sealed class GitHubAuthService
             return (p.ExitCode, so.ToString(), se.ToString());
         }
         catch (Exception ex) { return (-1, "", ex.Message); }
-    }
-
-    private static string? WhichOnPath(string exe)
-    {
-        var path = Environment.GetEnvironmentVariable("PATH");
-        if (path is null) return null;
-        foreach (var dir in path.Split(Path.PathSeparator))
-        {
-            try { var candidate = Path.Combine(dir, exe); if (File.Exists(candidate)) return candidate; }
-            catch { }
-        }
-        return null;
     }
 }

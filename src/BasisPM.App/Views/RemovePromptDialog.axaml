@@ -15,7 +15,7 @@
              see precisely what's at stake before choosing the destructive option. -->
         <Border Background="{StaticResource BasisPanelBrush}" BorderBrush="{StaticResource BasisBorderBrush}"
                 BorderThickness="1" CornerRadius="6" Padding="12,8">
-            <TextBlock x:Name="PathText" FontFamily="Cascadia Mono,Consolas,monospace" FontSize="12"
+            <TextBlock x:Name="PathText" FontFamily="{StaticResource MonoFontFamily}" FontSize="12"
                        Classes="muted" TextWrapping="Wrap"/>
         </Border>
 

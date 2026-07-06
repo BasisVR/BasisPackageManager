@@ -20,7 +20,7 @@ public sealed class GitService
     {
         if (_cachedGit is not null && File.Exists(_cachedGit)) return _cachedGit;
 
-        var onPath = WhichOnPath(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "git.exe" : "git");
+        var onPath = ExecutableFinder.Locate("git");
         if (onPath is not null) return _cachedGit = onPath;
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -297,6 +297,8 @@ public sealed class GitService
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             CreateNoWindow = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8,
         };
         if (!string.IsNullOrEmpty(workingDir)) psi.WorkingDirectory = workingDir;
         foreach (var a in args) psi.ArgumentList.Add(a);
@@ -321,21 +323,5 @@ public sealed class GitService
         p.BeginErrorReadLine();
         await p.WaitForExitAsync(ct).ConfigureAwait(false);
         return (p.ExitCode, stdout.ToString(), stderr.ToString());
-    }
-
-    private static string? WhichOnPath(string exe)
-    {
-        var path = Environment.GetEnvironmentVariable("PATH");
-        if (path is null) return null;
-        foreach (var dir in path.Split(Path.PathSeparator))
-        {
-            try
-            {
-                var candidate = Path.Combine(dir, exe);
-                if (File.Exists(candidate)) return candidate;
-            }
-            catch { }
-        }
-        return null;
     }
 }

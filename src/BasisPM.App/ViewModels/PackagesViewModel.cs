@@ -95,6 +95,7 @@ public sealed class PackagesViewModel : ObservableObject
     public RelayCommand RefreshCommand { get; }
     public RelayCommand AddFromGitHubCommand { get; }
     public RelayCommand CreateBundleCommand { get; }
+    public RelayCommand InstallBundleFromFileCommand { get; }
     public RelayCommand<CatalogPackageVersion> ChooseVersionCommand { get; }
     public RelayCommand ToggleLayoutCommand { get; }
     public RelayCommand<string> OpenLinkCommand { get; }
@@ -114,6 +115,7 @@ public sealed class PackagesViewModel : ObservableObject
         RefreshCommand = new RelayCommand(RefreshAsync);
         AddFromGitHubCommand = new RelayCommand(AddFromGitHubAsync);
         CreateBundleCommand = new RelayCommand(CreateBundleAsync);
+        InstallBundleFromFileCommand = new RelayCommand(InstallBundleFromFileAsync);
         ChooseVersionCommand = new RelayCommand<CatalogPackageVersion>(ChooseVersionAsync);
         ToggleLayoutCommand = new RelayCommand(() => IsGridView = !IsGridView);
         OpenLinkCommand = new RelayCommand<string>(url => { if (!string.IsNullOrWhiteSpace(url)) ExternalLink.Open(url!); });
@@ -594,12 +596,53 @@ public sealed class PackagesViewModel : ObservableObject
             WriteIndented = true,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         });
+
+        // Local: write the bundle JSON to a file the user keeps — no submission.
+        if (draft.Destination == BundleDestination.SaveToFile)
+        {
+            var savedPath = await Dialogs.SaveBundleFileAsync(bundle.Id, json);
+            if (savedPath is not null)
+                _shell.SetStatus(L.Tr("packages.status.bundleSaved", draft.Name, draft.Packages.Count, savedPath), StatusKind.Success);
+            return;
+        }
+
         var body = "### Bundle submission\n\nAdd this entry to `src/BasisPM.Server/seed/bundles.json`:\n\n```json\n" + json + "\n```\n";
         var url = "https://github.com/BasisVR/BasisPackageManager/issues/new?labels=bundle-submission"
                 + "&title=" + Uri.EscapeDataString("Add bundle: " + draft.Name)
                 + "&body=" + Uri.EscapeDataString(body);
         OpenUrl(url);
         _shell.SetStatus(L.Tr("packages.status.openingIssue", draft.Name, draft.Packages.Count), StatusKind.Success);
+    }
+
+    /// <summary>Reads a local bundle file (as saved by "Save to file") and installs its packages into a chosen project.</summary>
+    private async Task InstallBundleFromFileAsync()
+    {
+        var path = await Dialogs.OpenBundleFileAsync();
+        if (string.IsNullOrEmpty(path)) return;
+
+        Bundle? bundle;
+        try
+        {
+            var json = await File.ReadAllTextAsync(path);
+            bundle = JsonSerializer.Deserialize<Bundle>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        catch (Exception ex)
+        {
+            _shell.SetStatus(L.Tr("packages.status.bundleFileInvalid", ex.Message), StatusKind.Error);
+            return;
+        }
+
+        if (bundle is null || bundle.Packages.Count == 0)
+        {
+            _shell.SetStatus(L.Tr("packages.status.bundleFileEmpty"), StatusKind.Error);
+            return;
+        }
+
+        var target = await _shell.ChooseInstallTargetAsync(L.Tr("shell.bundle.pickerLabel", bundle.Name, bundle.Packages.Count));
+        if (target is null) return;
+
+        _shell.SetActiveInstall(target);
+        await AddBundleAsync(bundle, target);
     }
 
     /// <summary>Adds every package in a bundle to the target project's manifest (used by the bundle deep link).</summary>

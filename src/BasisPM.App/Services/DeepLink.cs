@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace BasisPM.App.Services;
 
@@ -61,16 +60,25 @@ public static class DeepLink
     }
 
     /// <summary>
-    /// Registers the <c>basispm://</c> scheme so the OS routes links to this app.
-    /// Only for installed (Velopack) Windows builds — dev runs are tested by launching
-    /// the exe with the URI argument directly.
+    /// Registers the <c>basispm://</c> scheme so the OS routes links to this app. Only for installed
+    /// (Velopack) builds — dev runs are tested by launching the exe with the URI argument directly.
+    /// Windows writes the HKCU class; Linux writes an XDG <c>.desktop</c> handler; macOS declares the
+    /// scheme via <c>CFBundleURLTypes</c> in the app bundle's Info.plist at packaging time (LaunchServices
+    /// reads it on install), so there is nothing to register at runtime there.
     /// </summary>
     public static void RegisterProtocolIfPackaged(bool isPackaged)
     {
-        if (!isPackaged || !RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+        if (!isPackaged) return;
         var exe = Environment.ProcessPath;
         if (string.IsNullOrEmpty(exe)) return;
 
+        if (OperatingSystem.IsWindows()) RegisterWindows(exe);
+        else if (OperatingSystem.IsLinux()) RegisterLinux(exe);
+        // macOS handled at packaging time (Info.plist), see summary.
+    }
+
+    private static void RegisterWindows(string exe)
+    {
         var root = $@"HKCU\Software\Classes\{Scheme}";
         try
         {
@@ -89,5 +97,45 @@ public static class DeepLink
         foreach (var r in rest) psi.ArgumentList.Add(r);
         psi.ArgumentList.Add("/f");
         Process.Start(psi)?.WaitForExit(3000);
+    }
+
+    /// <summary>The XDG desktop-entry filename that owns the scheme (also the id passed to xdg-mime).</summary>
+    public const string LinuxDesktopFile = "basispm-url-handler.desktop";
+
+    /// <summary>The <c>.desktop</c> file body registering this app as the handler for <c>basispm://</c>. Pure, so it's testable.</summary>
+    public static string LinuxDesktopEntry(string exe) =>
+        "[Desktop Entry]\n" +
+        "Type=Application\n" +
+        "Name=Basis Package Manager\n" +
+        $"Exec=\"{exe}\" %u\n" +
+        "NoDisplay=true\n" +
+        "StartupNotify=false\n" +
+        "Terminal=false\n" +
+        $"MimeType=x-scheme-handler/{Scheme};\n";
+
+    private static void RegisterLinux(string exe)
+    {
+        try
+        {
+            var appsDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "applications");
+            Directory.CreateDirectory(appsDir);
+            File.WriteAllText(Path.Combine(appsDir, LinuxDesktopFile), LinuxDesktopEntry(exe));
+            // Make this desktop entry the default handler for the scheme, then refresh the DB (both best-effort).
+            RunQuiet("xdg-mime", "default", LinuxDesktopFile, $"x-scheme-handler/{Scheme}");
+            RunQuiet("update-desktop-database", appsDir);
+        }
+        catch { /* best effort — deep links simply won't route until next successful run */ }
+    }
+
+    private static void RunQuiet(string exe, params string[] args)
+    {
+        try
+        {
+            var psi = new ProcessStartInfo(exe) { UseShellExecute = false, CreateNoWindow = true };
+            foreach (var a in args) psi.ArgumentList.Add(a);
+            Process.Start(psi)?.WaitForExit(3000);
+        }
+        catch { }
     }
 }

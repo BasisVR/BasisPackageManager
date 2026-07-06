@@ -73,9 +73,9 @@
                 <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                     <StackPanel Grid.Column="0" Spacing="6">
                         <TextBlock Text="{loc:Tr packages.hero.tagline}" Classes="tagline"/>
-                        <TextBlock Text="{loc:Tr packages.hero.title}" Classes="h1"/>
+                        <TextBlock Text="{loc:Tr packages.hero.title}" Classes="h1" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr packages.hero.subtitle}"
-                                   Classes="muted" FontSize="14"/>
+                                   Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                         <StackPanel Spacing="4" IsVisible="{Binding HasInstalls}">
@@ -97,6 +97,11 @@
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr packages.button.createBundle}" VerticalAlignment="Center"/>
                             </StackPanel>
+                        </Button>
+                        <Button Classes="iconBtn" Command="{Binding InstallBundleFromFileCommand}" VerticalAlignment="Bottom"
+                                IsVisible="{Binding HasInstalls}"
+                                ToolTip.Tip="{loc:Tr packages.button.installBundleFile}">
+                            <PathIcon Width="16" Height="16" Data="{StaticResource IconFolderOpen}"/>
                         </Button>
                         <Button Classes="iconBtn" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom"
                                 ToolTip.Tip="{loc:Tr packages.button.refresh}">
@@ -159,7 +164,12 @@
                                                     </StackPanel>
                                                     <TextBlock Text="{Binding Name}" Classes="dim" FontSize="11"/>
                                                     <TextBlock Text="{Binding Description}" Classes="muted" FontSize="12" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
-                                                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                                                    <WrapPanel Margin="0,4,0,0">
+                                                        <WrapPanel.Styles>
+                                                            <Style Selector="WrapPanel > Border, WrapPanel > TextBlock, WrapPanel > Button">
+                                                                <Setter Property="Margin" Value="0,0,8,4"/>
+                                                            </Style>
+                                                        </WrapPanel.Styles>
                                                         <Border Classes="versionPill" VerticalAlignment="Center">
                                                             <TextBlock Text="{Binding Version}" FontSize="11" Classes="brand"/>
                                                         </Border>
@@ -178,7 +188,7 @@
                                                                 CommandParameter="{Binding Link}">
                                                             <PathIcon Width="14" Height="14" Data="{StaticResource IconOpenExternal}"/>
                                                         </Button>
-                                                    </StackPanel>
+                                                    </WrapPanel>
                                                 </StackPanel>
                                                 <ContentControl Grid.Column="2" Width="160" VerticalAlignment="Center"
                                                                 Content="{Binding}" ContentTemplate="{StaticResource PackageActions}"/>
@@ -370,7 +380,7 @@
                     <StackPanel Spacing="6" IsVisible="{Binding HasGitUrl}">
                         <TextBlock Text="{loc:Tr packages.detail.gitUrl}" Classes="dim" FontSize="11" FontWeight="Bold"/>
                         <Border Classes="glass" Padding="10,8" CornerRadius="8">
-                            <TextBlock Text="{Binding GitUrl}" FontFamily="Cascadia Mono,Consolas,monospace" FontSize="11" Classes="muted" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding GitUrl}" FontFamily="{StaticResource MonoFontFamily}" FontSize="11" Classes="muted" TextWrapping="Wrap"/>
                         </Border>
                     </StackPanel>
 

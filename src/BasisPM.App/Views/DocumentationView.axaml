@@ -13,7 +13,7 @@
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
                 <StackPanel Spacing="10">
                     <TextBlock Text="{loc:Tr docs.hero.tagline}" Classes="tagline"/>
-                    <TextBlock Text="{loc:Tr docs.hero.title}" Classes="h1"/>
+                    <TextBlock Text="{loc:Tr docs.hero.title}" Classes="h1" TextWrapping="Wrap"/>
                     <TextBlock Text="{loc:Tr docs.hero.subtitle}"
                                Classes="muted" FontSize="14" TextWrapping="Wrap" MaxWidth="660" HorizontalAlignment="Left"/>
                     <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
@@ -36,7 +36,7 @@
             <Grid ColumnDefinitions="*,*">
                 <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="{loc:Tr docs.site.title}" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr docs.site.title}" Classes="h3" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr docs.site.body}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                         <Button Command="{Binding DocsCommand}" HorizontalAlignment="Left">
@@ -49,7 +49,7 @@
                 </Border>
                 <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="{loc:Tr docs.community.title}" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr docs.community.title}" Classes="h3" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr docs.community.body}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                         <Button Command="{Binding DiscordCommand}" HorizontalAlignment="Left">
@@ -64,7 +64,7 @@
 
             <Border Classes="card">
                 <StackPanel Spacing="10">
-                    <TextBlock Text="{loc:Tr docs.source.title}" Classes="h3"/>
+                    <TextBlock Text="{loc:Tr docs.source.title}" Classes="h3" TextWrapping="Wrap"/>
                     <TextBlock Text="{loc:Tr docs.source.body}"
                                Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                     <StackPanel Orientation="Horizontal" Spacing="12">

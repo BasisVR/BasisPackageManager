@@ -14,7 +14,7 @@
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
                 <StackPanel Spacing="10">
                     <TextBlock Text="{loc:Tr community.hero.tagline}" Classes="tagline"/>
-                    <TextBlock Text="{loc:Tr community.hero.title}" Classes="h1"/>
+                    <TextBlock Text="{loc:Tr community.hero.title}" Classes="h1" TextWrapping="Wrap"/>
                     <TextBlock Text="{loc:Tr community.hero.subtitle}"
                                Classes="muted" FontSize="14" TextWrapping="Wrap" MaxWidth="660" HorizontalAlignment="Left"/>
                     <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
@@ -64,7 +64,7 @@
                                     <TextBlock Text="{Binding DateDisplay}" Classes="dim" FontSize="12"
                                                VerticalAlignment="Center" IsVisible="{Binding HasDate}"/>
                                 </StackPanel>
-                                <TextBlock Text="{Binding Title}" Classes="h3" FontSize="17"/>
+                                <TextBlock Text="{Binding Title}" Classes="h3" FontSize="17" TextWrapping="Wrap"/>
                                 <TextBlock Text="{Binding Body}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                                 <Button Content="{Binding LinkText}" HorizontalAlignment="Left"
                                         IsVisible="{Binding HasLink}"
@@ -88,7 +88,7 @@
             <Grid ColumnDefinitions="*,*">
                 <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="{loc:Tr community.docs.siteTitle}" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr community.docs.siteTitle}" Classes="h3" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr community.docs.siteBody}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                         <Button Command="{Binding Documentation.DocsCommand}" HorizontalAlignment="Left">
@@ -101,7 +101,7 @@
                 </Border>
                 <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="{loc:Tr community.docs.askTitle}" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr community.docs.askTitle}" Classes="h3" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr community.docs.askBody}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                         <Button Command="{Binding Documentation.DiscordCommand}" HorizontalAlignment="Left">
@@ -115,7 +115,7 @@
             </Grid>
             <Border Classes="card">
                 <StackPanel Spacing="10">
-                    <TextBlock Text="{loc:Tr community.docs.sourceTitle}" Classes="h3"/>
+                    <TextBlock Text="{loc:Tr community.docs.sourceTitle}" Classes="h3" TextWrapping="Wrap"/>
                     <TextBlock Text="{loc:Tr community.docs.sourceBody}"
                                Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                     <StackPanel Orientation="Horizontal" Spacing="12">
@@ -156,7 +156,7 @@
             <Grid ColumnDefinitions="*,*">
                 <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="{loc:Tr community.support.donationsTitle}" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr community.support.donationsTitle}" Classes="h3" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr community.support.donationsBody}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                         <Button Command="{Binding Support.OpenCollectiveCommand}" HorizontalAlignment="Left">
@@ -169,7 +169,7 @@
                 </Border>
                 <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="{loc:Tr community.support.collabTitle}" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr community.support.collabTitle}" Classes="h3" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr community.support.collabBody}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                         <Button Command="{Binding Support.FundingPageCommand}" HorizontalAlignment="Left">
@@ -183,7 +183,7 @@
             </Grid>
             <Border Classes="card">
                 <StackPanel Spacing="10">
-                    <TextBlock Text="{loc:Tr community.support.moneyTitle}" Classes="h3"/>
+                    <TextBlock Text="{loc:Tr community.support.moneyTitle}" Classes="h3" TextWrapping="Wrap"/>
                     <TextBlock Text="{loc:Tr community.support.moneyBody}"
                                Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                     <Button Command="{Binding Support.FundingPageCommand}" HorizontalAlignment="Left">

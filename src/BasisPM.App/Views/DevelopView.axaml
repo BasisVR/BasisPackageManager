@@ -14,7 +14,7 @@
                 <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                     <StackPanel Grid.Column="0" Spacing="6">
                         <TextBlock Text="{loc:Tr develop.header.tagline}" Classes="tagline"/>
-                        <TextBlock Text="{Binding InstallName}" Classes="h1"/>
+                        <TextBlock Text="{Binding InstallName}" Classes="h1" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr develop.header.description}"
                                    Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                     </StackPanel>
@@ -28,7 +28,8 @@
                 <StackPanel Spacing="10" HorizontalAlignment="Center" Margin="0,50">
                     <TextBlock Text="{loc:Tr develop.empty.title}" Classes="h3" HorizontalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr develop.empty.description}"
-                               Classes="muted" HorizontalAlignment="Center"/>
+                               Classes="muted" HorizontalAlignment="Center" TextAlignment="Center"
+                               MaxWidth="480" TextWrapping="Wrap"/>
                 </StackPanel>
             </Border>
 
@@ -40,7 +41,12 @@
                         <TextBlock Text="{loc:Tr develop.git.requiredTitle}" Classes="h3"/>
                         <TextBlock Text="{loc:Tr develop.git.requiredDescription}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>
-                        <StackPanel Orientation="Horizontal" Spacing="10">
+                        <WrapPanel>
+                            <WrapPanel.Styles>
+                                <Style Selector="WrapPanel > Border, WrapPanel > TextBlock, WrapPanel > Button">
+                                    <Setter Property="Margin" Value="0,0,10,10"/>
+                                </Style>
+                            </WrapPanel.Styles>
                             <Button Classes="primary" Command="{Binding InstallGitCommand}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
@@ -50,7 +56,7 @@
                             <Button Classes="iconBtn" Command="{Binding RecheckCommand}" ToolTip.Tip="{loc:Tr develop.button.recheck}">
                                 <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
                             </Button>
-                        </StackPanel>
+                        </WrapPanel>
                     </StackPanel>
                 </Border>
 
@@ -188,12 +194,17 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="vm:MountedRow">
                                     <Border Padding="20,14" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                                        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                                            <StackPanel Grid.Column="0" Spacing="3" ClipToBounds="True">
+                                        <StackPanel Spacing="14">
+                                            <StackPanel Spacing="3">
                                                 <TextBlock Text="{Binding Id}" FontWeight="SemiBold"/>
                                                 <TextBlock Text="{Binding FolderPath}" Classes="dim" FontSize="11" TextTrimming="CharacterEllipsis"/>
                                             </StackPanel>
-                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <WrapPanel>
+                                                <WrapPanel.Styles>
+                                                    <Style Selector="WrapPanel > Border, WrapPanel > TextBlock, WrapPanel > Button">
+                                                        <Setter Property="Margin" Value="0,0,8,8"/>
+                                                    </Style>
+                                                </WrapPanel.Styles>
                                                 <Button Command="{Binding #Root.((vm:DevelopViewModel)DataContext).OpenInUnityCommand}"
                                                         CommandParameter="{Binding}">
                                                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -216,8 +227,8 @@
                                                         <TextBlock Text="{loc:Tr develop.button.submitPr}" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                 </Button>
-                                            </StackPanel>
-                                        </Grid>
+                                            </WrapPanel>
+                                        </StackPanel>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

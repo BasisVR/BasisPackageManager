@@ -567,6 +567,10 @@
       "value": "Grid view"
     },
     {
+      "key": "packages.button.installBundleFile",
+      "value": "Install bundle from file…"
+    },
+    {
       "key": "packages.button.install",
       "value": "Install"
     },
@@ -671,6 +675,14 @@
       "value": "Project"
     },
     {
+      "key": "packages.picker.openBundle",
+      "value": "Open bundle file"
+    },
+    {
+      "key": "packages.picker.saveBundle",
+      "value": "Save bundle"
+    },
+    {
       "key": "packages.recommended.name",
       "value": "Basis Recommended"
     },
@@ -691,8 +703,20 @@
       "value": "{0} {1}{2} from GitHub."
     },
     {
+      "key": "packages.status.bundleFileEmpty",
+      "value": "That bundle file has no packages."
+    },
+    {
+      "key": "packages.status.bundleFileInvalid",
+      "value": "That file isn’t a valid bundle: {0}"
+    },
+    {
       "key": "packages.status.bundleInstallFailed",
       "value": "Bundle install failed: {0}"
+    },
+    {
+      "key": "packages.status.bundleSaved",
+      "value": "Saved bundle “{0}” ({1} package(s)) → {2}"
     },
     {
       "key": "packages.status.chooseProject",
@@ -1672,7 +1696,7 @@
     },
     {
       "key": "dialog.createBundle.create",
-      "value": "Create submission"
+      "value": "Submit"
     },
     {
       "key": "dialog.createBundle.descriptionLabel",
@@ -1692,7 +1716,7 @@
     },
     {
       "key": "dialog.createBundle.intro",
-      "value": "Share your Basis + packages as an installable bundle. It opens a GitHub issue to submit."
+      "value": "Bundle your Basis + packages. Save it to a file to keep or share locally, or submit it to the public registry."
     },
     {
       "key": "dialog.createBundle.nameLabel",
@@ -1701,6 +1725,10 @@
     {
       "key": "dialog.createBundle.packagesLabel",
       "value": "Packages to include"
+    },
+    {
+      "key": "dialog.createBundle.saveLocal",
+      "value": "Save to file"
     },
     {
       "key": "dialog.createBundle.title",

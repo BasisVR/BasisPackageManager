@@ -39,8 +39,10 @@ public sealed class MountRegistry
         catch { }
     }
 
+    // InstallPath is a filesystem path, so compare it case-sensitively on Linux (case-sensitive FS)
+    // and case-insensitively on Windows/macOS. PackageId is a UPM id (case-insensitive by convention).
     private static bool Same(MountRecord r, string installPath, string packageId) =>
-        string.Equals(r.InstallPath, installPath, StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(r.InstallPath, installPath, Platform.PathComparison()) &&
         string.Equals(r.PackageId, packageId, StringComparison.OrdinalIgnoreCase);
 
     public MountRecord? Find(string installPath, string packageId)
@@ -51,7 +53,7 @@ public sealed class MountRegistry
     public IReadOnlyList<MountRecord> ForInstall(string installPath)
     {
         lock (_gate)
-            return Load().Where(r => string.Equals(r.InstallPath, installPath, StringComparison.OrdinalIgnoreCase)).ToList();
+            return Load().Where(r => string.Equals(r.InstallPath, installPath, Platform.PathComparison())).ToList();
     }
 
     public void Add(MountRecord record)
