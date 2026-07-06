@@ -252,7 +252,9 @@ public sealed class DevelopViewModel : ObservableObject
         if (rows.Count == 0) return;
 
         IsBusy = true;
-        int ok = 0, skipped = 0, failed = 0;
+        int ok = 0;
+        var skippedIds = new List<string>();
+        var failedItems = new List<string>();
         try
         {
             foreach (var row in rows)
@@ -260,14 +262,38 @@ public sealed class DevelopViewModel : ObservableObject
                 _shell.SetStatus(L.Tr("develop.status.mounting", row.Id));
                 var result = await _mount.MountAsync(_install, row.Id, row.GitUrl, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
                 if (result.Ok) ok++;
-                else if (result.Error is not null && result.Error.Contains("already exists", StringComparison.OrdinalIgnoreCase)) skipped++;
-                else failed++;
+                else if (result.Error is not null && result.Error.Contains("already exists", StringComparison.OrdinalIgnoreCase)) skippedIds.Add(row.Id);
+                else failedItems.Add(FormatMountFailure(row.Id, result.Error));
             }
             Refresh();
-            _shell.SetStatus(L.Tr("develop.status.mountedAll", ok, skipped, failed), failed > 0 ? StatusKind.Error : StatusKind.Success);
+
+            // Name the packages that skipped/failed — a bare count leaves the user unable to tell which
+            // package to look at (the "1 failed" report that didn't say which one).
+            var summary = L.Tr("develop.status.mountedAllCount", ok);
+            if (skippedIds.Count > 0)
+                summary += " " + L.Tr("develop.status.mountedAllSkipped", skippedIds.Count, string.Join(", ", skippedIds));
+            if (failedItems.Count > 0)
+                summary += " " + L.Tr("develop.status.mountedAllFailed", failedItems.Count, string.Join("; ", failedItems));
+            _shell.SetStatus(summary, failedItems.Count > 0 ? StatusKind.Error : StatusKind.Success);
         }
         catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.mountError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
+    }
+
+    // Package id plus a short, single-line reason, so the mount-all summary says which package failed
+    // and why without dumping git's full multi-line output into the status bar.
+    private static string FormatMountFailure(string id, string? error)
+    {
+        if (string.IsNullOrWhiteSpace(error)) return id;
+        var lines = error.Split('\n', '\r').Select(l => l.Trim()).Where(l => l.Length > 0).ToList();
+        if (lines.Count == 0) return id;
+        // Git prints "Cloning into '…'" progress before the real error, so prefer a fatal/error line;
+        // otherwise the last line (git's final message), which beats the leading progress line.
+        var line = lines.FirstOrDefault(l => l.Contains("fatal:", StringComparison.OrdinalIgnoreCase)
+                                          || l.Contains("error:", StringComparison.OrdinalIgnoreCase))
+                   ?? lines[^1];
+        if (line.Length > 140) line = line[..140].TrimEnd() + "…";
+        return $"{id} ({line})";
     }
 
     // Scan the project's git packages for accidental edits made directly in Library/PackageCache.

@@ -13,7 +13,7 @@
         <DataTemplate x:Key="PackageActions" DataType="vm:PackageRow">
             <StackPanel Spacing="8">
                 <Button Classes="primary" HorizontalAlignment="Stretch"
-                        IsVisible="{Binding !IsInstalled}"
+                        IsVisible="{Binding IsAvailableToInstall}"
                         Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                         CommandParameter="{Binding Entry}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -22,12 +22,22 @@
                     </StackPanel>
                 </Button>
                 <Button Classes="secondary" HorizontalAlignment="Stretch"
-                        IsVisible="{Binding IsInstalled}" Click="OnManageClick">
+                        IsVisible="{Binding IsManageable}" Click="OnManageClick">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon Classes="leadingIcon" Data="{StaticResource IconSettings}" VerticalAlignment="Center"/>
                         <TextBlock Text="{loc:Tr packages.button.manage}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
+                <!-- Mounted for editing: it's the local Packages/ folder, not the registry git URL —
+                     so neither "install" nor "manage" applies. -->
+                <Border IsVisible="{Binding IsMounted}" HorizontalAlignment="Stretch"
+                        Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="10" Padding="10,7"
+                        ToolTip.Tip="{Binding MountedHint}">
+                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                        <PathIcon Width="15" Height="15" Data="{StaticResource IconEdit}" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding MountedLabel}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
@@ -161,6 +171,11 @@
                                                             <TextBlock Text="{loc:Tr packages.badge.unofficial}" FontSize="9" FontWeight="Bold"
                                                                        Foreground="{StaticResource BasisWarningBrush}"/>
                                                         </Border>
+                                                        <Border VerticalAlignment="Center" IsVisible="{Binding IsMounted}"
+                                                                Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="999" Padding="8,2">
+                                                            <TextBlock Text="{loc:Tr packages.badge.mounted}" FontSize="9" FontWeight="Bold"
+                                                                       Foreground="{StaticResource BasisBlueBrush}"/>
+                                                        </Border>
                                                     </StackPanel>
                                                     <TextBlock Text="{Binding Name}" Classes="dim" FontSize="11"/>
                                                     <TextBlock Text="{Binding Description}" Classes="muted" FontSize="12" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
@@ -224,6 +239,11 @@
                                                         <Border Classes="unofficialBadge" HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding IsUnofficial}">
                                                             <TextBlock Text="{loc:Tr packages.badge.unofficial}" FontSize="9" FontWeight="Bold"
                                                                        Foreground="{StaticResource BasisWarningBrush}"/>
+                                                        </Border>
+                                                        <Border HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding IsMounted}"
+                                                                Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="999" Padding="8,2">
+                                                            <TextBlock Text="{loc:Tr packages.badge.mounted}" FontSize="9" FontWeight="Bold"
+                                                                       Foreground="{StaticResource BasisBlueBrush}"/>
                                                         </Border>
                                                     </StackPanel>
                                                 </StackPanel>
@@ -350,6 +370,11 @@
                                     <TextBlock Text="{loc:Tr packages.badge.unofficial}" FontSize="9" FontWeight="Bold"
                                                Foreground="{StaticResource BasisWarningBrush}"/>
                                 </Border>
+                                <Border VerticalAlignment="Center" IsVisible="{Binding IsMounted}"
+                                        Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="999" Padding="8,2">
+                                    <TextBlock Text="{loc:Tr packages.badge.mounted}" FontSize="9" FontWeight="Bold"
+                                               Foreground="{StaticResource BasisBlueBrush}"/>
+                                </Border>
                             </StackPanel>
                         </StackPanel>
                         <Button Grid.Column="2" Classes="iconBtn" VerticalAlignment="Top"
@@ -385,8 +410,19 @@
                     </StackPanel>
 
                     <StackPanel Spacing="8" Margin="0,4,0,0">
+                        <!-- Mounted for editing: it's the local Packages/ folder, not the registry git URL. -->
+                        <Border IsVisible="{Binding IsMounted}"
+                                Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="10" Padding="12,10">
+                            <StackPanel Spacing="4">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Width="16" Height="16" Data="{StaticResource IconEdit}" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding MountedLabel}" FontWeight="SemiBold" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding MountedHint}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
                         <Button Classes="primary" HorizontalAlignment="Stretch"
-                                IsVisible="{Binding IsNotInstalled}"
+                                IsVisible="{Binding IsAvailableToInstall}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                                 CommandParameter="{Binding Entry}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -395,7 +431,7 @@
                             </StackPanel>
                         </Button>
                         <Button Classes="primary" HorizontalAlignment="Stretch"
-                                IsVisible="{Binding IsInstalled}"
+                                IsVisible="{Binding IsManageable}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                                 CommandParameter="{Binding Entry}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -404,7 +440,7 @@
                             </StackPanel>
                         </Button>
                         <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding HasGit}"
+                                IsVisible="{Binding CanChooseVersion}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ChooseVersionCommand}"
                                 CommandParameter="{Binding Entry}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -413,7 +449,7 @@
                             </StackPanel>
                         </Button>
                         <Button Classes="danger" HorizontalAlignment="Stretch"
-                                IsVisible="{Binding IsInstalled}"
+                                IsVisible="{Binding IsManageable}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RemoveCommand}"
                                 CommandParameter="{Binding Entry}">
                             <StackPanel Orientation="Horizontal" Spacing="8">

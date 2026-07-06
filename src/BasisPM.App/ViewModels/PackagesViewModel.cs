@@ -15,6 +15,7 @@ public sealed class PackagesViewModel : ObservableObject
     private readonly UserSettingsService _settingsService;
     private readonly CatalogService _catalogService;
     private readonly UnityProjectService _projectService;
+    private readonly MountRegistry _mountRegistry;
     private readonly GitHubService _githubService;
     private readonly VersionService _versionService = new();
     private readonly MainWindowViewModel _shell;
@@ -34,6 +35,10 @@ public sealed class PackagesViewModel : ObservableObject
     private IReadOnlyList<string> _extraCatalogUrls = Array.Empty<string>();
     // Package ids that came only from an unofficial (extra) catalog — drives the "Unofficial" badge.
     private readonly HashSet<string> _unofficialIds = new(StringComparer.OrdinalIgnoreCase);
+    // Package ids mounted locally for editing in the active project — present as a folder in Packages/
+    // (or a "file:" manifest dep), not the registry git URL, so they read as "Locally mounted" rather
+    // than "available to install".
+    private readonly HashSet<string> _mountedIds = new(StringComparer.OrdinalIgnoreCase);
 
     private static string AllOwnersLabel => L.Tr("packages.filter.allOwners");
 
@@ -101,11 +106,12 @@ public sealed class PackagesViewModel : ObservableObject
     public RelayCommand<string> OpenLinkCommand { get; }
     public RelayCommand CloseDetailCommand { get; }
 
-    public PackagesViewModel(UserSettingsService settingsService, CatalogService catalogService, UnityProjectService projectService, MainWindowViewModel shell)
+    public PackagesViewModel(UserSettingsService settingsService, CatalogService catalogService, UnityProjectService projectService, MountRegistry mountRegistry, MainWindowViewModel shell)
     {
         _settingsService = settingsService;
         _catalogService = catalogService;
         _projectService = projectService;
+        _mountRegistry = mountRegistry;
         _githubService = new GitHubService();
         _shell = shell;
 
@@ -230,7 +236,7 @@ public sealed class PackagesViewModel : ObservableObject
                 continue;
 
             var installedVersion = _install?.Manifest.Dependencies.GetValueOrDefault(v.Name);
-            Available.Add(new PackageRow(v, installedVersion, _unofficialIds.Contains(v.Name)));
+            Available.Add(new PackageRow(v, installedVersion, _unofficialIds.Contains(v.Name), _mountedIds.Contains(v.Name)));
         }
 
         // Keep an open detail panel pointed at the refreshed row so its installed-state stays current.
@@ -245,7 +251,15 @@ public sealed class PackagesViewModel : ObservableObject
     {
         _allInstalled.Clear();
         Installed.Clear();
+        _mountedIds.Clear();
         if (_install is null || !_install.HasUnityProject) { RebuildInstalledOwners(); Refilter(); return; }
+
+        // Packages mounted for editing are present as a local folder, not the registry git URL: a
+        // root-level mount drops the manifest line entirely (cloned into Packages/<id>/), and a
+        // subfolder mount rewrites it to a "file:" dep. Track both from the mount registry (+ any
+        // stray file: dep) so the "Available" list marks them "Locally mounted".
+        foreach (var rec in _mountRegistry.ForInstall(_install.UnityProjectPath))
+            _mountedIds.Add(rec.PackageId);
 
         foreach (var (name, version) in _install.Manifest.Dependencies)
         {
@@ -253,6 +267,7 @@ public sealed class PackagesViewModel : ObservableObject
                 ? pkg.Versions.Values.First().DisplayName
                 : name;
             var isGit = version.Contains("github.com", StringComparison.OrdinalIgnoreCase) || version.StartsWith("git", StringComparison.OrdinalIgnoreCase);
+            if (version.StartsWith("file:", StringComparison.OrdinalIgnoreCase)) _mountedIds.Add(name);
             _allInstalled.Add(new InstalledPackageRow(name, displayName, version, isGit));
         }
 
@@ -714,7 +729,7 @@ public sealed class PackagesViewModel : ObservableObject
     private static void OpenUrl(string url) => ExternalLink.Open(url);
 }
 
-public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVersion, bool IsUnofficial = false)
+public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVersion, bool IsUnofficial = false, bool IsMounted = false)
 {
     public string DisplayName => Entry.DisplayName;
     public string Name => Entry.Name;
@@ -722,6 +737,14 @@ public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVe
     public string Description => Entry.Description;
     public bool IsInstalled => !string.IsNullOrEmpty(InstalledVersion);
     public bool IsNotInstalled => !IsInstalled;
+    // The action-area states are mutually exclusive. A package mounted for editing is present as a
+    // local folder (not the registry git URL), so it's neither "install" nor "manage" — it shows
+    // "Locally mounted" and points the user at the Develop tab.
+    public bool IsAvailableToInstall => !IsInstalled && !IsMounted;
+    public bool IsManageable => IsInstalled && !IsMounted;
+    public bool CanChooseVersion => HasGit && !IsMounted;
+    public string MountedLabel => L.Tr("packages.state.mounted");
+    public string MountedHint => L.Tr("packages.mounted.hint");
     public string ButtonLabel => IsInstalled ? L.Tr("packages.button.update") : L.Tr("packages.button.install");
     public string Author => Entry.Author?.Name ?? "";
     public bool HasAuthor => !string.IsNullOrWhiteSpace(Entry.Author?.Name);

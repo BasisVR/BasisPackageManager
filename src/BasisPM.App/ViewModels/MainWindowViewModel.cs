@@ -64,7 +64,7 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         _installService = new BasisInstallService(_projectService, _gitService);
         InstallsVM = new InstallsViewModel(_settingsService, _installService, _gitService, this);
-        PackagesVM = new PackagesViewModel(_settingsService, _catalogService, _projectService, this);
+        PackagesVM = new PackagesViewModel(_settingsService, _catalogService, _projectService, _mountRegistry, this);
         ChangesVM = new ChangesViewModel(_gitService, this);
         UnityVM = new UnityViewModel(_hubService, _releaseService, this);
         LogsVM = new LogsViewModel(_log);

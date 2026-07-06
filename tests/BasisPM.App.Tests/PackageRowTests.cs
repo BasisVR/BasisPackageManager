@@ -9,7 +9,7 @@ public sealed class PackageRowTests
 {
     private static CatalogPackageVersion Entry(
         string name = "com.basis.sdk", string display = "Basis SDK", string version = "1.0.0",
-        string? unity = "6000.0", string? author = "BasisVR", string? license = null)
+        string? unity = "6000.0", string? author = "BasisVR", string? license = null, string? url = null)
         => new()
         {
             Name = name,
@@ -18,6 +18,7 @@ public sealed class PackageRowTests
             Description = "A package.",
             Unity = unity,
             License = license,
+            Url = url,
             Author = author is null ? null : new CatalogAuthor { Name = author },
         };
 
@@ -99,5 +100,51 @@ public sealed class PackageRowTests
         Assert.Equal("X Package", row.DisplayName);
         Assert.Equal("https://github.com/x/x.git", row.Version);
         Assert.True(row.IsFromGit);
+    }
+
+    // A package mounted for editing lives as a local folder in Packages/, not the registry git URL.
+    // A root-level mount even drops its manifest line (so IsInstalled is false) — it must still read as
+    // "Locally mounted", never "available to install" (the reported bug).
+    [AvaloniaFact]
+    public void Root_mounted_row_is_locally_mounted_not_installable()
+    {
+        var row = new PackageRow(Entry(), InstalledVersion: null, IsUnofficial: false, IsMounted: true);
+        Assert.True(row.IsMounted);
+        Assert.False(row.IsAvailableToInstall);
+        Assert.False(row.IsManageable);
+        Assert.Equal("Locally mounted", row.MountedLabel);
+    }
+
+    // A subfolder mount keeps a "file:" manifest line (IsInstalled is true) but is still mounted, so it
+    // shows "Locally mounted" rather than the Manage / Update path.
+    [AvaloniaFact]
+    public void File_mounted_row_is_mounted_not_manageable()
+    {
+        var row = new PackageRow(Entry(), InstalledVersion: "file:../pkg", IsUnofficial: false, IsMounted: true);
+        Assert.True(row.IsInstalled);
+        Assert.True(row.IsMounted);
+        Assert.False(row.IsManageable);
+        Assert.False(row.IsAvailableToInstall);
+    }
+
+    [AvaloniaFact]
+    public void Mounted_row_hides_choose_version_even_with_a_git_url()
+    {
+        var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), InstalledVersion: null, IsMounted: true);
+        Assert.True(row.HasGit);
+        Assert.False(row.CanChooseVersion);
+    }
+
+    [AvaloniaFact]
+    public void Unmounted_rows_keep_install_and_manage_states()
+    {
+        var notInstalled = new PackageRow(Entry(), InstalledVersion: null);
+        Assert.True(notInstalled.IsAvailableToInstall);
+        Assert.False(notInstalled.IsManageable);
+        Assert.False(notInstalled.IsMounted);
+
+        var installed = new PackageRow(Entry(), InstalledVersion: "https://github.com/x/x.git");
+        Assert.True(installed.IsManageable);
+        Assert.False(installed.IsAvailableToInstall);
     }
 }

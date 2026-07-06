@@ -543,6 +543,18 @@
       "value": "UNOFFICIAL"
     },
     {
+      "key": "packages.badge.mounted",
+      "value": "MOUNTED"
+    },
+    {
+      "key": "packages.state.mounted",
+      "value": "Locally mounted"
+    },
+    {
+      "key": "packages.mounted.hint",
+      "value": "Cloned into Packages/ for editing — it uses the local folder, not the registry git URL. Manage it on the Develop tab; Swap back restores the git version."
+    },
+    {
       "key": "packages.bundle.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
@@ -1151,8 +1163,16 @@
       "value": "Mounted {0} into Packages/ — edit it in Unity, then Submit PR."
     },
     {
-      "key": "develop.status.mountedAll",
-      "value": "Mounted {0} package(s); skipped {1}; {2} failed."
+      "key": "develop.status.mountedAllCount",
+      "value": "Mounted {0} package(s)."
+    },
+    {
+      "key": "develop.status.mountedAllSkipped",
+      "value": "Skipped {0}: {1}."
+    },
+    {
+      "key": "develop.status.mountedAllFailed",
+      "value": "Failed {0}: {1}."
     },
     {
       "key": "develop.status.mounting",
