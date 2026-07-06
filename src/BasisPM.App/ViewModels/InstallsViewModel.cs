@@ -165,6 +165,7 @@ public sealed class InstallsViewModel : ObservableObject
             row.Commit = status.ShortCommit;
             row.GitSummary = DescribeStatus(status);
             row.ChangeCount = status.ChangeCount;
+            row.CoreHasUpdate = status.Upstream.HasUpstream && status.Upstream.Behind > 0;
             if (fetch)
                 _shell.SetStatus(L.Tr("installs.status.rowSummary", row.Name, row.GitSummary), StatusKind.Info);
         }
@@ -514,6 +515,7 @@ public sealed class InstallRow : ObservableObject
     private int _changeCount;
     private bool _isBusy;
     private bool _isActive;
+    private bool _coreHasUpdate;
 
     public BasisInstall Install { get; private set; }
 
@@ -535,6 +537,9 @@ public sealed class InstallRow : ObservableObject
     public bool HasLocalChanges => _changeCount > 0;
     public bool IsBusy { get => _isBusy; set => SetField(ref _isBusy, value); }
     public bool IsActive { get => _isActive; set => SetField(ref _isActive, value); }
+    // True only when the checked-out branch is behind its upstream — i.e. an update is actually
+    // available. Drives the "Update Core" button's brand-red styling (neutral when up to date).
+    public bool CoreHasUpdate { get => _coreHasUpdate; set => SetField(ref _coreHasUpdate, value); }
 
     public void UpdateInstall(BasisInstall install)
     {

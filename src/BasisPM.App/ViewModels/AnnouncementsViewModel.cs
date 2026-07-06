@@ -17,6 +17,7 @@ public sealed class AnnouncementsViewModel : ObservableObject
     private readonly AnnouncementService _service;
     private bool _isLoading;
     private bool _loaded;
+    private Task? _loadTask;
 
     public ObservableCollection<AnnouncementCard> Announcements { get; } = new();
     public RelayCommand RefreshCommand { get; }
@@ -40,9 +41,18 @@ public sealed class AnnouncementsViewModel : ObservableObject
     public IReadOnlyList<string> AllIds =>
         Announcements.Select(a => a.Id).Where(id => !string.IsNullOrEmpty(id)).ToList();
 
-    public async Task LoadAsync(bool force = false)
+    // Returns the shared in-flight load so concurrent callers (the startup badge computation and the
+    // mark-seen path) await the same fetch instead of each kicking off its own — otherwise the
+    // ObservableCollection gets cleared and repopulated twice while the list is being bound.
+    public Task LoadAsync(bool force = false)
     {
-        if (_loaded && !force) return;
+        if (force) { _loaded = false; _loadTask = null; }
+        if (_loaded) return Task.CompletedTask;
+        return _loadTask ??= LoadCoreAsync();
+    }
+
+    private async Task LoadCoreAsync()
+    {
         IsLoading = true;
         try
         {
@@ -56,6 +66,7 @@ public sealed class AnnouncementsViewModel : ObservableObject
         {
             IsLoading = false;
             OnPropertyChanged(nameof(ShowEmpty));
+            _loadTask = null;
         }
     }
 }

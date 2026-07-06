@@ -18,7 +18,9 @@
                         <TextBlock Text="{loc:Tr develop.header.description}"
                                    Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                     </StackPanel>
-                    <Button Grid.Column="1" Content="{loc:Tr develop.button.refresh}" Command="{Binding RefreshCommand}" VerticalAlignment="Top"/>
+                    <Button Grid.Column="1" Classes="iconBtn" Command="{Binding RefreshCommand}" VerticalAlignment="Top" ToolTip.Tip="{loc:Tr develop.button.refresh}">
+                        <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+                    </Button>
                 </Grid>
             </Border>
 
@@ -39,8 +41,15 @@
                         <TextBlock Text="{loc:Tr develop.git.requiredDescription}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                         <StackPanel Orientation="Horizontal" Spacing="10">
-                            <Button Classes="primary" Content="{loc:Tr develop.button.installGit}" Command="{Binding InstallGitCommand}"/>
-                            <Button Content="{loc:Tr develop.button.recheck}" Command="{Binding RecheckCommand}"/>
+                            <Button Classes="primary" Command="{Binding InstallGitCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr develop.button.installGit}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Classes="iconBtn" Command="{Binding RecheckCommand}" ToolTip.Tip="{loc:Tr develop.button.recheck}">
+                                <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+                            </Button>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -51,14 +60,21 @@
                         <Grid ColumnDefinitions="*,Auto">
                             <TextBlock Grid.Column="0" Text="{Binding AuthLabel}" Classes="muted" FontSize="12"
                                        VerticalAlignment="Center" TextWrapping="Wrap"/>
-                            <Button Grid.Column="1" Content="{loc:Tr develop.button.recheck}" Command="{Binding RecheckCommand}" VerticalAlignment="Top"/>
+                            <Button Grid.Column="1" Classes="iconBtn" Command="{Binding RecheckCommand}" VerticalAlignment="Top" ToolTip.Tip="{loc:Tr develop.button.recheck}">
+                                <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+                            </Button>
                         </Grid>
                         <StackPanel Spacing="6" IsVisible="{Binding ShowPatEntry}">
                             <TextBlock Text="{loc:Tr develop.auth.tokenLabel}" Classes="muted" FontSize="11"/>
                             <Grid ColumnDefinitions="*,8,Auto">
                                 <TextBox Grid.Column="0" Text="{Binding PatInput}" PasswordChar="•"
                                          Watermark="{loc:Tr develop.auth.tokenWatermark}"/>
-                                <Button Grid.Column="2" Classes="primary" Content="{loc:Tr develop.button.signIn}" Command="{Binding ApplyPatCommand}"/>
+                                <Button Grid.Column="2" Classes="primary" Command="{Binding ApplyPatCommand}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconKey}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{loc:Tr develop.button.signIn}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
                             </Grid>
                         </StackPanel>
                     </StackPanel>
@@ -82,8 +98,13 @@
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
                                 </StackPanel>
-                                <Button Grid.Column="2" Classes="primary" Content="{loc:Tr develop.button.mountAll}"
-                                        Command="{Binding MountAllCommand}" IsVisible="{Binding HasGitPackages}"/>
+                                <Button Grid.Column="2" Classes="primary"
+                                        Command="{Binding MountAllCommand}" IsVisible="{Binding HasGitPackages}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{loc:Tr develop.button.mountAll}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
                             </Grid>
                         </Border>
                         <ItemsControl ItemsSource="{Binding GitPackages}">
@@ -95,9 +116,14 @@
                                                 <TextBlock Text="{Binding Id}" FontWeight="SemiBold"/>
                                                 <TextBlock Text="{Binding Slug}" Classes="dim" FontSize="11" TextTrimming="CharacterEllipsis"/>
                                             </StackPanel>
-                                            <Button Grid.Column="1" Content="{loc:Tr develop.button.mountToEdit}" Classes="primary"
+                                            <Button Grid.Column="1" Classes="primary"
                                                     Command="{Binding #Root.((vm:DevelopViewModel)DataContext).MountCommand}"
-                                                    CommandParameter="{Binding}"/>
+                                                    CommandParameter="{Binding}">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconEdit}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{loc:Tr develop.button.mountToEdit}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -117,7 +143,12 @@
                                     <TextBlock Text="{loc:Tr develop.section.cacheChanges}" Classes="h3"/>
                                     <TextBlock Text="{loc:Tr develop.section.cacheChangesHint}" Classes="muted" FontSize="11" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <Button Grid.Column="1" Content="{loc:Tr develop.button.scanCache}" Command="{Binding ScanDriftCommand}" VerticalAlignment="Top"/>
+                                <Button Grid.Column="1" Command="{Binding ScanDriftCommand}" VerticalAlignment="Top">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconSearch}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{loc:Tr develop.button.scanCache}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
                             </Grid>
                         </Border>
                         <ItemsControl ItemsSource="{Binding DriftPackages}">
@@ -129,9 +160,14 @@
                                                 <TextBlock Text="{Binding PackageId}" FontWeight="SemiBold"/>
                                                 <TextBlock Text="{Binding ChangedSummary}" Classes="dim" FontSize="11" TextTrimming="CharacterEllipsis"/>
                                             </StackPanel>
-                                            <Button Grid.Column="1" Classes="primary" Content="{loc:Tr develop.button.reviewOpenPr}"
+                                            <Button Grid.Column="1" Classes="primary"
                                                     Command="{Binding #Root.((vm:DevelopViewModel)DataContext).OpenDriftPrCommand}"
-                                                    CommandParameter="{Binding}"/>
+                                                    CommandParameter="{Binding}">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{loc:Tr develop.button.reviewOpenPr}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -158,15 +194,28 @@
                                                 <TextBlock Text="{Binding FolderPath}" Classes="dim" FontSize="11" TextTrimming="CharacterEllipsis"/>
                                             </StackPanel>
                                             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                                <Button Content="{loc:Tr develop.button.openInUnity}"
-                                                        Command="{Binding #Root.((vm:DevelopViewModel)DataContext).OpenInUnityCommand}"
-                                                        CommandParameter="{Binding}"/>
-                                                <Button Content="{loc:Tr develop.button.swapBack}"
-                                                        Command="{Binding #Root.((vm:DevelopViewModel)DataContext).SwapBackCommand}"
-                                                        CommandParameter="{Binding}"/>
-                                                <Button Content="{loc:Tr develop.button.submitPr}" Classes="primary"
+                                                <Button Command="{Binding #Root.((vm:DevelopViewModel)DataContext).OpenInUnityCommand}"
+                                                        CommandParameter="{Binding}">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button Command="{Binding #Root.((vm:DevelopViewModel)DataContext).SwapBackCommand}"
+                                                        CommandParameter="{Binding}">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconUndo}" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{loc:Tr develop.button.swapBack}" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Button Classes="primary"
                                                         Command="{Binding #Root.((vm:DevelopViewModel)DataContext).SubmitPrCommand}"
-                                                        CommandParameter="{Binding}"/>
+                                                        CommandParameter="{Binding}">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{loc:Tr develop.button.submitPr}" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Button>
                                             </StackPanel>
                                         </Grid>
                                     </Border>

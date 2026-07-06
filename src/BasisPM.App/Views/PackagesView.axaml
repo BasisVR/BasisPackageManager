@@ -12,15 +12,56 @@
              referenced by BOTH the list and grid item templates so there is a single definition. -->
         <DataTemplate x:Key="PackageActions" DataType="vm:PackageRow">
             <StackPanel Spacing="8">
-                <Button Content="{loc:Tr packages.button.install}" Classes="primary" HorizontalAlignment="Stretch"
+                <Button Classes="primary" HorizontalAlignment="Stretch"
                         IsVisible="{Binding !IsInstalled}"
                         Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
-                        CommandParameter="{Binding Entry}"/>
-                <Button Content="{loc:Tr packages.button.manage}" Classes="secondary" HorizontalAlignment="Stretch"
-                        IsVisible="{Binding IsInstalled}" Click="OnManageClick"/>
+                        CommandParameter="{Binding Entry}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr packages.button.install}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Classes="secondary" HorizontalAlignment="Stretch"
+                        IsVisible="{Binding IsInstalled}" Click="OnManageClick">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconSettings}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr packages.button.manage}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
+
+    <UserControl.Styles>
+        <!-- Detail overlay entrance: fade the scrim and scale the card up, both eased. The hidden
+             state also turns hit-testing off so the transparent scrim never blocks the list beneath.
+             Opacity (DoubleTransition) and RenderTransform (TransformOperationsTransition) both have
+             transition interpolators, so this is safe (see project_basispm_avalonia_animation_gotcha). -->
+        <Style Selector="Border.detailOverlay">
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.16" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.detailOverlay.shown">
+            <Setter Property="Opacity" Value="1"/>
+            <Setter Property="IsHitTestVisible" Value="True"/>
+        </Style>
+        <Style Selector="Border.detailCard">
+            <Setter Property="RenderTransform" Value="scale(0.96)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.detailOverlay.shown Border.detailCard">
+            <Setter Property="RenderTransform" Value="scale(1)"/>
+        </Style>
+    </UserControl.Styles>
 
     <Grid>
     <ScrollViewer>
@@ -51,8 +92,16 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </StackPanel>
-                        <Button Content="{loc:Tr packages.button.createBundle}" Command="{Binding CreateBundleCommand}" VerticalAlignment="Bottom" IsVisible="{Binding HasInstall}"/>
-                        <Button Content="{loc:Tr packages.button.refresh}" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom"/>
+                        <Button Command="{Binding CreateBundleCommand}" VerticalAlignment="Bottom" IsVisible="{Binding HasInstall}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.createBundle}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="iconBtn" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom"
+                                ToolTip.Tip="{loc:Tr packages.button.refresh}">
+                            <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -89,7 +138,7 @@
                             <ItemsControl ItemsSource="{Binding Available}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="vm:PackageRow">
-                                        <Border Classes="glass" Padding="14" Margin="16,7" Cursor="Hand" Tapped="OnRowTapped"
+                                        <Border Classes="glass interactive" Padding="14" Margin="16,7" Cursor="Hand" Tapped="OnRowTapped"
                                                 ToolTip.Tip="{loc:Tr packages.tooltip.viewDetails}">
                                             <Grid ColumnDefinitions="Auto,*,Auto">
                                                 <Border Grid.Column="0" Width="46" Height="46" CornerRadius="13" VerticalAlignment="Top"
@@ -116,14 +165,19 @@
                                                         </Border>
                                                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasLicense}"
                                                                 ToolTip.Tip="{loc:Tr packages.label.license}">
-                                                            <TextBlock Text="{Binding License, StringFormat='⚖ {0}'}" FontSize="11" Classes="muted"/>
+                                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{Binding License}" FontSize="11" Classes="muted" VerticalAlignment="Center"/>
+                                                            </StackPanel>
                                                         </Border>
                                                         <TextBlock Text="{Binding Author, StringFormat='by {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center" IsVisible="{Binding HasAuthor}"/>
                                                         <TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center" IsVisible="{Binding HasUnity}"/>
-                                                        <Button Content="🔗" FontSize="14" Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
+                                                        <Button Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
                                                                 ToolTip.Tip="{Binding Link}"
                                                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
-                                                                CommandParameter="{Binding Link}"/>
+                                                                CommandParameter="{Binding Link}">
+                                                            <PathIcon Width="14" Height="14" Data="{StaticResource IconOpenExternal}"/>
+                                                        </Button>
                                                     </StackPanel>
                                                 </StackPanel>
                                                 <ContentControl Grid.Column="2" Width="160" VerticalAlignment="Center"
@@ -145,7 +199,7 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="vm:PackageRow">
-                                        <Border Classes="glass" Padding="16" Margin="6" Width="234" Cursor="Hand" Tapped="OnRowTapped"
+                                        <Border Classes="glass interactive" Padding="16" Margin="6" Width="234" Cursor="Hand" Tapped="OnRowTapped"
                                                 ToolTip.Tip="{loc:Tr packages.tooltip.viewDetails}">
                                             <StackPanel Spacing="10">
                                                 <StackPanel Orientation="Horizontal" Spacing="10">
@@ -171,12 +225,17 @@
                                                     </Border>
                                                     <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasLicense}"
                                                             ToolTip.Tip="{loc:Tr packages.label.license}">
-                                                        <TextBlock Text="{Binding License, StringFormat='⚖ {0}'}" FontSize="10" Classes="muted"/>
+                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                            <PathIcon Width="10" Height="10" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding License}" FontSize="10" Classes="muted" VerticalAlignment="Center"/>
+                                                        </StackPanel>
                                                     </Border>
-                                                    <Button Content="🔗" FontSize="14" Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
+                                                    <Button Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
                                                             ToolTip.Tip="{Binding Link}"
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
-                                                            CommandParameter="{Binding Link}"/>
+                                                            CommandParameter="{Binding Link}">
+                                                        <PathIcon Width="14" Height="14" Data="{StaticResource IconOpenExternal}"/>
+                                                    </Button>
                                                 </StackPanel>
                                                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource PackageActions}"/>
                                             </StackPanel>
@@ -197,7 +256,12 @@
                         <Grid ColumnDefinitions="*,8,Auto">
                             <TextBox Grid.Column="0" Text="{Binding GitHubInput}"
                                      Watermark="{loc:Tr packages.community.watermark}"/>
-                            <Button Grid.Column="2" Classes="primary" Content="{loc:Tr packages.button.add}" Command="{Binding AddFromGitHubCommand}"/>
+                            <Button Grid.Column="2" Classes="primary" Command="{Binding AddFromGitHubCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr packages.button.add}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
                         </Grid>
                     </StackPanel>
                 </Border>
@@ -228,9 +292,12 @@
                                                 </StackPanel>
                                                 <TextBlock Text="{Binding Version}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
                                             </StackPanel>
-                                            <Button Grid.Column="1" Content="{loc:Tr packages.button.remove}" Classes="danger"
+                                            <Button Grid.Column="1" Classes="iconBtn danger"
+                                                    ToolTip.Tip="{loc:Tr packages.button.remove}"
                                                     Command="{Binding #Root.((vm:PackagesViewModel)DataContext).UninstallCommand}"
-                                                    CommandParameter="{Binding}"/>
+                                                    CommandParameter="{Binding}">
+                                                <PathIcon Width="16" Height="16" Data="{StaticResource IconDelete}"/>
+                                            </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -243,13 +310,18 @@
         </StackPanel>
     </ScrollViewer>
 
-    <!-- Package detail overlay — opened by clicking a package row, closed by ✕ or the backdrop. -->
-    <Border IsVisible="{Binding ShowDetail}" Background="#E6000000" Tapped="OnBackdropTapped">
+    <!-- Package detail overlay — opened by clicking a package row, closed by ✕ or the backdrop.
+         Kept in the tree and driven by the `shown` class (bound to ShowDetail) so the scrim can fade
+         and the card can scale in/out; the hidden state disables hit-testing so the invisible scrim
+         never eats clicks meant for the list. -->
+    <Border Classes="detailOverlay" Classes.shown="{Binding ShowDetail}"
+            Background="#E6000000" Tapped="OnBackdropTapped">
         <!-- Opaque surface (overriding the translucent card glass) so the detail text stays readable
              over the animated background; the card glass is fine on the static list but not here. -->
-        <Border Classes="card" Background="{StaticResource BasisSurfaceBrush}"
+        <Border Classes="card detailCard" Background="{StaticResource BasisSurfaceBrush}"
                 MaxWidth="620" MaxHeight="740" Margin="40"
-                HorizontalAlignment="Center" VerticalAlignment="Center">
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                RenderTransformOrigin="50%,50%">
             <ScrollViewer DataContext="{Binding SelectedPackage}">
                 <StackPanel Spacing="16" x:DataType="vm:PackageRow">
                     <Grid ColumnDefinitions="Auto,*,Auto">
@@ -270,15 +342,23 @@
                                 </Border>
                             </StackPanel>
                         </StackPanel>
-                        <Button Grid.Column="2" Content="✕" FontSize="15" Padding="11,6" VerticalAlignment="Top"
-                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).CloseDetailCommand}"/>
+                        <Button Grid.Column="2" Classes="iconBtn" VerticalAlignment="Top"
+                                ToolTip.Tip="{loc:Tr packages.detail.close}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).CloseDetailCommand}">
+                            <PathIcon Width="15" Height="15" Data="{StaticResource IconClose}"/>
+                        </Button>
                     </Grid>
 
                     <TextBlock Text="{Binding Description}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Border Classes="versionPill"><TextBlock Text="{Binding Version, StringFormat='v{0}'}" FontSize="11" Classes="brand"/></Border>
-                        <Border Classes="versionPill" IsVisible="{Binding HasLicense}"><TextBlock Text="{Binding License, StringFormat='⚖ {0}'}" FontSize="11" Classes="muted"/></Border>
+                        <Border Classes="versionPill" IsVisible="{Binding HasLicense}">
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <PathIcon Width="11" Height="11" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding License}" FontSize="11" Classes="muted" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
                         <Border Classes="versionPill" IsVisible="{Binding HasUnity}"><TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" FontSize="11" Classes="muted"/></Border>
                     </StackPanel>
 
@@ -295,26 +375,51 @@
                     </StackPanel>
 
                     <StackPanel Spacing="8" Margin="0,4,0,0">
-                        <Button Content="{loc:Tr packages.button.install}" Classes="primary" HorizontalAlignment="Stretch"
+                        <Button Classes="primary" HorizontalAlignment="Stretch"
                                 IsVisible="{Binding IsNotInstalled}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
-                                CommandParameter="{Binding Entry}"/>
-                        <Button Content="{loc:Tr packages.button.update}" Classes="primary" HorizontalAlignment="Stretch"
+                                CommandParameter="{Binding Entry}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.install}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="primary" HorizontalAlignment="Stretch"
                                 IsVisible="{Binding IsInstalled}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
-                                CommandParameter="{Binding Entry}"/>
-                        <Button Content="{loc:Tr packages.button.chooseVersion}" HorizontalAlignment="Stretch"
+                                CommandParameter="{Binding Entry}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.update}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button HorizontalAlignment="Stretch"
                                 IsVisible="{Binding HasGit}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ChooseVersionCommand}"
-                                CommandParameter="{Binding Entry}"/>
-                        <Button Content="{loc:Tr packages.button.remove}" Classes="danger" HorizontalAlignment="Stretch"
+                                CommandParameter="{Binding Entry}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconTag}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.chooseVersion}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="danger" HorizontalAlignment="Stretch"
                                 IsVisible="{Binding IsInstalled}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RemoveCommand}"
-                                CommandParameter="{Binding Entry}"/>
-                        <Button Content="{loc:Tr packages.detail.website}" Classes="link" HorizontalAlignment="Center" Margin="0,4,0,0"
+                                CommandParameter="{Binding Entry}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconDelete}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.remove}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="link" HorizontalAlignment="Center" Margin="0,4,0,0"
                                 IsVisible="{Binding HasLink}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
-                                CommandParameter="{Binding Link}"/>
+                                CommandParameter="{Binding Link}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <PathIcon Width="13" Height="13" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.detail.website}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>

@@ -17,8 +17,18 @@
                     <TextBlock Text="{loc:Tr docs.hero.subtitle}"
                                Classes="muted" FontSize="14" TextWrapping="Wrap" MaxWidth="660" HorizontalAlignment="Left"/>
                     <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
-                        <Button Classes="primary" Content="{loc:Tr docs.button.openDocs}" Command="{Binding DocsCommand}"/>
-                        <Button Content="{loc:Tr docs.button.askDiscord}" Command="{Binding DiscordCommand}"/>
+                        <Button Classes="primary" Command="{Binding DocsCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconBook}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr docs.button.openDocs}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding DiscordCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconChat}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr docs.button.askDiscord}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -29,7 +39,12 @@
                         <TextBlock Text="{loc:Tr docs.site.title}" Classes="h3"/>
                         <TextBlock Text="{loc:Tr docs.site.body}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                        <Button Content="{loc:Tr docs.button.openDocsSite}" Command="{Binding DocsCommand}" HorizontalAlignment="Left"/>
+                        <Button Command="{Binding DocsCommand}" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr docs.button.openDocsSite}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </Border>
                 <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
@@ -37,7 +52,12 @@
                         <TextBlock Text="{loc:Tr docs.community.title}" Classes="h3"/>
                         <TextBlock Text="{loc:Tr docs.community.body}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                        <Button Content="{loc:Tr docs.button.joinDiscord}" Command="{Binding DiscordCommand}" HorizontalAlignment="Left"/>
+                        <Button Command="{Binding DiscordCommand}" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconChat}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr docs.button.joinDiscord}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -48,8 +68,18 @@
                     <TextBlock Text="{loc:Tr docs.source.body}"
                                Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                     <StackPanel Orientation="Horizontal" Spacing="12">
-                        <Button Content="{loc:Tr docs.button.basisGithub}" Command="{Binding BasisRepoCommand}" HorizontalAlignment="Left"/>
-                        <Button Content="{loc:Tr docs.button.packageManagerGithub}" Command="{Binding PackageManagerRepoCommand}" HorizontalAlignment="Left"/>
+                        <Button Command="{Binding BasisRepoCommand}" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr docs.button.basisGithub}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding PackageManagerRepoCommand}" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr docs.button.packageManagerGithub}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Border>

@@ -9,6 +9,16 @@
         <StyleInclude Source="avares://BasisPM.App/Styles/BasisTheme.axaml"/>
     </Application.Styles>
 
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Fluent System Icons (MIT) geometry library, referenced app-wide as
+                     PathIcon Data="{StaticResource IconName}". See Styles/Icons.axaml. -->
+                <ResourceInclude Source="avares://BasisPM.App/Styles/Icons.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
     <Application.DataTemplates>
         <DataTemplate DataType="vm:InstallsViewModel">
             <views:InstallsView />

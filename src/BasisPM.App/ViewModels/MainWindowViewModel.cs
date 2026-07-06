@@ -547,6 +547,16 @@ public sealed class MainWindowViewModel : ObservableObject
         try
         {
             await AnnouncementsVM.LoadAsync();
+
+            // If the user is already on Community (e.g. they opened it before the feed finished
+            // loading), mark everything seen now that the ids exist — otherwise the earlier mark-seen
+            // ran against an empty list and the badge would linger. On any other page, just count.
+            if (CurrentPage == NavPage.Community)
+            {
+                await MarkAnnouncementsSeenAsync();
+                return;
+            }
+
             var settings = await _settingsService.LoadAsync();
             var seen = settings.SeenAnnouncementIds;
             AnnouncementsUnreadCount = AnnouncementsVM.AllIds.Count(id => !seen.Contains(id));
@@ -557,11 +567,20 @@ public sealed class MainWindowViewModel : ObservableObject
     /// <summary>Marks every currently-shown announcement as read (persisted) and clears the badge.</summary>
     private async Task MarkAnnouncementsSeenAsync()
     {
+        // The feed loads asynchronously at startup. If the user reaches Community before it finishes,
+        // AllIds would still be empty and we'd persist an empty "seen" list — recording nothing and
+        // wiping the ids saved on a previous run, so the unread badge returns on the next launch.
+        // Awaiting the load (a no-op once it has completed) guarantees we record the real ids.
+        await AnnouncementsVM.LoadAsync();
+
         AnnouncementsUnreadCount = 0;
+        var ids = AnnouncementsVM.AllIds;
+        if (ids.Count == 0) return;   // nothing loaded yet — don't overwrite what's already saved
+
         try
         {
             var settings = await _settingsService.LoadAsync();
-            settings.SeenAnnouncementIds = AnnouncementsVM.AllIds.ToList();
+            settings.SeenAnnouncementIds = ids.ToList();
             await _settingsService.SaveAsync(settings);
         }
         catch { }

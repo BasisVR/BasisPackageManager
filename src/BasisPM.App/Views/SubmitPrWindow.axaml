@@ -26,8 +26,18 @@
         <TextBlock Text="{loc:Tr dialog.submitPr.hint}"
                    Classes="dim" FontSize="11" TextWrapping="Wrap"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-            <Button Content="{loc:Tr dialog.submitPr.cancel}" Click="OnCancel"/>
-            <Button Classes="primary" Content="{loc:Tr dialog.submitPr.openPr}" Click="OnOk"/>
+            <Button Click="OnCancel">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.submitPr.cancel}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Classes="primary" Click="OnOk">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.submitPr.openPr}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
     </StackPanel>
 </Window>

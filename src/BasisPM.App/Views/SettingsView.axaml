@@ -58,10 +58,12 @@
                                 <DataTemplate DataType="vm:CatalogUrlItem">
                                     <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,6">
                                         <TextBox Grid.Column="0" Text="{Binding Url}"/>
-                                        <Button Grid.Column="1" Content="✕" Margin="8,0,0,0" Classes="danger"
+                                        <Button Grid.Column="1" Classes="iconBtn danger" Margin="8,0,0,0"
                                                 Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).RemoveCatalogCommand}"
                                                 CommandParameter="{Binding}"
-                                                ToolTip.Tip="{loc:Tr settings.extraCatalogs.remove}"/>
+                                                ToolTip.Tip="{loc:Tr settings.extraCatalogs.remove}">
+                                            <PathIcon Width="14" Height="14" Data="{StaticResource IconClose}"/>
+                                        </Button>
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
@@ -69,8 +71,13 @@
                         <Grid ColumnDefinitions="*,Auto">
                             <TextBox Grid.Column="0" Text="{Binding NewCatalogUrl}"
                                      Watermark="{loc:Tr settings.extraCatalogs.watermark}"/>
-                            <Button Grid.Column="1" Content="{loc:Tr settings.extraCatalogs.add}" Margin="8,0,0,0"
-                                    Classes="primary" Command="{Binding AddCatalogCommand}"/>
+                            <Button Grid.Column="1" Margin="8,0,0,0"
+                                    Classes="primary" Command="{Binding AddCatalogCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr settings.extraCatalogs.add}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
                         </Grid>
                     </StackPanel>
 
@@ -90,7 +97,12 @@
                     <CheckBox Content="{loc:Tr settings.toggle.prerelease}" IsChecked="{Binding PrereleaseUpdates}"
                               ToolTip.Tip="{loc:Tr settings.toggle.prerelease.tip}"/>
 
-                    <Button Classes="primary" Content="{loc:Tr settings.button.save}" Command="{Binding SaveCommand}" HorizontalAlignment="Left"/>
+                    <Button Classes="primary" Command="{Binding SaveCommand}" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconSave}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr settings.button.save}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Border>
 
@@ -121,8 +133,12 @@
                             <TextBlock Text="{Binding AppVersion}" FontSize="12" FontWeight="SemiBold"/>
                         </Border>
                     </StackPanel>
-                    <Button Content="{loc:Tr settings.about.checkUpdates}" Command="{Binding CheckForUpdatesCommand}"
-                            HorizontalAlignment="Left"/>
+                    <Button Command="{Binding CheckForUpdatesCommand}" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr settings.about.checkUpdates}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                     <TextBlock Text="{loc:Tr settings.about.updatesBlurb}"
                                Classes="dim" FontSize="12" TextWrapping="Wrap"/>
                 </StackPanel>
@@ -137,9 +153,15 @@
                                        Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Top">
-                            <Button Content="{loc:Tr settings.logs.copy}" Click="OnCopyLogs"/>
-                            <Button Content="{loc:Tr settings.logs.openFolder}" Command="{Binding Logs.OpenFolderCommand}"/>
-                            <Button Content="{loc:Tr settings.logs.clear}" Command="{Binding Logs.ClearCommand}"/>
+                            <Button Classes="iconBtn" Click="OnCopyLogs" ToolTip.Tip="{loc:Tr settings.logs.copy}">
+                                <PathIcon Width="16" Height="16" Data="{StaticResource IconCopy}"/>
+                            </Button>
+                            <Button Classes="iconBtn" Command="{Binding Logs.OpenFolderCommand}" ToolTip.Tip="{loc:Tr settings.logs.openFolder}">
+                                <PathIcon Width="16" Height="16" Data="{StaticResource IconFolderOpen}"/>
+                            </Button>
+                            <Button Classes="iconBtn" Command="{Binding Logs.ClearCommand}" ToolTip.Tip="{loc:Tr settings.logs.clear}">
+                                <PathIcon Width="16" Height="16" Data="{StaticResource IconDelete}"/>
+                            </Button>
                         </StackPanel>
                     </Grid>
                     <Border Background="{StaticResource BasisPanelBrush}" BorderBrush="{StaticResource BasisBorderBrush}"
@@ -159,6 +181,94 @@
                             </ItemsControl>
                         </ScrollViewer>
                     </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Licenses & attributions: every third-party component bundled in the app, its
+                 licence, copyright and source. The interface icons (Fluent System Icons) are
+                 credited here too, per the project's attribution requirements. -->
+            <Border Classes="card">
+                <StackPanel Spacing="14">
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <PathIcon Width="18" Height="18" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr settings.licenses.title}" Classes="h3" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="{loc:Tr settings.licenses.description}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+
+                    <StackPanel Spacing="8">
+                        <Border Classes="glass" Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Text="Basis Package Manager" FontWeight="SemiBold" FontSize="13"/>
+                                    <TextBlock Text="{loc:Tr settings.licenses.role.thisApp}" Classes="muted" FontSize="11"/>
+                                    <TextBlock Text="© 2026 BasisVR · github.com/BasisVR/BasisPackageManager" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="MIT License">
+                                    <TextBlock Text="MIT" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <Border Classes="glass" Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Text="Avalonia" FontWeight="SemiBold" FontSize="13"/>
+                                    <TextBlock Text="{loc:Tr settings.licenses.role.framework}" Classes="muted" FontSize="11"/>
+                                    <TextBlock Text="© .NET Foundation and Contributors · avaloniaui.net" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="MIT License">
+                                    <TextBlock Text="MIT" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <Border Classes="glass" Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Text="Fluent System Icons" FontWeight="SemiBold" FontSize="13"/>
+                                    <TextBlock Text="{loc:Tr settings.licenses.role.icons}" Classes="muted" FontSize="11"/>
+                                    <TextBlock Text="© Microsoft Corporation · github.com/microsoft/fluentui-system-icons" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="MIT License">
+                                    <TextBlock Text="MIT" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <Border Classes="glass" Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Text="Inter" FontWeight="SemiBold" FontSize="13"/>
+                                    <TextBlock Text="{loc:Tr settings.licenses.role.font}" Classes="muted" FontSize="11"/>
+                                    <TextBlock Text="© The Inter Project Authors · rsms.me/inter" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="SIL Open Font License 1.1">
+                                    <TextBlock Text="OFL 1.1" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <Border Classes="glass" Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Text="Velopack" FontWeight="SemiBold" FontSize="13"/>
+                                    <TextBlock Text="{loc:Tr settings.licenses.role.updater}" Classes="muted" FontSize="11"/>
+                                    <TextBlock Text="© Caelan Sayler &amp; Velopack contributors · velopack.io" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="MIT License">
+                                    <TextBlock Text="MIT" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <Border Classes="glass" Padding="14,12">
+                            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <StackPanel Grid.Column="0" Spacing="2">
+                                    <TextBlock Text=".NET" FontWeight="SemiBold" FontSize="13"/>
+                                    <TextBlock Text="{loc:Tr settings.licenses.role.runtime}" Classes="muted" FontSize="11"/>
+                                    <TextBlock Text="© .NET Foundation and Contributors · dotnet.microsoft.com" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="MIT License">
+                                    <TextBlock Text="MIT" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
                 </StackPanel>
             </Border>
         </StackPanel>

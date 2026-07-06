@@ -14,20 +14,26 @@
                        Classes="muted" FontSize="13" TextWrapping="Wrap"/>
         </StackPanel>
 
-        <Button Click="OnUser" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="18,16">
-            <StackPanel Spacing="4">
-                <TextBlock Text="{loc:Tr dialog.roleWizard.userTitle}" FontWeight="SemiBold" FontSize="15"/>
-                <TextBlock Text="{loc:Tr dialog.roleWizard.userDesc}"
-                           Classes="muted" FontSize="12" TextWrapping="Wrap"/>
-            </StackPanel>
+        <Button Click="OnUser" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="18,16">
+            <Grid ColumnDefinitions="Auto,*">
+                <PathIcon Grid.Column="0" Width="24" Height="24" Data="{StaticResource IconPerson}" VerticalAlignment="Center" Margin="0,0,14,0"/>
+                <StackPanel Grid.Column="1" Spacing="4">
+                    <TextBlock Text="{loc:Tr dialog.roleWizard.userTitle}" FontWeight="SemiBold" FontSize="15"/>
+                    <TextBlock Text="{loc:Tr dialog.roleWizard.userDesc}"
+                               Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Grid>
         </Button>
 
-        <Button Click="OnDeveloper" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="18,16">
-            <StackPanel Spacing="4">
-                <TextBlock Text="{loc:Tr dialog.roleWizard.developerTitle}" FontWeight="SemiBold" FontSize="15"/>
-                <TextBlock Text="{loc:Tr dialog.roleWizard.developerDesc}"
-                           Classes="muted" FontSize="12" TextWrapping="Wrap"/>
-            </StackPanel>
+        <Button Click="OnDeveloper" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="18,16">
+            <Grid ColumnDefinitions="Auto,*">
+                <PathIcon Grid.Column="0" Width="24" Height="24" Data="{StaticResource IconDevelop}" VerticalAlignment="Center" Margin="0,0,14,0"/>
+                <StackPanel Grid.Column="1" Spacing="4">
+                    <TextBlock Text="{loc:Tr dialog.roleWizard.developerTitle}" FontWeight="SemiBold" FontSize="15"/>
+                    <TextBlock Text="{loc:Tr dialog.roleWizard.developerDesc}"
+                               Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Grid>
         </Button>
     </StackPanel>
 </Window>

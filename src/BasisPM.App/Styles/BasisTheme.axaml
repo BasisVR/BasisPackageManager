@@ -195,6 +195,34 @@
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- Smooth every button's hover/press. The :pointerover colour changes target the templated
+         ContentPresenter, so the colour transitions live there. The subtle press-shrink uses a
+         TransformOperationsTransition (the transitions subsystem DOES interpolate ITransform —
+         unlike the keyframe Animation animator, which throws "No animator for RenderTransform";
+         see project_basispm_avalonia_animation_gotcha). -->
+    <Style Selector="Button /template/ ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                <BrushTransition Property="TextElement.Foreground" Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.98)"/>
+    </Style>
+    <!-- Inline text links have no chrome to press, so don't shrink them. -->
+    <Style Selector="Button.link:pressed">
+        <Setter Property="RenderTransform" Value="none"/>
     </Style>
 
     <Style Selector="Button:pointerover /template/ ContentPresenter">
@@ -269,6 +297,28 @@
         <Setter Property="TextElement.Foreground" Value="#FFFFFF"/>
     </Style>
 
+    <!-- Square icon-only button for dense, repeated toolbar actions (refresh, copy, delete,
+         close, open-folder, open-link, add). The child is a single PathIcon; because a PathIcon's
+         Foreground inherits the ambient TextElement.Foreground, the glyph recolours on hover/press
+         exactly like a text label does — so these need no per-state icon styling. Every usage
+         carries a ToolTip.Tip naming the action (usually its former text label) for discoverability. -->
+    <Style Selector="Button.iconBtn">
+        <Setter Property="Padding" Value="9"/>
+        <Setter Property="MinWidth" Value="0"/>
+        <Setter Property="CornerRadius" Value="10"/>
+    </Style>
+    <!-- Tighter variant for compact strips such as the status bar. -->
+    <Style Selector="Button.iconBtn.sm">
+        <Setter Property="Padding" Value="7"/>
+    </Style>
+
+    <!-- Sizing for a leading icon that sits next to a text label inside a button or nav item.
+         Kept small so it reads as an accent, not a second focal point. -->
+    <Style Selector="PathIcon.leadingIcon">
+        <Setter Property="Width" Value="16"/>
+        <Setter Property="Height" Value="16"/>
+    </Style>
+
     <Style Selector="Button.nav">
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -307,6 +357,14 @@
         <Setter Property="SelectionBrush" Value="{StaticResource BasisBrandBrush}"/>
     </Style>
 
+    <!-- Ease the focus-ring colour in/out instead of snapping. -->
+    <Style Selector="TextBox /template/ Border#PART_BorderElement">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+    </Style>
     <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
         <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
     </Style>
@@ -341,6 +399,13 @@
         <Setter Property="Padding" Value="12,9"/>
     </Style>
 
+    <Style Selector="ComboBox /template/ Border#Background">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+    </Style>
     <Style Selector="ComboBox:pointerover /template/ Border#Background">
         <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
     </Style>
@@ -494,5 +559,39 @@
     <Style Selector="Button.menuItem.destructive:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
         <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandBrush}"/>
+    </Style>
+
+    <!-- Hover-lift for genuinely clickable cards/rows (package rows, install cards): a gentle rise +
+         1% scale with a brighter fill/border on pointer-over, eased both ways. Applied via an opt-in
+         class so static cards (hero, empty states) stay still. RenderTransform is animated through a
+         TransformOperationsTransition — the transitions subsystem interpolates ITransform, unlike the
+         keyframe Animation animator (see project_basispm_avalonia_animation_gotcha). -->
+    <Style Selector="Border.interactive">
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Setter Property="RenderTransform" Value="none"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.16" Easing="CubicEaseOut"/>
+                <BrushTransition Property="Background" Duration="0:0:0.16"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.16"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Border.interactive:pointerover">
+        <Setter Property="RenderTransform" Value="translateY(-2px) scale(1.01)"/>
+        <Setter Property="Background" Value="{StaticResource BasisGlassStrongBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBorderStrongBrush}"/>
+    </Style>
+
+    <!-- Soft fade-in for panels/overlays that toggle via IsVisible (update banner, clone form,
+         install cards). Opacity has a built-in keyframe animator, so this is safe; it replays each
+         time the element re-enters the visual tree. -->
+    <Style Selector="Border.reveal">
+        <Style.Animations>
+            <Animation Duration="0:0:0.24" Easing="CubicEaseOut" FillMode="Forward">
+                <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0"/></KeyFrame>
+                <KeyFrame Cue="100%"><Setter Property="Opacity" Value="1"/></KeyFrame>
+            </Animation>
+        </Style.Animations>
     </Style>
 </Styles>

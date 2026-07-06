@@ -16,9 +16,15 @@
                                Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Top">
-                    <Button Content="{loc:Tr logs.button.copy}" Click="OnCopy"/>
-                    <Button Content="{loc:Tr logs.button.openFolder}" Command="{Binding OpenFolderCommand}"/>
-                    <Button Content="{loc:Tr logs.button.clear}" Command="{Binding ClearCommand}"/>
+                    <Button Classes="iconBtn" Click="OnCopy" ToolTip.Tip="{loc:Tr logs.button.copy}">
+                        <PathIcon Width="16" Height="16" Data="{StaticResource IconCopy}"/>
+                    </Button>
+                    <Button Classes="iconBtn" Command="{Binding OpenFolderCommand}" ToolTip.Tip="{loc:Tr logs.button.openFolder}">
+                        <PathIcon Width="16" Height="16" Data="{StaticResource IconFolderOpen}"/>
+                    </Button>
+                    <Button Classes="iconBtn" Command="{Binding ClearCommand}" ToolTip.Tip="{loc:Tr logs.button.clear}">
+                        <PathIcon Width="16" Height="16" Data="{StaticResource IconDelete}"/>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>

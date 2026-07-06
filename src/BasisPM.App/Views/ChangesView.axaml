@@ -19,7 +19,9 @@
                     <TextBlock Text="{loc:Tr changes.hero.subtitle}"
                                Classes="muted" FontSize="14"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="{loc:Tr changes.button.refresh}" Command="{Binding RefreshCommand}"/>
+                <Button Grid.Column="1" Classes="iconBtn" Command="{Binding RefreshCommand}" ToolTip.Tip="{loc:Tr changes.button.refresh}">
+                    <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+                </Button>
             </Grid>
         </Border>
 

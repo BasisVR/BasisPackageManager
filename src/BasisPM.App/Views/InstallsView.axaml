@@ -19,14 +19,26 @@
                                    Classes="muted" FontSize="14"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
-                        <Button Content="{loc:Tr installs.button.addExisting}" Command="{Binding AddExistingCommand}"/>
-                        <Button Content="{loc:Tr installs.button.cloneBasis}" Command="{Binding ToggleCloneFormCommand}"/>
-                        <Button Content="{loc:Tr installs.button.refresh}" Command="{Binding RefreshCommand}"/>
+                        <Button Command="{Binding AddExistingCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr installs.button.addExisting}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding ToggleCloneFormCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr installs.button.cloneBasis}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="iconBtn" Command="{Binding RefreshCommand}" ToolTip.Tip="{loc:Tr installs.button.refresh}">
+                            <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <Border Classes="card" IsVisible="{Binding ShowCloneForm}">
+            <Border Classes="card reveal" IsVisible="{Binding ShowCloneForm}">
                 <StackPanel Spacing="14">
                     <TextBlock Text="{loc:Tr installs.cloneForm.heading}" Classes="h3"/>
                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -40,15 +52,20 @@
                             <TextBlock Text="{loc:Tr installs.cloneForm.cloneIntoLabel}" Classes="muted" FontSize="11"/>
                             <TextBox Text="{Binding ClonePath}" Watermark="C:\Users\you\BasisVR"/>
                         </StackPanel>
-                        <Button Grid.Row="0" Grid.Column="2" Content="{loc:Tr installs.button.browse}" VerticalAlignment="Bottom"
-                                Command="{Binding BrowseCloneFolderCommand}"/>
+                        <Button Grid.Row="0" Grid.Column="2" VerticalAlignment="Bottom"
+                                Command="{Binding BrowseCloneFolderCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr installs.button.browse}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </Grid>
 
                     <Border IsVisible="{Binding HasCloneSpaceWarning}"
                             Background="#1FF59E0B" BorderBrush="#66F59E0B" BorderThickness="1"
                             CornerRadius="8" Padding="12,9">
                         <StackPanel Orientation="Horizontal" Spacing="9">
-                            <TextBlock Text="⚠" FontSize="15" Foreground="#F59E0B" VerticalAlignment="Top"/>
+                            <PathIcon Width="14" Height="14" Data="{StaticResource IconWarning}" Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding CloneSpaceWarning}" TextWrapping="Wrap"
                                        FontSize="12" VerticalAlignment="Center"/>
                         </StackPanel>
@@ -73,9 +90,14 @@
                     </Grid>
 
                     <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                        <Button Classes="cta" Content="{loc:Tr installs.button.cloneBasis}"
+                        <Button Classes="cta"
                                 Command="{Binding CloneCommand}"
-                                IsEnabled="{Binding IsNotCloning}"/>
+                                IsEnabled="{Binding IsNotCloning}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr installs.button.cloneBasis}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                         <TextBlock Text="{Binding CloneProgress}" Classes="dim" FontSize="12"
                                    VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
                                    IsVisible="{Binding IsCloning}"/>
@@ -91,7 +113,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="vm:InstallRow">
-                        <Border Classes="card">
+                        <Border Classes="card interactive reveal">
                             <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                                 <StackPanel Grid.Column="0" Spacing="5" ClipToBounds="True">
                                     <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
@@ -121,25 +143,52 @@
                                     <TextBlock Text="{Binding GitSummary}" Classes="muted" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                    <Button Content="{loc:Tr installs.button.updateCore}" Classes="primary"
+                                    <Button Classes.primary="{Binding CoreHasUpdate}"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).UpdateCoreCommand}"
-                                            CommandParameter="{Binding}"/>
-                                    <Button Content="{loc:Tr installs.button.packages}"
-                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ManagePackagesCommand}"
-                                            CommandParameter="{Binding}"/>
-                                    <Button Content="{loc:Tr installs.button.changes}"
-                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ViewChangesCommand}"
-                                            CommandParameter="{Binding}"/>
-                                    <Button Content="{loc:Tr develop.button.openInUnity}" IsVisible="{Binding HasUnityProject}"
+                                            CommandParameter="{Binding}"
+                                            ToolTip.Tip="{Binding GitSummary}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr installs.button.updateCore}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ManagePackagesCommand}"
+                                            CommandParameter="{Binding}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr installs.button.packages}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ViewChangesCommand}"
+                                            CommandParameter="{Binding}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconChanges}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr installs.button.changes}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button IsVisible="{Binding HasUnityProject}"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenInUnityCommand}"
-                                            CommandParameter="{Binding}"/>
-                                    <Button Content="{loc:Tr installs.button.backup}" IsVisible="{Binding HasUnityProject}"
+                                            CommandParameter="{Binding}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button IsVisible="{Binding HasUnityProject}"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).BackupCommand}"
                                             CommandParameter="{Binding}"
-                                            ToolTip.Tip="{loc:Tr installs.tooltip.backup}"/>
-                                    <Button Content="{loc:Tr installs.button.remove}" Classes="danger"
+                                            ToolTip.Tip="{loc:Tr installs.tooltip.backup}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconArchive}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr installs.button.backup}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="iconBtn danger"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).RemoveCommand}"
-                                            CommandParameter="{Binding}"/>
+                                            CommandParameter="{Binding}"
+                                            ToolTip.Tip="{loc:Tr installs.button.remove}">
+                                        <PathIcon Width="16" Height="16" Data="{StaticResource IconDelete}"/>
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                         </Border>

@@ -17,8 +17,18 @@
                     <TextBlock Text="{loc:Tr support.hero.subtitle}"
                                Classes="muted" FontSize="14" TextWrapping="Wrap" MaxWidth="660" HorizontalAlignment="Left"/>
                     <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
-                        <Button Classes="primary" Content="{loc:Tr support.button.openCollective}" Command="{Binding OpenCollectiveCommand}"/>
-                        <Button Content="{loc:Tr support.button.joinDiscord}" Command="{Binding DiscordCommand}"/>
+                        <Button Classes="primary" Command="{Binding OpenCollectiveCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconHeart}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr support.button.openCollective}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding DiscordCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconChat}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr support.button.joinDiscord}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -31,7 +41,12 @@
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr support.community.bullets}"
                                    Classes="dim" FontSize="12"/>
-                        <Button Content="{loc:Tr support.button.backOpenCollective}" Command="{Binding OpenCollectiveCommand}" HorizontalAlignment="Left"/>
+                        <Button Command="{Binding OpenCollectiveCommand}" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconHeart}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr support.button.backOpenCollective}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </Border>
                 <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
@@ -41,7 +56,12 @@
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr support.company.bullets}"
                                    Classes="dim" FontSize="12"/>
-                        <Button Content="{loc:Tr support.button.sponsorFeature}" Command="{Binding FundingPageCommand}" HorizontalAlignment="Left"/>
+                        <Button Command="{Binding FundingPageCommand}" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconStar}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr support.button.sponsorFeature}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -51,7 +71,12 @@
                     <TextBlock Text="{loc:Tr support.where.title}" Classes="h3"/>
                     <TextBlock Text="{loc:Tr support.where.body}"
                                Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                    <Button Content="{loc:Tr support.button.fullFundingPage}" Command="{Binding FundingPageCommand}" HorizontalAlignment="Left"/>
+                    <Button Command="{Binding FundingPageCommand}" HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr support.button.fullFundingPage}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Border>
 

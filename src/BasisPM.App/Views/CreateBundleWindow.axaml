@@ -27,8 +27,18 @@
         <StackPanel DockPanel.Dock="Bottom" Spacing="10" Margin="0,14,0,0">
             <TextBlock x:Name="ErrorText" Foreground="#FFE06B6B" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button Content="{loc:Tr dialog.createBundle.cancel}" Click="OnCancel"/>
-                <Button Classes="primary" Content="{loc:Tr dialog.createBundle.create}" Click="OnCreate"/>
+                <Button Click="OnCancel">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr dialog.createBundle.cancel}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Classes="primary" Click="OnCreate">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr dialog.createBundle.create}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </StackPanel>
 
