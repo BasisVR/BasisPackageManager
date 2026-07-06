@@ -216,6 +216,27 @@
         <Setter Property="TextElement.Foreground" Value="#FFFFFF"/>
     </Style>
 
+    <!-- Secondary action: a calm, filled neutral button for already-handled states such as the
+         "Manage" menu on an installed package. Has the presence of a primary button without the
+         brand-red that reads as either the main CTA or a destructive action. -->
+    <Style Selector="Button.secondary">
+        <Setter Property="Background" Value="{StaticResource BasisSurfaceBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBorderStrongBrush}"/>
+    </Style>
+
+    <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
+    </Style>
+
+    <Style Selector="Button.secondary:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource BasisSurfaceMutedBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
+    </Style>
+
     <Style Selector="Button.cta">
         <Setter Property="Background" Value="{StaticResource BasisBrandGradient}"/>
         <Setter Property="Foreground" Value="#FFFFFF"/>

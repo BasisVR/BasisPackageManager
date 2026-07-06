@@ -113,7 +113,7 @@
                                                             IsVisible="{Binding !IsInstalled}"
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                                                             CommandParameter="{Binding Entry}"/>
-                                                    <Button Content="{loc:Tr packages.button.manage}" Classes="primary" HorizontalAlignment="Stretch"
+                                                    <Button Content="{loc:Tr packages.button.manage}" Classes="secondary" HorizontalAlignment="Stretch"
                                                             IsVisible="{Binding IsInstalled}" Click="OnManageClick"/>
                                                 </StackPanel>
                                             </Grid>
@@ -166,7 +166,7 @@
                                                         IsVisible="{Binding !IsInstalled}"
                                                         Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                                                         CommandParameter="{Binding Entry}"/>
-                                                <Button Content="{loc:Tr packages.button.manage}" Classes="primary" HorizontalAlignment="Stretch"
+                                                <Button Content="{loc:Tr packages.button.manage}" Classes="secondary" HorizontalAlignment="Stretch"
                                                         IsVisible="{Binding IsInstalled}" Click="OnManageClick"/>
                                             </StackPanel>
                                         </Border>
