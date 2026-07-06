@@ -491,6 +491,10 @@
       "value": "github"
     },
     {
+      "key": "packages.badge.unofficial",
+      "value": "UNOFFICIAL"
+    },
+    {
       "key": "packages.bundle.basisLine",
       "value": "Basis: {0}  ·  Unity {1}"
     },
@@ -1209,6 +1213,26 @@
     {
       "key": "settings.catalog.title",
       "value": "Package Catalog URL"
+    },
+    {
+      "key": "settings.extraCatalogs.add",
+      "value": "Add"
+    },
+    {
+      "key": "settings.extraCatalogs.description",
+      "value": "Add package catalogs from other sources. These are UNOFFICIAL — not reviewed or vetted by BasisVR — so install from them at your own risk. Official Basis packages always take priority over an unofficial one with the same id."
+    },
+    {
+      "key": "settings.extraCatalogs.remove",
+      "value": "Remove this catalog"
+    },
+    {
+      "key": "settings.extraCatalogs.title",
+      "value": "Additional Catalogs (Unofficial)"
+    },
+    {
+      "key": "settings.extraCatalogs.watermark",
+      "value": "https://example.com/catalog.json"
     },
     {
       "key": "settings.clone.description",

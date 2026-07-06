@@ -103,6 +103,10 @@
                                                         <Border Background="{StaticResource BasisSurfaceHoverBrush}" CornerRadius="999" Padding="8,2" VerticalAlignment="Center">
                                                             <TextBlock Text="{Binding Owner}" FontSize="10" FontWeight="Bold" Classes="muted"/>
                                                         </Border>
+                                                        <Border Classes="unofficialBadge" VerticalAlignment="Center" IsVisible="{Binding IsUnofficial}">
+                                                            <TextBlock Text="{loc:Tr packages.badge.unofficial}" FontSize="9" FontWeight="Bold"
+                                                                       Foreground="{StaticResource BasisWarningBrush}"/>
+                                                        </Border>
                                                     </StackPanel>
                                                     <TextBlock Text="{Binding Name}" Classes="dim" FontSize="11"/>
                                                     <TextBlock Text="{Binding Description}" Classes="muted" FontSize="12" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
@@ -116,7 +120,7 @@
                                                         </Border>
                                                         <TextBlock Text="{Binding Author, StringFormat='by {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center" IsVisible="{Binding HasAuthor}"/>
                                                         <TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center" IsVisible="{Binding HasUnity}"/>
-                                                        <Button Content="Website ↗" Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
+                                                        <Button Content="🔗" FontSize="14" Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
                                                                 ToolTip.Tip="{Binding Link}"
                                                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
                                                                 CommandParameter="{Binding Link}"/>
@@ -153,6 +157,10 @@
                                                         <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="13"
                                                                    TextTrimming="CharacterEllipsis" MaxWidth="150"/>
                                                         <TextBlock Text="{Binding Owner}" Classes="dim" FontSize="10"/>
+                                                        <Border Classes="unofficialBadge" HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding IsUnofficial}">
+                                                            <TextBlock Text="{loc:Tr packages.badge.unofficial}" FontSize="9" FontWeight="Bold"
+                                                                       Foreground="{StaticResource BasisWarningBrush}"/>
+                                                        </Border>
                                                     </StackPanel>
                                                 </StackPanel>
                                                 <TextBlock Text="{Binding Description}" Classes="muted" FontSize="11" TextWrapping="Wrap"
@@ -165,7 +173,7 @@
                                                             ToolTip.Tip="{loc:Tr packages.label.license}">
                                                         <TextBlock Text="{Binding License, StringFormat='⚖ {0}'}" FontSize="10" Classes="muted"/>
                                                     </Border>
-                                                    <Button Content="Website ↗" Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
+                                                    <Button Content="🔗" FontSize="14" Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
                                                             ToolTip.Tip="{Binding Link}"
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
                                                             CommandParameter="{Binding Link}"/>
@@ -256,6 +264,10 @@
                             <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,3,0,0">
                                 <TextBlock Text="{Binding Author, StringFormat='by {0}'}" Classes="muted" FontSize="12" IsVisible="{Binding HasAuthor}"/>
                                 <TextBlock Text="{Binding Owner}" Classes="dim" FontSize="12"/>
+                                <Border Classes="unofficialBadge" VerticalAlignment="Center" IsVisible="{Binding IsUnofficial}">
+                                    <TextBlock Text="{loc:Tr packages.badge.unofficial}" FontSize="9" FontWeight="Bold"
+                                               Foreground="{StaticResource BasisWarningBrush}"/>
+                                </Border>
                             </StackPanel>
                         </StackPanel>
                         <Button Grid.Column="2" Content="✕" FontSize="15" Padding="11,6" VerticalAlignment="Top"

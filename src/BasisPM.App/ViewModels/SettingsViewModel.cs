@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using BasisPM.App.Localization;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
@@ -13,6 +14,7 @@ public sealed class SettingsViewModel : ObservableObject
 
     private string _clonePath = "";
     private string _catalogUrl = "";
+    private string _newCatalogUrl = "";
     private string _unityHubPath = "";
     private bool _showLocalChanges;
     private bool _developerMode;
@@ -23,6 +25,10 @@ public sealed class SettingsViewModel : ObservableObject
 
     public string ClonePath { get => _clonePath; set => SetField(ref _clonePath, value); }
     public string CatalogUrl { get => _catalogUrl; set => SetField(ref _catalogUrl, value); }
+    // Extra, user-added catalog URLs — all UNOFFICIAL (not vetted by BasisVR).
+    public ObservableCollection<CatalogUrlItem> ExtraCatalogs { get; } = new();
+    // URL typed into the "add" field before it's committed to the list.
+    public string NewCatalogUrl { get => _newCatalogUrl; set => SetField(ref _newCatalogUrl, value); }
     public string UnityHubPath { get => _unityHubPath; set => SetField(ref _unityHubPath, value); }
     public bool ShowLocalChanges { get => _showLocalChanges; set => SetField(ref _showLocalChanges, value); }
     public bool DeveloperMode { get => _developerMode; set => SetField(ref _developerMode, value); }
@@ -47,6 +53,8 @@ public sealed class SettingsViewModel : ObservableObject
     public LogsViewModel Logs { get; }
 
     public RelayCommand SaveCommand { get; }
+    public RelayCommand AddCatalogCommand { get; }
+    public RelayCommand<CatalogUrlItem> RemoveCatalogCommand { get; }
     public RelayCommand CheckForUpdatesCommand => _shell.CheckForUpdatesCommand;
 
     public SettingsViewModel(UserSettingsService settingsService, GitService gitService, UnityHubService hubService, MainWindowViewModel shell, LogsViewModel logs)
@@ -58,6 +66,8 @@ public sealed class SettingsViewModel : ObservableObject
         Logs = logs;
         SettingsPath = settingsService.SettingsPath;
         SaveCommand = new RelayCommand(SaveAsync);
+        AddCatalogCommand = new RelayCommand(AddCatalog);
+        RemoveCatalogCommand = new RelayCommand<CatalogUrlItem>(item => { if (item is not null) ExtraCatalogs.Remove(item); });
         _selectedLanguage = FindLanguage(Localizer.Instance.CurrentCode);
         // Re-pull the localized "detected tooling" fallbacks when the language changes.
         Localizer.Instance.LanguageChanged += _ => RefreshDetected();
@@ -68,6 +78,9 @@ public sealed class SettingsViewModel : ObservableObject
     {
         ClonePath = settings.ClonePath ?? "";
         CatalogUrl = settings.CatalogUrl;
+        ExtraCatalogs.Clear();
+        foreach (var u in settings.ExtraCatalogUrls)
+            if (!string.IsNullOrWhiteSpace(u)) ExtraCatalogs.Add(new CatalogUrlItem(u));
         UnityHubPath = settings.UnityHubPath ?? "";
         ShowLocalChanges = settings.ShowLocalChanges;
         DeveloperMode = settings.DeveloperMode;
@@ -102,17 +115,39 @@ public sealed class SettingsViewModel : ObservableObject
         var settings = await _settingsService.LoadAsync();
         settings.ClonePath = string.IsNullOrWhiteSpace(ClonePath) ? null : ClonePath.Trim();
         settings.CatalogUrl = CatalogUrl?.Trim() ?? "";
+        settings.ExtraCatalogUrls = ExtraCatalogs
+            .Select(c => c.Url?.Trim() ?? "")
+            .Where(u => u.Length > 0)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
         settings.UnityHubPath = string.IsNullOrWhiteSpace(UnityHubPath) ? null : UnityHubPath.Trim();
         settings.ShowLocalChanges = ShowLocalChanges;
         settings.DeveloperMode = DeveloperMode;
         settings.PrereleaseUpdates = PrereleaseUpdates;
         await _settingsService.SaveAsync(settings);
 
-        await _shell.PackagesVM.LoadCatalogAsync(settings.CatalogUrl);
+        await _shell.PackagesVM.LoadCatalogAsync(settings.CatalogUrl, settings.ExtraCatalogUrls);
         _shell.ShowChangesTab = settings.ShowLocalChanges;
         _shell.ShowDevelopTab = settings.DeveloperMode;
         _shell.ApplyPrerelease(settings.PrereleaseUpdates);
         RefreshDetected();
         _shell.SetStatus(L.Tr("settings.status.saved"), StatusKind.Success);
     }
+
+    private void AddCatalog()
+    {
+        var url = NewCatalogUrl?.Trim();
+        if (string.IsNullOrWhiteSpace(url)) return;
+        if (!ExtraCatalogs.Any(c => string.Equals(c.Url?.Trim(), url, StringComparison.OrdinalIgnoreCase)))
+            ExtraCatalogs.Add(new CatalogUrlItem(url));
+        NewCatalogUrl = "";
+    }
+}
+
+/// <summary>One user-added (unofficial) catalog URL row in Settings; editable in place.</summary>
+public sealed class CatalogUrlItem : ObservableObject
+{
+    private string _url;
+    public CatalogUrlItem(string url) => _url = url;
+    public string Url { get => _url; set => SetField(ref _url, value); }
 }

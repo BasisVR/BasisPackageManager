@@ -292,7 +292,7 @@ public sealed class MainWindowViewModel : ObservableObject
         ShowDevelopTab = settings.DeveloperMode;
         PackagesVM.SetInitialGridView(settings.PackagesGridView);
         await InstallsVM.LoadAsync(settings);
-        await PackagesVM.LoadCatalogAsync(settings.CatalogUrl);
+        await PackagesVM.LoadCatalogAsync(settings.CatalogUrl, settings.ExtraCatalogUrls);
 
         // Handle a launch-time deep link now (active install + packages are ready) — don't wait on the slower Unity refresh.
         if (DeepLinkDispatcher.Pending is { } pending)

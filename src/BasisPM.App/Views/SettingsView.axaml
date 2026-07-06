@@ -50,6 +50,31 @@
                     </StackPanel>
 
                     <StackPanel Spacing="6">
+                        <TextBlock Text="{loc:Tr settings.extraCatalogs.title}" Classes="h3"/>
+                        <TextBlock Text="{loc:Tr settings.extraCatalogs.description}"
+                                   Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                        <ItemsControl ItemsSource="{Binding ExtraCatalogs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="vm:CatalogUrlItem">
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+                                        <TextBox Grid.Column="0" Text="{Binding Url}"/>
+                                        <Button Grid.Column="1" Content="✕" Margin="8,0,0,0" Classes="danger"
+                                                Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).RemoveCatalogCommand}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip.Tip="{loc:Tr settings.extraCatalogs.remove}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBox Grid.Column="0" Text="{Binding NewCatalogUrl}"
+                                     Watermark="{loc:Tr settings.extraCatalogs.watermark}"/>
+                            <Button Grid.Column="1" Content="{loc:Tr settings.extraCatalogs.add}" Margin="8,0,0,0"
+                                    Classes="primary" Command="{Binding AddCatalogCommand}"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Spacing="6">
                         <TextBlock Text="{loc:Tr settings.unityHub.title}" Classes="h3"/>
                         <TextBlock Text="{loc:Tr settings.unityHub.description}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>

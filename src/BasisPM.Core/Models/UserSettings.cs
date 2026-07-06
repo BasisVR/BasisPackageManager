@@ -17,6 +17,12 @@ public sealed class UserSettings
     [JsonPropertyName("catalogUrl")]
     public string CatalogUrl { get; set; } = "";
 
+    // Additional, user-added catalog URLs. These are UNOFFICIAL (not vetted by BasisVR): their
+    // packages are merged into the list and badged as such, and can never override an official
+    // package id (the Basis catalog above always wins a conflict).
+    [JsonPropertyName("extraCatalogUrls")]
+    public List<string> ExtraCatalogUrls { get; set; } = new();
+
     [JsonPropertyName("unityHubPath")]
     public string? UnityHubPath { get; set; }
 

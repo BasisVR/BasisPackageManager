@@ -33,6 +33,7 @@
 
             <Color x:Key="BasisDanger">#EF1237</Color>
             <Color x:Key="BasisSuccess">#22C55E</Color>
+            <Color x:Key="BasisWarning">#F59E0B</Color>
 
             <SolidColorBrush x:Key="BasisBackgroundBrush" Color="{StaticResource BasisBackground}"/>
             <SolidColorBrush x:Key="BasisPanelBrush" Color="{StaticResource BasisPanel}"/>
@@ -58,6 +59,7 @@
             <SolidColorBrush x:Key="BasisPinkBrush" Color="{StaticResource BasisPink}"/>
             <SolidColorBrush x:Key="BasisDangerBrush" Color="{StaticResource BasisDanger}"/>
             <SolidColorBrush x:Key="BasisSuccessBrush" Color="{StaticResource BasisSuccess}"/>
+            <SolidColorBrush x:Key="BasisWarningBrush" Color="{StaticResource BasisWarning}"/>
 
             <SolidColorBrush x:Key="BasisAccentBrush" Color="{StaticResource BasisBrand}"/>
 
@@ -376,6 +378,15 @@
         <Setter Property="Background" Value="{StaticResource BasisBrandBrush}"/>
         <Setter Property="CornerRadius" Value="999"/>
         <Setter Property="Padding" Value="10,3"/>
+    </Style>
+
+    <!-- Caution pill for packages from an unofficial (user-added) catalog. -->
+    <Style Selector="Border.unofficialBadge">
+        <Setter Property="Background" Value="#26F59E0B"/>
+        <Setter Property="BorderBrush" Value="#80F59E0B"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="999"/>
+        <Setter Property="Padding" Value="8,2"/>
     </Style>
 
     <Style Selector="Border.versionPill">

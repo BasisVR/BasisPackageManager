@@ -29,6 +29,11 @@ public sealed class PackagesViewModel : ObservableObject
     private readonly List<InstalledPackageRow> _allInstalled = new();
     private BasisInstall? _selectedInstall;
     private bool _syncingSelection;
+    // Configured catalog sources, remembered so Refresh reloads exactly what's configured.
+    private string? _officialCatalogUrl;
+    private IReadOnlyList<string> _extraCatalogUrls = Array.Empty<string>();
+    // Package ids that came only from an unofficial (extra) catalog — drives the "Unofficial" badge.
+    private readonly HashSet<string> _unofficialIds = new(StringComparer.OrdinalIgnoreCase);
 
     private static string AllOwnersLabel => L.Tr("packages.filter.allOwners");
 
@@ -162,12 +167,35 @@ public sealed class PackagesViewModel : ObservableObject
         _syncingSelection = false;
     }
 
-    public async Task LoadCatalogAsync(string? url)
+    public Task LoadCatalogAsync(string? officialUrl, IReadOnlyList<string>? extraUrls = null)
+    {
+        _officialCatalogUrl = officialUrl;
+        _extraCatalogUrls = extraUrls ?? Array.Empty<string>();
+        return ReloadCatalogAsync();
+    }
+
+    /// <summary>Reloads the official Basis catalog plus any configured unofficial extras, merged into
+    /// one list. The official catalog always wins a package-id conflict; extras contribute only ids it
+    /// doesn't already define, tracked in <see cref="_unofficialIds"/> so they can be badged.</summary>
+    private async Task ReloadCatalogAsync()
     {
         IsBusy = true;
         try
         {
-            _catalog = await _catalogService.LoadAsync(url);
+            var merged = await _catalogService.LoadAsync(_officialCatalogUrl);
+            _unofficialIds.Clear();
+            foreach (var extraUrl in _extraCatalogUrls)
+            {
+                var extra = await _catalogService.TryLoadAsync(extraUrl?.Trim() ?? "");
+                if (extra is null) continue;
+                foreach (var kv in extra.Packages)
+                {
+                    if (merged.Packages.ContainsKey(kv.Key)) continue; // official / earlier extra wins
+                    merged.Packages[kv.Key] = kv.Value;
+                    _unofficialIds.Add(kv.Key);
+                }
+            }
+            _catalog = merged;
             Refilter();
         }
         finally { IsBusy = false; }
@@ -175,7 +203,7 @@ public sealed class PackagesViewModel : ObservableObject
 
     private async Task RefreshAsync()
     {
-        await LoadCatalogAsync(null);
+        await ReloadCatalogAsync();
         if (_install is not null && _install.HasUnityProject)
         {
             try
@@ -200,7 +228,7 @@ public sealed class PackagesViewModel : ObservableObject
                 continue;
 
             var installedVersion = _install?.Manifest.Dependencies.GetValueOrDefault(v.Name);
-            Available.Add(new PackageRow(v, installedVersion));
+            Available.Add(new PackageRow(v, installedVersion, _unofficialIds.Contains(v.Name)));
         }
 
         // Keep an open detail panel pointed at the refreshed row so its installed-state stays current.
@@ -643,7 +671,7 @@ public sealed class PackagesViewModel : ObservableObject
     private static void OpenUrl(string url) => ExternalLink.Open(url);
 }
 
-public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVersion)
+public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVersion, bool IsUnofficial = false)
 {
     public string DisplayName => Entry.DisplayName;
     public string Name => Entry.Name;

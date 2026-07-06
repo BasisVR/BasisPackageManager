@@ -24,16 +24,30 @@ public sealed class CatalogService
     public async Task<Catalog> LoadAsync(string? url, CancellationToken ct = default)
     {
         var effective = string.IsNullOrWhiteSpace(url) ? DefaultCatalogUrl : url;
+        return await FetchAsync(effective, ct).ConfigureAwait(false) ?? LoadEmbedded();
+    }
+
+    /// <summary>
+    /// Loads a catalog from a URL WITHOUT the embedded-Basis fallback — returns null if it can't be
+    /// fetched or parsed. Used for extra (unofficial) catalogs so a broken URL contributes nothing
+    /// (rather than silently injecting the bundled Basis catalog as if it were the extra source).
+    /// </summary>
+    public Task<Catalog?> TryLoadAsync(string url, CancellationToken ct = default)
+        => string.IsNullOrWhiteSpace(url) ? Task.FromResult<Catalog?>(null) : FetchAsync(url, ct);
+
+    /// <summary>
+    /// GETs the catalog JSON and deserializes it, tolerating any content-type — many hosts
+    /// (e.g. raw.githubusercontent.com) serve JSON as text/plain, which GetFromJsonAsync rejects.
+    /// Returns null on any network or parse failure.
+    /// </summary>
+    private async Task<Catalog?> FetchAsync(string url, CancellationToken ct)
+    {
         try
         {
-            var remote = await _http.GetFromJsonAsync<Catalog>(effective, JsonOpts, ct).ConfigureAwait(false);
-            if (remote is not null) return remote;
+            var json = await _http.GetStringAsync(url, ct).ConfigureAwait(false);
+            return JsonSerializer.Deserialize<Catalog>(json, JsonOpts);
         }
-        catch
-        {
-        }
-
-        return LoadEmbedded();
+        catch { return null; }
     }
 
     public static Catalog LoadEmbedded()
