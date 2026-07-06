@@ -236,8 +236,11 @@
     </ScrollViewer>
 
     <!-- Package detail overlay — opened by clicking a package row, closed by ✕ or the backdrop. -->
-    <Border IsVisible="{Binding ShowDetail}" Background="#B4000000" Tapped="OnBackdropTapped">
-        <Border Classes="card" MaxWidth="620" MaxHeight="740" Margin="40"
+    <Border IsVisible="{Binding ShowDetail}" Background="#E6000000" Tapped="OnBackdropTapped">
+        <!-- Opaque surface (overriding the translucent card glass) so the detail text stays readable
+             over the animated background; the card glass is fine on the static list but not here. -->
+        <Border Classes="card" Background="{StaticResource BasisSurfaceBrush}"
+                MaxWidth="620" MaxHeight="740" Margin="40"
                 HorizontalAlignment="Center" VerticalAlignment="Center">
             <ScrollViewer DataContext="{Binding SelectedPackage}">
                 <StackPanel Spacing="16" x:DataType="vm:PackageRow">
