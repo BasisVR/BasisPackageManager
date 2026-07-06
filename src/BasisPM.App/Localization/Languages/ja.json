@@ -492,7 +492,7 @@
     },
     {
       "key": "packages.button.add",
-      "value": "+ 追加"
+      "value": "追加"
     },
     {
       "key": "packages.button.chooseVersion",
@@ -1216,7 +1216,7 @@
     },
     {
       "key": "support.button.fullFundingPage",
-      "value": "資金支援ページ全文を読む  ↗"
+      "value": "資金支援ページ全文を読む"
     },
     {
       "key": "support.button.joinDiscord",
@@ -1224,7 +1224,7 @@
     },
     {
       "key": "support.button.openCollective",
-      "value": "♥   OpenCollective で支援する"
+      "value": "OpenCollective で支援する"
     },
     {
       "key": "support.button.sponsorFeature",
@@ -1280,7 +1280,7 @@
     },
     {
       "key": "docs.button.basisGithub",
-      "value": "GitHub の Basis  ↗"
+      "value": "GitHub の Basis"
     },
     {
       "key": "docs.button.joinDiscord",
@@ -1288,15 +1288,15 @@
     },
     {
       "key": "docs.button.openDocs",
-      "value": "ドキュメントを開く  ↗"
+      "value": "ドキュメントを開く"
     },
     {
       "key": "docs.button.openDocsSite",
-      "value": "docs.basisvr.org を開く  ↗"
+      "value": "docs.basisvr.org を開く"
     },
     {
       "key": "docs.button.packageManagerGithub",
-      "value": "GitHub の Package Manager  ↗"
+      "value": "GitHub の Package Manager"
     },
     {
       "key": "docs.community.body",
@@ -1528,7 +1528,7 @@
     },
     {
       "key": "dialog.roleWizard.developerTitle",
-      "value": "🛠   開発者です"
+      "value": "開発者です"
     },
     {
       "key": "dialog.roleWizard.intro",
@@ -1544,7 +1544,7 @@
     },
     {
       "key": "dialog.roleWizard.userTitle",
-      "value": "🎮   フレームワークを使います"
+      "value": "フレームワークを使います"
     },
     {
       "key": "dialog.roleWizard.welcome",
@@ -1636,7 +1636,7 @@
     },
     {
       "key": "community.button.openDocs",
-      "value": "ドキュメントを開く  ↗"
+      "value": "ドキュメントを開く"
     },
     {
       "key": "community.button.joinDiscord",
@@ -1680,7 +1680,7 @@
     },
     {
       "key": "community.docs.openSite",
-      "value": "docs.basisvr.org を開く  ↗"
+      "value": "docs.basisvr.org を開く"
     },
     {
       "key": "community.docs.askTitle",
@@ -1700,11 +1700,11 @@
     },
     {
       "key": "community.docs.basisRepo",
-      "value": "GitHub の Basis  ↗"
+      "value": "GitHub の Basis"
     },
     {
       "key": "community.docs.pmRepo",
-      "value": "GitHub の Package Manager  ↗"
+      "value": "GitHub の Package Manager"
     },
     {
       "key": "community.support.heading",
@@ -1716,7 +1716,7 @@
     },
     {
       "key": "community.support.openCollective",
-      "value": "♥   OpenCollective で支援する"
+      "value": "OpenCollective で支援する"
     },
     {
       "key": "community.support.donationsTitle",
@@ -1752,7 +1752,7 @@
     },
     {
       "key": "community.support.fundingPage",
-      "value": "資金支援ページ全文を読む  ↗"
+      "value": "資金支援ページ全文を読む"
     }
   ]
 }

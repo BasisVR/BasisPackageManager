@@ -492,7 +492,7 @@
     },
     {
       "key": "packages.button.add",
-      "value": "+ Hinzufügen"
+      "value": "Hinzufügen"
     },
     {
       "key": "packages.button.chooseVersion",
@@ -1216,7 +1216,7 @@
     },
     {
       "key": "support.button.fullFundingPage",
-      "value": "Vollständige Förderseite lesen  ↗"
+      "value": "Vollständige Förderseite lesen"
     },
     {
       "key": "support.button.joinDiscord",
@@ -1224,7 +1224,7 @@
     },
     {
       "key": "support.button.openCollective",
-      "value": "♥   Über OpenCollective unterstützen"
+      "value": "Über OpenCollective unterstützen"
     },
     {
       "key": "support.button.sponsorFeature",
@@ -1280,7 +1280,7 @@
     },
     {
       "key": "docs.button.basisGithub",
-      "value": "Basis auf GitHub  ↗"
+      "value": "Basis auf GitHub"
     },
     {
       "key": "docs.button.joinDiscord",
@@ -1288,15 +1288,15 @@
     },
     {
       "key": "docs.button.openDocs",
-      "value": "Doku öffnen  ↗"
+      "value": "Doku öffnen"
     },
     {
       "key": "docs.button.openDocsSite",
-      "value": "docs.basisvr.org öffnen  ↗"
+      "value": "docs.basisvr.org öffnen"
     },
     {
       "key": "docs.button.packageManagerGithub",
-      "value": "Package Manager auf GitHub  ↗"
+      "value": "Package Manager auf GitHub"
     },
     {
       "key": "docs.community.body",
@@ -1528,7 +1528,7 @@
     },
     {
       "key": "dialog.roleWizard.developerTitle",
-      "value": "🛠   Ich bin Entwickler"
+      "value": "Ich bin Entwickler"
     },
     {
       "key": "dialog.roleWizard.intro",
@@ -1544,7 +1544,7 @@
     },
     {
       "key": "dialog.roleWizard.userTitle",
-      "value": "🎮   Ich nutze das Framework"
+      "value": "Ich nutze das Framework"
     },
     {
       "key": "dialog.roleWizard.welcome",
@@ -1636,7 +1636,7 @@
     },
     {
       "key": "community.button.openDocs",
-      "value": "Doku öffnen  ↗"
+      "value": "Doku öffnen"
     },
     {
       "key": "community.button.joinDiscord",
@@ -1680,7 +1680,7 @@
     },
     {
       "key": "community.docs.openSite",
-      "value": "docs.basisvr.org öffnen  ↗"
+      "value": "docs.basisvr.org öffnen"
     },
     {
       "key": "community.docs.askTitle",
@@ -1700,11 +1700,11 @@
     },
     {
       "key": "community.docs.basisRepo",
-      "value": "Basis auf GitHub  ↗"
+      "value": "Basis auf GitHub"
     },
     {
       "key": "community.docs.pmRepo",
-      "value": "Package Manager auf GitHub  ↗"
+      "value": "Package Manager auf GitHub"
     },
     {
       "key": "community.support.heading",
@@ -1716,7 +1716,7 @@
     },
     {
       "key": "community.support.openCollective",
-      "value": "♥   Über OpenCollective unterstützen"
+      "value": "Über OpenCollective unterstützen"
     },
     {
       "key": "community.support.donationsTitle",
@@ -1752,7 +1752,7 @@
     },
     {
       "key": "community.support.fundingPage",
-      "value": "Vollständige Förderseite lesen  ↗"
+      "value": "Vollständige Förderseite lesen"
     }
   ]
 }

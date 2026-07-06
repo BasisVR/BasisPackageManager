@@ -3,6 +3,42 @@
   "nativeName": "English",
   "entries": [
     {
+      "key": "packages.detail.close",
+      "value": "Close"
+    },
+    {
+      "key": "settings.licenses.title",
+      "value": "Licenses & attributions"
+    },
+    {
+      "key": "settings.licenses.description",
+      "value": "Basis Package Manager is open source under the MIT License. It's built with these third-party projects — thank you to their authors."
+    },
+    {
+      "key": "settings.licenses.role.thisApp",
+      "value": "This application"
+    },
+    {
+      "key": "settings.licenses.role.framework",
+      "value": "UI framework"
+    },
+    {
+      "key": "settings.licenses.role.icons",
+      "value": "Interface icons"
+    },
+    {
+      "key": "settings.licenses.role.font",
+      "value": "Interface typeface"
+    },
+    {
+      "key": "settings.licenses.role.updater",
+      "value": "Auto-updater"
+    },
+    {
+      "key": "settings.licenses.role.runtime",
+      "value": "Runtime"
+    },
+    {
       "key": "nav.changes",
       "value": "Local Changes"
     },
@@ -504,7 +540,7 @@
     },
     {
       "key": "packages.button.add",
-      "value": "+ Add"
+      "value": "Add"
     },
     {
       "key": "packages.button.chooseVersion",
@@ -560,7 +596,7 @@
     },
     {
       "key": "packages.detail.website",
-      "value": "Open website  ↗"
+      "value": "Open website"
     },
     {
       "key": "packages.dialog.installTitle",
@@ -1348,7 +1384,7 @@
     },
     {
       "key": "support.button.fullFundingPage",
-      "value": "Read the full funding page  ↗"
+      "value": "Read the full funding page"
     },
     {
       "key": "support.button.joinDiscord",
@@ -1356,7 +1392,7 @@
     },
     {
       "key": "support.button.openCollective",
-      "value": "♥   Support via OpenCollective"
+      "value": "Support via OpenCollective"
     },
     {
       "key": "support.button.sponsorFeature",
@@ -1412,7 +1448,7 @@
     },
     {
       "key": "docs.button.basisGithub",
-      "value": "Basis on GitHub  ↗"
+      "value": "Basis on GitHub"
     },
     {
       "key": "docs.button.joinDiscord",
@@ -1420,15 +1456,15 @@
     },
     {
       "key": "docs.button.openDocs",
-      "value": "Open the docs  ↗"
+      "value": "Open the docs"
     },
     {
       "key": "docs.button.openDocsSite",
-      "value": "Open docs.basisvr.org  ↗"
+      "value": "Open docs.basisvr.org"
     },
     {
       "key": "docs.button.packageManagerGithub",
-      "value": "Package Manager on GitHub  ↗"
+      "value": "Package Manager on GitHub"
     },
     {
       "key": "docs.community.body",
@@ -1660,7 +1696,7 @@
     },
     {
       "key": "dialog.roleWizard.developerTitle",
-      "value": "🛠   I'm a developer"
+      "value": "I'm a developer"
     },
     {
       "key": "dialog.roleWizard.intro",
@@ -1676,7 +1712,7 @@
     },
     {
       "key": "dialog.roleWizard.userTitle",
-      "value": "🎮   I'm using the framework"
+      "value": "I'm using the framework"
     },
     {
       "key": "dialog.roleWizard.welcome",
@@ -1768,7 +1804,7 @@
     },
     {
       "key": "community.button.openDocs",
-      "value": "Open the docs  ↗"
+      "value": "Open the docs"
     },
     {
       "key": "community.button.joinDiscord",
@@ -1812,7 +1848,7 @@
     },
     {
       "key": "community.docs.openSite",
-      "value": "Open docs.basisvr.org  ↗"
+      "value": "Open docs.basisvr.org"
     },
     {
       "key": "community.docs.askTitle",
@@ -1832,11 +1868,11 @@
     },
     {
       "key": "community.docs.basisRepo",
-      "value": "Basis on GitHub  ↗"
+      "value": "Basis on GitHub"
     },
     {
       "key": "community.docs.pmRepo",
-      "value": "Package Manager on GitHub  ↗"
+      "value": "Package Manager on GitHub"
     },
     {
       "key": "community.support.heading",
@@ -1848,7 +1884,7 @@
     },
     {
       "key": "community.support.openCollective",
-      "value": "♥   Support via OpenCollective"
+      "value": "Support via OpenCollective"
     },
     {
       "key": "community.support.donationsTitle",
@@ -1884,7 +1920,7 @@
     },
     {
       "key": "community.support.fundingPage",
-      "value": "Read the full funding page  ↗"
+      "value": "Read the full funding page"
     }
   ]
 }

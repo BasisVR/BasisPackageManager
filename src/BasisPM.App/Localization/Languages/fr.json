@@ -492,7 +492,7 @@
     },
     {
       "key": "packages.button.add",
-      "value": "+ Ajouter"
+      "value": "Ajouter"
     },
     {
       "key": "packages.button.chooseVersion",
@@ -1216,7 +1216,7 @@
     },
     {
       "key": "support.button.fullFundingPage",
-      "value": "Lire la page de financement complète  ↗"
+      "value": "Lire la page de financement complète"
     },
     {
       "key": "support.button.joinDiscord",
@@ -1224,7 +1224,7 @@
     },
     {
       "key": "support.button.openCollective",
-      "value": "♥   Soutenir via OpenCollective"
+      "value": "Soutenir via OpenCollective"
     },
     {
       "key": "support.button.sponsorFeature",
@@ -1280,7 +1280,7 @@
     },
     {
       "key": "docs.button.basisGithub",
-      "value": "Basis sur GitHub  ↗"
+      "value": "Basis sur GitHub"
     },
     {
       "key": "docs.button.joinDiscord",
@@ -1288,15 +1288,15 @@
     },
     {
       "key": "docs.button.openDocs",
-      "value": "Ouvrir la documentation  ↗"
+      "value": "Ouvrir la documentation"
     },
     {
       "key": "docs.button.openDocsSite",
-      "value": "Ouvrir docs.basisvr.org  ↗"
+      "value": "Ouvrir docs.basisvr.org"
     },
     {
       "key": "docs.button.packageManagerGithub",
-      "value": "Gestionnaire de paquets sur GitHub  ↗"
+      "value": "Gestionnaire de paquets sur GitHub"
     },
     {
       "key": "docs.community.body",
@@ -1528,7 +1528,7 @@
     },
     {
       "key": "dialog.roleWizard.developerTitle",
-      "value": "🛠   Je suis développeur"
+      "value": "Je suis développeur"
     },
     {
       "key": "dialog.roleWizard.intro",
@@ -1544,7 +1544,7 @@
     },
     {
       "key": "dialog.roleWizard.userTitle",
-      "value": "🎮   J'utilise le framework"
+      "value": "J'utilise le framework"
     },
     {
       "key": "dialog.roleWizard.welcome",
@@ -1636,7 +1636,7 @@
     },
     {
       "key": "community.button.openDocs",
-      "value": "Ouvrir la documentation  ↗"
+      "value": "Ouvrir la documentation"
     },
     {
       "key": "community.button.joinDiscord",
@@ -1680,7 +1680,7 @@
     },
     {
       "key": "community.docs.openSite",
-      "value": "Ouvrir docs.basisvr.org  ↗"
+      "value": "Ouvrir docs.basisvr.org"
     },
     {
       "key": "community.docs.askTitle",
@@ -1700,11 +1700,11 @@
     },
     {
       "key": "community.docs.basisRepo",
-      "value": "Basis sur GitHub  ↗"
+      "value": "Basis sur GitHub"
     },
     {
       "key": "community.docs.pmRepo",
-      "value": "Gestionnaire de paquets sur GitHub  ↗"
+      "value": "Gestionnaire de paquets sur GitHub"
     },
     {
       "key": "community.support.heading",
@@ -1716,7 +1716,7 @@
     },
     {
       "key": "community.support.openCollective",
-      "value": "♥   Soutenir via OpenCollective"
+      "value": "Soutenir via OpenCollective"
     },
     {
       "key": "community.support.donationsTitle",
@@ -1752,7 +1752,7 @@
     },
     {
       "key": "community.support.fundingPage",
-      "value": "Lire la page de financement complète  ↗"
+      "value": "Lire la page de financement complète"
     }
   ]
 }

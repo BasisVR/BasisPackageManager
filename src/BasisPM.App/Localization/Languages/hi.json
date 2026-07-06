@@ -492,7 +492,7 @@
     },
     {
       "key": "packages.button.add",
-      "value": "+ जोड़ें"
+      "value": "जोड़ें"
     },
     {
       "key": "packages.button.chooseVersion",
@@ -1216,7 +1216,7 @@
     },
     {
       "key": "support.button.fullFundingPage",
-      "value": "पूरा फंडिंग पेज पढ़ें  ↗"
+      "value": "पूरा फंडिंग पेज पढ़ें"
     },
     {
       "key": "support.button.joinDiscord",
@@ -1224,7 +1224,7 @@
     },
     {
       "key": "support.button.openCollective",
-      "value": "♥   OpenCollective के माध्यम से समर्थन करें"
+      "value": "OpenCollective के माध्यम से समर्थन करें"
     },
     {
       "key": "support.button.sponsorFeature",
@@ -1280,7 +1280,7 @@
     },
     {
       "key": "docs.button.basisGithub",
-      "value": "GitHub पर Basis  ↗"
+      "value": "GitHub पर Basis"
     },
     {
       "key": "docs.button.joinDiscord",
@@ -1288,15 +1288,15 @@
     },
     {
       "key": "docs.button.openDocs",
-      "value": "दस्तावेज़ खोलें  ↗"
+      "value": "दस्तावेज़ खोलें"
     },
     {
       "key": "docs.button.openDocsSite",
-      "value": "docs.basisvr.org खोलें  ↗"
+      "value": "docs.basisvr.org खोलें"
     },
     {
       "key": "docs.button.packageManagerGithub",
-      "value": "GitHub पर Package Manager  ↗"
+      "value": "GitHub पर Package Manager"
     },
     {
       "key": "docs.community.body",
@@ -1528,7 +1528,7 @@
     },
     {
       "key": "dialog.roleWizard.developerTitle",
-      "value": "🛠   मैं एक डेवलपर हूँ"
+      "value": "मैं एक डेवलपर हूँ"
     },
     {
       "key": "dialog.roleWizard.intro",
@@ -1544,7 +1544,7 @@
     },
     {
       "key": "dialog.roleWizard.userTitle",
-      "value": "🎮   मैं फ्रेमवर्क का उपयोग कर रहा हूँ"
+      "value": "मैं फ्रेमवर्क का उपयोग कर रहा हूँ"
     },
     {
       "key": "dialog.roleWizard.welcome",
@@ -1636,7 +1636,7 @@
     },
     {
       "key": "community.button.openDocs",
-      "value": "दस्तावेज़ खोलें  ↗"
+      "value": "दस्तावेज़ खोलें"
     },
     {
       "key": "community.button.joinDiscord",
@@ -1680,7 +1680,7 @@
     },
     {
       "key": "community.docs.openSite",
-      "value": "docs.basisvr.org खोलें  ↗"
+      "value": "docs.basisvr.org खोलें"
     },
     {
       "key": "community.docs.askTitle",
@@ -1700,11 +1700,11 @@
     },
     {
       "key": "community.docs.basisRepo",
-      "value": "GitHub पर Basis  ↗"
+      "value": "GitHub पर Basis"
     },
     {
       "key": "community.docs.pmRepo",
-      "value": "GitHub पर Package Manager  ↗"
+      "value": "GitHub पर Package Manager"
     },
     {
       "key": "community.support.heading",
@@ -1716,7 +1716,7 @@
     },
     {
       "key": "community.support.openCollective",
-      "value": "♥   OpenCollective के माध्यम से समर्थन करें"
+      "value": "OpenCollective के माध्यम से समर्थन करें"
     },
     {
       "key": "community.support.donationsTitle",
@@ -1752,7 +1752,7 @@
     },
     {
       "key": "community.support.fundingPage",
-      "value": "पूरा फंडिंग पेज पढ़ें  ↗"
+      "value": "पूरा फंडिंग पेज पढ़ें"
     }
   ]
 }

@@ -492,7 +492,7 @@
     },
     {
       "key": "packages.button.add",
-      "value": "+ 添加"
+      "value": "添加"
     },
     {
       "key": "packages.button.chooseVersion",
@@ -1216,7 +1216,7 @@
     },
     {
       "key": "support.button.fullFundingPage",
-      "value": "阅读完整的资助页面  ↗"
+      "value": "阅读完整的资助页面"
     },
     {
       "key": "support.button.joinDiscord",
@@ -1224,7 +1224,7 @@
     },
     {
       "key": "support.button.openCollective",
-      "value": "♥   通过 OpenCollective 支持"
+      "value": "通过 OpenCollective 支持"
     },
     {
       "key": "support.button.sponsorFeature",
@@ -1280,7 +1280,7 @@
     },
     {
       "key": "docs.button.basisGithub",
-      "value": "GitHub 上的 Basis  ↗"
+      "value": "GitHub 上的 Basis"
     },
     {
       "key": "docs.button.joinDiscord",
@@ -1288,15 +1288,15 @@
     },
     {
       "key": "docs.button.openDocs",
-      "value": "打开文档  ↗"
+      "value": "打开文档"
     },
     {
       "key": "docs.button.openDocsSite",
-      "value": "打开 docs.basisvr.org  ↗"
+      "value": "打开 docs.basisvr.org"
     },
     {
       "key": "docs.button.packageManagerGithub",
-      "value": "GitHub 上的包管理器  ↗"
+      "value": "GitHub 上的包管理器"
     },
     {
       "key": "docs.community.body",
@@ -1528,7 +1528,7 @@
     },
     {
       "key": "dialog.roleWizard.developerTitle",
-      "value": "🛠   我是开发者"
+      "value": "我是开发者"
     },
     {
       "key": "dialog.roleWizard.intro",
@@ -1544,7 +1544,7 @@
     },
     {
       "key": "dialog.roleWizard.userTitle",
-      "value": "🎮   我在使用该框架"
+      "value": "我在使用该框架"
     },
     {
       "key": "dialog.roleWizard.welcome",
@@ -1636,7 +1636,7 @@
     },
     {
       "key": "community.button.openDocs",
-      "value": "打开文档  ↗"
+      "value": "打开文档"
     },
     {
       "key": "community.button.joinDiscord",
@@ -1680,7 +1680,7 @@
     },
     {
       "key": "community.docs.openSite",
-      "value": "打开 docs.basisvr.org  ↗"
+      "value": "打开 docs.basisvr.org"
     },
     {
       "key": "community.docs.askTitle",
@@ -1700,11 +1700,11 @@
     },
     {
       "key": "community.docs.basisRepo",
-      "value": "GitHub 上的 Basis  ↗"
+      "value": "GitHub 上的 Basis"
     },
     {
       "key": "community.docs.pmRepo",
-      "value": "GitHub 上的包管理器  ↗"
+      "value": "GitHub 上的包管理器"
     },
     {
       "key": "community.support.heading",
@@ -1716,7 +1716,7 @@
     },
     {
       "key": "community.support.openCollective",
-      "value": "♥   通过 OpenCollective 支持"
+      "value": "通过 OpenCollective 支持"
     },
     {
       "key": "community.support.donationsTitle",
@@ -1752,7 +1752,7 @@
     },
     {
       "key": "community.support.fundingPage",
-      "value": "阅读完整的资助页面  ↗"
+      "value": "阅读完整的资助页面"
     }
   ]
 }
