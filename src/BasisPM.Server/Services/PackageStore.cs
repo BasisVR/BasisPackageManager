@@ -231,6 +231,7 @@ public sealed class PackageStore
                         Dependencies = p.Dependencies,
                         Author = new CatalogAuthor { Name = p.Author, Url = p.AuthorUrl },
                         Image = p.Image,
+                        Icon = p.Icon,
                         Link = p.Link,
                     },
                 },

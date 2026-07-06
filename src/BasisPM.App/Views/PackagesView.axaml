@@ -7,6 +7,21 @@
              x:DataType="vm:PackagesViewModel"
              Name="Root">
 
+    <UserControl.Resources>
+        <!-- One shared per-row action block (Install when not installed, else the Manage menu),
+             referenced by BOTH the list and grid item templates so there is a single definition. -->
+        <DataTemplate x:Key="PackageActions" DataType="vm:PackageRow">
+            <StackPanel Spacing="8">
+                <Button Content="{loc:Tr packages.button.install}" Classes="primary" HorizontalAlignment="Stretch"
+                        IsVisible="{Binding !IsInstalled}"
+                        Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
+                        CommandParameter="{Binding Entry}"/>
+                <Button Content="{loc:Tr packages.button.manage}" Classes="secondary" HorizontalAlignment="Stretch"
+                        IsVisible="{Binding IsInstalled}" Click="OnManageClick"/>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+
     <Grid>
     <ScrollViewer>
         <StackPanel Margin="40,32" Spacing="20">
@@ -79,7 +94,7 @@
                                             <Grid ColumnDefinitions="Auto,*,Auto">
                                                 <Border Grid.Column="0" Width="46" Height="46" CornerRadius="13" VerticalAlignment="Top"
                                                         Background="{StaticResource BasisBrandGradient}">
-                                                    <TextBlock Text="{Binding Initial}" FontSize="22" FontWeight="Bold" Foreground="#FFFFFF"
+                                                    <TextBlock Text="{Binding TileGlyph}" FontSize="22" FontWeight="Bold" Foreground="#FFFFFF"
                                                                HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                 </Border>
                                                 <StackPanel Grid.Column="1" Margin="14,0,16,0" Spacing="3" VerticalAlignment="Center">
@@ -107,15 +122,8 @@
                                                                 CommandParameter="{Binding Link}"/>
                                                     </StackPanel>
                                                 </StackPanel>
-                                                <StackPanel Grid.Column="2" Width="160" Spacing="8" VerticalAlignment="Center">
-                                                    <!-- Not installed: a single Install. Installed: a Manage menu. -->
-                                                    <Button Content="{loc:Tr packages.button.install}" Classes="primary" HorizontalAlignment="Stretch"
-                                                            IsVisible="{Binding !IsInstalled}"
-                                                            Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
-                                                            CommandParameter="{Binding Entry}"/>
-                                                    <Button Content="{loc:Tr packages.button.manage}" Classes="secondary" HorizontalAlignment="Stretch"
-                                                            IsVisible="{Binding IsInstalled}" Click="OnManageClick"/>
-                                                </StackPanel>
+                                                <ContentControl Grid.Column="2" Width="160" VerticalAlignment="Center"
+                                                                Content="{Binding}" ContentTemplate="{StaticResource PackageActions}"/>
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
@@ -138,7 +146,7 @@
                                             <StackPanel Spacing="10">
                                                 <StackPanel Orientation="Horizontal" Spacing="10">
                                                     <Border Width="40" Height="40" CornerRadius="11" Background="{StaticResource BasisBrandGradient}">
-                                                        <TextBlock Text="{Binding Initial}" FontSize="19" FontWeight="Bold" Foreground="#FFFFFF"
+                                                        <TextBlock Text="{Binding TileGlyph}" FontSize="19" FontWeight="Bold" Foreground="#FFFFFF"
                                                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                     </Border>
                                                     <StackPanel VerticalAlignment="Center" Spacing="1">
@@ -162,12 +170,7 @@
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
                                                             CommandParameter="{Binding Link}"/>
                                                 </StackPanel>
-                                                <Button Content="{loc:Tr packages.button.install}" Classes="primary" HorizontalAlignment="Stretch"
-                                                        IsVisible="{Binding !IsInstalled}"
-                                                        Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
-                                                        CommandParameter="{Binding Entry}"/>
-                                                <Button Content="{loc:Tr packages.button.manage}" Classes="secondary" HorizontalAlignment="Stretch"
-                                                        IsVisible="{Binding IsInstalled}" Click="OnManageClick"/>
+                                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource PackageActions}"/>
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>
@@ -241,7 +244,7 @@
                     <Grid ColumnDefinitions="Auto,*,Auto">
                         <Border Grid.Column="0" Width="56" Height="56" CornerRadius="15" VerticalAlignment="Top"
                                 Background="{StaticResource BasisBrandGradient}">
-                            <TextBlock Text="{Binding Initial}" FontSize="26" FontWeight="Bold" Foreground="#FFFFFF"
+                            <TextBlock Text="{Binding TileGlyph}" FontSize="26" FontWeight="Bold" Foreground="#FFFFFF"
                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel Grid.Column="1" Margin="16,0" Spacing="2" VerticalAlignment="Center">

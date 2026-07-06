@@ -660,6 +660,8 @@ public sealed record PackageRow(CatalogPackageVersion Entry, string? InstalledVe
     public bool HasLicense => !string.IsNullOrWhiteSpace(Entry.License);
     public string Owner => PackagesViewModel.OwnerOf(Entry.Name);
     public string Initial => string.IsNullOrWhiteSpace(DisplayName) ? "?" : DisplayName.TrimStart()[..1].ToUpperInvariant();
+    // Icon-tile glyph: the package's registry emoji when set, else its initial letter.
+    public string TileGlyph => string.IsNullOrWhiteSpace(Entry.Icon) ? Initial : Entry.Icon!.Trim();
     public bool HasGit => !string.IsNullOrWhiteSpace(Entry.Url);
     public string? GitUrl => Entry.Url;
     public bool HasGitUrl => !string.IsNullOrWhiteSpace(Entry.Url);
