@@ -11,14 +11,20 @@
         Background="{StaticResource BasisBackgroundBrush}">
 
     <Panel ClipToBounds="True">
-        <!-- Animated background: a base brand gradient that slowly breathes, plus colored blobs
-             that drift on independent loops — the desktop equivalent of the website's moving gradient. -->
+        <!-- Animated background: an oversized brand gradient that slowly pans on a loop
+             (mirrors the website's .animated-gradient background-position sweep), plus
+             colored blobs that drift on independent loops. -->
         <Panel.Styles>
-            <Style Selector="Border.bgGradient">
+            <!-- Pans the oversized gradient horizontally so its diagonal color bands sweep
+                 across, the desktop equivalent of the site's `background-position: 0%->100%`
+                 shift. 7.5s each way = 15s round trip, matching the site's `15s` keyframe.
+                 Canvas.Left is a double (built-in animator); RenderTransform has none and
+                 throws at load — see project_basispm_avalonia_animation_gotcha. -->
+            <Style Selector="Border.flowGradient">
                 <Style.Animations>
-                    <Animation Duration="0:0:20" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
-                        <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.10"/></KeyFrame>
-                        <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.18"/></KeyFrame>
+                    <Animation Duration="0:0:7.5" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                        <KeyFrame Cue="0%"><Setter Property="Canvas.Left" Value="0"/></KeyFrame>
+                        <KeyFrame Cue="100%"><Setter Property="Canvas.Left" Value="-480"/></KeyFrame>
                     </Animation>
                 </Style.Animations>
             </Style>
@@ -58,16 +64,23 @@
             </Style>
         </Panel.Styles>
 
-        <Border Classes="bgGradient" Opacity="0.14">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="100%,0%" EndPoint="0%,100%">
-                    <GradientStop Offset="0" Color="#EF1237"/>
-                    <GradientStop Offset="0.33" Color="#9333EA"/>
-                    <GradientStop Offset="0.66" Color="#3B82F6"/>
-                    <GradientStop Offset="1" Color="#F43F5E"/>
-                </LinearGradientBrush>
-            </Border.Background>
-        </Border>
+        <!-- Flowing gradient backdrop: an oversized -45deg gradient (start bottom-right ->
+             end top-left, matching the site's `linear-gradient(-45deg, ...)`) that slides
+             horizontally so the diagonal bands sweep across. Sized far beyond any window
+             (covers up to 3920x2600) so the moving edge never enters view. -->
+        <Canvas ClipToBounds="True" IsHitTestVisible="False">
+            <Border Classes="flowGradient" Width="4400" Height="2600"
+                    Canvas.Left="0" Canvas.Top="0" Opacity="0.18">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="100%,100%" EndPoint="0%,0%">
+                        <GradientStop Offset="0" Color="#EF1237"/>
+                        <GradientStop Offset="0.33" Color="#9333EA"/>
+                        <GradientStop Offset="0.66" Color="#3B82F6"/>
+                        <GradientStop Offset="1" Color="#F43F5E"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+        </Canvas>
 
         <Canvas IsHitTestVisible="False" ClipToBounds="True">
             <Ellipse Classes="blobA" Width="260" Height="260" Canvas.Left="-60" Canvas.Top="-40"
