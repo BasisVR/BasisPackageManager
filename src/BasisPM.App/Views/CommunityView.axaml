@@ -24,12 +24,6 @@
                                 <TextBlock Text="{loc:Tr community.button.openDocs}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding Documentation.DiscordCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconChat}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr community.button.joinDiscord}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -144,12 +138,6 @@
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon Classes="leadingIcon" Data="{StaticResource IconHeart}" VerticalAlignment="Center"/>
                         <TextBlock Text="{loc:Tr community.support.openCollective}" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding Support.DiscordCommand}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconChat}" VerticalAlignment="Center"/>
-                        <TextBlock Text="{loc:Tr community.button.joinDiscord}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
