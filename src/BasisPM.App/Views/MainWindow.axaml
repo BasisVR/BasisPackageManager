@@ -70,7 +70,7 @@
              (covers up to 3920x2600) so the moving edge never enters view. -->
         <Canvas ClipToBounds="True" IsHitTestVisible="False">
             <Border Classes="flowGradient" Width="4400" Height="2600"
-                    Canvas.Left="0" Canvas.Top="0" Opacity="0.18">
+                    Canvas.Left="0" Canvas.Top="0" Opacity="0.13">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="100%,100%" EndPoint="0%,0%">
                         <GradientStop Offset="0" Color="#EF1237"/>

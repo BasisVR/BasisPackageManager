@@ -185,7 +185,11 @@
     </Style>
 
     <Style Selector="Button">
-        <Setter Property="Background" Value="Transparent"/>
+        <!-- Idle fill = the hover fill at ZERO alpha, NOT Transparent. Avalonia's `Transparent` is
+             transparent WHITE (#00FFFFFF), so a BrushTransition from it interpolates RGB from white —
+             the "transparent -> white -> blue" wash. Matching the hover RGB (#221F44) at alpha 00
+             means the transition ramps only opacity, so the fill fades straight in as navy. -->
+        <Setter Property="Background" Value="#00221F44"/>
         <Setter Property="Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BasisBorderStrongBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -287,6 +291,8 @@
     </Style>
 
     <Style Selector="Button.danger">
+        <!-- Idle = brand-red at zero alpha (not the inherited navy) so hover fades in cleanly as red. -->
+        <Setter Property="Background" Value="#00EF1237"/>
         <Setter Property="Foreground" Value="{StaticResource BasisBrandBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
     </Style>
@@ -540,7 +546,8 @@
     <Style Selector="Button.menuItem">
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
-        <Setter Property="Background" Value="Transparent"/>
+        <!-- Zero-alpha navy idle (not Transparent) so the hover fill fades in without the white wash. -->
+        <Setter Property="Background" Value="#00221F44"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="Padding" Value="12,9"/>

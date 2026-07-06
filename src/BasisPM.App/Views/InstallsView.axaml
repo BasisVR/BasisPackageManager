@@ -113,7 +113,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="vm:InstallRow">
-                        <Border Classes="card interactive reveal">
+                        <Border Classes="card reveal">
                             <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                                 <StackPanel Grid.Column="0" Spacing="5" ClipToBounds="True">
                                     <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
@@ -122,7 +122,8 @@
                                             <TextBlock Text="{loc:Tr installs.badge.active}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
                                         </Border>
                                     </StackPanel>
-                                    <TextBlock Text="{Binding RepoRoot}" Classes="dim" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding RepoRoot}" Classes="dim" FontSize="12"
+                                               TextWrapping="Wrap" ToolTip.Tip="{Binding RepoRoot}"/>
                                     <WrapPanel Margin="0,4,0,0">
                                         <Border Background="{StaticResource BasisPanelBrush}"
                                                 BorderBrush="{StaticResource BasisBorderBrush}"

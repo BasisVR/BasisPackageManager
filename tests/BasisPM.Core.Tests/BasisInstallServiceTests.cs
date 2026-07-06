@@ -72,6 +72,30 @@ public sealed class BasisInstallServiceTests
     }
 
     [Fact]
+    public async Task DeleteFolderAsync_removes_the_folder_including_readonly_files()
+    {
+        using var t = new TempDir();
+        var root = t.CreateDir("Basis");
+        var gitObject = t.WriteFile("Basis/.git/objects/ab/cdef123", "packed");
+        File.SetAttributes(gitObject, FileAttributes.ReadOnly);   // Git marks packed objects read-only on Windows
+
+        await BasisInstallService.DeleteFolderAsync(root);
+
+        Assert.False(Directory.Exists(root));
+    }
+
+    [Fact]
+    public async Task DeleteFolderAsync_is_a_noop_for_a_missing_folder()
+    {
+        using var t = new TempDir();
+        var missing = t.Combine("never-created");
+
+        await BasisInstallService.DeleteFolderAsync(missing);   // must not throw
+
+        Assert.False(Directory.Exists(missing));
+    }
+
+    [Fact]
     public async Task ToProjectInfo_maps_the_install()
     {
         using var t = new TempDir();

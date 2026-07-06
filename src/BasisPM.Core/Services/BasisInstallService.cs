@@ -56,4 +56,35 @@ public sealed class BasisInstallService
         UnityVersion = install.UnityVersion,
         Manifest = install.Manifest,
     };
+
+    /// <summary>
+    /// Permanently deletes an install's folder (the whole clone) from disk. Runs off the calling
+    /// thread because a Basis checkout plus its Unity <c>Library</c> can be tens of gigabytes.
+    /// </summary>
+    public static Task DeleteFolderAsync(string root) => Task.Run(() => ForceDelete(root));
+
+    // Git marks packed objects read-only on Windows, so a plain Directory.Delete would throw
+    // UnauthorizedAccessException partway through — clear the attribute on every entry first.
+    private static void ForceDelete(string root)
+    {
+        if (string.IsNullOrWhiteSpace(root)) return;
+        var full = Path.GetFullPath(root);
+
+        // Never delete a drive root — a corrupt/misconfigured path must not wipe an entire volume.
+        var pathRoot = Path.GetPathRoot(full) ?? "";
+        if (string.Equals(Path.TrimEndingDirectorySeparator(full),
+                          Path.TrimEndingDirectorySeparator(pathRoot),
+                          StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException($"Refusing to delete a drive root: {full}");
+
+        var dir = new DirectoryInfo(full);
+        if (!dir.Exists) return;
+
+        dir.Attributes = FileAttributes.Directory;
+        foreach (var info in dir.EnumerateFileSystemInfos("*", SearchOption.AllDirectories))
+            if ((info.Attributes & FileAttributes.ReadOnly) != 0)
+                info.Attributes &= ~FileAttributes.ReadOnly;
+
+        dir.Delete(recursive: true);
+    }
 }

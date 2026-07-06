@@ -468,6 +468,31 @@ public sealed class InstallsViewModel : ObservableObject
     private async Task RemoveAsync(InstallRow? row)
     {
         if (row is null) return;
+        var window = GetMainWindow();
+        if (window is null) return;
+
+        // Confirm first, and let the user choose between forgetting the project (files kept) and
+        // permanently deleting the folder from disk.
+        var choice = await new RemovePromptDialog(row.Name, row.RepoRoot).ShowDialog<RemoveChoice>(window);
+        if (choice == RemoveChoice.Cancel) return;
+
+        if (choice == RemoveChoice.DeleteFromDisk)
+        {
+            row.IsBusy = true;
+            _shell.SetStatus(L.Tr("installs.status.deleting", row.Name));
+            try
+            {
+                await BasisInstallService.DeleteFolderAsync(row.RepoRoot);
+            }
+            catch (Exception ex)
+            {
+                row.IsBusy = false;
+                // Leave the row in place so the user can retry (e.g. after closing Unity, which locks files).
+                _shell.SetStatus(L.Tr("installs.status.deleteFailed", row.Name, ex.Message), StatusKind.Error);
+                return;
+            }
+        }
+
         Installs.Remove(row);
         SyncPackageProjects();
         if (_activeRow == row)
@@ -477,7 +502,11 @@ public sealed class InstallsViewModel : ObservableObject
             if (next is not null) Activate(next, null);
         }
         await PersistAsync();
-        _shell.SetStatus(L.Tr("installs.status.removed", row.Name), StatusKind.Info);
+        _shell.SetStatus(
+            choice == RemoveChoice.DeleteFromDisk
+                ? L.Tr("installs.status.deleted", row.Name)
+                : L.Tr("installs.status.removed", row.Name),
+            StatusKind.Info);
     }
 
     private async Task PersistAsync()

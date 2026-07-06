@@ -491,6 +491,18 @@
       "value": "Removed {0} from the list (files left on disk)."
     },
     {
+      "key": "installs.status.deleting",
+      "value": "Deleting {0} from disk…"
+    },
+    {
+      "key": "installs.status.deleted",
+      "value": "Deleted {0} from disk."
+    },
+    {
+      "key": "installs.status.deleteFailed",
+      "value": "Couldn't delete {0}: {1}"
+    },
+    {
       "key": "installs.status.requiresUnityNote",
       "value": " Requires Unity {0} — open the Unity tab to install it."
     },
@@ -1629,6 +1641,30 @@
     {
       "key": "dialog.confirm.yes",
       "value": "Yes"
+    },
+    {
+      "key": "dialog.remove.title",
+      "value": "Remove project"
+    },
+    {
+      "key": "dialog.remove.heading",
+      "value": "Remove {0}?"
+    },
+    {
+      "key": "dialog.remove.body",
+      "value": "“Remove from list” just forgets this project here — your files stay exactly where they are. “Delete from disk” permanently deletes the whole project folder shown below. This cannot be undone."
+    },
+    {
+      "key": "dialog.remove.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key": "dialog.remove.removeFromList",
+      "value": "Remove from list"
+    },
+    {
+      "key": "dialog.remove.deleteFromDisk",
+      "value": "Delete from disk"
     },
     {
       "key": "dialog.createBundle.cancel",

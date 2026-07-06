@@ -6,7 +6,7 @@
              x:DataType="vm:SettingsViewModel">
 
     <ScrollViewer>
-        <StackPanel Margin="40,32" Spacing="24" MaxWidth="760" HorizontalAlignment="Left">
+        <StackPanel Margin="40,32" Spacing="24">
 
             <Border CornerRadius="14" Padding="32,28" Background="{StaticResource BasisHeroGradient}"
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">

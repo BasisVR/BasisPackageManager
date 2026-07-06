@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:BasisPM.App.Localization"
+        x:Class="BasisPM.App.Views.RemovePromptDialog"
+        Title="{loc:Tr dialog.remove.title}"
+        Width="500" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <StackPanel Margin="26,24" Spacing="16">
+        <TextBlock x:Name="HeadingText" Classes="h3"/>
+        <TextBlock Text="{loc:Tr dialog.remove.body}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+
+        <!-- The exact folder that "Delete from disk" will permanently remove — shown so the user can
+             see precisely what's at stake before choosing the destructive option. -->
+        <Border Background="{StaticResource BasisPanelBrush}" BorderBrush="{StaticResource BasisBorderBrush}"
+                BorderThickness="1" CornerRadius="6" Padding="12,8">
+            <TextBlock x:Name="PathText" FontFamily="Cascadia Mono,Consolas,monospace" FontSize="12"
+                       Classes="muted" TextWrapping="Wrap"/>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+            <Button Click="OnCancel">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.remove.cancel}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Content="{loc:Tr dialog.remove.removeFromList}" Click="OnRemoveFromList"/>
+            <Button Classes="danger" Click="OnDeleteFromDisk">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconDelete}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.remove.deleteFromDisk}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</Window>
