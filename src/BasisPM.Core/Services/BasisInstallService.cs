@@ -4,10 +4,6 @@ namespace BasisPM.Core.Services;
 
 public sealed class BasisInstallService
 {
-    public const string BasisRepoUrl = "https://github.com/BasisVR/Basis";
-    public const string DefaultFolderName = "Basis";
-    public const string DefaultBranch = "developer";
-
     private readonly UnityProjectService _projects;
     private readonly GitService _git;
 

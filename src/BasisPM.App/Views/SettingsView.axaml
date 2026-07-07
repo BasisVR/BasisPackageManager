@@ -41,13 +41,6 @@
                 </Expander.Header>
                 <StackPanel Spacing="20" Margin="0,10,0,0">
                     <StackPanel Spacing="6">
-                        <TextBlock Text="{loc:Tr settings.clone.title}" Classes="h3"/>
-                        <TextBlock Text="{loc:Tr settings.clone.description}"
-                                   Classes="muted" FontSize="12" TextWrapping="Wrap"/>
-                        <TextBox Text="{Binding ClonePath}" Watermark="C:\Users\you\BasisVR"/>
-                    </StackPanel>
-
-                    <StackPanel Spacing="6">
                         <TextBlock Text="{loc:Tr settings.catalog.title}" Classes="h3"/>
                         <TextBlock Text="{loc:Tr settings.catalog.description}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>

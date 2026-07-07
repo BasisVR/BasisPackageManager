@@ -16,7 +16,6 @@ public sealed class UserSettingsServiceTests
         {
             Installs = { @"C:\Basis", @"D:\Other" },
             CatalogUrl = "https://example.com/catalog.json",
-            ClonePath = @"C:\Clones",
             ShowLocalChanges = true,
             PrereleaseUpdates = true,
             SeenAnnouncementIds = { "a", "b" },
@@ -29,7 +28,6 @@ public sealed class UserSettingsServiceTests
 
         Assert.Equal(new[] { @"C:\Basis", @"D:\Other" }, loaded.Installs);
         Assert.Equal("https://example.com/catalog.json", loaded.CatalogUrl);
-        Assert.Equal(@"C:\Clones", loaded.ClonePath);
         Assert.True(loaded.ShowLocalChanges);
         Assert.True(loaded.PrereleaseUpdates);
         Assert.Equal("My Basis", loaded.InstallAliases[@"C:\Basis"]);

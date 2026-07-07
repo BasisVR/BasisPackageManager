@@ -13,7 +13,6 @@ public sealed class SettingsViewModel : ObservableObject
     private readonly UnityHubService _hubService;
     private readonly MainWindowViewModel _shell;
 
-    private string _clonePath = "";
     private string _catalogUrl = "";
     private string _newCatalogUrl = "";
     private string _unityHubPath = "";
@@ -22,7 +21,6 @@ public sealed class SettingsViewModel : ObservableObject
     private string _gitDetected = "";
     private string _hubDetected = "";
 
-    public string ClonePath { get => _clonePath; set => SetField(ref _clonePath, value); }
     public string CatalogUrl { get => _catalogUrl; set => SetField(ref _catalogUrl, value); }
     // Extra, user-added catalog URLs — all UNOFFICIAL (not vetted by BasisVR).
     public ObservableCollection<CatalogUrlItem> ExtraCatalogs { get; } = new();
@@ -75,7 +73,6 @@ public sealed class SettingsViewModel : ObservableObject
 
     public void Apply(UserSettings settings)
     {
-        ClonePath = settings.ClonePath ?? "";
         CatalogUrl = settings.CatalogUrl;
         ExtraCatalogs.Clear();
         foreach (var u in settings.ExtraCatalogUrls)
@@ -110,7 +107,6 @@ public sealed class SettingsViewModel : ObservableObject
     private async Task SaveAsync()
     {
         var settings = await _settingsService.LoadAsync();
-        settings.ClonePath = string.IsNullOrWhiteSpace(ClonePath) ? null : ClonePath.Trim();
         settings.CatalogUrl = CatalogUrl?.Trim() ?? "";
         settings.ExtraCatalogUrls = ExtraCatalogs
             .Select(c => c.Url?.Trim() ?? "")

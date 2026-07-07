@@ -1083,30 +1083,6 @@ public sealed class PackagesViewModel : ObservableObject
         finally { IsBusy = false; }
     }
 
-    /// <summary>How many packages the "Basis Recommended" pack would add — the whole catalog.</summary>
-    public int RecommendedCount => _catalogService.AllLatest(_catalog).Count();
-
-    /// <summary>Installs the full "Basis Recommended" set (every catalog package) into the target project.</summary>
-    public async Task InstallRecommendedAsync(BasisInstall target)
-    {
-        var packages = _catalogService.AllLatest(_catalog)
-            .Where(v => !string.IsNullOrWhiteSpace(v.Url))
-            .Select(v => new PackageListEntry { Id = v.Name, Name = v.DisplayName, GitUrl = v.Url })
-            .ToList();
-        if (packages.Count == 0)
-        {
-            _shell.SetStatus(L.Tr("packages.status.recommendedEmpty"), StatusKind.Info);
-            return;
-        }
-        var packageList = new PackageList
-        {
-            Id = "basis-recommended",
-            Name = L.Tr("packages.recommended.name"),
-            Packages = packages,
-        };
-        await AddPackageListAsync(packageList, target);
-    }
-
     private static string Slugify(string s)
     {
         var slug = new string(s.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-').ToArray());

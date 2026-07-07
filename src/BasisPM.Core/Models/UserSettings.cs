@@ -11,9 +11,6 @@ public sealed class UserSettings
     [JsonPropertyName("installAliases")]
     public Dictionary<string, string> InstallAliases { get; set; } = new();
 
-    [JsonPropertyName("clonePath")]
-    public string? ClonePath { get; set; }
-
     [JsonPropertyName("catalogUrl")]
     public string CatalogUrl { get; set; } = "";
 

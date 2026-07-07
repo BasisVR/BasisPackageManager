@@ -112,7 +112,7 @@
     },
     {
       "key": "shell.status.cloneFirst",
-      "value": "Clone or add a Basis install first, then install {0}."
+      "value": "Create or add a project first, then install {0}."
     },
     {
       "key": "shell.status.copied",
@@ -355,10 +355,6 @@
       "value": "Switch"
     },
     {
-      "key": "installs.branch.default",
-      "value": "{0} (main)"
-    },
-    {
       "key": "installs.button.addExisting",
       "value": "Add existing"
     },
@@ -367,16 +363,8 @@
       "value": "Backup"
     },
     {
-      "key": "installs.button.browse",
-      "value": "Browse…"
-    },
-    {
       "key": "installs.button.changes",
       "value": "Changes"
-    },
-    {
-      "key": "installs.button.cloneBasis",
-      "value": "Clone Basis"
     },
     {
       "key": "installs.button.createAssets",
@@ -411,22 +399,6 @@
       "value": "Update Core"
     },
     {
-      "key": "installs.cloneForm.branchLabel",
-      "value": "Branch"
-    },
-    {
-      "key": "installs.cloneForm.cloneIntoLabel",
-      "value": "Clone into folder"
-    },
-    {
-      "key": "installs.cloneForm.heading",
-      "value": "Clone Basis"
-    },
-    {
-      "key": "installs.cloneForm.subFolderLabel",
-      "value": "Sub-folder name"
-    },
-    {
       "key": "installs.dialog.backupPrompt",
       "value": "{0}\n\nBack up {1} first? This zips Assets, Packages and ProjectSettings (not the Library cache) into a BasisBackups folder next to your install."
     },
@@ -439,32 +411,16 @@
       "value": "Permanently delete project?"
     },
     {
-      "key": "installs.dialog.lowDiskSpaceBody",
-      "value": "Only {0} is free on {1}. Cloning Basis and opening it in Unity can need well over that, and the clone may fail partway.\n\nClone here anyway?"
-    },
-    {
-      "key": "installs.dialog.lowDiskSpaceTitle",
-      "value": "Low disk space"
-    },
-    {
       "key": "installs.dialog.nameThisInstall",
       "value": "Name this install"
     },
     {
-      "key": "installs.dialog.recommendedBody",
-      "value": "Add all {0} recommended Basis packages to this project now? You can manage them anytime on the Packages tab."
-    },
-    {
-      "key": "installs.dialog.recommendedTitle",
-      "value": "Install the Basis Recommended pack?"
-    },
-    {
       "key": "installs.empty.body",
-      "value": "Use Clone Basis above to pull down BasisVR/Basis, or Add existing to register a clone you already have."
+      "value": "Use New project to create a Basis-ready Unity project, or Add existing to register one you already have."
     },
     {
       "key": "installs.empty.title",
-      "value": "No installs yet"
+      "value": "No projects yet"
     },
     {
       "key": "installs.git.ahead",
@@ -504,7 +460,7 @@
     },
     {
       "key": "installs.hero.subtitle",
-      "value": "Clone the BasisVR/Basis repository, then manage each project's packages, updates and local changes."
+      "value": "Create a Unity project with the Basis packages, then manage each project's packages, updates and local changes."
     },
     {
       "key": "installs.hero.tagline",
@@ -515,20 +471,12 @@
       "value": "Your Basis projects"
     },
     {
-      "key": "installs.picker.chooseCloneFolder",
-      "value": "Choose a folder to clone Basis into"
-    },
-    {
       "key": "installs.picker.selectExistingClone",
-      "value": "Select an existing Basis clone"
+      "value": "Select an existing Basis project folder"
     },
     {
       "key": "installs.picker.newProjectFolder",
       "value": "Choose an empty folder for the new project"
-    },
-    {
-      "key": "installs.progress.starting",
-      "value": "Starting clone…"
     },
     {
       "key": "installs.row.noUnityProject",
@@ -537,14 +485,6 @@
     {
       "key": "installs.row.unityVersion",
       "value": "Unity {0}"
-    },
-    {
-      "key": "installs.space.criticalWarning",
-      "value": "Very low disk space — only {0} free on {1}. Cloning Basis will likely fail; free up space or choose another drive."
-    },
-    {
-      "key": "installs.space.lowWarning",
-      "value": "Low disk space — {0} free on {1}. Basis plus its Unity Library can use 20 GB or more."
     },
     {
       "key": "installs.status.added",
@@ -583,34 +523,6 @@
       "value": "Backup failed: {0}"
     },
     {
-      "key": "installs.status.chooseFolderFirst",
-      "value": "Choose a folder to clone into first."
-    },
-    {
-      "key": "installs.status.cloneCancelledLowSpace",
-      "value": "Clone cancelled — low disk space on the target drive."
-    },
-    {
-      "key": "installs.status.cloneError",
-      "value": "Clone error: {0}"
-    },
-    {
-      "key": "installs.status.cloneFailed",
-      "value": "Clone failed (exit {0}). {1}"
-    },
-    {
-      "key": "installs.status.clonedInto",
-      "value": "Cloned Basis into {0}.{1}"
-    },
-    {
-      "key": "installs.status.cloningInto",
-      "value": "Cloning Basis into {0}…"
-    },
-    {
-      "key": "installs.status.destExists",
-      "value": "{0} already exists and is not empty."
-    },
-    {
       "key": "installs.status.folderMissing",
       "value": "Folder no longer exists: {0}"
     },
@@ -645,10 +557,6 @@
     {
       "key": "installs.status.deleteFailed",
       "value": "Couldn't delete {0}: {1}"
-    },
-    {
-      "key": "installs.status.requiresUnityNote",
-      "value": " Requires Unity {0} — open the Unity tab to install it."
     },
     {
       "key": "installs.status.rowSummary",
@@ -923,10 +831,6 @@
       "value": "Save package list"
     },
     {
-      "key": "packages.recommended.name",
-      "value": "Basis Recommended"
-    },
-    {
       "key": "packages.status.added",
       "value": "Added"
     },
@@ -1041,10 +945,6 @@
     {
       "key": "packages.status.pasteGitHub",
       "value": "Paste a GitHub URL or owner/repo."
-    },
-    {
-      "key": "packages.status.recommendedEmpty",
-      "value": "No packages available to install — check your connection, then try Refresh on the Packages tab."
     },
     {
       "key": "packages.status.refusedUnsafeUrl",
@@ -1605,14 +1505,6 @@
     {
       "key": "settings.extraCatalogs.watermark",
       "value": "https://example.com/catalog.json"
-    },
-    {
-      "key": "settings.clone.description",
-      "value": "Where new Basis clones are created by default."
-    },
-    {
-      "key": "settings.clone.title",
-      "value": "Default clone location"
     },
     {
       "key": "settings.detected.git",
