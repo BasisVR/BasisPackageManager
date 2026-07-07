@@ -92,6 +92,46 @@ public sealed partial class UnityHubService
         return Process.Start(spec.ToStartInfo()) is not null;
     }
 
+    /// <summary>
+    /// Runs com.basis.setup's create/update entry point on the project by launching the matching editor in
+    /// batch mode — so the Assets-level config can be generated without opening Unity. The project must not
+    /// already be open in Unity (batch mode fails on the project lock). Long-running: Unity imports the whole project.
+    /// </summary>
+    public async Task<UnitySetupRunResult> RunProjectSetupAsync(string projectPath, string? unityVersion, bool update, string? hubOverride = null, IEnumerable<InstalledEditor>? extraEditors = null, CancellationToken ct = default)
+    {
+        var editors = new List<InstalledEditor>(await ListInstalledAsync(hubOverride, ct).ConfigureAwait(false));
+        if (extraEditors is not null) editors.AddRange(extraEditors);
+        var editor = editors.FirstOrDefault(e => string.Equals(e.Version, unityVersion, StringComparison.OrdinalIgnoreCase));
+        var exe = editor is null ? null : ResolveEditorExecutable(editor.Path);
+        if (exe is null) return UnitySetupRunResult.NoEditor;
+
+        var method = update
+            ? "Basis.Setup.BasisSetupRunner.UpdateAllAssetsBatch"
+            : "Basis.Setup.BasisSetupRunner.CreateMissingAssetsBatch";
+        var logPath = Path.Combine(Path.GetTempPath(), $"basispm-setup-{DateTime.Now:yyyyMMdd-HHmmss}.log");
+        var args = new[]
+        {
+            "-batchmode", "-quit",
+            "-projectPath", projectPath,
+            "-executeMethod", method,
+            "-logFile", logPath,
+        };
+
+        var (code, _, _) = await RunAsync(exe, args, ct).ConfigureAwait(false);
+        return new UnitySetupRunResult(true, code, logPath);
+    }
+
+    private static string? ResolveEditorExecutable(string path)
+    {
+        if (File.Exists(path)) return path;
+        if (Directory.Exists(path))
+        {
+            var mac = Path.Combine(path, "Contents", "MacOS", "Unity");
+            if (File.Exists(mac)) return mac;
+        }
+        return null;
+    }
+
     /// <summary>Opens the Unity Hub GUI — the fallback when the matching editor isn't installed. False if Hub isn't found.</summary>
     public bool OpenHub(string? hubOverride = null)
     {

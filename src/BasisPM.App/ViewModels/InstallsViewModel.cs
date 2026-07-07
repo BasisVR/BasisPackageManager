@@ -56,13 +56,13 @@ public sealed class InstallsViewModel : ObservableObject
     public RelayCommand CloneCommand { get; }
     public RelayCommand BrowseCloneFolderCommand { get; }
     public RelayCommand AddExistingCommand { get; }
+    public RelayCommand NewProjectCommand { get; }
     public RelayCommand RefreshCommand { get; }
-    public RelayCommand<InstallRow> UpdateCoreCommand { get; }
     public RelayCommand<InstallRow> ChangeBranchCommand { get; }
     public RelayCommand<InstallRow> CheckUpdatesCommand { get; }
     public RelayCommand<InstallRow> OpenInUnityCommand { get; }
+    public RelayCommand<InstallRow> SetUpCommand { get; }
     public RelayCommand<InstallRow> ManagePackagesCommand { get; }
-    public RelayCommand<InstallRow> ViewChangesCommand { get; }
     public RelayCommand<InstallRow> RemoveCommand { get; }
     public RelayCommand<InstallRow> SetActiveCommand { get; }
     public RelayCommand<InstallRow> BackupCommand { get; }
@@ -77,13 +77,13 @@ public sealed class InstallsViewModel : ObservableObject
         CloneCommand = new RelayCommand(CloneAsync);
         BrowseCloneFolderCommand = new RelayCommand(BrowseCloneFolderAsync);
         AddExistingCommand = new RelayCommand(AddExistingAsync);
+        NewProjectCommand = new RelayCommand(NewProjectAsync);
         RefreshCommand = new RelayCommand(RefreshAsync);
-        UpdateCoreCommand = new RelayCommand<InstallRow>(UpdateCoreAsync);
         ChangeBranchCommand = new RelayCommand<InstallRow>(ChangeBranchAsync);
         CheckUpdatesCommand = new RelayCommand<InstallRow>(r => RefreshGitInfoAsync(r, fetch: true));
         OpenInUnityCommand = new RelayCommand<InstallRow>(OpenInUnity);
+        SetUpCommand = new RelayCommand<InstallRow>(SetUpAsync);
         ManagePackagesCommand = new RelayCommand<InstallRow>(r => Activate(r, "packages"));
-        ViewChangesCommand = new RelayCommand<InstallRow>(r => Activate(r, "changes"));
         RemoveCommand = new RelayCommand<InstallRow>(RemoveAsync);
         SetActiveCommand = new RelayCommand<InstallRow>(r => Activate(r, null));
         BackupCommand = new RelayCommand<InstallRow>(BackupAsync);
@@ -329,43 +329,6 @@ public sealed class InstallsViewModel : ObservableObject
         await _shell.PackagesVM.InstallRecommendedAsync(install);
     }
 
-    private async Task UpdateCoreAsync(InstallRow? row)
-    {
-        if (row is null) return;
-        if (!row.Install.IsGitRepo)
-        {
-            _shell.SetStatus(L.Tr("installs.status.notGitRepo", row.Name), StatusKind.Error);
-            return;
-        }
-
-        if (!await PromptBackupAsync(row, L.Tr("installs.action.updateCore")))
-            return;
-
-        row.IsBusy = true;
-        _shell.SetStatus(L.Tr("installs.status.updating", row.Name));
-        try
-        {
-            var result = await _git.PullAsync(row.RepoRoot);
-            if (result.Ok)
-            {
-                var reloaded = await _installService.LoadAsync(row.RepoRoot, row.Install.Alias);
-                row.UpdateInstall(reloaded);
-                if (row.IsActive) _shell.SetActiveInstall(reloaded);
-                await RefreshGitInfoAsync(row, fetch: false);
-                _shell.SetStatus(L.Tr("installs.status.updated", row.Name, Tail(result.Output)), StatusKind.Success);
-            }
-            else
-            {
-                _shell.SetStatus(L.Tr("installs.status.updateFailed", row.Name, Tail(result.Output)), StatusKind.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            _shell.SetStatus(L.Tr("installs.status.updateError", ex.Message), StatusKind.Error);
-        }
-        finally { row.IsBusy = false; }
-    }
-
     private async Task ChangeBranchAsync(InstallRow? row)
     {
         if (row is null) return;
@@ -495,6 +458,51 @@ public sealed class InstallsViewModel : ObservableObject
         _shell.SetStatus(L.Tr("installs.status.added", install.Name, note), install.HasUnityProject ? StatusKind.Success : StatusKind.Info);
     }
 
+    private async Task NewProjectAsync()
+    {
+        var window = GetMainWindow();
+        if (window is null) return;
+        var folders = await window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = L.Tr("installs.picker.newProjectFolder"),
+            AllowMultiple = false,
+        });
+        var picked = folders?.FirstOrDefault()?.TryGetLocalPath();
+        if (string.IsNullOrEmpty(picked)) return;
+
+        if (Installs.Any(r => string.Equals(r.RepoRoot, picked, StringComparison.OrdinalIgnoreCase)))
+        {
+            _shell.SetStatus(L.Tr("installs.status.alreadyInList"), StatusKind.Info);
+            return;
+        }
+        if (_installService.IsUnityProject(picked))
+        {
+            _shell.SetStatus(L.Tr("installs.status.newAlreadyProject"), StatusKind.Error);
+            return;
+        }
+
+        var version = await _shell.NewestInstalledEditorVersionAsync();
+        if (string.IsNullOrWhiteSpace(version))
+        {
+            _shell.SetStatus(L.Tr("installs.status.newNoEditor"), StatusKind.Error);
+            return;
+        }
+
+        try
+        {
+            var install = await _installService.CreateNewProjectAsync(picked, version);
+            var alias = await BasisPM.App.Services.Dialogs.PromptAliasAsync(L.Tr("installs.dialog.nameThisInstall"), picked, install.Name);
+            install.Alias = string.IsNullOrWhiteSpace(alias) ? null : alias;
+            AddRow(install, activate: true);
+            await PersistAsync();
+            await _shell.SetUpAsBasisProjectAsync(install);
+        }
+        catch (Exception ex)
+        {
+            _shell.SetStatus(L.Tr("installs.status.projectCreateFailed", ex.Message), StatusKind.Error);
+        }
+    }
+
     private async Task BrowseCloneFolderAsync()
     {
         var window = GetMainWindow();
@@ -521,6 +529,14 @@ public sealed class InstallsViewModel : ObservableObject
         _ = _shell.OpenProjectInUnityAsync(row.Install);
     }
 
+    private async Task SetUpAsync(InstallRow? row)
+    {
+        if (row is null) return;
+        row.IsBusy = true;
+        try { await _shell.SetUpAsBasisProjectAsync(row.Install); }
+        finally { row.IsBusy = false; }
+    }
+
     private async Task RemoveAsync(InstallRow? row)
     {
         if (row is null) return;
@@ -534,6 +550,11 @@ public sealed class InstallsViewModel : ObservableObject
 
         if (choice == RemoveChoice.DeleteFromDisk)
         {
+            var confirmed = await BasisPM.App.Services.Dialogs.ConfirmAsync(
+                L.Tr("installs.dialog.deleteConfirmTitle"),
+                L.Tr("installs.dialog.deleteConfirmBody", row.Name, row.RepoRoot));
+            if (!confirmed) return;
+
             row.IsBusy = true;
             _shell.SetStatus(L.Tr("installs.status.deleting", row.Name));
             try

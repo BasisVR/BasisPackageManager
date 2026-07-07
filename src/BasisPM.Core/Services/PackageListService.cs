@@ -21,6 +21,9 @@ public sealed class PackageListService
 
     public const string DefaultPackageListsUrl = "https://basisvr.org/packages/packagelists.json";
 
+    /// <summary>Id of the published package list used as the minimum "make this a Basis project" set.</summary>
+    public const string MinimumPackageListId = "basis-minimum";
+
     /// <summary>The pre-rename feed name, kept as a fallback so registries that haven't regenerated yet still resolve.</summary>
     public const string LegacyPackageListsUrl = "https://basisvr.org/packages/bundles.json";
 

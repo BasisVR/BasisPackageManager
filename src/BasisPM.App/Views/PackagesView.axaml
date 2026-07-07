@@ -341,10 +341,11 @@
                                                                        Foreground="{StaticResource BasisBlueBrush}"/>
                                                         </Border>
                                                         <Border Classes="versionPill" HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding HasLicense}"
-                                                                ToolTip.Tip="{loc:Tr packages.label.license}">
+                                                                ToolTip.Tip="{Binding License}">
                                                             <StackPanel Orientation="Horizontal" Spacing="4">
                                                                 <PathIcon Width="10" Height="10" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
-                                                                <TextBlock Text="{Binding License}" FontSize="10" Classes="muted" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{Binding License}" FontSize="10" Classes="muted" VerticalAlignment="Center"
+                                                                           MaxWidth="110" TextTrimming="CharacterEllipsis"/>
                                                             </StackPanel>
                                                         </Border>
                                                     </StackPanel>

@@ -147,6 +147,38 @@
       "value": "Install link for {0} was missing its git URL."
     },
     {
+      "key": "shell.status.assetsCreated",
+      "value": "Created default assets for {0}."
+    },
+    {
+      "key": "shell.status.assetsError",
+      "value": "Create-assets error: {0}"
+    },
+    {
+      "key": "shell.status.assetsFailed",
+      "value": "Basis Setup failed (exit code {0}). Log: {1}"
+    },
+    {
+      "key": "shell.status.creatingAssets",
+      "value": "Running Basis Setup for {0} (this can take a few minutes)…"
+    },
+    {
+      "key": "shell.status.minimumListNotFound",
+      "value": "Minimum package list '{0}' isn't published in the registry yet."
+    },
+    {
+      "key": "shell.status.projectSetUp",
+      "value": "{0} is set up as a Basis project."
+    },
+    {
+      "key": "shell.status.settingUpProject",
+      "value": "Setting up {0} as a Basis project…"
+    },
+    {
+      "key": "shell.status.setUpProjectError",
+      "value": "Set-up error: {0}"
+    },
+    {
       "key": "shell.status.loadingPackageList",
       "value": "Loading package list…"
     },
@@ -263,6 +295,14 @@
       "value": "Switch this project to a different git branch"
     },
     {
+      "key": "installs.tooltip.createAssets",
+      "value": "Generate the Assets-level config (Addressables, XR, rendering…) by running Basis Setup in the matching Unity editor. Close Unity for this project first."
+    },
+    {
+      "key": "installs.tooltip.setUpProject",
+      "value": "Add the minimum Basis packages, then generate the Assets/ProjectSettings config (runs Basis Setup in Unity). Close Unity for this project first."
+    },
+    {
       "key": "installs.action.changeBranch",
       "value": "Change branch"
     },
@@ -339,6 +379,18 @@
       "value": "Clone Basis"
     },
     {
+      "key": "installs.button.createAssets",
+      "value": "Create default assets"
+    },
+    {
+      "key": "installs.button.setUpProject",
+      "value": "Set up as Basis project"
+    },
+    {
+      "key": "installs.button.newProject",
+      "value": "New project"
+    },
+    {
       "key": "installs.button.open",
       "value": "Open"
     },
@@ -377,6 +429,14 @@
     {
       "key": "installs.dialog.backupPrompt",
       "value": "{0}\n\nBack up {1} first? This zips Assets, Packages and ProjectSettings (not the Library cache) into a BasisBackups folder next to your install."
+    },
+    {
+      "key": "installs.dialog.deleteConfirmBody",
+      "value": "This permanently deletes “{0}” and everything inside:\n\n{1}\n\nThis cannot be undone. Delete it?"
+    },
+    {
+      "key": "installs.dialog.deleteConfirmTitle",
+      "value": "Permanently delete project?"
     },
     {
       "key": "installs.dialog.lowDiskSpaceBody",
@@ -463,6 +523,10 @@
       "value": "Select an existing Basis clone"
     },
     {
+      "key": "installs.picker.newProjectFolder",
+      "value": "Choose an empty folder for the new project"
+    },
+    {
       "key": "installs.progress.starting",
       "value": "Starting clone…"
     },
@@ -489,6 +553,22 @@
     {
       "key": "installs.status.alreadyInList",
       "value": "That install is already in the list."
+    },
+    {
+      "key": "installs.status.newAlreadyProject",
+      "value": "That folder already has a Unity project — use Add existing."
+    },
+    {
+      "key": "installs.status.newNoEditor",
+      "value": "No Unity editor found. Add one on the Unity Editors tab first."
+    },
+    {
+      "key": "installs.status.projectCreated",
+      "value": "Created {0}. Click ‘Set up as Basis project’ to add Basis."
+    },
+    {
+      "key": "installs.status.projectCreateFailed",
+      "value": "Couldn't create project: {0}"
     },
     {
       "key": "installs.status.backedUp",

@@ -19,6 +19,12 @@
                                    Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                        <Button Classes="primary" Command="{Binding NewProjectCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr installs.button.newProject}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                         <Button Command="{Binding AddExistingCommand}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
@@ -156,13 +162,13 @@
                                             <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Classes.primary="{Binding CoreHasUpdate}"
-                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).UpdateCoreCommand}"
+                                    <Button IsVisible="{Binding HasUnityProject}"
+                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).SetUpCommand}"
                                             CommandParameter="{Binding}"
-                                            ToolTip.Tip="{Binding GitSummary}">
+                                            ToolTip.Tip="{loc:Tr installs.tooltip.setUpProject}">
                                         <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{loc:Tr installs.button.updateCore}" VerticalAlignment="Center"/>
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconSettings}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr installs.button.setUpProject}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <Button IsVisible="{Binding IsGitRepo}"
@@ -179,13 +185,6 @@
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
                                             <TextBlock Text="{loc:Tr installs.button.packages}" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ViewChangesCommand}"
-                                            CommandParameter="{Binding}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconChanges}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{loc:Tr installs.button.changes}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <Button IsVisible="{Binding HasUnityProject}"

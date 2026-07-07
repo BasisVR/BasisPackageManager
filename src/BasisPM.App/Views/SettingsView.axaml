@@ -93,9 +93,6 @@
                         <TextBox Text="{Binding UnityHubPath}" Watermark="C:\Program Files\Unity Hub\Unity Hub.exe"/>
                     </StackPanel>
 
-                    <CheckBox Content="{loc:Tr settings.toggle.localChanges}" IsChecked="{Binding ShowLocalChanges}"
-                              ToolTip.Tip="{loc:Tr settings.toggle.localChanges.tip}"/>
-
                     <CheckBox Content="{loc:Tr settings.toggle.prerelease}" IsChecked="{Binding PrereleaseUpdates}"
                               ToolTip.Tip="{loc:Tr settings.toggle.prerelease.tip}"/>
 

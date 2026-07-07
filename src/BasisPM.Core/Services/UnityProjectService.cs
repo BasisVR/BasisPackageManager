@@ -93,6 +93,15 @@ public sealed class UnityProjectService
         await JsonSerializer.SerializeAsync(fs, manifest, JsonOpts, ct).ConfigureAwait(false);
     }
 
+    public async Task CreateNewProjectAsync(string rootPath, string unityVersion, CancellationToken ct = default)
+    {
+        Directory.CreateDirectory(Path.Combine(rootPath, "Assets"));
+        var settingsDir = Path.Combine(rootPath, "ProjectSettings");
+        Directory.CreateDirectory(settingsDir);
+        await File.WriteAllTextAsync(Path.Combine(settingsDir, "ProjectVersion.txt"), $"m_EditorVersion: {unityVersion}\n", ct).ConfigureAwait(false);
+        await SaveManifestAsync(rootPath, new PackageManifest(), ct).ConfigureAwait(false);
+    }
+
     private static readonly JsonSerializerOptions ReadOpts = new() { PropertyNameCaseInsensitive = true };
 
     /// <summary>Enumerates the embedded packages (each <c>Packages/&lt;folder&gt;/package.json</c>) of a Unity project.</summary>

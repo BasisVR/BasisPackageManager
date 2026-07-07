@@ -166,12 +166,6 @@
                             <TextBlock Text="{loc:Tr nav.packages}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
-                    <Button Classes="nav" Classes.active="{Binding IsChanges}" Tag="changes" Click="OnNavClick" IsVisible="{Binding ShowChangesTab}">
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <PathIcon Width="18" Height="18" Data="{StaticResource IconChanges}" VerticalAlignment="Center"/>
-                            <TextBlock Text="{loc:Tr nav.changes}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
                     <Button Classes="nav" Classes.active="{Binding IsUnity}" Tag="unity" Click="OnNavClick">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <PathIcon Width="18" Height="18" Data="{StaticResource IconUnity}" VerticalAlignment="Center"/>

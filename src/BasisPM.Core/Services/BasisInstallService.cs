@@ -57,6 +57,14 @@ public sealed class BasisInstallService
         Manifest = install.Manifest,
     };
 
+    public bool IsUnityProject(string path) => _projects.IsUnityProject(path);
+
+    public async Task<BasisInstall> CreateNewProjectAsync(string rootPath, string unityVersion, string? alias = null, CancellationToken ct = default)
+    {
+        await _projects.CreateNewProjectAsync(rootPath, unityVersion, ct).ConfigureAwait(false);
+        return await LoadAsync(rootPath, alias, ct).ConfigureAwait(false);
+    }
+
     /// <summary>
     /// Permanently deletes an install's folder (the whole clone) from disk. Runs off the calling
     /// thread because a Basis checkout plus its Unity <c>Library</c> can be tens of gigabytes.
