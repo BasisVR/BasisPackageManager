@@ -1,9 +1,9 @@
 # Releasing Basis Package Manager
 
 Releases are automated with [Velopack](https://velopack.io). Pushing a semver tag builds
-installers for Windows, Linux and macOS, packs them (plus the update manifest) with `vpk`,
-and publishes them to a single GitHub Release. The in-app updater reads that release, so a
-new version promotes itself to existing users.
+installers for Windows, Linux and macOS — each in x64 **and** ARM flavours — packs them
+(plus the update manifests) with `vpk`, and publishes them to a single GitHub Release. The
+in-app updater reads that release, so a new version promotes itself to existing users.
 
 ## Cut a release
 
@@ -16,15 +16,42 @@ That's it. [`.github/workflows/release.yml`](.github/workflows/release.yml) runs
 `windows-latest` / `ubuntu-latest` / `macos-latest` matrix and, when it finishes, the
 [Releases page](https://github.com/BasisVR/BasisPackageManager/releases) has:
 
-| Platform | Asset |
-|----------|-------|
-| Windows  | `BasisPackageManager-win-Setup.exe` (+ portable zip) |
-| Linux    | `BasisPackageManager-linux-*.AppImage` |
-| macOS    | `BasisPackageManager-osx-*.pkg` |
-| (all)    | `*-full.nupkg` + `releases.*.json` / `RELEASES` — the update manifest |
+| Platform | Architecture | Asset | Update channel |
+|----------|--------------|-------|----------------|
+| Windows  | x64 | `BasisPackageManager-win-Setup.exe` (+ portable zip) | `win` |
+| Windows  | arm64 | `BasisPackageManager-win-arm64-Setup.exe` (+ portable zip) | `win-arm64` |
+| Linux    | x64 | `BasisPackageManager.AppImage` | `linux` |
+| Linux    | arm64 | `BasisPackageManager-linux-arm64.AppImage` | `linux-arm64` |
+| macOS    | Apple Silicon | `BasisPackageManager-osx-Setup.pkg` (+ portable zip) | `osx` |
+| macOS    | Intel | `BasisPackageManager-osx-x64-Setup.pkg` (+ portable zip) | `osx-x64` |
+| (all)    | | `*-full.nupkg` + `releases.*.json` / `RELEASES` — the update manifests | |
 
 **Verify:** install the previous version, publish a higher tag, and confirm the in-app
 banner offers the update and one click installs + restarts onto it.
+
+## Architectures
+
+Every architecture that both .NET 9 and Velopack support is built: the three OS jobs
+cross-compile and cross-pack their second architecture with `vpk pack --runtime <rid>`,
+so no ARM runners are involved. The setup binary checks the machine architecture at
+install time, so a user who grabs the wrong file gets a clear refusal, not a broken install.
+
+Update channels are how an install finds the right binaries: the channel name is baked
+into each package, and the app updates from that same channel forever. The three original
+channels predate multi-arch support and keep their historical meaning — `win` and `linux`
+are x64 and `osx` is Apple Silicon — while every newer architecture uses its RID as the
+channel name. **Never re-point an existing channel at a different architecture**: every
+install on that channel would self-update onto binaries its CPU can't run.
+
+Deliberately not shipped:
+
+- **win-x86** — 32-bit-only Windows machines can't run Unity, so the app is pointless there
+  (and Windows 10 32-bit is out of support).
+- **linux-arm (32-bit, armhf)** — Velopack 1.2.0 ships no 32-bit ARM update/AppImage stubs.
+- **riscv64 / loongarch64** — no official .NET runtime, so no self-contained publish.
+
+To add an architecture later, add its RID to `targets` in the release matrix (it gets a
+RID-named channel automatically) and to the CI publish-smoke list.
 
 ## Versioning
 

@@ -1,9 +1,16 @@
 name: Release
 
-# Push a semver tag to build installers for every platform and publish them
-# (plus the Velopack update manifest) to a single GitHub Release:
+# Push a semver tag to build installers for every platform and architecture and publish them
+# (plus the Velopack update manifests) to a single GitHub Release:
 #
 #   git tag v0.1.0 && git push origin v0.1.0
+#
+# Each OS job publishes and packs all of its architectures — vpk cross-packs with --runtime,
+# so no ARM runners are needed. Update channels: the original three (win / linux / osx) keep
+# their historical architectures (win-x64 / linux-x64 / osx-arm64) because existing installs
+# follow the channel baked into their package; every other architecture uses its RID as the
+# channel name (win-arm64, linux-arm64, osx-x64). Never re-point a channel at a different
+# architecture — installs on it would update onto binaries they can't run.
 #
 # Code signing is optional and auto-detected: releases are unsigned until the signing
 # secrets are configured, then the next tag signs automatically. See RELEASING.md.
@@ -23,15 +30,18 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            rid: win-x64
-            mainExe: BasisPM.App.exe
+            targets: win-x64 win-arm64
+            legacyRid: win-x64     # ships on the original 'win' channel
           - os: ubuntu-latest
-            rid: linux-x64
-            mainExe: BasisPM.App
+            targets: linux-x64 linux-arm64
+            legacyRid: linux-x64   # ships on the original 'linux' channel
           - os: macos-latest
-            rid: osx-arm64
-            mainExe: BasisPM.App
+            targets: osx-arm64 osx-x64
+            legacyRid: osx-arm64   # ships on the original 'osx' channel
     runs-on: ${{ matrix.os }}
+    env:
+      TARGETS: ${{ matrix.targets }}
+      LEGACY_RID: ${{ matrix.legacyRid }}
     steps:
       - uses: actions/checkout@v4
 
@@ -67,18 +77,24 @@ jobs:
           dotnet tool install -g vpk --version 1.2.0
           echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
 
-      - name: Publish (self-contained)
-        shell: bash
-        run: >
-          dotnet publish src/BasisPM.App/BasisPM.App.csproj
-          -c Release -r ${{ matrix.rid }} --self-contained true
-          -o publish -p:Version=$VERSION
-
-      - name: Download previous release (enables delta updates)
+      - name: Publish (self-contained, per architecture)
         shell: bash
         run: |
-          vpk download github --repoUrl "https://github.com/${{ github.repository }}" \
-            --token "${{ secrets.GITHUB_TOKEN }}" || true
+          for RID in $TARGETS; do
+            dotnet publish src/BasisPM.App/BasisPM.App.csproj \
+              -c Release -r "$RID" --self-contained true \
+              -o "publish/$RID" -p:Version=$VERSION
+          done
+
+      - name: Download previous releases (enables delta updates)
+        shell: bash
+        run: |
+          for RID in $TARGETS; do
+            if [ "$RID" = "$LEGACY_RID" ]; then CHANNEL="${RID%%-*}"; else CHANNEL="$RID"; fi
+            vpk download github --repoUrl "https://github.com/${{ github.repository }}" \
+              --channel "$CHANNEL" -o "releases/$RID" \
+              --token "${{ secrets.GITHUB_TOKEN }}" || true
+          done
 
       # --- macOS code signing (Apple Developer ID + notarization) — only when secrets are set ---
       - name: Import Apple certificates (macOS)
@@ -125,16 +141,24 @@ jobs:
         run: |
           SIGN=()
           if [ "$SIGN_WINDOWS" = "true" ]; then SIGN=(--signParams "$WINDOWS_SIGN_PARAMS"); fi
-          vpk pack -u BasisPackageManager -v "$VERSION" -p publish -e BasisPM.App.exe \
-            --packTitle "Basis Package Manager" --shortcuts StartMenuRoot \
-            --icon src/BasisPM.App/Assets/BasisLogo.ico "${SIGN[@]}"
+          for RID in $TARGETS; do
+            if [ "$RID" = "$LEGACY_RID" ]; then CHANNEL="${RID%%-*}"; else CHANNEL="$RID"; fi
+            vpk pack -u BasisPackageManager -v "$VERSION" -p "publish/$RID" -e BasisPM.App.exe \
+              --runtime "$RID" --channel "$CHANNEL" -o "releases/$RID" \
+              --packTitle "Basis Package Manager" --shortcuts StartMenuRoot \
+              --icon src/BasisPM.App/Assets/BasisLogo.ico "${SIGN[@]}"
+          done
 
       - name: Pack (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         shell: bash
         run: |
-          vpk pack -u BasisPackageManager -v "$VERSION" -p publish -e BasisPM.App \
-            --packTitle "Basis Package Manager"
+          for RID in $TARGETS; do
+            if [ "$RID" = "$LEGACY_RID" ]; then CHANNEL="${RID%%-*}"; else CHANNEL="$RID"; fi
+            vpk pack -u BasisPackageManager -v "$VERSION" -p "publish/$RID" -e BasisPM.App \
+              --runtime "$RID" --channel "$CHANNEL" -o "releases/$RID" \
+              --packTitle "Basis Package Manager"
+          done
 
       - name: Pack (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
@@ -150,19 +174,27 @@ jobs:
                   --notaryProfile velopack-notary \
                   --signEntitlements build/entitlements.plist)
           fi
-          vpk pack -u BasisPackageManager -v "$VERSION" -p publish -e BasisPM.App \
-            --packTitle "Basis Package Manager" "${SIGN[@]}"
+          for RID in $TARGETS; do
+            if [ "$RID" = "$LEGACY_RID" ]; then CHANNEL="${RID%%-*}"; else CHANNEL="$RID"; fi
+            vpk pack -u BasisPackageManager -v "$VERSION" -p "publish/$RID" -e BasisPM.App \
+              --runtime "$RID" --channel "$CHANNEL" -o "releases/$RID" \
+              --packTitle "Basis Package Manager" "${SIGN[@]}"
+          done
 
       - name: Upload to GitHub Release
         shell: bash
-        run: >
-          vpk upload github
-          --repoUrl "https://github.com/${{ github.repository }}"
-          --publish
-          --releaseName "Basis Package Manager $VERSION"
-          --tag "${{ github.ref_name }}"
-          --merge
-          --token "${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          for RID in $TARGETS; do
+            if [ "$RID" = "$LEGACY_RID" ]; then CHANNEL="${RID%%-*}"; else CHANNEL="$RID"; fi
+            vpk upload github \
+              --repoUrl "https://github.com/${{ github.repository }}" \
+              --publish \
+              --releaseName "Basis Package Manager $VERSION" \
+              --tag "${{ github.ref_name }}" \
+              --merge \
+              --channel "$CHANNEL" -o "releases/$RID" \
+              --token "${{ secrets.GITHUB_TOKEN }}"
+          done
 
       # A tag with a prerelease suffix (e.g. v0.2.0-beta.1) is the prerelease channel: mark the
       # GitHub release as a pre-release so stable users don't receive it (opt-in via app Settings).

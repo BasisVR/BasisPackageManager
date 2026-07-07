@@ -19,9 +19,13 @@ Grab the latest installer for your platform from the
 
 | Platform | File | First run |
 |----------|------|-----------|
-| Windows  | `*-win-Setup.exe` | Unsigned for now, so SmartScreen may warn — choose **More info → Run anyway**. |
-| Linux    | `*.AppImage` | `chmod +x` it, then run. (Needs FUSE, which most distros ship.) |
-| macOS    | `*.pkg` (Apple Silicon) | Unsigned — **right-click → Open**, then **Open** the first time. |
+| Windows  | `*-win-Setup.exe` (x64) or `*-win-arm64-Setup.exe` (Windows on ARM) | Unsigned for now, so SmartScreen may warn — choose **More info → Run anyway**. |
+| Linux    | `BasisPackageManager.AppImage` (x64) or `*-linux-arm64.AppImage` (arm64) | `chmod +x` it, then run. (Needs FUSE, which most distros ship.) |
+| macOS    | `*-osx-Setup.pkg` (Apple Silicon) or `*-osx-x64-Setup.pkg` (Intel) | Unsigned — **right-click → Open**, then **Open** the first time. |
+
+Not sure which architecture you have? Windows: Settings → System → About → *System type*.
+Mac: Apple menu → About This Mac (an *Intel* processor means `osx-x64`). Pick the matching
+file — the installer refuses a package built for a different processor.
 
 The app installs per-user (no admin required) and keeps itself up to date — see below.
 

@@ -24,3 +24,12 @@ jobs:
 
       - name: Test
         run: dotnet test BasisPM.slnx -c Release --no-build --verbosity normal
+
+      # Catch a dependency that stops shipping natives for the non-x64 release targets
+      # before release day (release.yml cross-packs these same RIDs).
+      - name: Publish smoke (non-x64 release targets)
+        run: |
+          for rid in win-arm64 linux-arm64 osx-x64; do
+            dotnet publish src/BasisPM.App/BasisPM.App.csproj \
+              -c Release -r "$rid" --self-contained true -o "/tmp/pub-$rid"
+          done
