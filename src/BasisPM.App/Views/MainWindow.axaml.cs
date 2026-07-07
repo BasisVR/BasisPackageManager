@@ -10,7 +10,16 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        // The ambient background (gradient pan + blurred blobs) animates forever, forcing a repaint
+        // every frame. Pause it whenever the window isn't in the foreground so a backgrounded or
+        // minimized app spends ~no CPU on rendering; it resumes the moment the window is focused.
+        Activated += OnForegroundChanged;
+        Deactivated += OnForegroundChanged;
+        PropertyChanged += (_, e) => { if (e.Property == WindowStateProperty) OnForegroundChanged(this, EventArgs.Empty); };
     }
+
+    private void OnForegroundChanged(object? sender, EventArgs e)
+        => BgRoot.Classes.Set("bgLive", IsActive && WindowState != WindowState.Minimized);
 
     private void OnNavClick(object? sender, RoutedEventArgs e)
     {

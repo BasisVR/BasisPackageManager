@@ -134,9 +134,10 @@
             <TextBlock Text="{loc:Tr community.support.intro}"
                        Classes="muted" FontSize="13" TextWrapping="Wrap" MaxWidth="680" HorizontalAlignment="Left"/>
             <StackPanel Orientation="Horizontal" Spacing="12">
-                <Button Classes="primary" Command="{Binding Support.OpenCollectiveCommand}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconHeart}" VerticalAlignment="Center"/>
+                <Button Classes="primary" Command="{Binding Support.OpenCollectiveCommand}"
+                        HorizontalAlignment="Left" FontSize="16" Padding="32,17" CornerRadius="14">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <PathIcon Data="{StaticResource IconHeart}" Width="20" Height="20" VerticalAlignment="Center"/>
                         <TextBlock Text="{loc:Tr community.support.openCollective}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
@@ -147,12 +148,6 @@
                         <TextBlock Text="{loc:Tr community.support.donationsTitle}" Classes="h3" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr community.support.donationsBody}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                        <Button Command="{Binding Support.OpenCollectiveCommand}" HorizontalAlignment="Left">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconHeart}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr community.support.backOpenCollective}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
                     </StackPanel>
                 </Border>
                 <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">

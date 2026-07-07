@@ -233,6 +233,13 @@ public sealed class PackageStore
                         Image = p.Image,
                         Icon = p.Icon,
                         Link = p.Link,
+                        // Filter/sort metadata for the desktop client (mirrors the website's browser).
+                        Category = p.Category,
+                        Source = p.Source,
+                        Tags = p.Tags,
+                        Stars = p.Stars,
+                        Forks = p.Forks,
+                        Updated = p.Updated,
                     },
                 },
             };

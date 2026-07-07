@@ -3,6 +3,10 @@
   "nativeName": "العربية",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "عام"
+    },
+    {
       "key": "packages.version.installed",
       "value": "تم تثبيت {0}"
     },
@@ -1195,14 +1199,6 @@
       "value": "تم حفظ الإعدادات."
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "وضع المطوّر (إظهار تبويب تطوير)"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "ركّب حزم git محليًا، وحرّرها في Unity، وافتح طلبات السحب. مخفي لغير المطوّرين."
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "إظهار تبويب التغييرات المحلية"
     },
@@ -1537,34 +1533,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "اختيار تثبيت"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "كل ما سبق، إضافةً إلى تبويب تطوير — ركّب الحزم محليًا، وحرّرها في Unity، وافتح طلبات السحب."
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "أنا مطوّر"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "كيف ستستخدم Basis؟ سنخصّص الأدوات المعروضة — يمكنك تغيير ذلك في أي وقت من الإعدادات."
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "مرحبًا بك في مدير حزم Basis"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "استنسخ Basis، وثبّت الحزم، وأبقِه محدّثًا. الأساسيات، دون أي إضافات."
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "أستخدم إطار العمل"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "مرحبًا 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

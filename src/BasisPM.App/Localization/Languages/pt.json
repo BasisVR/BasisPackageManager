@@ -3,6 +3,10 @@
   "nativeName": "Português",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "Geral"
+    },
+    {
       "key": "packages.version.installed",
       "value": "Instalado {0}"
     },
@@ -1195,14 +1199,6 @@
       "value": "Configurações salvas."
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "Modo desenvolvedor (mostrar a aba Desenvolver)"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "Monte pacotes git localmente, edite-os no Unity e abra pull requests. Oculto para não desenvolvedores."
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "Mostrar a aba Alterações Locais"
     },
@@ -1537,34 +1533,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "Escolha uma instalação"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "Tudo acima, mais a aba Desenvolver — monte pacotes localmente, edite-os no Unity e abra pull requests."
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "Sou desenvolvedor"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "Como você vai usar o Basis? Vamos personalizar quais ferramentas são exibidas — você pode alterar isso a qualquer momento nas Configurações."
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "Bem-vindo ao Basis Package Manager"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "Clone o Basis, instale pacotes e mantenha tudo atualizado. O essencial, nada além."
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "Estou usando o framework"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "Bem-vindo 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

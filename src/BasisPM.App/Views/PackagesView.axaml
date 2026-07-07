@@ -40,6 +40,19 @@
                 </Border>
             </StackPanel>
         </DataTemplate>
+
+        <!-- One Source/Category filter chip (label + count), highlighted when it's the active pick.
+             Shared by the Source and Category chip rows; the VM routes the click by chip.Kind. -->
+        <DataTemplate x:Key="FacetChip" DataType="vm:FacetChip">
+            <Button Classes="chip" Classes.selected="{Binding IsSelected}"
+                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SelectFacetCommand}"
+                    CommandParameter="{Binding}">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Count}" Opacity="0.55" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </DataTemplate>
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -70,6 +83,22 @@
         </Style>
         <Style Selector="Border.detailOverlay.shown Border.detailCard">
             <Setter Property="RenderTransform" Value="scale(1)"/>
+        </Style>
+
+        <!-- Filter chips (Source / Category). The selected chip fills with the brand gradient. -->
+        <Style Selector="Button.chip">
+            <Setter Property="Margin" Value="0,0,8,8"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="CornerRadius" Value="999"/>
+            <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BasisBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style Selector="Button.chip.selected">
+            <Setter Property="Background" Value="{StaticResource BasisBrandGradient}"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
         </Style>
     </UserControl.Styles>
 
@@ -151,17 +180,50 @@
                     <Grid RowDefinitions="Auto,Auto,*">
                         <Border Grid.Row="0" Padding="20,16" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
                             <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
-                                <TextBlock Grid.Column="0" Text="{loc:Tr packages.header.available}" Classes="h3" VerticalAlignment="Center"/>
-                                <Border Grid.Column="1" Classes="brandBadge" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Grid.Column="0" Text="{Binding ListHeaderLabel}" Classes="h3" VerticalAlignment="Center"/>
+                                <Border Grid.Column="1" Classes="brandBadge" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"
+                                        IsVisible="{Binding !ShowInstalledOnly}">
                                     <TextBlock Text="{loc:Tr packages.badge.basisRegistry}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
                                 </Border>
-                                <Button Grid.Column="2" Content="{Binding LayoutToggleLabel}" Command="{Binding ToggleLayoutCommand}"
-                                        FontSize="12" Padding="14,7" VerticalAlignment="Center"
-                                        ToolTip.Tip="{loc:Tr packages.tooltip.toggleLayout}"/>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <Button Content="{Binding InstalledToggleLabel}" Command="{Binding ToggleInstalledCommand}"
+                                            FontSize="12" Padding="14,7"
+                                            ToolTip.Tip="{loc:Tr packages.tooltip.showInstalled}"/>
+                                    <Button Content="{Binding LayoutToggleLabel}" Command="{Binding ToggleLayoutCommand}"
+                                            FontSize="12" Padding="14,7"
+                                            ToolTip.Tip="{loc:Tr packages.tooltip.toggleLayout}"/>
+                                </StackPanel>
                             </Grid>
                         </Border>
                         <Border Grid.Row="1" Padding="20,12" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                            <TextBox Watermark="{loc:Tr packages.filter.watermark}" Text="{Binding Filter}"/>
+                            <StackPanel Spacing="12">
+                                <!-- Search + sort, mirroring the website's top bar. -->
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBox Grid.Column="0" Watermark="{loc:Tr packages.filter.watermark}" Text="{Binding Filter}"/>
+                                    <ComboBox Grid.Column="1" Margin="10,0,0,0" MinWidth="170" VerticalAlignment="Center"
+                                              ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SelectedSort}"
+                                              ToolTip.Tip="{loc:Tr packages.filter.sortBy}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:SortOption">
+                                                <TextBlock Text="{Binding Label}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
+                                <!-- Source facet chips (All / Official / Community / …), each with a count. -->
+                                <ItemsControl ItemsSource="{Binding SourceFacets}" ItemTemplate="{StaticResource FacetChip}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                                <!-- Category facet chips; shown only when the catalog carries categories. -->
+                                <ItemsControl ItemsSource="{Binding CategoryFacets}" ItemTemplate="{StaticResource FacetChip}"
+                                              IsVisible="{Binding HasCategoryFacets}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </StackPanel>
                         </Border>
                         <!-- List layout: one roomy row per package, with a wide action column. -->
                         <ScrollViewer Grid.Row="2" MaxHeight="720" IsVisible="{Binding IsListView}">
@@ -191,6 +253,14 @@
                                                             <TextBlock Text="{loc:Tr packages.badge.mounted}" FontSize="9" FontWeight="Bold"
                                                                        Foreground="{StaticResource BasisBlueBrush}"/>
                                                         </Border>
+                                                        <!-- License sits with the name/description (identity), not down with the version/branch pills. -->
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasLicense}"
+                                                                ToolTip.Tip="{loc:Tr packages.label.license}">
+                                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{Binding License}" FontSize="11" Classes="muted" VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Border>
                                                     </StackPanel>
                                                     <TextBlock Text="{Binding Name}" Classes="dim" FontSize="11"/>
                                                     <TextBlock Text="{Binding Description}" Classes="muted" FontSize="12" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
@@ -200,25 +270,28 @@
                                                                 <Setter Property="Margin" Value="0,0,8,4"/>
                                                             </Style>
                                                         </WrapPanel.Styles>
-                                                        <Border Classes="versionPill" VerticalAlignment="Center">
-                                                            <TextBlock Text="{Binding Version}" FontSize="11" Classes="brand"/>
+                                                        <!-- One status pill: the installed branch/version (green) when installed,
+                                                             else a greyed "Not Installed". No separate available-version pill. -->
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsAvailableToInstall}"
+                                                                Background="#12FFFFFF" BorderBrush="#26FFFFFF">
+                                                            <TextBlock Text="{loc:Tr packages.state.notInstalled}" FontSize="11" Classes="dim"/>
                                                         </Border>
                                                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasInstalledVersion}"
-                                                                Background="#2622C55E" BorderBrush="#8022C55E">
+                                                                Background="#2622C55E" BorderBrush="#8022C55E" ToolTip.Tip="{Binding InstalledVersionText}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
-                                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconCheck}" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
-                                                                <TextBlock Text="{Binding InstalledVersionText}" FontSize="11" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
-                                                            </StackPanel>
-                                                        </Border>
-                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasLicense}"
-                                                                ToolTip.Tip="{loc:Tr packages.label.license}">
-                                                            <StackPanel Orientation="Horizontal" Spacing="4">
-                                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
-                                                                <TextBlock Text="{Binding License}" FontSize="11" Classes="muted" VerticalAlignment="Center"/>
+                                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconBranch}" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{Binding InstalledLabel}" FontSize="11" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center" MaxWidth="180" TextTrimming="CharacterEllipsis"/>
                                                             </StackPanel>
                                                         </Border>
                                                         <TextBlock Text="{Binding Author, StringFormat='by {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center" IsVisible="{Binding HasAuthor}"/>
                                                         <TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center" IsVisible="{Binding HasUnity}"/>
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasCategory}">
+                                                            <TextBlock Text="{Binding Category}" FontSize="11" Classes="muted"/>
+                                                        </Border>
+                                                        <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" IsVisible="{Binding HasStars}">
+                                                            <TextBlock Text="★" FontSize="11" Classes="dim" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding StarsText}" FontSize="11" Classes="dim" VerticalAlignment="Center"/>
+                                                        </StackPanel>
                                                         <Button Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
                                                                 ToolTip.Tip="{Binding Link}"
                                                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
@@ -267,6 +340,13 @@
                                                             <TextBlock Text="{loc:Tr packages.badge.mounted}" FontSize="9" FontWeight="Bold"
                                                                        Foreground="{StaticResource BasisBlueBrush}"/>
                                                         </Border>
+                                                        <Border Classes="versionPill" HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding HasLicense}"
+                                                                ToolTip.Tip="{loc:Tr packages.label.license}">
+                                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                <PathIcon Width="10" Height="10" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{Binding License}" FontSize="10" Classes="muted" VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Border>
                                                     </StackPanel>
                                                 </StackPanel>
                                                 <TextBlock Text="{Binding Description}" Classes="muted" FontSize="11" TextWrapping="Wrap"
@@ -277,23 +357,24 @@
                                                             <Setter Property="Margin" Value="0,0,6,4"/>
                                                         </Style>
                                                     </WrapPanel.Styles>
-                                                    <Border Classes="versionPill" VerticalAlignment="Center">
-                                                        <TextBlock Text="{Binding Version}" FontSize="10" Classes="brand"/>
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsAvailableToInstall}"
+                                                            Background="#12FFFFFF" BorderBrush="#26FFFFFF">
+                                                        <TextBlock Text="{loc:Tr packages.state.notInstalled}" FontSize="10" Classes="dim"/>
                                                     </Border>
                                                     <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasInstalledVersion}"
-                                                            Background="#2622C55E" BorderBrush="#8022C55E">
+                                                            Background="#2622C55E" BorderBrush="#8022C55E" ToolTip.Tip="{Binding InstalledVersionText}">
                                                         <StackPanel Orientation="Horizontal" Spacing="5">
-                                                            <PathIcon Width="10" Height="10" Data="{StaticResource IconCheck}" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="{Binding InstalledVersionText}" FontSize="10" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                                                            <PathIcon Width="10" Height="10" Data="{StaticResource IconBranch}" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding InstalledLabel}" FontSize="10" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center" MaxWidth="150" TextTrimming="CharacterEllipsis"/>
                                                         </StackPanel>
                                                     </Border>
-                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasLicense}"
-                                                            ToolTip.Tip="{loc:Tr packages.label.license}">
-                                                        <StackPanel Orientation="Horizontal" Spacing="4">
-                                                            <PathIcon Width="10" Height="10" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="{Binding License}" FontSize="10" Classes="muted" VerticalAlignment="Center"/>
-                                                        </StackPanel>
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasCategory}">
+                                                        <TextBlock Text="{Binding Category}" FontSize="10" Classes="muted"/>
                                                     </Border>
+                                                    <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" IsVisible="{Binding HasStars}">
+                                                        <TextBlock Text="★" FontSize="10" Classes="dim" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding StarsText}" FontSize="10" Classes="dim" VerticalAlignment="Center"/>
+                                                    </StackPanel>
                                                     <Button Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
                                                             ToolTip.Tip="{Binding Link}"
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
@@ -308,6 +389,9 @@
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
                         </ScrollViewer>
+                        <TextBlock Grid.Row="2" Text="{loc:Tr packages.installed.empty}" Classes="muted"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,44"
+                                   IsVisible="{Binding ShowInstalledEmptyHint}"/>
                     </Grid>
                 </Border>
 
@@ -329,46 +413,6 @@
                         </Grid>
                     </StackPanel>
                 </Border>
-
-                <!-- Installed (a collapsible tab, closed until opened) -->
-                <Expander IsExpanded="False" HorizontalAlignment="Stretch">
-                    <Expander.Header>
-                        <TextBlock Text="{loc:Tr packages.header.installed}" Classes="h3"/>
-                    </Expander.Header>
-                    <StackPanel Margin="0,10,0,0">
-                        <Border Padding="0,0,0,10" Margin="0,0,0,4" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                            <ComboBox HorizontalAlignment="Left" MinWidth="150"
-                                      ItemsSource="{Binding InstalledOwners}"
-                                      SelectedItem="{Binding SelectedInstalledOwner}"
-                                      ToolTip.Tip="{loc:Tr packages.tooltip.filterByOwner}"/>
-                        </Border>
-                        <ItemsControl ItemsSource="{Binding Installed}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="vm:InstalledPackageRow">
-                                    <Border Padding="20,12" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                                        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                                            <StackPanel Grid.Column="0" Spacing="3">
-                                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"/>
-                                                    <Border Classes="versionPill" IsVisible="{Binding IsFromGit}">
-                                                        <TextBlock Text="{loc:Tr packages.badge.github}" FontSize="10" Classes="brand" FontWeight="Bold"/>
-                                                    </Border>
-                                                </StackPanel>
-                                                <TextBlock Text="{Binding Version}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
-                                            </StackPanel>
-                                            <Button Grid.Column="1" Classes="iconBtn danger"
-                                                    ToolTip.Tip="{loc:Tr packages.button.remove}"
-                                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).UninstallCommand}"
-                                                    CommandParameter="{Binding}">
-                                                <PathIcon Width="16" Height="16" Data="{StaticResource IconDelete}"/>
-                                            </Button>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Expander>
 
             </StackPanel>
         </StackPanel>
@@ -423,10 +467,10 @@
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <Border Classes="versionPill"><TextBlock Text="{Binding Version, StringFormat='v{0}'}" FontSize="11" Classes="brand"/></Border>
                         <Border Classes="versionPill" IsVisible="{Binding HasInstalledVersion}"
-                                Background="#2622C55E" BorderBrush="#8022C55E">
+                                Background="#2622C55E" BorderBrush="#8022C55E" ToolTip.Tip="{Binding InstalledVersionText}">
                             <StackPanel Orientation="Horizontal" Spacing="5">
-                                <PathIcon Width="11" Height="11" Data="{StaticResource IconCheck}" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding InstalledVersionText}" FontSize="11" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                                <PathIcon Width="11" Height="11" Data="{StaticResource IconBranch}" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding InstalledLabel}" FontSize="11" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center" MaxWidth="300" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
                         </Border>
                         <Border Classes="versionPill" IsVisible="{Binding HasLicense}">
@@ -436,6 +480,7 @@
                             </StackPanel>
                         </Border>
                         <Border Classes="versionPill" IsVisible="{Binding HasUnity}"><TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" FontSize="11" Classes="muted"/></Border>
+                        <Border Classes="versionPill" IsVisible="{Binding HasCategory}"><TextBlock Text="{Binding Category}" FontSize="11" Classes="muted"/></Border>
                     </StackPanel>
 
                     <StackPanel Spacing="6" IsVisible="{Binding HasDependencies}">

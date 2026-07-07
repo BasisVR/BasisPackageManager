@@ -3,6 +3,10 @@
   "nativeName": "日本語",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "一般"
+    },
+    {
       "key": "packages.version.installed",
       "value": "インストール済み {0}"
     },
@@ -1195,14 +1199,6 @@
       "value": "設定を保存しました。"
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "開発者モード（「開発」タブを表示）"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "git パッケージをローカルにマウントし、Unity で編集してプルリクエストを開きます。開発者以外には非表示です。"
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "「ローカルの変更」タブを表示"
     },
@@ -1537,34 +1533,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "インストールを選択"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "上記のすべてに加えて「開発」タブ — パッケージをローカルにマウントし、Unity で編集してプルリクエストを開きます。"
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "開発者です"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "Basis をどのように使いますか？表示するツールを調整します — 設定でいつでも変更できます。"
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "Basis Package Manager へようこそ"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "Basis をクローンし、パッケージをインストールして、最新の状態に保ちます。必要なものだけ、余計なものはありません。"
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "フレームワークを使います"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "ようこそ 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

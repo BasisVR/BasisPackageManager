@@ -3,6 +3,10 @@
   "nativeName": "हिन्दी",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "सामान्य"
+    },
+    {
       "key": "packages.version.installed",
       "value": "इंस्टॉल किया गया {0}"
     },
@@ -1195,14 +1199,6 @@
       "value": "सेटिंग्स सहेजी गईं।"
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "डेवलपर मोड (डेवलप टैब दिखाएँ)"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "git पैकेज को स्थानीय रूप से माउंट करें, उन्हें Unity में संपादित करें, और पुल रिक्वेस्ट खोलें। गैर-डेवलपर के लिए छिपा हुआ।"
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "स्थानीय बदलाव टैब दिखाएँ"
     },
@@ -1537,34 +1533,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "एक इंस्टॉल चुनें"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "ऊपर दी गई हर चीज़, साथ ही डेवलप टैब — पैकेज को स्थानीय रूप से माउंट करें, उन्हें Unity में संपादित करें, और पुल रिक्वेस्ट खोलें।"
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "मैं एक डेवलपर हूँ"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "आप Basis का उपयोग कैसे करेंगे? हम तय करेंगे कि कौन से टूल दिखाए जाएँ — आप इसे कभी भी सेटिंग्स में बदल सकते हैं।"
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "Basis Package Manager में आपका स्वागत है"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "Basis क्लोन करें, पैकेज इंस्टॉल करें, और उसे अद्यतित रखें। बस ज़रूरी चीज़ें, कुछ भी अतिरिक्त नहीं।"
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "मैं फ्रेमवर्क का उपयोग कर रहा हूँ"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "स्वागत है 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

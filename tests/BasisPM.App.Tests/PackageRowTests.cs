@@ -92,16 +92,6 @@ public sealed class PackageRowTests
         Assert.Equal(expectedOwner, new PackageRow(Entry(name: name), null).Owner);
     }
 
-    [AvaloniaFact]
-    public void InstalledPackageRow_exposes_its_fields()
-    {
-        var row = new InstalledPackageRow("com.x", "X Package", "https://github.com/x/x.git", IsFromGit: true);
-        Assert.Equal("com.x", row.Name);
-        Assert.Equal("X Package", row.DisplayName);
-        Assert.Equal("https://github.com/x/x.git", row.Version);
-        Assert.True(row.IsFromGit);
-    }
-
     // A package mounted for editing lives as a local folder in Packages/, not the registry git URL.
     // A root-level mount even drops its manifest line (so IsInstalled is false) — it must still read as
     // "Locally mounted", never "available to install" (the reported bug).

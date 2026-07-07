@@ -3,6 +3,10 @@
   "nativeName": "Русский",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "Общие"
+    },
+    {
       "key": "packages.version.installed",
       "value": "Установлено {0}"
     },
@@ -1195,14 +1199,6 @@
       "value": "Настройки сохранены."
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "Режим разработчика (показать вкладку «Разработка»)"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "Подключайте git-пакеты локально, редактируйте их в Unity и открывайте pull request. Скрыто для не-разработчиков."
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "Показать вкладку «Локальные изменения»"
     },
@@ -1537,34 +1533,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "Выберите установку"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "Всё, что выше, плюс вкладка «Разработка» — подключайте пакеты локально, редактируйте их в Unity и открывайте pull request."
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "Я разработчик"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "Как вы будете использовать Basis? Мы подберём, какие инструменты показывать — это можно изменить в любое время в настройках."
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "Добро пожаловать в Basis Package Manager"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "Клонируйте Basis, устанавливайте пакеты и поддерживайте его в актуальном состоянии. Только самое необходимое, ничего лишнего."
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "Я использую фреймворк"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "Добро пожаловать 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

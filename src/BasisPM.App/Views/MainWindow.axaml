@@ -10,17 +10,19 @@
         MinWidth="880" MinHeight="600"
         Background="{StaticResource BasisBackgroundBrush}">
 
-    <Panel ClipToBounds="True">
+    <Panel ClipToBounds="True" x:Name="BgRoot" Classes="bgLive">
         <!-- Animated background: an oversized brand gradient that slowly pans on a loop
              (mirrors the website's .animated-gradient background-position sweep), plus
-             colored blobs that drift on independent loops. -->
+             colored blobs that drift on independent loops. The animations are gated on the
+             `bgLive` class (toggled off in code-behind when the window loses focus / minimizes),
+             so a backgrounded app stops repainting and drops to ~no CPU. -->
         <Panel.Styles>
             <!-- Pans the oversized gradient horizontally so its diagonal color bands drift across —
                  the desktop nod to the site's `background-position` sweep, but kept SUBTLE: small,
                  slow travel so the motion isn't distracting. Canvas.Left is a double (built-in
                  animator); RenderTransform has none and throws at load —
                  see project_basispm_avalonia_animation_gotcha. -->
-            <Style Selector="Border.flowGradient">
+            <Style Selector="Panel.bgLive Border.flowGradient">
                 <Style.Animations>
                     <Animation Duration="0:0:9" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
                         <KeyFrame Cue="0%"><Setter Property="Canvas.Left" Value="0"/></KeyFrame>
@@ -30,7 +32,7 @@
             </Style>
             <!-- Blobs drift by animating their Canvas anchors (double → built-in animator).
                  RenderTransform has no default animator in Avalonia and throws at load. -->
-            <Style Selector="Ellipse.blobA">
+            <Style Selector="Panel.bgLive Ellipse.blobA">
                 <Style.Animations>
                     <Animation Duration="0:0:23" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
                         <KeyFrame Cue="0%"><Setter Property="Canvas.Left" Value="-60"/><Setter Property="Canvas.Top" Value="-40"/></KeyFrame>
@@ -38,7 +40,7 @@
                     </Animation>
                 </Style.Animations>
             </Style>
-            <Style Selector="Ellipse.blobB">
+            <Style Selector="Panel.bgLive Ellipse.blobB">
                 <Style.Animations>
                     <Animation Duration="0:0:29" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
                         <KeyFrame Cue="0%"><Setter Property="Canvas.Right" Value="-80"/><Setter Property="Canvas.Top" Value="60"/></KeyFrame>
@@ -46,7 +48,7 @@
                     </Animation>
                 </Style.Animations>
             </Style>
-            <Style Selector="Ellipse.blobC">
+            <Style Selector="Panel.bgLive Ellipse.blobC">
                 <Style.Animations>
                     <Animation Duration="0:0:34" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
                         <KeyFrame Cue="0%"><Setter Property="Canvas.Left" Value="280"/><Setter Property="Canvas.Bottom" Value="-40"/></KeyFrame>
@@ -54,7 +56,7 @@
                     </Animation>
                 </Style.Animations>
             </Style>
-            <Style Selector="Ellipse.blobD">
+            <Style Selector="Panel.bgLive Ellipse.blobD">
                 <Style.Animations>
                     <Animation Duration="0:0:26" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
                         <KeyFrame Cue="0%"><Setter Property="Canvas.Right" Value="120"/><Setter Property="Canvas.Bottom" Value="-30"/></KeyFrame>
@@ -86,25 +88,25 @@
             <Ellipse Classes="blobA" Width="260" Height="260" Canvas.Left="-60" Canvas.Top="-40"
                      Fill="#26EF1237">
                 <Ellipse.Effect>
-                    <BlurEffect Radius="120"/>
+                    <BlurEffect Radius="72"/>
                 </Ellipse.Effect>
             </Ellipse>
             <Ellipse Classes="blobB" Width="320" Height="320" Canvas.Right="-80" Canvas.Top="60"
                      Fill="#269333EA">
                 <Ellipse.Effect>
-                    <BlurEffect Radius="140"/>
+                    <BlurEffect Radius="84"/>
                 </Ellipse.Effect>
             </Ellipse>
             <Ellipse Classes="blobC" Width="220" Height="220" Canvas.Left="280" Canvas.Bottom="-40"
                      Fill="#1F3B82F6">
                 <Ellipse.Effect>
-                    <BlurEffect Radius="120"/>
+                    <BlurEffect Radius="72"/>
                 </Ellipse.Effect>
             </Ellipse>
             <Ellipse Classes="blobD" Width="200" Height="200" Canvas.Right="120" Canvas.Bottom="-30"
                      Fill="#26F43F5E">
                 <Ellipse.Effect>
-                    <BlurEffect Radius="100"/>
+                    <BlurEffect Radius="60"/>
                 </Ellipse.Effect>
             </Ellipse>
         </Canvas>

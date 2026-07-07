@@ -3,6 +3,10 @@
   "nativeName": "English",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "General"
+    },
+    {
       "key": "packages.detail.close",
       "value": "Close"
     },
@@ -615,6 +619,10 @@
       "value": "Local edits"
     },
     {
+      "key": "packages.state.notInstalled",
+      "value": "Not Installed"
+    },
+    {
       "key": "packages.mounted.hint",
       "value": "Cloned into Packages/ for editing — it uses the local folder, not the registry git URL. Open the folder, submit a PR, or Swap back to restore the git version."
     },
@@ -661,6 +669,22 @@
     {
       "key": "packages.button.listView",
       "value": "List view"
+    },
+    {
+      "key": "packages.button.showInstalled",
+      "value": "Show installed"
+    },
+    {
+      "key": "packages.button.showAll",
+      "value": "Show all"
+    },
+    {
+      "key": "packages.tooltip.showInstalled",
+      "value": "Switch between all packages and just the ones installed in this project"
+    },
+    {
+      "key": "packages.installed.empty",
+      "value": "No packages installed in this project yet."
     },
     {
       "key": "packages.button.manage",
@@ -732,7 +756,51 @@
     },
     {
       "key": "packages.filter.watermark",
-      "value": "Filter packages..."
+      "value": "Search packages, authors, tags…"
+    },
+    {
+      "key": "packages.filter.sortBy",
+      "value": "Sort"
+    },
+    {
+      "key": "packages.source.all",
+      "value": "All"
+    },
+    {
+      "key": "packages.source.official",
+      "value": "Official"
+    },
+    {
+      "key": "packages.source.community",
+      "value": "Community"
+    },
+    {
+      "key": "packages.source.builtin",
+      "value": "Built-in"
+    },
+    {
+      "key": "packages.category.all",
+      "value": "All categories"
+    },
+    {
+      "key": "packages.sort.popular",
+      "value": "Popular"
+    },
+    {
+      "key": "packages.sort.stars",
+      "value": "Most stars"
+    },
+    {
+      "key": "packages.sort.forks",
+      "value": "Most forks"
+    },
+    {
+      "key": "packages.sort.updated",
+      "value": "Recently updated"
+    },
+    {
+      "key": "packages.sort.name",
+      "value": "Name (A–Z)"
     },
     {
       "key": "packages.header.available",
@@ -1563,14 +1631,6 @@
       "value": "Couldn't reset: {0}"
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "Developer mode (show the Develop tab)"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "Mount git packages locally, edit them in Unity, and open pull requests. Hidden for non-developers."
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "Show the Local Changes tab"
     },
@@ -1941,34 +2001,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "Choose an install"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "Everything above, plus the Develop tab — mount packages locally, edit them in Unity, and open pull requests."
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "I'm a developer"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "How will you use Basis? We'll tailor which tools are shown — you can change this anytime in Settings."
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "Welcome to Basis Package Manager"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "Clone Basis, install packages, and keep it up to date. The essentials, nothing extra."
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "I'm using the framework"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "Welcome 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

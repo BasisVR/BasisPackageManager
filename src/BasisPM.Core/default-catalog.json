@@ -9,6 +9,8 @@
           "displayName": "Basis Framework",
           "version": "0.1.0",
           "description": "Core BasisVR networked social framework.",
+          "category": "Platform",
+          "source": "official",
           "icon": "🧩",
           "unity": "6000.0",
           "dependencies": {
@@ -26,6 +28,8 @@
           "displayName": "Basis Networking",
           "version": "0.1.0",
           "description": "LiteNetLib-based networking layer for BasisVR.",
+          "category": "Platform",
+          "source": "official",
           "icon": "🌐",
           "unity": "6000.0",
           "url": "https://github.com/BasisVR/Basis.git?path=Basis/Packages/com.basis.networking",
@@ -40,6 +44,8 @@
           "displayName": "Basis SDK",
           "version": "0.1.0",
           "description": "Authoring SDK for creating BasisVR avatars and worlds.",
+          "category": "Developer Tools",
+          "source": "official",
           "icon": "🛠️",
           "unity": "6000.0",
           "dependencies": {

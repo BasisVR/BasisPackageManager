@@ -23,7 +23,6 @@ public sealed class InstallsViewModel : ObservableObject
     private string _cloneProgress = "";
     private bool _isCloning;
     private InstallRow? _activeRow;
-    private bool _showCloneForm;
     private string? _cloneSpaceWarning;
     private bool _cloneSpaceCritical;
 
@@ -51,7 +50,6 @@ public sealed class InstallsViewModel : ObservableObject
     public string CloneProgress { get => _cloneProgress; set => SetField(ref _cloneProgress, value); }
     public bool IsCloning { get => _isCloning; set { if (SetField(ref _isCloning, value)) OnPropertyChanged(nameof(IsNotCloning)); } }
     public bool IsNotCloning => !_isCloning;
-    public bool ShowCloneForm { get => _showCloneForm; set => SetField(ref _showCloneForm, value); }
 
     public string RepoUrl => BasisInstallService.BasisRepoUrl;
 
@@ -68,7 +66,6 @@ public sealed class InstallsViewModel : ObservableObject
     public RelayCommand<InstallRow> RemoveCommand { get; }
     public RelayCommand<InstallRow> SetActiveCommand { get; }
     public RelayCommand<InstallRow> BackupCommand { get; }
-    public RelayCommand ToggleCloneFormCommand { get; }
 
     public InstallsViewModel(UserSettingsService settingsService, BasisInstallService installService, GitService git, MainWindowViewModel shell)
     {
@@ -90,7 +87,6 @@ public sealed class InstallsViewModel : ObservableObject
         RemoveCommand = new RelayCommand<InstallRow>(RemoveAsync);
         SetActiveCommand = new RelayCommand<InstallRow>(r => Activate(r, null));
         BackupCommand = new RelayCommand<InstallRow>(BackupAsync);
-        ToggleCloneFormCommand = new RelayCommand(() => { ShowCloneForm = !ShowCloneForm; });
     }
 
     public async Task LoadAsync(UserSettings settings)

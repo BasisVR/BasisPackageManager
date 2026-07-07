@@ -3,6 +3,10 @@
   "nativeName": "简体中文",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "常规"
+    },
+    {
       "key": "packages.version.installed",
       "value": "已安装 {0}"
     },
@@ -1195,14 +1199,6 @@
       "value": "设置已保存。"
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "开发者模式（显示“开发”选项卡）"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "在本地挂载 git 软件包，在 Unity 中编辑它们，并发起拉取请求。对非开发者隐藏。"
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "显示“本地更改”选项卡"
     },
@@ -1537,34 +1533,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "选择一个安装项"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "以上全部，外加“开发”选项卡 — 在本地挂载软件包，在 Unity 中编辑它们，并发起拉取请求。"
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "我是开发者"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "你将如何使用 Basis？我们会据此定制显示哪些工具 — 你可以随时在设置中更改。"
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "欢迎使用 Basis 软件包管理器"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "克隆 Basis、安装软件包并保持更新。只有基础功能，别无其他。"
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "我在使用该框架"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "欢迎 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

@@ -34,6 +34,17 @@ public sealed class CatalogPackageVersion
     [JsonPropertyName("icon")] public string? Icon { get; set; }
     // Optional author-provided link (homepage / showcase / docs), surfaced in the desktop client.
     [JsonPropertyName("link")] public string? Link { get; set; }
+
+    // Registry metadata (from the server's RegistryPackage) that drives the desktop package filters:
+    // discovery category, provenance (official / community / built-in), search tags, and GitHub
+    // popularity / recency. Absent from older catalogs and unofficial extras, so all are nullable/zero
+    // and every filter treats "missing" gracefully.
+    [JsonPropertyName("category")] public string? Category { get; set; }
+    [JsonPropertyName("source")] public string? Source { get; set; }
+    [JsonPropertyName("tags")] public List<string>? Tags { get; set; }
+    [JsonPropertyName("stars")] public int Stars { get; set; }
+    [JsonPropertyName("forks")] public int Forks { get; set; }
+    [JsonPropertyName("updated")] public string? Updated { get; set; }
 }
 
 public sealed class CatalogAuthor

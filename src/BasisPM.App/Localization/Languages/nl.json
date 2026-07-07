@@ -3,6 +3,10 @@
   "nativeName": "Nederlands",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "Algemeen"
+    },
+    {
       "key": "packages.version.installed",
       "value": "Geïnstalleerd {0}"
     },
@@ -1195,14 +1199,6 @@
       "value": "Instellingen opgeslagen."
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "Ontwikkelaarsmodus (toon het tabblad Ontwikkelen)"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "Koppel git-pakketten lokaal, bewerk ze in Unity en open pull requests. Verborgen voor niet-ontwikkelaars."
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "Toon het tabblad Lokale wijzigingen"
     },
@@ -1537,34 +1533,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "Kies een installatie"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "Alles hierboven, plus het tabblad Ontwikkelen — koppel pakketten lokaal, bewerk ze in Unity en open pull requests."
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "Ik ben ontwikkelaar"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "Hoe ga je Basis gebruiken? We passen aan welke tools worden getoond — je kunt dit altijd wijzigen in Instellingen."
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "Welkom bij Basis Package Manager"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "Kloon Basis, installeer pakketten en houd het up-to-date. Alleen het essentiële, niets meer."
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "Ik gebruik het framework"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "Welkom 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

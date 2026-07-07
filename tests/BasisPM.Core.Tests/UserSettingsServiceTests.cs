@@ -17,9 +17,7 @@ public sealed class UserSettingsServiceTests
             Installs = { @"C:\Basis", @"D:\Other" },
             CatalogUrl = "https://example.com/catalog.json",
             ClonePath = @"C:\Clones",
-            DeveloperMode = true,
             ShowLocalChanges = true,
-            CompletedOnboarding = true,
             PrereleaseUpdates = true,
             SeenAnnouncementIds = { "a", "b" },
             ManualEditors = { new ManualUnityEditor { Version = "6000.0.30f1", Path = @"C:\Unity\6000.0.30f1\Editor\Unity.exe" } },
@@ -32,7 +30,6 @@ public sealed class UserSettingsServiceTests
         Assert.Equal(new[] { @"C:\Basis", @"D:\Other" }, loaded.Installs);
         Assert.Equal("https://example.com/catalog.json", loaded.CatalogUrl);
         Assert.Equal(@"C:\Clones", loaded.ClonePath);
-        Assert.True(loaded.DeveloperMode);
         Assert.True(loaded.ShowLocalChanges);
         Assert.True(loaded.PrereleaseUpdates);
         Assert.Equal("My Basis", loaded.InstallAliases[@"C:\Basis"]);
@@ -71,7 +68,6 @@ public sealed class UserSettingsServiceTests
 
         Assert.Empty(loaded.Installs);
         Assert.Equal("", loaded.CatalogUrl);
-        Assert.False(loaded.DeveloperMode);
     }
 
     [Fact]

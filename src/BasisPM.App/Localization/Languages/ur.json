@@ -3,6 +3,10 @@
   "nativeName": "اردو",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "عام"
+    },
+    {
       "key": "packages.version.installed",
       "value": "انسٹال شدہ {0}"
     },
@@ -1195,14 +1199,6 @@
       "value": "ترتیبات محفوظ ہو گئیں۔"
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "ڈویلپر موڈ (ڈویلپ ٹیب دکھائیں)"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "git پیکجز کو مقامی طور پر ماؤنٹ کریں، انہیں Unity میں ترمیم کریں، اور pull requests کھولیں۔ غیر ڈویلپرز کے لیے پوشیدہ۔"
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "مقامی تبدیلیاں ٹیب دکھائیں"
     },
@@ -1537,34 +1533,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "ایک انسٹال منتخب کریں"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "اوپر کی ہر چیز، اور ڈویلپ ٹیب بھی — پیکجز کو مقامی طور پر ماؤنٹ کریں، انہیں Unity میں ترمیم کریں، اور pull requests کھولیں۔"
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "میں ایک ڈویلپر ہوں"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "آپ Basis کو کیسے استعمال کریں گے؟ ہم اس کے مطابق دکھائے جانے والے ٹولز کو ترتیب دیں گے — آپ اسے کسی بھی وقت ترتیبات میں تبدیل کر سکتے ہیں۔"
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "Basis Package Manager میں خوش آمدید"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "Basis کلون کریں، پیکجز انسٹال کریں، اور اسے تازہ ترین رکھیں۔ صرف بنیادی چیزیں، کچھ اضافی نہیں۔"
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "میں فریم ورک استعمال کر رہا ہوں"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "خوش آمدید 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

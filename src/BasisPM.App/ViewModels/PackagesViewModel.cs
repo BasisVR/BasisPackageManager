@@ -32,8 +32,10 @@ public sealed class PackagesViewModel : ObservableObject
     private string _filter = "";
     private string _githubInput = "";
     private bool _isBusy;
-    private string _installedOwner = AllOwnersLabel;
-    private readonly List<InstalledPackageRow> _allInstalled = new();
+    private bool _showInstalledOnly;
+    private string _selectedSource = "all";
+    private string _selectedCategory = "all";
+    private string _sortKey = "popular";
     private BasisInstall? _selectedInstall;
     private bool _syncingSelection;
     // Configured catalog sources, remembered so Refresh reloads exactly what's configured.
@@ -57,17 +59,41 @@ public sealed class PackagesViewModel : ObservableObject
     private bool _scanningEdits;
     private bool _scanningDrift;
 
-    private static string AllOwnersLabel => L.Tr("packages.filter.allOwners");
-
     public ObservableCollection<PackageRow> Available { get; } = new();
-    public ObservableCollection<InstalledPackageRow> Installed { get; } = new();
-    public ObservableCollection<string> InstalledOwners { get; } = new();
     public ObservableCollection<BasisInstall> InstallOptions { get; } = new();
+
+    // Website-style filter facets: Source + Category chips (each with a count) rebuilt whenever the
+    // catalog loads; the sort dropdown mirrors the website's. Selections live in _selectedSource /
+    // _selectedCategory / _sortKey and drive Refilter.
+    public ObservableCollection<FacetChip> SourceFacets { get; } = new();
+    public ObservableCollection<FacetChip> CategoryFacets { get; } = new();
+    public bool HasCategoryFacets => CategoryFacets.Count > 1;
+    public IReadOnlyList<SortOption> SortOptions { get; }
+    private SortOption _selectedSort;
+    public SortOption SelectedSort
+    {
+        get => _selectedSort;
+        set { if (SetField(ref _selectedSort, value) && value is not null) { _sortKey = value.Key; Refilter(); } }
+    }
 
     public string Filter { get => _filter; set { if (SetField(ref _filter, value)) Refilter(); } }
     public string GitHubInput { get => _githubInput; set => SetField(ref _githubInput, value); }
     public bool IsBusy { get => _isBusy; set => SetField(ref _isBusy, value); }
-    public string SelectedInstalledOwner { get => _installedOwner; set { if (SetField(ref _installedOwner, value)) ApplyInstalledFilter(); } }
+    public bool ShowInstalledOnly
+    {
+        get => _showInstalledOnly;
+        set
+        {
+            if (!SetField(ref _showInstalledOnly, value)) return;
+            OnPropertyChanged(nameof(InstalledToggleLabel));
+            OnPropertyChanged(nameof(ListHeaderLabel));
+            OnPropertyChanged(nameof(ShowInstalledEmptyHint));
+            Refilter();
+        }
+    }
+    public string InstalledToggleLabel => _showInstalledOnly ? L.Tr("packages.button.showAll") : L.Tr("packages.button.showInstalled");
+    public string ListHeaderLabel => _showInstalledOnly ? L.Tr("packages.header.installed") : L.Tr("packages.header.available");
+    public bool ShowInstalledEmptyHint => _showInstalledOnly && Available.Count == 0;
 
     public BasisInstall? SelectedInstall
     {
@@ -113,13 +139,14 @@ public sealed class PackagesViewModel : ObservableObject
 
     public RelayCommand<CatalogPackageVersion> InstallCommand { get; }
     public RelayCommand<CatalogPackageVersion> RemoveCommand { get; }
-    public RelayCommand<InstalledPackageRow> UninstallCommand { get; }
+    public RelayCommand ToggleInstalledCommand { get; }
     public RelayCommand RefreshCommand { get; }
     public RelayCommand AddFromGitHubCommand { get; }
     public RelayCommand CreatePackageListCommand { get; }
     public RelayCommand InstallPackageListFromFileCommand { get; }
     public RelayCommand<CatalogPackageVersion> ChooseVersionCommand { get; }
     public RelayCommand ToggleLayoutCommand { get; }
+    public RelayCommand<FacetChip> SelectFacetCommand { get; }
     public RelayCommand<string> OpenLinkCommand { get; }
     public RelayCommand CloseDetailCommand { get; }
     // Mount workflow (formerly the Develop tab): act on a package straight from its row/detail.
@@ -149,13 +176,23 @@ public sealed class PackagesViewModel : ObservableObject
 
         InstallCommand = new RelayCommand<CatalogPackageVersion>(InstallCuratedAsync);
         RemoveCommand = new RelayCommand<CatalogPackageVersion>(RemoveAvailableAsync);
-        UninstallCommand = new RelayCommand<InstalledPackageRow>(UninstallAsync);
+        ToggleInstalledCommand = new RelayCommand(() => ShowInstalledOnly = !ShowInstalledOnly);
         RefreshCommand = new RelayCommand(RefreshAsync);
         AddFromGitHubCommand = new RelayCommand(AddFromGitHubAsync);
         CreatePackageListCommand = new RelayCommand(CreatePackageListAsync);
         InstallPackageListFromFileCommand = new RelayCommand(InstallPackageListFromFileAsync);
         ChooseVersionCommand = new RelayCommand<CatalogPackageVersion>(ChooseVersionAsync);
         ToggleLayoutCommand = new RelayCommand(() => IsGridView = !IsGridView);
+        SelectFacetCommand = new RelayCommand<FacetChip>(SelectFacet);
+        SortOptions = new List<SortOption>
+        {
+            new("popular", L.Tr("packages.sort.popular")),
+            new("stars",   L.Tr("packages.sort.stars")),
+            new("forks",   L.Tr("packages.sort.forks")),
+            new("updated", L.Tr("packages.sort.updated")),
+            new("name",    L.Tr("packages.sort.name")),
+        };
+        _selectedSort = SortOptions[0];
         OpenLinkCommand = new RelayCommand<string>(url => { if (!string.IsNullOrWhiteSpace(url)) ExternalLink.Open(url!); });
         CloseDetailCommand = new RelayCommand(() => SelectedPackage = null);
         MountCommand = new RelayCommand<PackageRow>(MountAsync);
@@ -242,6 +279,7 @@ public sealed class PackagesViewModel : ObservableObject
                 }
             }
             _catalog = merged;
+            BuildFacets();
             Refilter();
         }
         finally { IsBusy = false; }
@@ -266,15 +304,19 @@ public sealed class PackagesViewModel : ObservableObject
     {
         Available.Clear();
         var f = _filter?.Trim() ?? "";
-        bool Matches(string display, string name) => f.Length == 0
-            || display.Contains(f, StringComparison.OrdinalIgnoreCase)
-            || name.Contains(f, StringComparison.OrdinalIgnoreCase);
+
+        // Catalog packages get the full website-style treatment: search across name/id/description/
+        // author/tags, the Source and Category facets, then the chosen sort (mirrors PackageStore.Query).
+        var catalog = _catalogService.AllLatest(_catalog).Where(v =>
+            SearchMatches(v, f)
+            && (_selectedSource == "all" || string.Equals(v.Source, _selectedSource, StringComparison.OrdinalIgnoreCase))
+            && (_selectedCategory == "all" || string.Equals(v.Category, _selectedCategory, StringComparison.OrdinalIgnoreCase)));
 
         var shown = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var v in _catalogService.AllLatest(_catalog))
+        foreach (var v in SortEntries(catalog, _sortKey))
         {
-            if (!Matches(v.DisplayName, v.Name)) continue;
             var installedVersion = _install?.Manifest.Dependencies.GetValueOrDefault(v.Name);
+            if (_showInstalledOnly && installedVersion is null && !_mountedIds.Contains(v.Name)) continue;
             _mounts.TryGetValue(v.Name, out var rec);
             Available.Add(new PackageRow(v, installedVersion, _unofficialIds.Contains(v.Name),
                 _mountedIds.Contains(v.Name), rec?.FolderPath, _mountEditedIds.Contains(v.Name)));
@@ -287,7 +329,7 @@ public sealed class PackagesViewModel : ObservableObject
         // expander in RefreshInstalled, so a package never shows in both places.)
         foreach (var id in SyntheticRowIds())
         {
-            if (shown.Contains(id) || !Matches(id, id)) continue;
+            if (shown.Contains(id) || !TextMatches(id, f)) continue;
             var installedVersion = _install?.Manifest.Dependencies.GetValueOrDefault(id);
             var gitUrl = installedVersion is not null && UpmGitUrl.Parse(installedVersion) is not null
                 ? installedVersion
@@ -307,6 +349,8 @@ public sealed class PackagesViewModel : ObservableObject
             var match = Available.FirstOrDefault(r => string.Equals(r.Name, _selectedPackage.Name, StringComparison.Ordinal));
             if (match is not null) SelectedPackage = match;
         }
+
+        OnPropertyChanged(nameof(ShowInstalledEmptyHint));
     }
 
     // Ids that deserve an Available row despite not being in the catalog: every mounted package, plus
@@ -322,13 +366,99 @@ public sealed class PackagesViewModel : ObservableObject
             if (!_catalog.Packages.ContainsKey(id) && LooksMountable(val) && seen.Add(id)) yield return id;
     }
 
+    // Rebuilds the Source + Category filter chips from the whole catalog. Counts are over every package,
+    // independent of the active search/sort (matching the website). Keeps the current selection when that
+    // value still exists after a reload, otherwise falls back to "all".
+    private void BuildFacets()
+    {
+        var all = _catalogService.AllLatest(_catalog).ToList();
+
+        SourceFacets.Clear();
+        SourceFacets.Add(new FacetChip("source", "all", L.Tr("packages.source.all"), all.Count));
+        foreach (var g in all.Where(v => !string.IsNullOrWhiteSpace(v.Source))
+                             .GroupBy(v => v.Source!.Trim(), StringComparer.OrdinalIgnoreCase)
+                             .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
+            SourceFacets.Add(new FacetChip("source", g.Key, SourceLabel(g.Key), g.Count()));
+
+        CategoryFacets.Clear();
+        CategoryFacets.Add(new FacetChip("category", "all", L.Tr("packages.category.all"), all.Count));
+        foreach (var g in all.Where(v => !string.IsNullOrWhiteSpace(v.Category))
+                             .GroupBy(v => v.Category!.Trim(), StringComparer.OrdinalIgnoreCase)
+                             .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
+            CategoryFacets.Add(new FacetChip("category", g.Key, g.Key, g.Count()));
+
+        // A previously-selected facet may have vanished after a catalog reload — fall back to "all".
+        if (!SourceFacets.Any(c => string.Equals(c.Key, _selectedSource, StringComparison.OrdinalIgnoreCase)))
+            _selectedSource = "all";
+        if (!CategoryFacets.Any(c => string.Equals(c.Key, _selectedCategory, StringComparison.OrdinalIgnoreCase)))
+            _selectedCategory = "all";
+        foreach (var c in SourceFacets) c.IsSelected = string.Equals(c.Key, _selectedSource, StringComparison.OrdinalIgnoreCase);
+        foreach (var c in CategoryFacets) c.IsSelected = string.Equals(c.Key, _selectedCategory, StringComparison.OrdinalIgnoreCase);
+
+        OnPropertyChanged(nameof(HasCategoryFacets));
+    }
+
+    private void SelectFacet(FacetChip? chip)
+    {
+        if (chip is null) return;
+        if (string.Equals(chip.Kind, "source", StringComparison.Ordinal)) SetSource(chip.Key);
+        else SetCategory(chip.Key);
+    }
+
+    private void SetSource(string key)
+    {
+        if (string.Equals(_selectedSource, key, StringComparison.OrdinalIgnoreCase)) return;
+        _selectedSource = key;
+        foreach (var c in SourceFacets) c.IsSelected = string.Equals(c.Key, key, StringComparison.OrdinalIgnoreCase);
+        Refilter();
+    }
+
+    private void SetCategory(string key)
+    {
+        if (string.Equals(_selectedCategory, key, StringComparison.OrdinalIgnoreCase)) return;
+        _selectedCategory = key;
+        foreach (var c in CategoryFacets) c.IsSelected = string.Equals(c.Key, key, StringComparison.OrdinalIgnoreCase);
+        Refilter();
+    }
+
+    // Known provenance values get a friendly localized label; anything else shows as-is.
+    private static string SourceLabel(string source) => source.Trim().ToLowerInvariant() switch
+    {
+        "official" => L.Tr("packages.source.official"),
+        "community" => L.Tr("packages.source.community"),
+        "built-in" or "builtin" => L.Tr("packages.source.builtin"),
+        _ => source.Trim(),
+    };
+
+    // Search parity with the website / server Query: name, id, description, author and tags.
+    private static bool SearchMatches(CatalogPackageVersion v, string f)
+    {
+        if (f.Length == 0) return true;
+        return v.DisplayName.Contains(f, StringComparison.OrdinalIgnoreCase)
+            || v.Name.Contains(f, StringComparison.OrdinalIgnoreCase)
+            || (v.Description?.Contains(f, StringComparison.OrdinalIgnoreCase) ?? false)
+            || (v.Author?.Name?.Contains(f, StringComparison.OrdinalIgnoreCase) ?? false)
+            || (v.Tags?.Any(t => t.Contains(f, StringComparison.OrdinalIgnoreCase)) ?? false);
+    }
+
+    private static bool TextMatches(string text, string f) =>
+        f.Length == 0 || text.Contains(f, StringComparison.OrdinalIgnoreCase);
+
+    // Sort keys mirror PackageStore.Query: popular (stars, then forks), stars, forks, updated, name.
+    private static IEnumerable<CatalogPackageVersion> SortEntries(IEnumerable<CatalogPackageVersion> q, string sort) => sort switch
+    {
+        "stars" => q.OrderByDescending(v => v.Stars),
+        "forks" => q.OrderByDescending(v => v.Forks),
+        "updated" => q.OrderByDescending(v => v.Updated ?? "", StringComparer.Ordinal),
+        "name" => q.OrderBy(v => v.DisplayName, StringComparer.OrdinalIgnoreCase),
+        _ => q.OrderByDescending(v => v.Stars).ThenByDescending(v => v.Forks),
+    };
+
     private void RefreshInstalled()
     {
-        _allInstalled.Clear();
-        Installed.Clear();
         _mountedIds.Clear();
         _mounts.Clear();
-        if (_install is null || !_install.HasUnityProject) { RebuildInstalledOwners(); Refilter(); OnPropertyChanged(nameof(GitMissing)); return; }
+        if (_install is null || !_install.HasUnityProject) { Refilter(); OnPropertyChanged(nameof(GitMissing)); return; }
 
         // Packages mounted for editing are present as a local folder, not the registry git URL: a
         // root-level mount drops the manifest line entirely (cloned into Packages/<id>/), and a
@@ -341,22 +471,8 @@ public sealed class PackagesViewModel : ObservableObject
         }
 
         foreach (var (name, version) in _install.Manifest.Dependencies)
-        {
             if (version.StartsWith("file:", StringComparison.OrdinalIgnoreCase)) _mountedIds.Add(name);
-            // Mounted packages and non-catalog git deps get their own row in the Available list (with
-            // the mount actions), so keep them out of the raw Installed list to avoid showing the same
-            // package twice.
-            if (_mountedIds.Contains(name) || (!_catalog.Packages.ContainsKey(name) && LooksMountable(version)))
-                continue;
-            var displayName = _catalog.Packages.TryGetValue(name, out var pkg) && pkg.Versions.Count > 0
-                ? pkg.Versions.Values.First().DisplayName
-                : name;
-            var isGit = version.Contains("github.com", StringComparison.OrdinalIgnoreCase) || version.StartsWith("git", StringComparison.OrdinalIgnoreCase);
-            _allInstalled.Add(new InstalledPackageRow(name, displayName, version, isGit));
-        }
 
-        RebuildInstalledOwners();
-        ApplyInstalledFilter();
         Refilter();
         OnPropertyChanged(nameof(GitMissing));
         StartEditScan();
@@ -369,33 +485,6 @@ public sealed class PackagesViewModel : ObservableObject
         var owner = parts.Length >= 2 ? parts[1] : parts.FirstOrDefault() ?? "";
         if (owner.Length == 0) return L.Tr("packages.filter.otherOwner");
         return char.ToUpperInvariant(owner[0]) + owner[1..];
-    }
-
-    private void RebuildInstalledOwners()
-    {
-        var current = _installedOwner;
-        var owners = _allInstalled.Select(r => OwnerOf(r.Name))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(o => o, StringComparer.OrdinalIgnoreCase).ToList();
-
-        InstalledOwners.Clear();
-        InstalledOwners.Add(AllOwnersLabel);
-        foreach (var o in owners) InstalledOwners.Add(o);
-
-        // Keep the current pick if it still exists, otherwise fall back to "All owners".
-        _installedOwner = InstalledOwners.Contains(current) ? current : AllOwnersLabel;
-        OnPropertyChanged(nameof(SelectedInstalledOwner));
-    }
-
-    private void ApplyInstalledFilter()
-    {
-        Installed.Clear();
-        var all = string.Equals(_installedOwner, AllOwnersLabel, StringComparison.Ordinal);
-        foreach (var r in _allInstalled)
-        {
-            if (all || string.Equals(OwnerOf(r.Name), _installedOwner, StringComparison.OrdinalIgnoreCase))
-                Installed.Add(r);
-        }
     }
 
     /// <summary>
@@ -522,12 +611,6 @@ public sealed class PackagesViewModel : ObservableObject
         }
         catch (Exception ex) { _shell.SetStatus(L.Tr("packages.status.versionInstallError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
-    }
-
-    private async Task UninstallAsync(InstalledPackageRow? row)
-    {
-        if (row is null) return;
-        await RemoveByNameAsync(row.Name, row.DisplayName);
     }
 
     /// <summary>Removes an already-installed package straight from the "Available" list.</summary>
@@ -1111,6 +1194,12 @@ public sealed class PackageRow : ObservableObject
     public bool HasUnity => !string.IsNullOrWhiteSpace(Entry.Unity);
     public string? License => Entry.License;
     public bool HasLicense => !string.IsNullOrWhiteSpace(Entry.License);
+    // Registry metadata surfaced on the row: a category pill and (when known) a GitHub star count.
+    public string? Category => Entry.Category;
+    public bool HasCategory => !string.IsNullOrWhiteSpace(Entry.Category);
+    public int Stars => Entry.Stars;
+    public string StarsText => Entry.Stars.ToString("N0");
+    public bool HasStars => Entry.Stars > 0;
     public string Owner => PackagesViewModel.OwnerOf(Entry.Name);
     public string Initial => string.IsNullOrWhiteSpace(DisplayName) ? "?" : DisplayName.TrimStart()[..1].ToUpperInvariant();
     // Icon-tile glyph: the package's registry emoji when set, else its initial letter.
@@ -1126,4 +1215,20 @@ public sealed class PackageRow : ObservableObject
     public bool HasLink => !string.IsNullOrWhiteSpace(Entry.Link);
 }
 
-public sealed record InstalledPackageRow(string Name, string DisplayName, string Version, bool IsFromGit);
+/// <summary>One Source/Category filter chip: a label, a live count, and whether it's the active pick.</summary>
+public sealed class FacetChip : ObservableObject
+{
+    public FacetChip(string kind, string key, string label, int count)
+    {
+        Kind = kind; Key = key; Label = label; Count = count;
+    }
+    public string Kind { get; }   // "source" | "category" — which facet row this chip belongs to
+    public string Key { get; }    // the value to filter by ("all", "official", "Rendering", …)
+    public string Label { get; }
+    public int Count { get; }
+    private bool _isSelected;
+    public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
+}
+
+/// <summary>One entry in the sort dropdown: a stable key and its localized label.</summary>
+public sealed record SortOption(string Key, string Label);

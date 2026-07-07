@@ -3,6 +3,10 @@
   "nativeName": "Italiano",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "Generale"
+    },
+    {
       "key": "packages.version.installed",
       "value": "Installato {0}"
     },
@@ -1195,14 +1199,6 @@
       "value": "Impostazioni salvate."
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "Modalità sviluppatore (mostra la scheda Sviluppo)"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "Monta pacchetti git in locale, modificali in Unity e apri pull request. Nascosta per i non sviluppatori."
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "Mostra la scheda Modifiche locali"
     },
@@ -1537,34 +1533,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "Scegli un'installazione"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "Tutto quanto sopra, più la scheda Sviluppo — monta i pacchetti in locale, modificali in Unity e apri pull request."
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "Sono uno sviluppatore"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "Come userai Basis? Adatteremo gli strumenti mostrati — puoi cambiarlo in qualsiasi momento in Impostazioni."
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "Benvenuto in Basis Package Manager"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "Clona Basis, installa pacchetti e mantienilo aggiornato. L'essenziale, niente di superfluo."
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "Sto usando il framework"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "Benvenuto 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

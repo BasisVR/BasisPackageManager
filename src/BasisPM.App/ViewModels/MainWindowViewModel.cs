@@ -303,7 +303,6 @@ public sealed class MainWindowViewModel : ObservableObject
     private async Task RunFirstRunPromptsAsync()
     {
         await OfferCrashIssueIfAnyAsync();
-        await MaybeRunOnboardingAsync();
         await MaybePromptDesktopShortcutAsync();
     }
 
@@ -341,24 +340,6 @@ public sealed class MainWindowViewModel : ObservableObject
         catch { }
     }
 
-    /// <summary>First run: ask the user's role so we show only the tools they need (toggle later in Settings).</summary>
-    private async Task MaybeRunOnboardingAsync()
-    {
-        try
-        {
-            var settings = await _settingsService.LoadAsync();
-            if (settings.CompletedOnboarding) return;
-
-            var isDeveloper = await Dialogs.ChooseRoleAsync();
-            settings.DeveloperMode = isDeveloper;
-            settings.CompletedOnboarding = true;
-            await _settingsService.SaveAsync(settings);
-
-            SettingsVM.Apply(settings);
-        }
-        catch { }
-    }
-
     /// <summary>On the first run of an installed build, offer to add a desktop shortcut (asked once).</summary>
     private async Task MaybePromptDesktopShortcutAsync()
     {
@@ -385,8 +366,8 @@ public sealed class MainWindowViewModel : ObservableObject
 
     /// <summary>
     /// Wipes every persisted trace of the app — settings, mounted-package records, activity logs and
-    /// crash markers (the whole <c>%AppData%/BasisPM</c> folder) — then reloads defaults and re-runs the
-    /// first-run role wizard, so it behaves like a brand-new install. Basis clones on disk are untouched.
+    /// crash markers (the whole <c>%AppData%/BasisPM</c> folder) — then reloads defaults, so it behaves
+    /// like a brand-new install. Basis clones on disk are untouched.
     /// </summary>
     public async Task ResetEverythingAsync()
     {
@@ -416,9 +397,6 @@ public sealed class MainWindowViewModel : ObservableObject
         await ApplySettingsAsync(settings);
 
         SetStatus(L.Tr("settings.reset.done"), StatusKind.Success);
-
-        // Behave like a first launch: offer the role wizard again (CompletedOnboarding is now false).
-        await MaybeRunOnboardingAsync();
     }
 
     /// <summary>Handles a <c>basispm://install?…</c> link: choose a target install and add the git package to it.</summary>

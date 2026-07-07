@@ -102,14 +102,6 @@ public static class Dialogs
         return await new SignInPromptWindow().ShowDialog<string?>(owner);
     }
 
-    /// <summary>The first-run role wizard; true = developer (reveals the Develop tab).</summary>
-    public static async Task<bool> ChooseRoleAsync()
-    {
-        var owner = Owner;
-        if (owner is null) return false;
-        return await new RoleWizardWindow().ShowDialog<bool>(owner);
-    }
-
     /// <summary>Shows the version picker; returns the chosen version, or null if cancelled.</summary>
     public static async Task<PackageVersionOption?> PickVersionAsync(string title, PackageVersions versions)
     {

@@ -3,6 +3,10 @@
   "nativeName": "繁體中文",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "一般"
+    },
+    {
       "key": "packages.version.installed",
       "value": "已安裝 {0}"
     },
@@ -1195,14 +1199,6 @@
       "value": "設定已儲存。"
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "開發者模式（顯示「開發」分頁）"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "在本機掛載 git 套件、在 Unity 中編輯它們，並開啟 pull request。對非開發者隱藏。"
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "顯示「本機變更」分頁"
     },
@@ -1537,34 +1533,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "選擇一個安裝項目"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "包含以上全部，再加上「開發」分頁 — 在本機掛載套件、在 Unity 中編輯，並開啟 pull request。"
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "我是開發者"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "你會如何使用 Basis？我們會據此調整所顯示的工具 — 你隨時可以在「設定」中變更。"
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "歡迎使用 Basis Package Manager"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "複製 Basis、安裝套件並保持更新。只有基本功能，沒有多餘的東西。"
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "我在使用這個框架"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "歡迎 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

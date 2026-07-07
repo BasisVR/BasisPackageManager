@@ -3,6 +3,10 @@
   "nativeName": "Deutsch",
   "entries": [
     {
+      "key": "settings.section.general",
+      "value": "Allgemein"
+    },
+    {
       "key": "packages.version.installed",
       "value": "Installiert {0}"
     },
@@ -1195,14 +1199,6 @@
       "value": "Einstellungen gespeichert."
     },
     {
-      "key": "settings.toggle.developer",
-      "value": "Entwicklermodus (Tab „Entwickeln“ anzeigen)"
-    },
-    {
-      "key": "settings.toggle.developer.tip",
-      "value": "Git-Pakete lokal einbinden, in Unity bearbeiten und Pull Requests öffnen. Für Nicht-Entwickler ausgeblendet."
-    },
-    {
       "key": "settings.toggle.localChanges",
       "value": "Tab „Lokale Änderungen“ anzeigen"
     },
@@ -1537,34 +1533,6 @@
     {
       "key": "dialog.installPicker.title",
       "value": "Installation auswählen"
-    },
-    {
-      "key": "dialog.roleWizard.developerDesc",
-      "value": "Alles von oben, plus den Tab „Entwickeln“ — Pakete lokal einbinden, in Unity bearbeiten und Pull Requests öffnen."
-    },
-    {
-      "key": "dialog.roleWizard.developerTitle",
-      "value": "Ich bin Entwickler"
-    },
-    {
-      "key": "dialog.roleWizard.intro",
-      "value": "Wie wirst du Basis nutzen? Wir passen an, welche Tools angezeigt werden — du kannst dies jederzeit in den Einstellungen ändern."
-    },
-    {
-      "key": "dialog.roleWizard.title",
-      "value": "Willkommen beim Basis Package Manager"
-    },
-    {
-      "key": "dialog.roleWizard.userDesc",
-      "value": "Basis klonen, Pakete installieren und aktuell halten. Das Wesentliche, nichts weiter."
-    },
-    {
-      "key": "dialog.roleWizard.userTitle",
-      "value": "Ich nutze das Framework"
-    },
-    {
-      "key": "dialog.roleWizard.welcome",
-      "value": "Willkommen 👋"
     },
     {
       "key": "dialog.submitPr.branchLabel",

@@ -154,6 +154,12 @@ public sealed class PackageStoreTests
         var withGit = Pkg("com.a", "Alpha", gitUrl: "https://github.com/x/a.git");
         withGit.Version = "1.2.3";
         withGit.License = "MIT AND Unlicense";
+        withGit.Category = "Rendering";
+        withGit.Source = "official";
+        withGit.Tags = new List<string> { "shader", "urp" };
+        withGit.Stars = 42;
+        withGit.Forks = 7;
+        withGit.Updated = "2026-01-02";
         var noGit = new RegistryPackage { Id = "com.b", Name = "Beta", GitUrl = null };
 
         var catalog = PackageStore.BuildCatalog(new[] { withGit, noGit });
@@ -164,6 +170,13 @@ public sealed class PackageStoreTests
         Assert.Equal("https://github.com/x/a.git", version.Url);
         Assert.Equal("Alpha", version.DisplayName);
         Assert.Equal("MIT AND Unlicense", version.License);
+        // Filter/sort metadata must survive the catalog build so the desktop client can filter on it.
+        Assert.Equal("Rendering", version.Category);
+        Assert.Equal("official", version.Source);
+        Assert.Equal(new[] { "shader", "urp" }, version.Tags);
+        Assert.Equal(42, version.Stars);
+        Assert.Equal(7, version.Forks);
+        Assert.Equal("2026-01-02", version.Updated);
     }
 
     [Fact]

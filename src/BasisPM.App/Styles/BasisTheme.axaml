@@ -94,20 +94,20 @@
 
             <!-- Expander reskin: the Fluent defaults (opaque header surface, blue-grey chevron)
                  clash with the glass theme. Override its theme resources to match the cards. -->
-            <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="Transparent"/>
-            <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver" Color="{StaticResource BasisSurfaceHover}"/>
-            <SolidColorBrush x:Key="ExpanderHeaderBackgroundPressed" Color="{StaticResource BasisSurfaceHover}"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="{StaticResource BasisGlassStrong}"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBackgroundPointerOver" Color="#33FFFFFF"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBackgroundPressed" Color="#40FFFFFF"/>
             <SolidColorBrush x:Key="ExpanderHeaderBackgroundDisabled" Color="Transparent"/>
             <SolidColorBrush x:Key="ExpanderHeaderForeground" Color="{StaticResource BasisTextPrimary}"/>
             <SolidColorBrush x:Key="ExpanderHeaderForegroundPointerOver" Color="{StaticResource BasisTextPrimary}"/>
             <SolidColorBrush x:Key="ExpanderHeaderForegroundPressed" Color="{StaticResource BasisTextPrimary}"/>
             <SolidColorBrush x:Key="ExpanderHeaderForegroundDisabled" Color="{StaticResource BasisTextDim}"/>
-            <SolidColorBrush x:Key="ExpanderHeaderBorderBrush" Color="Transparent"/>
-            <SolidColorBrush x:Key="ExpanderHeaderBorderBrushPointerOver" Color="Transparent"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBorderBrush" Color="{StaticResource BasisBorderStrong}"/>
+            <SolidColorBrush x:Key="ExpanderHeaderBorderBrushPointerOver" Color="{StaticResource BasisBorderStrong}"/>
             <SolidColorBrush x:Key="ExpanderHeaderBorderBrushPressed" Color="Transparent"/>
             <SolidColorBrush x:Key="ExpanderHeaderBorderBrushDisabled" Color="Transparent"/>
-            <SolidColorBrush x:Key="ExpanderContentBackground" Color="Transparent"/>
-            <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="{StaticResource BasisBorder}"/>
+            <SolidColorBrush x:Key="ExpanderContentBackground" Color="{StaticResource BasisGlassStrong}"/>
+            <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="{StaticResource BasisBorderStrong}"/>
             <SolidColorBrush x:Key="ExpanderChevronForeground" Color="{StaticResource BasisTextMuted}"/>
             <SolidColorBrush x:Key="ExpanderChevronForegroundPointerOver" Color="{StaticResource BasisBrand}"/>
             <SolidColorBrush x:Key="ExpanderChevronForegroundPressed" Color="{StaticResource BasisBrand}"/>
@@ -527,15 +527,20 @@
         <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandHoverBrush}"/>
     </Style>
 
-    <!-- Expander: a frosted-glass collapsible section that matches Border.card -->
+    <!-- Expander: a collapsible foldout (e.g. the Clone-Basis section). The Fluent template only
+         paints the header ToggleButton when collapsed — NOT the Expander root — so setting the root's
+         Background/Border did nothing and the foldout was invisible until hover. The glass fill +
+         border therefore live on the header (and content) resources above. Glass, not opaque, to
+         match the app's cards. Applies to every Expander in the app. -->
     <Style Selector="Expander">
-        <Setter Property="Background" Value="{StaticResource BasisGlassBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBorderBrush}"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="14"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
     </Style>
     <Style Selector="Expander /template/ ToggleButton#ExpanderHeader">
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Padding" Value="20,14"/>
         <Setter Property="MinHeight" Value="0"/>
     </Style>
