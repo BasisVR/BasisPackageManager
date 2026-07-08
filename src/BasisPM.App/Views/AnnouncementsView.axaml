@@ -53,7 +53,8 @@
                                 <TextBlock Text="{Binding Body}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                                 <Button Content="{Binding LinkText}" HorizontalAlignment="Left"
                                         IsVisible="{Binding HasLink}"
-                                        Command="{Binding OpenLinkCommand}"/>
+                                        Command="{Binding OpenLinkCommand}"
+                                        ToolTip.Tip="{loc:Tr announcements.tooltip.openLink}"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>

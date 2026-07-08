@@ -138,14 +138,14 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Spacing="0" Margin="10,0">
-                    <Button Classes="nav" Classes.active="{Binding IsInstalls}" Tag="installs" Click="OnNavClick">
+                    <Button Classes="nav" Classes.active="{Binding IsInstalls}" Tag="installs" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.installs}">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <PathIcon Width="18" Height="18" Data="{StaticResource IconInstalls}" VerticalAlignment="Center"/>
                             <TextBlock Text="{loc:Tr nav.installs}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                     <Grid>
-                        <Button Classes="nav" Classes.active="{Binding IsCommunity}" Tag="community" Click="OnNavClick" HorizontalAlignment="Stretch">
+                        <Button Classes="nav" Classes.active="{Binding IsCommunity}" Tag="community" Click="OnNavClick" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr nav.tooltip.community}">
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <PathIcon Width="18" Height="18" Data="{StaticResource IconCommunity}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr nav.community}" VerticalAlignment="Center"/>
@@ -160,19 +160,19 @@
                                        HorizontalAlignment="Center"/>
                         </Border>
                     </Grid>
-                    <Button Classes="nav" Classes.active="{Binding IsPackages}" Tag="packages" Click="OnNavClick">
+                    <Button Classes="nav" Classes.active="{Binding IsPackages}" Tag="packages" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.packages}">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <PathIcon Width="18" Height="18" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
                             <TextBlock Text="{loc:Tr nav.packages}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
-                    <Button Classes="nav" Classes.active="{Binding IsUnity}" Tag="unity" Click="OnNavClick">
+                    <Button Classes="nav" Classes.active="{Binding IsUnity}" Tag="unity" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.unity}">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <PathIcon Width="18" Height="18" Data="{StaticResource IconUnity}" VerticalAlignment="Center"/>
                             <TextBlock Text="{loc:Tr nav.unity}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
-                    <Button Classes="nav" Classes.active="{Binding IsSettings}" Tag="settings" Click="OnNavClick">
+                    <Button Classes="nav" Classes.active="{Binding IsSettings}" Tag="settings" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.settings}">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <PathIcon Width="18" Height="18" Data="{StaticResource IconSettings}" VerticalAlignment="Center"/>
                             <TextBlock Text="{loc:Tr nav.settings}" VerticalAlignment="Center"/>
@@ -233,6 +233,33 @@
                         <CrossFade Duration="0:0:0.18"/>
                     </TransitioningContentControl.PageTransition>
                 </TransitioningContentControl>
+
+                <!-- Floating download card: shows the current package-install queue's progress in the
+                     bottom-right while the install worker runs (stays visible across nav tab switches). -->
+                <Border Grid.Row="1" Classes="reveal"
+                        IsVisible="{Binding PackagesVM.IsInstalling}"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,24,24"
+                        Width="330" Padding="16,13" CornerRadius="12"
+                        Background="{StaticResource BasisSurfaceBrush}"
+                        BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="9">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <PathIcon Width="16" Height="16" Data="{StaticResource IconDownload}"
+                                      Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding PackagesVM.InstallProgressText}" FontWeight="SemiBold" FontSize="13"
+                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                        <ProgressBar Minimum="0" Maximum="100"
+                                     Value="{Binding PackagesVM.InstallProgress}"
+                                     IsIndeterminate="{Binding PackagesVM.InstallProgressIndeterminate}"
+                                     Height="7" CornerRadius="4"/>
+                        <TextBlock Text="{Binding PackagesVM.InstallProgressDetail}" Classes="dim" FontSize="11"
+                                   TextTrimming="CharacterEllipsis"
+                                   IsVisible="{Binding PackagesVM.HasInstallProgressDetail}"/>
+                        <TextBlock Text="{Binding PackagesVM.InstallQueueLabel}" Classes="muted" FontSize="11"
+                                   IsVisible="{Binding PackagesVM.HasInstallQueue}"/>
+                    </StackPanel>
+                </Border>
             </Grid>
 
             <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"

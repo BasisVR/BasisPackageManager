@@ -659,6 +659,18 @@
       "value": "Install"
     },
     {
+      "key": "packages.button.installing",
+      "value": "Installing…"
+    },
+    {
+      "key": "packages.button.queued",
+      "value": "Queued…"
+    },
+    {
+      "key": "packages.install.queued",
+      "value": "{0} more queued"
+    },
+    {
       "key": "packages.button.listView",
       "value": "List view"
     },
@@ -917,6 +929,14 @@
     {
       "key": "packages.status.installedCloned",
       "value": "Installed {0} into {1} — cloned into Packages/ so you can edit it."
+    },
+    {
+      "key": "packages.status.installingNow",
+      "value": "Installing {0}…"
+    },
+    {
+      "key": "packages.status.queuedForInstall",
+      "value": "Queued {0} for install."
     },
     {
       "key": "packages.status.installedVersion",
@@ -2213,6 +2233,338 @@
     {
       "key": "packages.filter.category",
       "value": "Filter by category"
+    },
+    {
+      "key": "packages.button.updateAll",
+      "value": "Update all"
+    },
+    {
+      "key": "packages.tooltip.updateAll",
+      "value": "Update every package in this project to its latest release (packages with local edits are skipped)"
+    },
+    {
+      "key": "packages.status.updateAllQueued",
+      "value": "Updating {0} package(s)…"
+    },
+    {
+      "key": "packages.status.updateAllQueuedSkipped",
+      "value": "Updating {0} package(s); skipped {1} with local edits."
+    },
+    {
+      "key": "announcements.tooltip.openLink",
+      "value": "Open this announcement's link in your browser"
+    },
+    {
+      "key": "develop.tooltip.mountToEdit",
+      "value": "Clone this package's source into Packages/ so you can edit it"
+    },
+    {
+      "key": "develop.tooltip.submitPr",
+      "value": "Turn your local edits into a pull request on GitHub"
+    },
+    {
+      "key": "dialog.alias.tooltip.cancel",
+      "value": "Close without renaming"
+    },
+    {
+      "key": "dialog.alias.tooltip.input",
+      "value": "The name this project shows in the app"
+    },
+    {
+      "key": "dialog.alias.tooltip.save",
+      "value": "Save this display name"
+    },
+    {
+      "key": "dialog.backup.tooltip.backupContinue",
+      "value": "Create a backup copy first, then continue"
+    },
+    {
+      "key": "dialog.backup.tooltip.cancel",
+      "value": "Do nothing and go back"
+    },
+    {
+      "key": "dialog.backup.tooltip.continueWithout",
+      "value": "Continue without creating a backup"
+    },
+    {
+      "key": "dialog.branchPicker.tooltip.cancel",
+      "value": "Keep the current branch"
+    },
+    {
+      "key": "dialog.branchPicker.tooltip.switch",
+      "value": "Check out the selected branch"
+    },
+    {
+      "key": "dialog.confirm.tooltip.no",
+      "value": "Close without doing anything"
+    },
+    {
+      "key": "dialog.confirm.tooltip.yes",
+      "value": "Confirm and continue"
+    },
+    {
+      "key": "dialog.createPackageList.tooltip.cancel",
+      "value": "Close without creating a package list"
+    },
+    {
+      "key": "dialog.createPackageList.tooltip.create",
+      "value": "Open a pre-filled GitHub issue that submits this list to the registry"
+    },
+    {
+      "key": "dialog.createPackageList.tooltip.description",
+      "value": "A short description of what this list is for"
+    },
+    {
+      "key": "dialog.createPackageList.tooltip.include",
+      "value": "Include this package in the list"
+    },
+    {
+      "key": "dialog.createPackageList.tooltip.name",
+      "value": "The package list's display name"
+    },
+    {
+      "key": "dialog.createPackageList.tooltip.saveLocal",
+      "value": "Save the list as a JSON file on this computer"
+    },
+    {
+      "key": "dialog.installPicker.tooltip.addHere",
+      "value": "Add the package to the selected project"
+    },
+    {
+      "key": "dialog.installPicker.tooltip.cancel",
+      "value": "Close without adding the package"
+    },
+    {
+      "key": "dialog.packageListPicker.tooltip.cancel",
+      "value": "Close without installing anything"
+    },
+    {
+      "key": "dialog.packageListPicker.tooltip.install",
+      "value": "Install every package in the selected list"
+    },
+    {
+      "key": "dialog.remove.tooltip.cancel",
+      "value": "Keep the project and close"
+    },
+    {
+      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "value": "Permanently delete the folder shown above"
+    },
+    {
+      "key": "dialog.remove.tooltip.removeFromList",
+      "value": "Forget this project in the app — files on disk are kept"
+    },
+    {
+      "key": "dialog.signIn.tooltip.cancel",
+      "value": "Close without signing in"
+    },
+    {
+      "key": "dialog.signIn.tooltip.signIn",
+      "value": "Use this token and continue"
+    },
+    {
+      "key": "dialog.signIn.tooltip.token",
+      "value": "A GitHub personal access token — used only to open pull requests"
+    },
+    {
+      "key": "dialog.submitPr.tooltip.branch",
+      "value": "The branch name your changes will be pushed to"
+    },
+    {
+      "key": "dialog.submitPr.tooltip.cancel",
+      "value": "Close without opening a pull request"
+    },
+    {
+      "key": "dialog.submitPr.tooltip.description",
+      "value": "Explain what you changed and why"
+    },
+    {
+      "key": "dialog.submitPr.tooltip.openPr",
+      "value": "Push the branch and open the pull request on GitHub"
+    },
+    {
+      "key": "dialog.submitPr.tooltip.title",
+      "value": "A short title for the pull request"
+    },
+    {
+      "key": "dialog.versionPicker.tooltip.cancel",
+      "value": "Close without changing version"
+    },
+    {
+      "key": "dialog.versionPicker.tooltip.install",
+      "value": "Install the selected version"
+    },
+    {
+      "key": "dialog.versionPicker.tooltip.showPrereleases",
+      "value": "Also list beta and prerelease versions"
+    },
+    {
+      "key": "docs.tooltip.basisGithub",
+      "value": "Open the Basis repository on GitHub"
+    },
+    {
+      "key": "docs.tooltip.discord",
+      "value": "Join the Basis Discord in your browser"
+    },
+    {
+      "key": "docs.tooltip.openDocs",
+      "value": "Open docs.basisvr.org in your browser"
+    },
+    {
+      "key": "docs.tooltip.packageManagerGithub",
+      "value": "Open this app's repository on GitHub"
+    },
+    {
+      "key": "installs.tooltip.addExisting",
+      "value": "Register a Unity project that already exists on disk"
+    },
+    {
+      "key": "installs.tooltip.newProject",
+      "value": "Create a new Unity project set up for Basis"
+    },
+    {
+      "key": "installs.tooltip.openInUnity",
+      "value": "Open this project in its Unity editor"
+    },
+    {
+      "key": "installs.tooltip.packages",
+      "value": "Manage this project's packages on the Packages tab"
+    },
+    {
+      "key": "nav.tooltip.community",
+      "value": "Announcements, documentation and ways to support Basis"
+    },
+    {
+      "key": "nav.tooltip.installs",
+      "value": "Your Unity projects — create, open and manage them"
+    },
+    {
+      "key": "nav.tooltip.packages",
+      "value": "Browse the registry and manage the active project's packages"
+    },
+    {
+      "key": "nav.tooltip.settings",
+      "value": "App settings, logs and version info"
+    },
+    {
+      "key": "nav.tooltip.unity",
+      "value": "Find, add and install Unity editors"
+    },
+    {
+      "key": "packages.tooltip.addFromGit",
+      "value": "Add the package at this git URL to the project"
+    },
+    {
+      "key": "packages.tooltip.createPackageList",
+      "value": "Bundle this project's packages into a shareable package list"
+    },
+    {
+      "key": "packages.tooltip.gitUrlInput",
+      "value": "A GitHub or GitLab git URL of a Unity (UPM) package"
+    },
+    {
+      "key": "packages.tooltip.install",
+      "value": "Add this package to the selected project"
+    },
+    {
+      "key": "packages.tooltip.installGit",
+      "value": "Open the git download page in your browser"
+    },
+    {
+      "key": "packages.tooltip.manage",
+      "value": "Update, change version, mount or remove this package"
+    },
+    {
+      "key": "packages.tooltip.openFolder",
+      "value": "Reveal the package's working folder in your file manager"
+    },
+    {
+      "key": "packages.tooltip.projectPicker",
+      "value": "The project the actions on this page apply to"
+    },
+    {
+      "key": "packages.tooltip.remove",
+      "value": "Remove this package from the project"
+    },
+    {
+      "key": "packages.tooltip.reviewDrift",
+      "value": "Review accidental PackageCache edits and turn them into a PR"
+    },
+    {
+      "key": "packages.tooltip.search",
+      "value": "Search by name, id, description, author or tag"
+    },
+    {
+      "key": "packages.tooltip.update",
+      "value": "Update this package to its latest release"
+    },
+    {
+      "key": "settings.tooltip.addCatalog",
+      "value": "Add this catalog to the list"
+    },
+    {
+      "key": "settings.tooltip.catalogUrl",
+      "value": "The package registry this app reads — leave blank for the official basisvr.org registry"
+    },
+    {
+      "key": "settings.tooltip.checkUpdates",
+      "value": "Check GitHub for a newer version of this app"
+    },
+    {
+      "key": "settings.tooltip.extraCatalogUrl",
+      "value": "An extra catalog URL merged into the package list"
+    },
+    {
+      "key": "settings.tooltip.language",
+      "value": "The app's display language"
+    },
+    {
+      "key": "settings.tooltip.reset",
+      "value": "Wipe all settings and return the app to a first-run state (files on disk are kept)"
+    },
+    {
+      "key": "settings.tooltip.save",
+      "value": "Save and apply these settings"
+    },
+    {
+      "key": "settings.tooltip.unityHubPath",
+      "value": "Path to the Unity Hub executable — leave blank to auto-detect"
+    },
+    {
+      "key": "support.tooltip.fundingPage",
+      "value": "Open the Basis funding page in your browser"
+    },
+    {
+      "key": "support.tooltip.openCollective",
+      "value": "Open the Basis OpenCollective page in your browser"
+    },
+    {
+      "key": "unity.tooltip.addFromFolder",
+      "value": "Register a Unity editor already on disk — no Unity Hub needed"
+    },
+    {
+      "key": "unity.tooltip.editorPicker",
+      "value": "The installed Unity editors this app knows about"
+    },
+    {
+      "key": "unity.tooltip.install",
+      "value": "Install the selected Unity version with the checked modules via Unity Hub"
+    },
+    {
+      "key": "unity.tooltip.installModules",
+      "value": "Add the checked modules to this editor via Unity Hub"
+    },
+    {
+      "key": "unity.tooltip.module",
+      "value": "Include this build-support module"
+    },
+    {
+      "key": "unity.tooltip.releasePicker",
+      "value": "The Unity version to install"
+    },
+    {
+      "key": "unity.tooltip.streamFilter",
+      "value": "Filter the version list by release stream"
     }
   ]
 }

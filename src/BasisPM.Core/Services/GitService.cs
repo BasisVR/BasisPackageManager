@@ -107,7 +107,13 @@ public sealed class GitService
         var branchTask = GetBranchAsync(repoRoot, ct);
         var commitTask = GetShortCommitAsync(repoRoot, ct);
         var upstreamTask = GetAheadBehindAsync(repoRoot, ct);
+        var changes = await GetChangesAsync(repoRoot, ct).ConfigureAwait(false);
+        return new GitStatus(await branchTask, await commitTask, changes, await upstreamTask);
+    }
 
+    /// <summary>Working-tree changes only (one <c>git status</c> call) — no branch/commit/upstream lookups.</summary>
+    public async Task<IReadOnlyList<GitFileChange>> GetChangesAsync(string repoRoot, CancellationToken ct = default)
+    {
         var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "status", "--porcelain=v1", "--untracked-files=all" }, null, ct).ConfigureAwait(false);
         var changes = new List<GitFileChange>();
         if (code == 0)
@@ -125,8 +131,7 @@ public sealed class GitService
             }
             changes.Sort((a, b) => string.Compare(a.Path, b.Path, StringComparison.OrdinalIgnoreCase));
         }
-
-        return new GitStatus(await branchTask, await commitTask, changes, await upstreamTask);
+        return changes;
     }
 
     public async Task<string> GetDiffAsync(string repoRoot, GitFileChange change, CancellationToken ct = default)
@@ -387,6 +392,11 @@ public sealed class GitService
             StandardErrorEncoding = Encoding.UTF8,
         };
         if (!string.IsNullOrEmpty(workingDir)) psi.WorkingDirectory = workingDir;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            psi.ArgumentList.Add("-c");
+            psi.ArgumentList.Add("core.longpaths=true");
+        }
         foreach (var a in args) psi.ArgumentList.Add(a);
         psi.Environment["GIT_TERMINAL_PROMPT"] = "0";
         // Defence in depth: even if a hostile URL reaches git, only real fetch protocols are permitted.

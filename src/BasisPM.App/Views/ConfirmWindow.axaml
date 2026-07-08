@@ -11,13 +11,13 @@
         <TextBlock x:Name="TitleText" Text="{loc:Tr dialog.confirm.title}" Classes="h3"/>
         <TextBlock x:Name="MessageText" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
         <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-            <Button Click="OnNo">
+            <Button Click="OnNo" ToolTip.Tip="{loc:Tr dialog.confirm.tooltip.no}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.confirm.no}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
-            <Button Classes="primary" Click="OnYes">
+            <Button Classes="primary" Click="OnYes" ToolTip.Tip="{loc:Tr dialog.confirm.tooltip.yes}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconCheck}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.confirm.yes}" VerticalAlignment="Center"/>

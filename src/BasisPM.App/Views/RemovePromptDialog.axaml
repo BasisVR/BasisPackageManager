@@ -20,14 +20,14 @@
         </Border>
 
         <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-            <Button Click="OnCancel">
+            <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.remove.tooltip.cancel}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.remove.cancel}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
-            <Button Content="{loc:Tr dialog.remove.removeFromList}" Click="OnRemoveFromList"/>
-            <Button Classes="danger" Click="OnDeleteFromDisk">
+            <Button Content="{loc:Tr dialog.remove.removeFromList}" Click="OnRemoveFromList" ToolTip.Tip="{loc:Tr dialog.remove.tooltip.removeFromList}"/>
+            <Button Classes="danger" Click="OnDeleteFromDisk" ToolTip.Tip="{loc:Tr dialog.remove.tooltip.deleteFromDisk}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconDelete}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.remove.deleteFromDisk}" VerticalAlignment="Center"/>

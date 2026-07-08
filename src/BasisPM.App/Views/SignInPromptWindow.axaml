@@ -12,16 +12,16 @@
         <TextBlock Text="{loc:Tr dialog.signIn.body}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
         <StackPanel Spacing="6">
             <TextBlock Text="{loc:Tr develop.auth.tokenLabel}" Classes="muted" FontSize="11"/>
-            <TextBox x:Name="Input" PasswordChar="•" Watermark="{loc:Tr develop.auth.tokenWatermark}"/>
+            <TextBox x:Name="Input" PasswordChar="•" Watermark="{loc:Tr develop.auth.tokenWatermark}" ToolTip.Tip="{loc:Tr dialog.signIn.tooltip.token}"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-            <Button Click="OnCancel">
+            <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.signIn.tooltip.cancel}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.alias.cancel}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
-            <Button Classes="primary" Click="OnOk">
+            <Button Classes="primary" Click="OnOk" ToolTip.Tip="{loc:Tr dialog.signIn.tooltip.signIn}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconKey}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr develop.button.signIn}" VerticalAlignment="Center"/>

@@ -18,7 +18,7 @@
                     <TextBlock Text="{loc:Tr community.hero.subtitle}"
                                Classes="muted" FontSize="14" TextWrapping="Wrap" MaxWidth="660" HorizontalAlignment="Left"/>
                     <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
-                        <Button Classes="primary" Command="{Binding Documentation.DocsCommand}">
+                        <Button Classes="primary" Command="{Binding Documentation.DocsCommand}" ToolTip.Tip="{loc:Tr docs.tooltip.openDocs}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconBook}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr community.button.openDocs}" VerticalAlignment="Center"/>
@@ -62,7 +62,8 @@
                                 <TextBlock Text="{Binding Body}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                                 <Button Content="{Binding LinkText}" HorizontalAlignment="Left"
                                         IsVisible="{Binding HasLink}"
-                                        Command="{Binding OpenLinkCommand}"/>
+                                        Command="{Binding OpenLinkCommand}"
+                                        ToolTip.Tip="{loc:Tr announcements.tooltip.openLink}"/>
                             </StackPanel>
                         </Border>
                     </DataTemplate>
@@ -85,7 +86,7 @@
                         <TextBlock Text="{loc:Tr community.docs.siteTitle}" Classes="h3" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr community.docs.siteBody}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                        <Button Command="{Binding Documentation.DocsCommand}" HorizontalAlignment="Left">
+                        <Button Command="{Binding Documentation.DocsCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr docs.tooltip.openDocs}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr community.docs.openSite}" VerticalAlignment="Center"/>
@@ -98,7 +99,7 @@
                         <TextBlock Text="{loc:Tr community.docs.askTitle}" Classes="h3" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr community.docs.askBody}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                        <Button Command="{Binding Documentation.DiscordCommand}" HorizontalAlignment="Left">
+                        <Button Command="{Binding Documentation.DiscordCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr docs.tooltip.discord}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconChat}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr community.button.joinDiscord}" VerticalAlignment="Center"/>
@@ -113,13 +114,13 @@
                     <TextBlock Text="{loc:Tr community.docs.sourceBody}"
                                Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                     <StackPanel Orientation="Horizontal" Spacing="12">
-                        <Button Command="{Binding Documentation.BasisRepoCommand}" HorizontalAlignment="Left">
+                        <Button Command="{Binding Documentation.BasisRepoCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr docs.tooltip.basisGithub}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr community.docs.basisRepo}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding Documentation.PackageManagerRepoCommand}" HorizontalAlignment="Left">
+                        <Button Command="{Binding Documentation.PackageManagerRepoCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr docs.tooltip.packageManagerGithub}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr community.docs.pmRepo}" VerticalAlignment="Center"/>
@@ -135,7 +136,8 @@
                        Classes="muted" FontSize="13" TextWrapping="Wrap" MaxWidth="680" HorizontalAlignment="Left"/>
             <StackPanel Orientation="Horizontal" Spacing="12">
                 <Button Classes="primary" Command="{Binding Support.OpenCollectiveCommand}"
-                        HorizontalAlignment="Left" FontSize="16" Padding="32,17" CornerRadius="14">
+                        HorizontalAlignment="Left" FontSize="16" Padding="32,17" CornerRadius="14"
+                        ToolTip.Tip="{loc:Tr support.tooltip.openCollective}">
                     <StackPanel Orientation="Horizontal" Spacing="10">
                         <PathIcon Data="{StaticResource IconHeart}" Width="20" Height="20" VerticalAlignment="Center"/>
                         <TextBlock Text="{loc:Tr community.support.openCollective}" VerticalAlignment="Center"/>
@@ -155,7 +157,7 @@
                         <TextBlock Text="{loc:Tr community.support.collabTitle}" Classes="h3" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr community.support.collabBody}"
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                        <Button Command="{Binding Support.FundingPageCommand}" HorizontalAlignment="Left">
+                        <Button Command="{Binding Support.FundingPageCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr support.tooltip.fundingPage}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconStar}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr community.support.sponsorFeature}" VerticalAlignment="Center"/>
@@ -169,7 +171,7 @@
                     <TextBlock Text="{loc:Tr community.support.moneyTitle}" Classes="h3" TextWrapping="Wrap"/>
                     <TextBlock Text="{loc:Tr community.support.moneyBody}"
                                Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                    <Button Command="{Binding Support.FundingPageCommand}" HorizontalAlignment="Left">
+                    <Button Command="{Binding Support.FundingPageCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr support.tooltip.fundingPage}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
                             <TextBlock Text="{loc:Tr community.support.fundingPage}" VerticalAlignment="Center"/>

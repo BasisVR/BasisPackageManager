@@ -12,17 +12,17 @@
         <TextBlock x:Name="PathText" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
         <StackPanel Spacing="6">
             <TextBlock Text="{loc:Tr dialog.alias.displayName}" Classes="muted" FontSize="11"/>
-            <TextBox x:Name="Input" Watermark="{loc:Tr dialog.alias.watermark}"/>
+            <TextBox x:Name="Input" Watermark="{loc:Tr dialog.alias.watermark}" ToolTip.Tip="{loc:Tr dialog.alias.tooltip.input}"/>
         </StackPanel>
         <TextBlock Text="{loc:Tr dialog.alias.hint}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-            <Button Click="OnCancel">
+            <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.alias.tooltip.cancel}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.alias.cancel}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
-            <Button Classes="primary" Click="OnOk">
+            <Button Classes="primary" Click="OnOk" ToolTip.Tip="{loc:Tr dialog.alias.tooltip.save}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconSave}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.alias.save}" VerticalAlignment="Center"/>

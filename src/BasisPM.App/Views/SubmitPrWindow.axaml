@@ -12,27 +12,27 @@
         <TextBlock x:Name="SubText" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
         <StackPanel Spacing="6">
             <TextBlock Text="{loc:Tr dialog.submitPr.titleLabel}" Classes="muted" FontSize="11"/>
-            <TextBox x:Name="TitleBox" Watermark="{loc:Tr dialog.submitPr.titleWatermark}"/>
+            <TextBox x:Name="TitleBox" Watermark="{loc:Tr dialog.submitPr.titleWatermark}" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.title}"/>
         </StackPanel>
         <StackPanel Spacing="6">
             <TextBlock Text="{loc:Tr dialog.submitPr.descriptionLabel}" Classes="muted" FontSize="11"/>
             <TextBox x:Name="BodyBox" AcceptsReturn="True" Height="96" TextWrapping="Wrap"
-                     Watermark="{loc:Tr dialog.submitPr.descriptionWatermark}"/>
+                     Watermark="{loc:Tr dialog.submitPr.descriptionWatermark}" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.description}"/>
         </StackPanel>
         <StackPanel Spacing="6">
             <TextBlock Text="{loc:Tr dialog.submitPr.branchLabel}" Classes="muted" FontSize="11"/>
-            <TextBox x:Name="BranchBox"/>
+            <TextBox x:Name="BranchBox" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.branch}"/>
         </StackPanel>
         <TextBlock Text="{loc:Tr dialog.submitPr.hint}"
                    Classes="dim" FontSize="11" TextWrapping="Wrap"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-            <Button Click="OnCancel">
+            <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.cancel}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.submitPr.cancel}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
-            <Button Classes="primary" Click="OnOk">
+            <Button Classes="primary" Click="OnOk" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.openPr}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.submitPr.openPr}" VerticalAlignment="Center"/>

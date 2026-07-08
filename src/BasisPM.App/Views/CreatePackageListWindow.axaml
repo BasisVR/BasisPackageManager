@@ -14,11 +14,11 @@
                        Classes="muted" FontSize="12" TextWrapping="Wrap"/>
             <StackPanel Spacing="4">
                 <TextBlock Text="{loc:Tr dialog.createPackageList.nameLabel}" Classes="muted" FontSize="11"/>
-                <TextBox x:Name="NameBox"/>
+                <TextBox x:Name="NameBox" ToolTip.Tip="{loc:Tr dialog.createPackageList.tooltip.name}"/>
             </StackPanel>
             <StackPanel Spacing="4">
                 <TextBlock Text="{loc:Tr dialog.createPackageList.descriptionLabel}" Classes="muted" FontSize="11"/>
-                <TextBox x:Name="DescBox" AcceptsReturn="True" Height="58" TextWrapping="Wrap"/>
+                <TextBox x:Name="DescBox" AcceptsReturn="True" Height="58" TextWrapping="Wrap" ToolTip.Tip="{loc:Tr dialog.createPackageList.tooltip.description}"/>
             </StackPanel>
             <TextBlock x:Name="BasisLine" Classes="dim" FontSize="11"/>
             <TextBlock Text="{loc:Tr dialog.createPackageList.packagesLabel}" Classes="muted" FontSize="11" Margin="0,4,0,0"/>
@@ -27,19 +27,19 @@
         <StackPanel DockPanel.Dock="Bottom" Spacing="10" Margin="0,14,0,0">
             <TextBlock x:Name="ErrorText" Foreground="#FFE06B6B" FontSize="12" IsVisible="False" TextWrapping="Wrap"/>
             <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                <Button Click="OnCancel">
+                <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.createPackageList.tooltip.cancel}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
                         <TextBlock Text="{loc:Tr dialog.createPackageList.cancel}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-                <Button Click="OnSubmit">
+                <Button Click="OnSubmit" ToolTip.Tip="{loc:Tr dialog.createPackageList.tooltip.create}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
                         <TextBlock Text="{loc:Tr dialog.createPackageList.create}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-                <Button Classes="primary" Click="OnSaveLocal">
+                <Button Classes="primary" Click="OnSaveLocal" ToolTip.Tip="{loc:Tr dialog.createPackageList.tooltip.saveLocal}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon Classes="leadingIcon" Data="{StaticResource IconSave}" VerticalAlignment="Center"/>
                         <TextBlock Text="{loc:Tr dialog.createPackageList.saveLocal}" VerticalAlignment="Center"/>
@@ -54,7 +54,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="local:PackagePick">
                             <Border Padding="14,8" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                                <CheckBox IsChecked="{Binding Include}">
+                                <CheckBox IsChecked="{Binding Include}" ToolTip.Tip="{loc:Tr dialog.createPackageList.tooltip.include}">
                                     <StackPanel Spacing="-1">
                                         <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
                                         <TextBlock Text="{Binding Subtitle}" Classes="dim" FontSize="10"/>

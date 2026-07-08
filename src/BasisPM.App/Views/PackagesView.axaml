@@ -13,16 +13,20 @@
         <DataTemplate x:Key="PackageActions" DataType="vm:PackageRow">
             <StackPanel Spacing="8">
                 <Button Classes="primary" HorizontalAlignment="Stretch"
-                        IsVisible="{Binding IsAvailableToInstall}"
+                        IsVisible="{Binding IsAvailableToInstall}" IsEnabled="{Binding CanClickInstall}"
                         Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
-                        CommandParameter="{Binding Entry}">
+                        CommandParameter="{Binding Entry}"
+                        ToolTip.Tip="{loc:Tr packages.tooltip.install}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
-                        <TextBlock Text="{loc:Tr packages.button.install}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding InstallButtonLabel}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
+                <ProgressBar IsVisible="{Binding InstallPending}" IsIndeterminate="True"
+                             Height="4" CornerRadius="2" Margin="0,-2,0,0"/>
                 <Button Classes="secondary" HorizontalAlignment="Stretch"
-                        IsVisible="{Binding IsManageable}" Click="OnManageClick">
+                        IsVisible="{Binding IsManageable}" Click="OnManageClick"
+                        ToolTip.Tip="{loc:Tr packages.tooltip.manage}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon Classes="leadingIcon" Data="{StaticResource IconSettings}" VerticalAlignment="Center"/>
                         <TextBlock Text="{loc:Tr packages.button.manage}" VerticalAlignment="Center"/>
@@ -99,7 +103,8 @@
                         <StackPanel Spacing="4" IsVisible="{Binding HasInstalls}">
                             <TextBlock Text="{loc:Tr packages.label.project}" Classes="muted" FontSize="11"/>
                             <ComboBox MinWidth="200" MaxDropDownHeight="360"
-                                      ItemsSource="{Binding InstallOptions}" SelectedItem="{Binding SelectedInstall}">
+                                      ItemsSource="{Binding InstallOptions}" SelectedItem="{Binding SelectedInstall}"
+                                      ToolTip.Tip="{loc:Tr packages.tooltip.projectPicker}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate DataType="models:BasisInstall">
                                         <StackPanel Spacing="-1">
@@ -110,7 +115,8 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
                         </StackPanel>
-                        <Button Command="{Binding CreatePackageListCommand}" VerticalAlignment="Bottom" IsVisible="{Binding HasInstall}">
+                        <Button Command="{Binding CreatePackageListCommand}" VerticalAlignment="Bottom" IsVisible="{Binding HasInstall}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.createPackageList}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr packages.button.createPackageList}" VerticalAlignment="Center"/>
@@ -150,7 +156,8 @@
                     <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                         <TextBlock Grid.Column="0" Margin="0,0,12,0" Text="{loc:Tr develop.git.requiredDescription}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
-                        <Button Grid.Column="1" Classes="primary" Command="{Binding InstallGitCommand}" VerticalAlignment="Center">
+                        <Button Grid.Column="1" Classes="primary" Command="{Binding InstallGitCommand}" VerticalAlignment="Center"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.installGit}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr develop.button.installGit}" VerticalAlignment="Center"/>
@@ -170,6 +177,14 @@
                                     <TextBlock Text="{loc:Tr packages.badge.basisRegistry}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
                                 </Border>
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <Button Command="{Binding UpdateAllCommand}" IsVisible="{Binding CanUpdateAll}"
+                                            FontSize="12" Padding="14,7"
+                                            ToolTip.Tip="{loc:Tr packages.tooltip.updateAll}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr packages.button.updateAll}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
                                     <Button Content="{Binding InstalledToggleLabel}" Command="{Binding ToggleInstalledCommand}"
                                             FontSize="12" Padding="14,7"
                                             ToolTip.Tip="{loc:Tr packages.tooltip.showInstalled}"/>
@@ -185,7 +200,8 @@
                                      Source (All / Built-in / Official / Community / …) and Category are
                                      dropdowns rather than chip rows to keep the toolbar compact. -->
                                 <Grid ColumnDefinitions="*,Auto,Auto,Auto">
-                                    <TextBox Grid.Column="0" Watermark="{loc:Tr packages.filter.watermark}" Text="{Binding Filter}"/>
+                                    <TextBox Grid.Column="0" Watermark="{loc:Tr packages.filter.watermark}" Text="{Binding Filter}"
+                                             ToolTip.Tip="{loc:Tr packages.tooltip.search}"/>
                                     <ComboBox Grid.Column="1" Margin="10,0,0,0" MinWidth="150" VerticalAlignment="Center" MaxDropDownHeight="360"
                                               ItemsSource="{Binding SourceFacets}" SelectedItem="{Binding SelectedSourceFacet}"
                                               ItemTemplate="{StaticResource FacetOption}"
@@ -271,8 +287,8 @@
                                                             <TextBlock Text="{Binding Category}" FontSize="11" Classes="muted"/>
                                                         </Border>
                                                         <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" IsVisible="{Binding HasStars}">
-                                                            <TextBlock Text="★" FontSize="11" Classes="dim" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="{Binding StarsText}" FontSize="11" Classes="dim" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="★" FontSize="11" Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding StarsText}" FontSize="11" Classes="muted" VerticalAlignment="Center"/>
                                                         </StackPanel>
                                                         <Button Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
                                                                 ToolTip.Tip="{Binding Link}"
@@ -355,8 +371,8 @@
                                                         <TextBlock Text="{Binding Category}" FontSize="10" Classes="muted"/>
                                                     </Border>
                                                     <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" IsVisible="{Binding HasStars}">
-                                                        <TextBlock Text="★" FontSize="10" Classes="dim" VerticalAlignment="Center"/>
-                                                        <TextBlock Text="{Binding StarsText}" FontSize="10" Classes="dim" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="★" FontSize="10" Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding StarsText}" FontSize="10" Classes="muted" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                     <Button Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
                                                             ToolTip.Tip="{Binding Link}"
@@ -386,8 +402,10 @@
                                    Text="{loc:Tr packages.community.description}"/>
                         <Grid ColumnDefinitions="*,8,Auto">
                             <TextBox Grid.Column="0" Text="{Binding GitHubInput}"
-                                     Watermark="{loc:Tr packages.community.watermark}"/>
-                            <Button Grid.Column="2" Classes="primary" Command="{Binding AddFromGitHubCommand}">
+                                     Watermark="{loc:Tr packages.community.watermark}"
+                                     ToolTip.Tip="{loc:Tr packages.tooltip.gitUrlInput}"/>
+                            <Button Grid.Column="2" Classes="primary" Command="{Binding AddFromGitHubCommand}"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.addFromGit}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}" VerticalAlignment="Center"/>
                                     <TextBlock Text="{loc:Tr packages.button.add}" VerticalAlignment="Center"/>
@@ -489,21 +507,27 @@
                                     <TextBlock Text="{Binding MountedStateLabel}" FontWeight="SemiBold" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
                                 </StackPanel>
                                 <TextBlock Text="{Binding MountFolder}" Classes="dim" FontSize="11" TextWrapping="Wrap" IsVisible="{Binding HasMountFolder}"/>
+                                <TextBlock Text="{Binding MountedEditsSummary}" FontFamily="{StaticResource MonoFontFamily}"
+                                           Classes="muted" FontSize="11" TextWrapping="Wrap" IsVisible="{Binding MountedHasEdits}"/>
                             </StackPanel>
                         </Border>
                         <Button Classes="primary" HorizontalAlignment="Stretch"
-                                IsVisible="{Binding IsAvailableToInstall}"
+                                IsVisible="{Binding IsAvailableToInstall}" IsEnabled="{Binding CanClickInstall}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
-                                CommandParameter="{Binding Entry}">
+                                CommandParameter="{Binding Entry}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.install}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr packages.button.install}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding InstallButtonLabel}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
+                        <ProgressBar IsVisible="{Binding InstallPending}" IsIndeterminate="True"
+                                     Height="4" CornerRadius="2" Margin="0,-4,0,0"/>
                         <Button Classes="primary" HorizontalAlignment="Stretch"
                                 IsVisible="{Binding CanUpdate}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
-                                CommandParameter="{Binding Entry}">
+                                CommandParameter="{Binding Entry}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.update}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr packages.button.update}" VerticalAlignment="Center"/>
@@ -512,7 +536,8 @@
                         <Button HorizontalAlignment="Stretch"
                                 IsVisible="{Binding CanChooseVersion}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ChooseVersionCommand}"
-                                CommandParameter="{Binding Entry}">
+                                CommandParameter="{Binding Entry}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.chooseVersion}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconTag}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr packages.button.chooseVersion}" VerticalAlignment="Center"/>
@@ -522,7 +547,8 @@
                         <Button HorizontalAlignment="Stretch"
                                 IsVisible="{Binding CanMountToEdit}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).MountCommand}"
-                                CommandParameter="{Binding}">
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="{loc:Tr develop.tooltip.mountToEdit}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconEdit}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr develop.button.mountToEdit}" VerticalAlignment="Center"/>
@@ -532,7 +558,8 @@
                         <Button HorizontalAlignment="Stretch"
                                 IsVisible="{Binding IsMounted}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenFolderCommand}"
-                                CommandParameter="{Binding}">
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.openFolder}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr packages.button.openFolder}" VerticalAlignment="Center"/>
@@ -541,7 +568,8 @@
                         <Button HorizontalAlignment="Stretch"
                                 IsVisible="{Binding IsMounted}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SubmitPrCommand}"
-                                CommandParameter="{Binding}">
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="{loc:Tr develop.tooltip.submitPr}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr develop.button.submitPr}" VerticalAlignment="Center"/>
@@ -551,7 +579,8 @@
                         <Button Classes="primary" HorizontalAlignment="Stretch"
                                 IsVisible="{Binding HasDrift}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ReviewDriftCommand}"
-                                CommandParameter="{Binding}">
+                                CommandParameter="{Binding}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.reviewDrift}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr packages.button.reviewDrift}" VerticalAlignment="Center"/>
@@ -560,7 +589,8 @@
                         <Button Classes="danger" HorizontalAlignment="Stretch"
                                 IsVisible="{Binding CanRemove}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RemoveCommand}"
-                                CommandParameter="{Binding Entry}">
+                                CommandParameter="{Binding Entry}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.remove}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconDelete}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr packages.button.remove}" VerticalAlignment="Center"/>
@@ -569,7 +599,8 @@
                         <Button Classes="link" HorizontalAlignment="Center" Margin="0,4,0,0"
                                 IsVisible="{Binding HasLink}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
-                                CommandParameter="{Binding Link}">
+                                CommandParameter="{Binding Link}"
+                                ToolTip.Tip="{Binding Link}">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <PathIcon Width="13" Height="13" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr packages.detail.website}" VerticalAlignment="Center"/>

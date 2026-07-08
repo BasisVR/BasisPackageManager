@@ -13,14 +13,14 @@
              this if the (localized) button row needs it, so the buttons never overflow off-screen. -->
         <TextBlock x:Name="MessageText" Classes="muted" FontSize="13" TextWrapping="Wrap" MaxWidth="520"/>
         <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-            <Button Click="OnCancel">
+            <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.backup.tooltip.cancel}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.backup.cancel}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
-            <Button Content="{loc:Tr dialog.backup.continueWithout}" Click="OnContinue"/>
-            <Button Classes="primary" Click="OnBackup">
+            <Button Content="{loc:Tr dialog.backup.continueWithout}" Click="OnContinue" ToolTip.Tip="{loc:Tr dialog.backup.tooltip.continueWithout}"/>
+            <Button Classes="primary" Click="OnBackup" ToolTip.Tip="{loc:Tr dialog.backup.tooltip.backupContinue}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconArchive}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.backup.backupContinue}" VerticalAlignment="Center"/>

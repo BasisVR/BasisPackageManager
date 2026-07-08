@@ -43,7 +43,8 @@
                     <ComboBox ItemsSource="{Binding InstalledEditors}"
                               SelectedItem="{Binding SelectedEditor}"
                               HorizontalAlignment="Stretch" MaxDropDownHeight="320"
-                              IsVisible="{Binding HasInstalledEditors}">
+                              IsVisible="{Binding HasInstalledEditors}"
+                              ToolTip.Tip="{loc:Tr unity.tooltip.editorPicker}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate DataType="models:InstalledEditor">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
@@ -74,11 +75,11 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="vm:ModuleOption">
-                                    <CheckBox Content="{Binding Name}" IsChecked="{Binding Selected}" Margin="0,0,16,8"/>
+                                    <CheckBox Content="{Binding Name}" IsChecked="{Binding Selected}" Margin="0,0,16,8" ToolTip.Tip="{loc:Tr unity.tooltip.module}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Button Classes="secondary" Command="{Binding InstallModulesCommand}" HorizontalAlignment="Left">
+                        <Button Classes="secondary" Command="{Binding InstallModulesCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr unity.tooltip.installModules}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr unity.button.installModules}" VerticalAlignment="Center"/>
@@ -88,7 +89,7 @@
                     <TextBlock Text="{loc:Tr unity.editors.none}" Classes="muted" FontSize="12"
                                IsVisible="{Binding !HasInstalledEditors}"/>
                     <TextBlock Text="{loc:Tr unity.editors.addHint}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
-                    <Button Classes="secondary" Command="{Binding AddEditorCommand}" HorizontalAlignment="Left">
+                    <Button Classes="secondary" Command="{Binding AddEditorCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr unity.tooltip.addFromFolder}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
                             <TextBlock Text="{loc:Tr unity.button.addFromFolder}" VerticalAlignment="Center"/>
@@ -117,7 +118,8 @@
                             <ComboBox ItemsSource="{Binding AvailableReleases}"
                                       SelectedItem="{Binding SelectedRelease}"
                                       HorizontalAlignment="Stretch"
-                                      MaxDropDownHeight="320">
+                                      MaxDropDownHeight="320"
+                                      ToolTip.Tip="{loc:Tr unity.tooltip.releasePicker}">
                                 <ComboBox.Styles>
                                     <Style Selector="ComboBoxItem" x:DataType="vm:UnityReleaseRow">
                                         <Setter Property="IsEnabled" Value="{Binding !IsInstalled}"/>
@@ -141,7 +143,8 @@
                             <TextBlock Text="{loc:Tr unity.label.streamFilter}" Classes="muted" FontSize="11"/>
                             <ComboBox ItemsSource="{Binding StreamFilters}"
                                       SelectedItem="{Binding StreamFilter}"
-                                      HorizontalAlignment="Stretch"/>
+                                      HorizontalAlignment="Stretch"
+                                      ToolTip.Tip="{loc:Tr unity.tooltip.streamFilter}"/>
                         </StackPanel>
                     </Grid>
 
@@ -158,11 +161,11 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate DataType="vm:ModuleOption">
-                                <CheckBox Content="{Binding Name}" IsChecked="{Binding Selected}" Margin="0,0,16,8"/>
+                                <CheckBox Content="{Binding Name}" IsChecked="{Binding Selected}" Margin="0,0,16,8" ToolTip.Tip="{loc:Tr unity.tooltip.module}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <Button Classes="primary" Command="{Binding InstallCommand}" HorizontalAlignment="Left">
+                    <Button Classes="primary" Command="{Binding InstallCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr unity.tooltip.install}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
                             <TextBlock Text="{loc:Tr unity.button.install}" VerticalAlignment="Center"/>
