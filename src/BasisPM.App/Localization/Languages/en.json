@@ -383,6 +383,10 @@
       "value": "Open"
     },
     {
+      "key": "installs.button.openFolder",
+      "value": "Open folder"
+    },
+    {
       "key": "installs.button.packages",
       "value": "Packages"
     },
@@ -719,6 +723,14 @@
       "value": "Open website"
     },
     {
+      "key": "packages.dialog.discardEditsTitle",
+      "value": "Discard local edits?"
+    },
+    {
+      "key": "packages.dialog.discardEditsBody",
+      "value": "{0} has uncommitted edits in its mounted clone. Continuing replaces the clone and discards them. Submit a PR first if you want to keep them. Continue?"
+    },
+    {
       "key": "packages.dialog.installTitle",
       "value": "Install {0}"
     },
@@ -901,6 +913,10 @@
     {
       "key": "packages.status.installed",
       "value": "Installed {0} into {1}."
+    },
+    {
+      "key": "packages.status.installedCloned",
+      "value": "Installed {0} into {1} — cloned into Packages/ so you can edit it."
     },
     {
       "key": "packages.status.installedVersion",
@@ -1179,10 +1195,6 @@
       "value": "Install Git"
     },
     {
-      "key": "develop.button.mountAll",
-      "value": "Mount all"
-    },
-    {
       "key": "develop.owner.label",
       "value": "Owner"
     },
@@ -1341,18 +1353,6 @@
     {
       "key": "develop.status.mounted",
       "value": "Mounted {0} into Packages/ — edit it in Unity, then Submit PR."
-    },
-    {
-      "key": "develop.status.mountedAllCount",
-      "value": "Mounted {0} package(s)."
-    },
-    {
-      "key": "develop.status.mountedAllSkipped",
-      "value": "Skipped {0}: {1}."
-    },
-    {
-      "key": "develop.status.mountedAllFailed",
-      "value": "Failed {0}: {1}."
     },
     {
       "key": "develop.status.mounting",
@@ -2177,6 +2177,42 @@
     {
       "key": "community.support.fundingPage",
       "value": "Read the full funding page"
+    },
+    {
+      "key": "packages.button.installPackageList",
+      "value": "Install a package list from the registry"
+    },
+    {
+      "key": "packages.status.loadingPackageLists",
+      "value": "Loading package lists…"
+    },
+    {
+      "key": "packages.status.noPackageLists",
+      "value": "Couldn't load any package lists from the registry."
+    },
+    {
+      "key": "dialog.packageListPicker.title",
+      "value": "Install a package list"
+    },
+    {
+      "key": "dialog.packageListPicker.heading",
+      "value": "Install which package list?"
+    },
+    {
+      "key": "dialog.packageListPicker.subtitle",
+      "value": "A package list adds a curated set of packages to your project in one go."
+    },
+    {
+      "key": "dialog.packageListPicker.packageCount",
+      "value": "{0} packages"
+    },
+    {
+      "key": "packages.filter.source",
+      "value": "Filter by source"
+    },
+    {
+      "key": "packages.filter.category",
+      "value": "Filter by category"
     }
   ]
 }

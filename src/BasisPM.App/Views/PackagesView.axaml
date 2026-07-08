@@ -41,17 +41,12 @@
             </StackPanel>
         </DataTemplate>
 
-        <!-- One Source/Category filter chip (label + count), highlighted when it's the active pick.
-             Shared by the Source and Category chip rows; the VM routes the click by chip.Kind. -->
-        <DataTemplate x:Key="FacetChip" DataType="vm:FacetChip">
-            <Button Classes="chip" Classes.selected="{Binding IsSelected}"
-                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SelectFacetCommand}"
-                    CommandParameter="{Binding}">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding Count}" Opacity="0.55" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Button>
+        <!-- One Source/Category dropdown option (label + count), shared by both filter ComboBoxes. -->
+        <DataTemplate x:Key="FacetOption" DataType="vm:FacetChip">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="{Binding Label}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Count}" Opacity="0.55" VerticalAlignment="Center"/>
+            </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
 
@@ -83,22 +78,6 @@
         </Style>
         <Style Selector="Border.detailOverlay.shown Border.detailCard">
             <Setter Property="RenderTransform" Value="scale(1)"/>
-        </Style>
-
-        <!-- Filter chips (Source / Category). The selected chip fills with the brand gradient. -->
-        <Style Selector="Button.chip">
-            <Setter Property="Margin" Value="0,0,8,8"/>
-            <Setter Property="Padding" Value="12,6"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="CornerRadius" Value="999"/>
-            <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BasisBorderBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-        </Style>
-        <Style Selector="Button.chip.selected">
-            <Setter Property="Background" Value="{StaticResource BasisBrandGradient}"/>
-            <Setter Property="Foreground" Value="#FFFFFF"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
         </Style>
     </UserControl.Styles>
 
@@ -136,6 +115,11 @@
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr packages.button.createPackageList}" VerticalAlignment="Center"/>
                             </StackPanel>
+                        </Button>
+                        <Button Classes="iconBtn" Command="{Binding InstallPackageListFromRegistryCommand}" VerticalAlignment="Bottom"
+                                IsVisible="{Binding HasInstalls}"
+                                ToolTip.Tip="{loc:Tr packages.button.installPackageList}">
+                            <PathIcon Width="16" Height="16" Data="{StaticResource IconDownload}"/>
                         </Button>
                         <Button Classes="iconBtn" Command="{Binding InstallPackageListFromFileCommand}" VerticalAlignment="Bottom"
                                 IsVisible="{Binding HasInstalls}"
@@ -197,10 +181,21 @@
                         </Border>
                         <Border Grid.Row="1" Padding="20,12" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
                             <StackPanel Spacing="12">
-                                <!-- Search + sort, mirroring the website's top bar. -->
-                                <Grid ColumnDefinitions="*,Auto">
+                                <!-- Search + filters + sort in one row, mirroring the website's top bar.
+                                     Source (All / Built-in / Official / Community / …) and Category are
+                                     dropdowns rather than chip rows to keep the toolbar compact. -->
+                                <Grid ColumnDefinitions="*,Auto,Auto,Auto">
                                     <TextBox Grid.Column="0" Watermark="{loc:Tr packages.filter.watermark}" Text="{Binding Filter}"/>
-                                    <ComboBox Grid.Column="1" Margin="10,0,0,0" MinWidth="170" VerticalAlignment="Center"
+                                    <ComboBox Grid.Column="1" Margin="10,0,0,0" MinWidth="150" VerticalAlignment="Center" MaxDropDownHeight="360"
+                                              ItemsSource="{Binding SourceFacets}" SelectedItem="{Binding SelectedSourceFacet}"
+                                              ItemTemplate="{StaticResource FacetOption}"
+                                              ToolTip.Tip="{loc:Tr packages.filter.source}"/>
+                                    <ComboBox Grid.Column="2" Margin="10,0,0,0" MinWidth="150" VerticalAlignment="Center" MaxDropDownHeight="360"
+                                              ItemsSource="{Binding CategoryFacets}" SelectedItem="{Binding SelectedCategoryFacet}"
+                                              ItemTemplate="{StaticResource FacetOption}"
+                                              IsVisible="{Binding HasCategoryFacets}"
+                                              ToolTip.Tip="{loc:Tr packages.filter.category}"/>
+                                    <ComboBox Grid.Column="3" Margin="10,0,0,0" MinWidth="170" VerticalAlignment="Center"
                                               ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SelectedSort}"
                                               ToolTip.Tip="{loc:Tr packages.filter.sortBy}">
                                         <ComboBox.ItemTemplate>
@@ -210,19 +205,6 @@
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
                                 </Grid>
-                                <!-- Source facet chips (All / Official / Community / …), each with a count. -->
-                                <ItemsControl ItemsSource="{Binding SourceFacets}" ItemTemplate="{StaticResource FacetChip}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
-                                <!-- Category facet chips; shown only when the catalog carries categories. -->
-                                <ItemsControl ItemsSource="{Binding CategoryFacets}" ItemTemplate="{StaticResource FacetChip}"
-                                              IsVisible="{Binding HasCategoryFacets}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
                             </StackPanel>
                         </Border>
                         <!-- List layout: one roomy row per package, with a wide action column. -->
@@ -519,7 +501,7 @@
                             </StackPanel>
                         </Button>
                         <Button Classes="primary" HorizontalAlignment="Stretch"
-                                IsVisible="{Binding IsManageable}"
+                                IsVisible="{Binding CanUpdate}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                                 CommandParameter="{Binding Entry}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -546,7 +528,7 @@
                                 <TextBlock Text="{loc:Tr develop.button.mountToEdit}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <!-- Mounted-package actions: open the folder, submit a PR, or swap back to the registry. -->
+                        <!-- Mounted-package actions: reveal the working clone, or turn edits into a PR. -->
                         <Button HorizontalAlignment="Stretch"
                                 IsVisible="{Binding IsMounted}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenFolderCommand}"
@@ -556,22 +538,13 @@
                                 <TextBlock Text="{loc:Tr packages.button.openFolder}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Classes="primary" HorizontalAlignment="Stretch"
+                        <Button HorizontalAlignment="Stretch"
                                 IsVisible="{Binding IsMounted}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SubmitPrCommand}"
                                 CommandParameter="{Binding}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr develop.button.submitPr}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding IsMounted}"
-                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SwapBackCommand}"
-                                CommandParameter="{Binding}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconUndo}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr develop.button.swapBack}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <!-- Accidental edits made directly in Library/PackageCache → turn them into a PR. -->
@@ -585,7 +558,7 @@
                             </StackPanel>
                         </Button>
                         <Button Classes="danger" HorizontalAlignment="Stretch"
-                                IsVisible="{Binding IsManageable}"
+                                IsVisible="{Binding CanRemove}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RemoveCommand}"
                                 CommandParameter="{Binding Entry}">
                             <StackPanel Orientation="Horizontal" Spacing="8">

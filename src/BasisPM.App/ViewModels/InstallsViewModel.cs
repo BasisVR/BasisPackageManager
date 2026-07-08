@@ -27,6 +27,7 @@ public sealed class InstallsViewModel : ObservableObject
     public RelayCommand<InstallRow> ChangeBranchCommand { get; }
     public RelayCommand<InstallRow> CheckUpdatesCommand { get; }
     public RelayCommand<InstallRow> OpenInUnityCommand { get; }
+    public RelayCommand<InstallRow> OpenFolderCommand { get; }
     public RelayCommand<InstallRow> SetUpCommand { get; }
     public RelayCommand<InstallRow> ManagePackagesCommand { get; }
     public RelayCommand<InstallRow> RemoveCommand { get; }
@@ -46,6 +47,7 @@ public sealed class InstallsViewModel : ObservableObject
         ChangeBranchCommand = new RelayCommand<InstallRow>(ChangeBranchAsync);
         CheckUpdatesCommand = new RelayCommand<InstallRow>(r => RefreshGitInfoAsync(r, fetch: true));
         OpenInUnityCommand = new RelayCommand<InstallRow>(OpenInUnity);
+        OpenFolderCommand = new RelayCommand<InstallRow>(r => { if (r is not null) BasisPM.App.Services.ExternalLink.OpenFolder(r.RepoRoot); });
         SetUpCommand = new RelayCommand<InstallRow>(SetUpAsync);
         ManagePackagesCommand = new RelayCommand<InstallRow>(r => Activate(r, "packages"));
         RemoveCommand = new RelayCommand<InstallRow>(RemoveAsync);

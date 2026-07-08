@@ -36,6 +36,14 @@ public static class Dialogs
         return await new InstallPickerWindow(title, installs).ShowDialog<BasisInstall?>(owner);
     }
 
+    /// <summary>Shows the registry package-list picker; returns the chosen list, or null if cancelled.</summary>
+    public static async Task<PackageList?> PickPackageListAsync(IReadOnlyList<PackageList> lists)
+    {
+        var owner = Owner;
+        if (owner is null) return null;
+        return await new PackageListPickerWindow(lists).ShowDialog<PackageList?>(owner);
+    }
+
     /// <summary>A yes/no prompt; returns true only if the user chose Yes.</summary>
     public static async Task<bool> ConfirmAsync(string title, string message)
     {

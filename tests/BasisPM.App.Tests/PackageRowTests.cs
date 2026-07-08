@@ -117,12 +117,27 @@ public sealed class PackageRowTests
         Assert.False(row.IsAvailableToInstall);
     }
 
+    // Install clones the package in, so a mounted package is the installed state: it can be updated,
+    // re-versioned and removed (no more "swap back" to a git-URL dependency).
     [AvaloniaFact]
-    public void Mounted_row_hides_choose_version_even_with_a_git_url()
+    public void Mounted_row_is_manageable_update_version_remove()
     {
         var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), installedVersion: null, isMounted: true);
         Assert.True(row.HasGit);
-        Assert.False(row.CanChooseVersion);
+        Assert.True(row.CanChooseVersion);
+        Assert.True(row.CanUpdate);
+        Assert.True(row.CanRemove);
+        Assert.False(row.IsAvailableToInstall);
+    }
+
+    // A not-installed row can only be installed — not updated or removed.
+    [AvaloniaFact]
+    public void Available_row_cannot_update_or_remove()
+    {
+        var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), installedVersion: null);
+        Assert.True(row.IsAvailableToInstall);
+        Assert.False(row.CanUpdate);
+        Assert.False(row.CanRemove);
     }
 
     [AvaloniaFact]
@@ -170,15 +185,32 @@ public sealed class PackageRowTests
     }
 
     [AvaloniaFact]
-    public void InstalledLabel_is_absent_when_not_installed_or_mounted()
+    public void InstalledLabel_is_absent_when_not_installed()
     {
         var notInstalled = new PackageRow(Entry(), installedVersion: null);
         Assert.Null(notInstalled.InstalledLabel);
         Assert.False(notInstalled.HasInstalledVersion);
+    }
 
-        var mounted = new PackageRow(Entry(), installedVersion: "file:../pkg", isMounted: true);
-        Assert.Null(mounted.InstalledLabel);
-        Assert.False(mounted.HasInstalledVersion);
+    // A mounted package's live manifest points at the local folder, so its version comes from the git
+    // URL it was cloned from (the mount's original manifest value) — the version pill still shows.
+    [AvaloniaFact]
+    public void Mounted_row_shows_version_from_the_clone_source()
+    {
+        var mounted = new PackageRow(Entry(), installedVersion: null, isMounted: true,
+            mountOriginalValue: "https://github.com/x/x.git#v1.2.0");
+        Assert.Equal("v1.2.0", mounted.InstalledLabel);
+        Assert.True(mounted.HasInstalledVersion);
+
+        // A subfolder mount keeps a "file:" manifest line, but the version still comes from the clone source.
+        var fileMounted = new PackageRow(Entry(), installedVersion: "file:../pkg", isMounted: true,
+            mountOriginalValue: "https://github.com/x/x.git#v2.0.0");
+        Assert.Equal("v2.0.0", fileMounted.InstalledLabel);
+
+        // A mount with no recorded clone source has no version to show.
+        var noSource = new PackageRow(Entry(), installedVersion: "file:../pkg", isMounted: true);
+        Assert.Null(noSource.InstalledLabel);
+        Assert.False(noSource.HasInstalledVersion);
     }
 
     // A package installed straight from git and not yet mounted can be mounted for editing; a semver
