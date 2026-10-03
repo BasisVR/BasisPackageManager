@@ -28,7 +28,13 @@ public partial class App : Application
             var window = new MainWindow { DataContext = vm };
             desktop.MainWindow = window;
 
-            // A clean exit clears the crash marker; a crash or force-close leaves it for the next launch.
+            // Clear as soon as the main window really closes. Waiting only for desktop.Exit is too
+            // late when shutdown is delayed by another window or a framework/background teardown.
+            // A force-close cannot raise Closed, so it still leaves the marker behind as intended.
+            window.Closed += (_, _) => CrashReporter.MarkCleanExit();
+
+            // Keep the lifetime event as a fallback for explicit shutdowns that do not close the
+            // main window first (for example an updater-triggered application shutdown).
             desktop.Exit += (_, _) => CrashReporter.MarkCleanExit();
 
             // basispm:// links forwarded from a second launch while this instance is already running.

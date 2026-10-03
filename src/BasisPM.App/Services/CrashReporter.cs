@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using BasisPM.Core.Services;
 
 namespace BasisPM.App.Services;
@@ -22,9 +23,20 @@ public static class CrashReporter
 
     public static void Install()
     {
+        // Visual Studio's Stop button terminates a debuggee without giving Avalonia a chance to
+        // raise Window.Closed or desktop.Exit. Treating that normal development action as a crash
+        // causes the warning on every subsequent run. The attached debugger already surfaces real
+        // failures, so do not persist an unclean-session marker for debugger-controlled runs.
+        if (Debugger.IsAttached)
+        {
+            _previousUnclean = false;
+            MarkCleanExit();
+            return;
+        }
+
         try
         {
-            _previousUnclean = File.Exists(MarkerFile);
+            _previousUnclean = IsAbandonedMarker(MarkerFile);
         }
         catch (Exception E)
         {
@@ -43,7 +55,8 @@ public static class CrashReporter
         try
         {
             Directory.CreateDirectory(Dir);
-            File.WriteAllText(MarkerFile, DateTime.UtcNow.ToString("o"));
+            File.WriteAllText(MarkerFile,
+                $"pid={Environment.ProcessId}\nstarted={DateTime.UtcNow:o}");
         }
         catch (Exception E)
         {
@@ -112,7 +125,38 @@ public static class CrashReporter
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
         if (string.IsNullOrWhiteSpace(detail)) detail = null;
-        return (detail, _previousUnclean);
+        var unclean = _previousUnclean;
+        _previousUnclean = false;
+        return (detail, unclean);
+    }
+
+    private static bool IsAbandonedMarker(string path)
+    {
+        if (!File.Exists(path)) return false;
+
+        // New markers identify their owning process. This prevents a second executable or a
+        // shutdown/relaunch race from reporting the session that is still running as a crash.
+        // Legacy timestamp-only markers are conservatively treated as abandoned once.
+        var firstLine = File.ReadLines(path).FirstOrDefault();
+        if (firstLine is null || !firstLine.StartsWith("pid=", StringComparison.Ordinal) ||
+            !int.TryParse(firstLine.AsSpan(4), out var processId))
+            return true;
+
+        try
+        {
+            using var process = Process.GetProcessById(processId);
+            return process.HasExited;
+        }
+        catch (ArgumentException)
+        {
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // If process inspection is unavailable, do not show a speculative crash dialog.
+            DiagnosticLog.Write($"Checking whether session process {processId} is still running", ex);
+            return false;
+        }
     }
 
     private static string? SafeInvoke(Func<string>? f)
