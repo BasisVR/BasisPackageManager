@@ -23,7 +23,7 @@
       <Border Classes="card" Padding="20">
         <StackPanel Spacing="14">
           <TextBlock Text="Server runtime" Classes="h3"/>
-          <TextBlock Text="Builds are kept outside the Git checkout. The first run opens the server console so you can complete its built-in setup wizard." Classes="muted" TextWrapping="Wrap"/>
+          <TextBlock Text="The server is built into Basis Server/BasisServerConsole/bin/Release/net10.0. The first run opens its console so you can complete the built-in setup wizard." Classes="muted" TextWrapping="Wrap"/>
           <TextBlock Text="{Binding RuntimeDirectory}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
           <Border CornerRadius="10" Padding="14" Background="{StaticResource BasisSurfaceHoverBrush}"
                   BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">

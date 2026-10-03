@@ -1,7 +1,5 @@
 using System.Diagnostics;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using BasisPM.Core.Models;
@@ -15,9 +13,7 @@ public sealed class BasisServerService
     public BasisServerPaths GetPaths(string repoRoot)
     {
         var project = Path.Combine(repoRoot, "Basis Server", "BasisServerConsole", "BasisNetworkConsole.csproj");
-        var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(Path.GetFullPath(repoRoot))))[..12];
-        var runtime = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Basis Package Manager", "Servers", hash);
+        var runtime = Path.Combine(repoRoot, "Basis Server", "BasisServerConsole", "bin", "Release", "net10.0");
         var executable = Path.Combine(runtime, OperatingSystem.IsWindows() ? "BasisNetworkConsole.exe" : "BasisNetworkConsole");
         return new BasisServerPaths(project, runtime, executable,
             Path.Combine(runtime, "config", "config.xml"),
@@ -29,7 +25,6 @@ public sealed class BasisServerService
     {
         var paths = GetPaths(repoRoot);
         if (!File.Exists(paths.ProjectFile)) return (false, "The Basis server project was not found in this checkout.");
-        Directory.CreateDirectory(paths.RuntimeDirectory);
         var psi = new ProcessStartInfo("dotnet")
         {
             WorkingDirectory = Path.GetDirectoryName(paths.ProjectFile)!,
@@ -38,7 +33,7 @@ public sealed class BasisServerService
             RedirectStandardError = true,
             CreateNoWindow = true,
         };
-        foreach (var argument in new[] { "publish", paths.ProjectFile, "-c", "Release", "-o", paths.RuntimeDirectory })
+        foreach (var argument in new[] { "build", paths.ProjectFile, "-c", "Release" })
             psi.ArgumentList.Add(argument);
         using var process = Process.Start(psi) ?? throw new InvalidOperationException("Could not start dotnet.");
         var stdout = process.StandardOutput.ReadToEndAsync(cancellationToken);
@@ -88,7 +83,7 @@ public sealed class BasisServerService
             await client.ConnectAsync(host, port, cancellation.Token);
             return true;
         }
-        catch { return false; }
+        catch (Exception ex) { DiagnosticLog.Write($"Checking server connectivity to {host}:{port}", ex); return false; }
     }
 
     public Process Start(string repoRoot)

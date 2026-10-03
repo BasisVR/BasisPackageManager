@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using BasisPM.Core.Services;
 
 namespace BasisPM.App.Services;
 
@@ -84,8 +85,9 @@ public static class DeepLink
                     {
                         return Uri.UnescapeDataString(kv[1]);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        DiagnosticLog.Write($"Decoding deep-link query value for {key}", ex);
                         return kv[1];
                     }
                 }
@@ -137,6 +139,7 @@ public static class DeepLink
         }
         catch (Exception E)
         {
+            DiagnosticLog.Write("Registering the Windows deep-link protocol", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
     }
@@ -183,6 +186,7 @@ public static class DeepLink
         }
         catch (Exception E)
         {
+            DiagnosticLog.Write("Registering the Linux deep-link protocol", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
     }
@@ -197,6 +201,7 @@ public static class DeepLink
         }
         catch (Exception E)
         {
+            DiagnosticLog.Write($"Running protocol registration helper {exe}", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
     }

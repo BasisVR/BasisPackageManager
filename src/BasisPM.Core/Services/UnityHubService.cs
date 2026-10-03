@@ -41,13 +41,19 @@ public sealed partial class UnityHubService
     public string? FindHubPath(string? overridePath = null)
     {
         if (!string.IsNullOrEmpty(overridePath) && File.Exists(overridePath))
+        {
             return overridePath;
+        }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
             return WindowsHubPaths.FirstOrDefault(File.Exists);
+        }
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
             return MacHubPaths.FirstOrDefault(File.Exists);
+        }
 
         // Linux: the PATH wrapper first, then the well-known deb/AppImage locations.
         return ExecutableFinder.Locate("unityhub") ?? LinuxHubCandidates().FirstOrDefault(File.Exists);

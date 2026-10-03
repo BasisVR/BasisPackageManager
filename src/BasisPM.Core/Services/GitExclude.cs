@@ -29,7 +29,7 @@ public static class GitExclude
             lines.Add(pattern);
             File.WriteAllText(excludePath, string.Join('\n', lines) + '\n');
         }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write($"Adding mount {mountFolder} to Git exclude for {repoRoot}", ex); }
     }
 
     /// <inheritdoc cref="Add(string,string,Func{string,string})"/>
@@ -48,7 +48,7 @@ public static class GitExclude
             if (lines.RemoveAll(l => l.Trim() == pattern) > 0)
                 File.WriteAllText(excludePath, string.Join('\n', lines) + '\n');
         }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write($"Removing mount {mountFolder} from Git exclude for {repoRoot}", ex); }
     }
 
     /// <summary>

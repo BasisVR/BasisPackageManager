@@ -35,8 +35,9 @@ public static class DiskSpace
             if (drive is null || !drive.IsReady) return null;
             return new DiskSpaceInfo(drive.AvailableFreeSpace, drive.TotalSize, drive.Name);
         }
-        catch
+        catch (Exception ex)
         {
+            DiagnosticLog.Write($"Determining disk space for {path}", ex);
             return null; // UNC path, missing drive, permission issue, … — just don't warn.
         }
     }

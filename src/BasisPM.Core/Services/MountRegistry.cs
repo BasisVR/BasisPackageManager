@@ -17,9 +17,8 @@ public sealed class MountRegistry
 
     public MountRegistry(string? dataDir = null)
     {
-        var dir = dataDir ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BasisPM");
-        Directory.CreateDirectory(dir);
-        _path = Path.Combine(dir, "mounts.json");
+        var dir = dataDir ?? AppDataPaths.Root;
+        _path = Path.Combine(dir, AppDataPaths.MountsFileName);
     }
 
     private List<MountRecord> Load()
@@ -29,14 +28,18 @@ public sealed class MountRegistry
             if (File.Exists(_path))
                 return JsonSerializer.Deserialize<List<MountRecord>>(File.ReadAllText(_path)) ?? new();
         }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write($"Loading mount registry from {_path}", ex); }
         return new();
     }
 
     private void Save(List<MountRecord> records)
     {
-        try { File.WriteAllText(_path, JsonSerializer.Serialize(records, Opts)); }
-        catch { }
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
+            File.WriteAllText(_path, JsonSerializer.Serialize(records, Opts));
+        }
+        catch (Exception ex) { DiagnosticLog.Write($"Saving mount registry to {_path}", ex); }
     }
 
     // InstallPath is a filesystem path, so compare it case-sensitively on Linux (case-sensitive FS)

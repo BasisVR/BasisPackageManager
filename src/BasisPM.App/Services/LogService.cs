@@ -1,4 +1,5 @@
 using System.Text;
+using BasisPM.Core.Services;
 
 namespace BasisPM.App.Services;
 
@@ -23,15 +24,16 @@ public sealed class LogService
 
     public LogService()
     {
-        LogDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BasisPM", "logs");
+        LogDirectory = AppDataPaths.Logs;
         try
         {
             Directory.CreateDirectory(LogDirectory);
             _file = Path.Combine(LogDirectory, $"session-{DateTime.Now:yyyyMMdd-HHmmss}.log");
         }
-        catch
+        catch (Exception E)
         {
             _file = null;
+            DiagnosticLog.Write($"Creating session log in {LogDirectory}", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
     }
@@ -57,6 +59,7 @@ public sealed class LogService
         try { if (_file is not null) File.AppendAllText(_file, $"{entry.Time:yyyy-MM-dd HH:mm:ss} [{level}] {message}\n"); }
         catch (Exception E)
         {
+            DiagnosticLog.Write("Writing the session activity log", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
         Added?.Invoke(entry);

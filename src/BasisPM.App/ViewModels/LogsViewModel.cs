@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Avalonia.Media;
 using Avalonia.Threading;
 using BasisPM.App.Services;
+using BasisPM.Core.Services;
 
 namespace BasisPM.App.ViewModels;
 
@@ -37,7 +38,7 @@ public sealed class LogsViewModel : ObservableObject
     private static void OpenPath(string path)
     {
         try { Process.Start(new ProcessStartInfo { FileName = path, UseShellExecute = true }); }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write($"Opening log folder {path}", ex); }
     }
 }
 

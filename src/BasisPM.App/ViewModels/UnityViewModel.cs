@@ -18,7 +18,7 @@ public sealed class UnityViewModel : ObservableObject
     private readonly UnityHubService _hubService;
     private readonly UnityReleaseService _releaseService;
     private readonly UserSettingsService _settingsService;
-    private readonly UnityEditorLocator _locator = new();
+    private readonly UnityEditorLocator _locator;
     private readonly MainWindowViewModel _shell;
 
     private string _hubStatus = "";
@@ -117,6 +117,7 @@ public sealed class UnityViewModel : ObservableObject
         _hubService = hubService;
         _releaseService = releaseService;
         _settingsService = settingsService;
+        _locator = new UnityEditorLocator();
         _shell = shell;
         RefreshCommand = new RelayCommand(RefreshAsync);
         InstallCommand = new RelayCommand(InstallAsync);
@@ -157,6 +158,7 @@ public sealed class UnityViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Refreshing Unity Hub installations", ex);
             HubStatus = L.Tr("unity.status.error", ex.Message);
         }
         finally { IsBusy = false; }
@@ -178,6 +180,7 @@ public sealed class UnityViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Loading available Unity releases", ex);
             _shell.SetStatus(L.Tr("unity.status.fetchReleasesFailed", ex.Message), StatusKind.Error);
         }
         finally { IsLoadingReleases = false; }
@@ -230,6 +233,7 @@ public sealed class UnityViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Installing the selected Unity editor", ex);
             _shell.SetStatus(L.Tr("unity.status.installError", ex.Message), StatusKind.Error);
         }
         finally
@@ -269,6 +273,7 @@ public sealed class UnityViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Installing Unity editor modules", ex);
             _shell.SetStatus(L.Tr("unity.status.modulesError", ex.Message), StatusKind.Error);
         }
         finally

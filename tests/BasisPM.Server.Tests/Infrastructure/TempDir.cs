@@ -1,3 +1,5 @@
+using BasisPM.Core.Services;
+
 namespace BasisPM.Server.Tests.Infrastructure;
 
 public sealed class TempDir : IDisposable
@@ -37,6 +39,6 @@ public sealed class TempDir : IDisposable
     public void Dispose()
     {
         try { if (Directory.Exists(Path)) Directory.Delete(Path, recursive: true); }
-        catch {  }
+        catch (Exception ex) { DiagnosticLog.Write($"Deleting server test directory {Path}", ex); }
     }
 }

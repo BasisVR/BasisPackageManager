@@ -47,7 +47,7 @@ public sealed class CatalogService
             var json = await _http.GetStringAsync(url, ct).ConfigureAwait(false);
             return JsonSerializer.Deserialize<Catalog>(json, JsonOpts);
         }
-        catch { return null; }
+        catch (Exception ex) { DiagnosticLog.Write("Parsing package catalog JSON", ex); return null; }
     }
 
     public static Catalog LoadEmbedded()

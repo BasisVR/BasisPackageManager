@@ -81,6 +81,28 @@ public sealed class UserSettingsServiceTests
     }
 
     [Fact]
+    public void Synchronous_Load_returns_defaults_on_corrupt_json_for_app_startup()
+    {
+        using var t = new TempDir();
+        var path = t.WriteFile("settings.json", "{ this is not valid json ");
+
+        var loaded = new UserSettingsService(path).Load();
+
+        Assert.NotNull(loaded);
+        Assert.Empty(loaded.Installs);
+        Assert.Null(loaded.Language);
+    }
+
+    [Fact]
+    public void Synchronous_Load_reads_the_saved_language_before_first_paint()
+    {
+        using var t = new TempDir();
+        var path = t.WriteFile("settings.json", """{ "language": "de" }""");
+
+        Assert.Equal("de", new UserSettingsService(path).Load().Language);
+    }
+
+    [Fact]
     public async Task Save_creates_the_parent_directory()
     {
         using var t = new TempDir();

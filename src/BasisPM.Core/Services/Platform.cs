@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace BasisPM.Core.Services;
 
@@ -99,7 +100,7 @@ public static class AppLauncher
     public static bool LaunchGuiApp(string appPath, IReadOnlyList<string>? args = null)
     {
         try { Process.Start(GuiAppSpec(Platform.Current, appPath, args).ToStartInfo()); return true; }
-        catch { return false; }
+        catch (Exception ex) { DiagnosticLog.Write($"Launching GUI application {appPath}", ex); return false; }
     }
 }
 
@@ -129,7 +130,7 @@ public static class ExecutableFinder
             {
                 string candidate;
                 try { candidate = Path.Combine(dir, exeName + ext); }
-                catch { continue; } // invalid chars in a PATH entry
+                catch (Exception ex) { DiagnosticLog.Write($"Combining executable search path entry for {exeName}", ex); continue; } // invalid chars in a PATH entry
                 if (isCandidate(candidate)) return candidate;
             }
         }
@@ -144,12 +145,20 @@ public static class ExecutableFinder
     public static bool IsRunnableFile(string path)
     {
         if (!File.Exists(path)) return false;
-        if (Platform.Current == OSPlatform.Windows) return true;
+        if (OperatingSystem.IsWindows()) return true;
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS()) return IsUnixRunnableFile(path);
+        return true;
+    }
+
+    [SupportedOSPlatform("linux")]
+    [SupportedOSPlatform("macos")]
+    private static bool IsUnixRunnableFile(string path)
+    {
         try
         {
             var mode = File.GetUnixFileMode(path);
             return (mode & (UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute)) != 0;
         }
-        catch { return true; } // if the mode can't be read, don't be stricter than File.Exists
+        catch (Exception ex) { DiagnosticLog.Write($"Reading executable file permissions for {path}", ex); return true; } // don't be stricter than File.Exists
     }
 }

@@ -56,8 +56,9 @@ public sealed class PackageListService
         {
             return await _http.GetFromJsonAsync<List<PackageList>>(url, JsonOpts, ct).ConfigureAwait(false);
         }
-        catch
+        catch (Exception ex)
         {
+            DiagnosticLog.Write($"Loading package list from {url}", ex);
             return null;
         }
     }

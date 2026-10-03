@@ -21,6 +21,7 @@ public static class ExternalLink
         try { Process.Start(new ProcessStartInfo(url!.Trim()) { UseShellExecute = true }); }
         catch (Exception E)
         {
+            DiagnosticLog.Write($"Opening external link {url}", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
     }
@@ -36,6 +37,7 @@ public static class ExternalLink
         try { Process.Start(new ProcessStartInfo(path) { UseShellExecute = true }); }
         catch (Exception E)
         {
+            DiagnosticLog.Write($"Opening folder {path}", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
     }

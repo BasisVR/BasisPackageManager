@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using BasisPM.App.Localization;
 using BasisPM.App.ViewModels;
+using BasisPM.Core.Services;
 
 namespace BasisPM.App.Views;
 
@@ -39,6 +40,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Copying diagnostic logs to the clipboard", ex);
             vm.SetStatus(L.Tr("shell.status.copyFailed", ex.Message), StatusKind.Error);
         }
     }

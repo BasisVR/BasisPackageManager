@@ -68,7 +68,7 @@ public sealed class CacheDriftService
                 ClearExcept(pkgDir, parsed.Path is null ? ".git" : null);
                 CopyInto(cacheFolder, pkgDir);
             }
-            catch { TryDelete(workClone); continue; }
+            catch (Exception ex) { DiagnosticLog.Write($"Comparing cached package {id} with its source", ex); TryDelete(workClone); continue; }
 
             await _git.AddAllAsync(workClone, ct).ConfigureAwait(false);
             var status = await _git.GetStatusAsync(workClone, ct).ConfigureAwait(false);
@@ -86,7 +86,7 @@ public sealed class CacheDriftService
     private static IEnumerable<string> SafeEnumerate(string dir, string pattern)
     {
         try { return Directory.EnumerateDirectories(dir, pattern); }
-        catch { return Array.Empty<string>(); }
+        catch (Exception ex) { DiagnosticLog.Write($"Enumerating cached packages in {dir} matching {pattern}", ex); return Array.Empty<string>(); }
     }
 
     // True if a file looks edited after checkout (mtime spread over the threshold). Cheap: file metadata only, no clone.
@@ -102,7 +102,7 @@ public sealed class CacheDriftService
                 if (t > max) max = t;
             }
         }
-        catch { return true; } // can't tell → don't skip it
+        catch (Exception ex) { DiagnosticLog.Write($"Checking whether cached package {folder} was modified", ex); return true; } // can't tell → don't skip it
         return min != DateTime.MaxValue && (max - min) > CheckoutSpreadThreshold;
     }
 
@@ -116,7 +116,7 @@ public sealed class CacheDriftService
         {
             if (keep is not null && Path.GetFileName(entry).Equals(keep, StringComparison.OrdinalIgnoreCase)) continue;
             if (Directory.Exists(entry)) ForceDelete(entry);
-            else { try { File.SetAttributes(entry, FileAttributes.Normal); } catch { } File.Delete(entry); }
+            else { try { File.SetAttributes(entry, FileAttributes.Normal); } catch (Exception ex) { DiagnosticLog.Write($"Clearing file attributes for {entry}", ex); } File.Delete(entry); }
         }
     }
 
@@ -134,14 +134,14 @@ public sealed class CacheDriftService
 
     private static void TryDelete(string path)
     {
-        try { if (Directory.Exists(path)) ForceDelete(path); } catch { }
+        try { if (Directory.Exists(path)) ForceDelete(path); } catch (Exception ex) { DiagnosticLog.Write($"Deleting temporary cache-drift directory {path}", ex); }
     }
 
     private static void ForceDelete(string path)
     {
         foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
         {
-            try { File.SetAttributes(file, FileAttributes.Normal); } catch { }
+            try { File.SetAttributes(file, FileAttributes.Normal); } catch (Exception ex) { DiagnosticLog.Write($"Clearing file attributes for {file}", ex); }
         }
         Directory.Delete(path, recursive: true);
     }

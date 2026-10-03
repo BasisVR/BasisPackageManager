@@ -50,7 +50,7 @@ public sealed class MountService
             if (!clone.Ok) { TryForceDelete(dest); return MountResult.Fail($"Clone failed: {clone.Output}"); }
 
             info.Manifest.Dependencies.Remove(packageId);
-            await _projects.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
+            await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
             install.Manifest = info.Manifest;
 
             _registry.Add(new MountRecord(install.UnityProjectPath, packageId, dest, manifestGitValue));
@@ -78,7 +78,7 @@ public sealed class MountService
         var packagesDir = Path.Combine(install.UnityProjectPath, "Packages");
         var relative = Path.GetRelativePath(packagesDir, pkgDir).Replace('\\', '/');
         info.Manifest.Dependencies[packageId] = "file:" + relative;
-        await _projects.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
+        await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
         install.Manifest = info.Manifest;
 
         _registry.Add(new MountRecord(install.UnityProjectPath, packageId, workspace, manifestGitValue));
@@ -103,11 +103,11 @@ public sealed class MountService
 
         var info = await _projects.LoadAsync(install.UnityProjectPath, ct).ConfigureAwait(false);
         info.Manifest.Dependencies[packageId] = restore;
-        await _projects.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
+        await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
         install.Manifest = info.Manifest;
 
         try { if (Directory.Exists(dest)) ForceDeleteDirectory(dest); }
-        catch (Exception ex) { return MountResult.Fail($"Restored the manifest, but couldn't delete {dest}: {ex.Message}"); }
+        catch (Exception ex) { DiagnosticLog.Write($"Deleting mounted package directory {dest}", ex); return MountResult.Fail($"Restored the manifest, but couldn't delete {dest}: {ex.Message}"); }
 
         _registry.Remove(install.UnityProjectPath, packageId);
         GitExclude.Remove(install.RepoRoot, dest, _git.GetCommonGitDir);
@@ -117,7 +117,7 @@ public sealed class MountService
     private static void TryForceDelete(string path)
     {
         try { if (Directory.Exists(path)) ForceDeleteDirectory(path); }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write($"Cleaning up mount directory {path}", ex); }
     }
 
     // git stores read-only objects under .git; clear attributes before deleting.
@@ -125,7 +125,8 @@ public sealed class MountService
     {
         foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
         {
-            try { File.SetAttributes(file, FileAttributes.Normal); } catch { }
+            try { File.SetAttributes(file, FileAttributes.Normal); }
+            catch (Exception ex) { DiagnosticLog.Write($"Clearing file attributes for {file}", ex); }
         }
         Directory.Delete(path, recursive: true);
     }

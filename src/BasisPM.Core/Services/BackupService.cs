@@ -47,7 +47,7 @@ public sealed class BackupService
                     ct.ThrowIfCancellationRequested();
                     var rel = Path.GetRelativePath(projectPath, file).Replace('\\', '/');
                     try { zip.CreateEntryFromFile(file, rel, CompressionLevel.Fastest); }
-                    catch (IOException) { /* skip files locked by the editor */ }
+                    catch (IOException ex) { DiagnosticLog.Write($"Skipping locked backup file {file}", ex); }
                 }
             }
         }, ct).ConfigureAwait(false);

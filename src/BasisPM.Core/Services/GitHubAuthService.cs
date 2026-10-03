@@ -83,6 +83,6 @@ public sealed class GitHubAuthService
             await p.WaitForExitAsync(ct).ConfigureAwait(false);
             return (p.ExitCode, so.ToString(), se.ToString());
         }
-        catch (Exception ex) { return (-1, "", ex.Message); }
+        catch (Exception ex) { DiagnosticLog.Write("Running GitHub CLI authentication command", ex); return (-1, "", ex.Message); }
     }
 }

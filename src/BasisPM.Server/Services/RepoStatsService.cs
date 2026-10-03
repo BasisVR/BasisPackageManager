@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BasisPM.Core.Services;
 
 namespace BasisPM.Server.Services;
 
@@ -51,7 +52,7 @@ public sealed class RepoStatsService
                 if (r is not null) stats = new RepoStats(r.StarCount, r.ForksCount, r.Description, r.LastActivityAt);
             }
         }
-        catch { stats = null; }
+        catch (Exception ex) { DiagnosticLog.Write($"Loading repository statistics for {url}", ex); stats = null; }
 
         _cache[key] = stats;
         return stats;

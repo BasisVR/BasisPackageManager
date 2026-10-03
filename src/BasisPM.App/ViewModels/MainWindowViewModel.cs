@@ -13,20 +13,20 @@ public enum StatusKind { Info, Success, Error }
 
 public sealed class MainWindowViewModel : ObservableObject
 {
-    private readonly UserSettingsService _settingsService = new();
-    private readonly UnityProjectService _projectService = new();
-    private readonly GitService _gitService = new();
+    private readonly UserSettingsService _settingsService;
+    private readonly UnityProjectService _projectService;
+    private readonly GitService _gitService;
     private readonly BasisInstallService _installService;
-    private readonly CatalogService _catalogService = new();
-    private readonly AnnouncementService _announcementService = new();
-    private readonly PackageListService _packageListService = new();
-    private readonly UnityHubService _hubService = new();
-    private readonly UnityReleaseService _releaseService = new();
-    private readonly UpdateService _updateService = new();
-    private readonly GitHubAuthService _ghAuth = new();
-    private readonly GitHubApiService _ghApi = new();
-    private readonly MountRegistry _mountRegistry = new();
-    private readonly LogService _log = new();
+    private readonly CatalogService _catalogService;
+    private readonly AnnouncementService _announcementService;
+    private readonly PackageListService _packageListService;
+    private readonly UnityHubService _hubService;
+    private readonly UnityReleaseService _releaseService;
+    private readonly UpdateService _updateService;
+    private readonly GitHubAuthService _ghAuth;
+    private readonly GitHubApiService _ghApi;
+    private readonly MountRegistry _mountRegistry;
+    private readonly LogService _log;
 
     private NavPage _currentPage = NavPage.Installs;
     private object? _currentView;
@@ -68,6 +68,21 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public MainWindowViewModel()
     {
+        // Construct the object graph explicitly in dependency order. Field initializers run before
+        // the constructor body and make order-sensitive changes easy to introduce accidentally.
+        _settingsService = new UserSettingsService();
+        _projectService = new UnityProjectService();
+        _gitService = new GitService();
+        _catalogService = new CatalogService();
+        _announcementService = new AnnouncementService();
+        _packageListService = new PackageListService();
+        _hubService = new UnityHubService();
+        _releaseService = new UnityReleaseService();
+        _updateService = new UpdateService();
+        _ghAuth = new GitHubAuthService();
+        _ghApi = new GitHubApiService();
+        _mountRegistry = new MountRegistry();
+        _log = new LogService();
         _installService = new BasisInstallService(_projectService, _gitService);
         InstallsVM = new InstallsViewModel(_settingsService, _installService, _gitService, this);
         var mountService = new MountService(_gitService, _projectService, _mountRegistry);
@@ -381,7 +396,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private static void OpenUrl(string url)
     {
         try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = url, UseShellExecute = true }); }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write($"Opening external URL {url}", ex); }
     }
 
     /// <summary>On the first run of an installed build, offer to add a desktop shortcut (asked once).</summary>
@@ -404,6 +419,7 @@ public sealed class MainWindowViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Creating the desktop shortcut", ex);
             SetStatus(L.Tr("shell.status.desktopShortcutFailed", ex.Message), StatusKind.Error);
         }
     }
@@ -422,6 +438,7 @@ public sealed class MainWindowViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Resetting application data", ex);
             SetStatus(L.Tr("settings.reset.failed", ex.Message), StatusKind.Error);
             return;
         }
@@ -429,7 +446,7 @@ public sealed class MainWindowViewModel : ObservableObject
         // Recreate what the still-running session relies on, so nothing silently breaks before a restart:
         // re-arm the crash marker and re-make the log folder that file logging appends into.
         CrashReporter.ArmSession();
-        try { Directory.CreateDirectory(_log.LogDirectory); } catch { }
+        try { Directory.CreateDirectory(_log.LogDirectory); } catch (Exception ex) { DiagnosticLog.Write($"Recreating log directory {_log.LogDirectory}", ex); }
 
         // Reset the live, in-memory state to what a fresh launch would show.
         LogsVM.ClearCommand.Execute(null);
@@ -533,7 +550,7 @@ public sealed class MainWindowViewModel : ObservableObject
             else
                 SetStatus(L.Tr("shell.status.unityNotInstalled", install.UnityVersion), StatusKind.Error);
         }
-        catch (Exception ex) { SetStatus(L.Tr("shell.status.openUnityFailed", ex.Message), StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Opening the Basis project in Unity", ex); SetStatus(L.Tr("shell.status.openUnityFailed", ex.Message), StatusKind.Error); }
     }
 
     public async Task CheckForUpdatesAsync(bool manual)
@@ -564,6 +581,7 @@ public sealed class MainWindowViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Checking for application updates", ex);
             if (manual) SetStatus(L.Tr("shell.status.updateCheckFailed", ex.Message), StatusKind.Error);
         }
     }
@@ -586,6 +604,7 @@ public sealed class MainWindowViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Applying the application update", ex);
             CrashReporter.ArmSession();   // update aborted — still running, so re-arm crash detection
             IsUpdating = false;
             SetStatus(L.Tr("shell.status.updateFailed", ex.Message), StatusKind.Error);
@@ -612,7 +631,7 @@ public sealed class MainWindowViewModel : ObservableObject
             var seen = settings.SeenAnnouncementIds;
             AnnouncementsUnreadCount = AnnouncementsVM.AllIds.Count(id => !seen.Contains(id));
         }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write("Refreshing the unread announcement count", ex); }
     }
 
     /// <summary>Marks every currently-shown announcement as read (persisted) and clears the badge.</summary>
@@ -634,7 +653,7 @@ public sealed class MainWindowViewModel : ObservableObject
             settings.SeenAnnouncementIds = ids.ToList();
             await _settingsService.SaveAsync(settings);
         }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write("Saving the set of read announcements", ex); }
     }
 
     public void NavigateTo(string page)

@@ -189,7 +189,7 @@ public sealed class GitService
     public bool IsGitRepo(string path)
     {
         try { return Directory.Exists(Path.Combine(path, ".git")) || File.Exists(Path.Combine(path, ".git")); }
-        catch { return false; }
+        catch (Exception ex) { DiagnosticLog.Write($"Checking whether {path} is a Git repository", ex); return false; }
     }
 
     /// <summary>
@@ -234,7 +234,7 @@ public sealed class GitService
             var full = Path.IsPathRooted(printed) ? printed : Path.GetFullPath(Path.Combine(repoRoot, printed));
             return Directory.Exists(full) ? full : null;
         }
-        catch { return null; }
+        catch (Exception ex) { DiagnosticLog.Write($"Resolving the common Git directory for {repoRoot}", ex); return null; }
     }
 
     // ---- write-side operations (publish wizard): init / add / commit / remote / push / tag ----

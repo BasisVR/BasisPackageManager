@@ -98,7 +98,7 @@ public sealed class ServerViewModel : ObservableObject
             var port = ConfigFields.FirstOrDefault(x => x.Name == "SetPort")?.Value;
             if (ushort.TryParse(port, out _)) Port = port!;
         }
-        catch (Exception ex) { _shell.SetStatus($"Could not load server configuration: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Loading the Basis server configuration", ex); _shell.SetStatus($"Could not load server configuration: {ex.Message}", StatusKind.Error); }
         RaiseCollections();
         await Task.CompletedTask;
     }
@@ -127,7 +127,7 @@ public sealed class ServerViewModel : ObservableObject
                 result.Success ? StatusKind.Success : StatusKind.Error);
             return result.Success;
         }
-        catch (Exception ex) { _shell.SetStatus($"Server build failed: {ex.Message}", StatusKind.Error); return false; }
+        catch (Exception ex) { DiagnosticLog.Write("Building the Basis server", ex); _shell.SetStatus($"Server build failed: {ex.Message}", StatusKind.Error); return false; }
         finally { IsBusy = false; await RefreshAsync(); }
     }
 
@@ -140,7 +140,7 @@ public sealed class ServerViewModel : ObservableObject
             StartServer(_install);
             _shell.SetStatus("Basis server started in its console. Complete the setup wizard there on first run.", StatusKind.Success);
         }
-        catch (Exception ex) { _shell.SetStatus($"Could not start server: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Starting the Basis server", ex); _shell.SetStatus($"Could not start server: {ex.Message}", StatusKind.Error); }
         await Task.CompletedTask;
     }
 
@@ -153,7 +153,7 @@ public sealed class ServerViewModel : ObservableObject
             await _serverProcess.WaitForExitAsync();
             _shell.SetStatus("Basis server stopped.", StatusKind.Success);
         }
-        catch (Exception ex) { _shell.SetStatus($"Could not stop server: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Stopping the Basis server", ex); _shell.SetStatus($"Could not stop server: {ex.Message}", StatusKind.Error); }
     }
 
     private async Task LaunchClientAsync()
@@ -180,7 +180,7 @@ public sealed class ServerViewModel : ObservableObject
                     trackedRunning = true;
                     _shell.SetStatus("Server started. Waiting for it to accept connections…");
                 }
-                catch (Exception ex) { _shell.SetStatus($"Could not start server: {ex.Message}", StatusKind.Error); return; }
+                catch (Exception ex) { DiagnosticLog.Write("Starting the Basis server before connecting", ex); _shell.SetStatus($"Could not start server: {ex.Message}", StatusKind.Error); return; }
             }
         }
 
@@ -209,7 +209,7 @@ public sealed class ServerViewModel : ObservableObject
             _service.SaveConfig(_install.RepoRoot, ConfigFields.Select(x => x.ToModel()));
             _shell.SetStatus("Server configuration saved. Restart the server to apply it.", StatusKind.Success);
         }
-        catch (Exception ex) { _shell.SetStatus($"Could not save server configuration: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Saving the Basis server configuration", ex); _shell.SetStatus($"Could not save server configuration: {ex.Message}", StatusKind.Error); }
         await Task.CompletedTask;
     }
 
@@ -226,14 +226,14 @@ public sealed class ServerViewModel : ObservableObject
             await RefreshAsync();
             _shell.SetStatus("Default server content added. Restart the server to load it.", StatusKind.Success);
         }
-        catch (Exception ex) { _shell.SetStatus($"Could not add server content: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Adding content to the Basis server", ex); _shell.SetStatus($"Could not add server content: {ex.Message}", StatusKind.Error); }
     }
 
     private async Task RemoveContentAsync(ServerContentFile? item)
     {
         if (item is null || _install is null) return;
         try { _service.RemoveContent(_install.RepoRoot, item); await RefreshAsync(); _shell.SetStatus($"Removed {item.Name}.", StatusKind.Success); }
-        catch (Exception ex) { _shell.SetStatus($"Could not remove content: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Removing content from the Basis server", ex); _shell.SetStatus($"Could not remove content: {ex.Message}", StatusKind.Error); }
     }
 
     private void OpenRuntime()
@@ -284,8 +284,9 @@ public sealed class ServerViewModel : ObservableObject
                 ? ".NET 10 SDK detected — this computer can compile the Basis server."
                 : ".NET 10 SDK not detected — install it before building the Basis server.";
         }
-        catch
+        catch (Exception ex)
         {
+            DiagnosticLog.Write("Detecting the installed .NET SDK", ex);
             HasDotNet10Sdk = false;
             DotNetStatus = "Could not detect the .NET 10 SDK. It is required to compile the Basis server.";
         }

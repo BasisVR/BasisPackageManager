@@ -25,7 +25,7 @@ public sealed class DependencyResolver
             var (name, rangeSpec, origin) = queue.Dequeue();
             SemVerRange range;
             try { range = SemVerRange.Parse(rangeSpec); }
-            catch { conflicts.Add($"{name}: invalid range \"{rangeSpec}\" from {origin}"); continue; }
+            catch (Exception ex) { DiagnosticLog.Write($"Parsing dependency range {rangeSpec} for {name}", ex); conflicts.Add($"{name}: invalid range \"{rangeSpec}\" from {origin}"); continue; }
 
             var best = _catalogService.FindBest(catalog, name, range);
             if (best is null)

@@ -83,6 +83,7 @@ public sealed class ContributeService
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write($"Opening pull request for {upstream.Owner}/{upstream.Repo}", ex);
             return ContributeResult.Fail($"Pushed successfully, but opening the PR failed: {ex.Message}");
         }
     }

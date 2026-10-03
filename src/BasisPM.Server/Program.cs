@@ -94,10 +94,12 @@ if (submissionsEnabled)
         }
         catch (ArgumentException ex)
         {
+            DiagnosticLog.Write("Validating a registry package submission", ex);
             return Results.BadRequest(new { error = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
+            DiagnosticLog.Write("Adding a registry package submission", ex);
             return Results.Conflict(new { error = ex.Message });
         }
     });
@@ -200,7 +202,7 @@ static async Task<UpmPackageJson?> FetchUpmPackageAsync(GitHubService github, st
         var loc = GitHubService.Parse(gitOrRepoUrl);
         return await github.FetchPackageJsonAsync(loc);
     }
-    catch { return null; }
+    catch (Exception ex) { DiagnosticLog.Write($"Loading package metadata from {gitOrRepoUrl}", ex); return null; }
 }
 
 // The set of package ids declared in the Basis developer-branch Packages/manifest.json — these ship
@@ -227,6 +229,7 @@ static async Task<HashSet<string>> FetchBuiltInIdsAsync(string? token)
     }
     catch (Exception ex)
     {
+        DiagnosticLog.Write($"Detecting built-in packages from {repo}@{branch}", ex);
         Console.Error.WriteLine($"  (built-in detection skipped — could not read {repo}@{branch}: {ex.Message})");
     }
     return ids;

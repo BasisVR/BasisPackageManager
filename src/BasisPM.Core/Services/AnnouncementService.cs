@@ -34,8 +34,9 @@ public sealed class AnnouncementService
             var list = await _http.GetFromJsonAsync<List<Announcement>>(effective, JsonOpts, ct).ConfigureAwait(false);
             if (list is not null) return Order(list);
         }
-        catch
+        catch (Exception ex)
         {
+            DiagnosticLog.Write($"Loading announcements from {effective}", ex);
         }
         return Order(LoadEmbedded());
     }

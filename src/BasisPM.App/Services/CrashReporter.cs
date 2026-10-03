@@ -1,3 +1,5 @@
+using BasisPM.Core.Services;
+
 namespace BasisPM.App.Services;
 
 /// <summary>
@@ -7,9 +9,9 @@ namespace BasisPM.App.Services;
 /// </summary>
 public static class CrashReporter
 {
-    private static string Dir => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BasisPM");
-    private static string CrashFile => Path.Combine(Dir, "lastcrash.txt");
-    private static string MarkerFile => Path.Combine(Dir, "session.lock");
+    private static string Dir => AppDataPaths.Root;
+    private static string CrashFile => Path.Combine(Dir, AppDataPaths.CrashFileName);
+    private static string MarkerFile => Path.Combine(Dir, AppDataPaths.SessionMarkerFileName);
 
     /// <summary>Set by the shell so a crash report can include the recent action trail.</summary>
     public static Func<string>? BreadcrumbProvider { get; set; }
@@ -26,6 +28,7 @@ public static class CrashReporter
         }
         catch (Exception E)
         {
+            DiagnosticLog.Write("Checking the previous session crash marker", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
         ArmSession();
@@ -44,6 +47,7 @@ public static class CrashReporter
         }
         catch (Exception E)
         {
+            DiagnosticLog.Write("Writing the current session crash marker", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
     }
@@ -60,6 +64,7 @@ public static class CrashReporter
         }
         catch (Exception E)
         {
+            DiagnosticLog.Write("Clearing the current session crash marker", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
     }
@@ -88,6 +93,7 @@ public static class CrashReporter
         }
         catch (Exception E)
         {
+            DiagnosticLog.Write($"Writing the crash report for {source}", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
     }
@@ -102,6 +108,7 @@ public static class CrashReporter
         try { if (File.Exists(CrashFile)) { detail = File.ReadAllText(CrashFile); File.Delete(CrashFile); } }
         catch (Exception E)
         {
+            DiagnosticLog.Write("Reading the pending crash report", E);
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
         if (string.IsNullOrWhiteSpace(detail)) detail = null;
@@ -110,6 +117,6 @@ public static class CrashReporter
 
     private static string? SafeInvoke(Func<string>? f)
     {
-        try { return f?.Invoke(); } catch { return null; }
+        try { return f?.Invoke(); } catch (Exception ex) { DiagnosticLog.Write("Collecting crash report metadata", ex); return null; }
     }
 }

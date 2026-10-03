@@ -18,14 +18,13 @@ internal static class Program
 
 internal sealed class ConsoleApplication
 {
-    private readonly GitService _git = new();
-    private readonly UnityProjectService _projects = new();
-    private readonly CatalogService _catalogs = new();
-    private readonly PackageListService _packageLists = new();
-    private readonly UserSettingsService _settings = new();
-    private readonly UnityHubService _unityHub = new();
-    private readonly MountRegistry _mountRegistry = new();
-    private readonly BasisServerService _servers = new();
+    private readonly GitService _git;
+    private readonly UnityProjectService _projects;
+    private readonly CatalogService _catalogs;
+    private readonly PackageListService _packageLists;
+    private readonly UserSettingsService _settings;
+    private readonly UnityHubService _unityHub;
+    private readonly MountRegistry _mountRegistry;
     private readonly BasisInstallService _installs;
     private readonly MountService _mounts;
     private CancellationTokenSource? _activeOperation;
@@ -34,6 +33,15 @@ internal sealed class ConsoleApplication
 
     public ConsoleApplication()
     {
+        // Keep dependency construction explicit; instance field initialization otherwise runs before
+        // this body and silently depends on declaration order.
+        _git = new GitService();
+        _projects = new UnityProjectService();
+        _catalogs = new CatalogService();
+        _packageLists = new PackageListService();
+        _settings = new UserSettingsService();
+        _unityHub = new UnityHubService();
+        _mountRegistry = new MountRegistry();
         _installs = new BasisInstallService(_projects, _git);
         _mounts = new MountService(_git, _projects, _mountRegistry);
         Console.CancelKeyPress += (_, e) =>
@@ -59,7 +67,7 @@ internal sealed class ConsoleApplication
 
             string[] args;
             try { args = Tokenize(input).ToArray(); }
-            catch (FormatException ex) { WriteError(ex.Message); continue; }
+            catch (FormatException ex) { DiagnosticLog.Write("Parsing interactive console command", ex); WriteError(ex.Message); continue; }
             if (args.Length == 0) continue;
             if (args[0].Equals("exit", StringComparison.OrdinalIgnoreCase)
                 || args[0].Equals("quit", StringComparison.OrdinalIgnoreCase)) return 0;
@@ -98,20 +106,13 @@ internal sealed class ConsoleApplication
                 case "change-branch": case "checkout": await ChangeBranchAsync(values); break;
                 case "update-basis": case "pull": await UpdateBasisAsync(); break;
                 case "open-unity": await OpenUnityAsync(); break;
-                case "server-build": await BuildServerAsync(); break;
-                case "server-run": await RunServerAsync(); break;
-                case "server-config": await ServerConfigAsync(values); break;
-                case "server-content": await ListServerContentAsync(); break;
-                case "server-add-library": await AddServerContentAsync(values, library: true); break;
-                case "server-add-startup": await AddServerContentAsync(values, library: false); break;
-                case "connect-client": await ConnectClientAsync(values); break;
                 case "exit": case "quit": break;
                 default: WriteError($"Unknown command '{args[0]}'. Type 'help' to see available commands."); return 2;
             }
             return 0;
         }
-        catch (OperationCanceledException) { WriteWarning("Operation cancelled."); return 130; }
-        catch (Exception ex) { WriteError(ex.Message); return 1; }
+        catch (OperationCanceledException ex) { DiagnosticLog.Write($"Cancelling CLI command {command}", ex); WriteWarning("Operation cancelled."); return 130; }
+        catch (Exception ex) { DiagnosticLog.Write($"Running CLI command {command}", ex); WriteError(ex.Message); return 1; }
     }
 
     private async Task CloneBasisAsync(IReadOnlyList<string> values)
@@ -145,8 +146,6 @@ internal sealed class ConsoleApplication
         var detection = _projects.Detect(full);
         if (!detection.IsValid)
             throw new DirectoryNotFoundException($"'{full}' is not a Basis/Unity project: {detection.Reason}");
-        if (!_installs.IsBasisCheckout(full))
-            throw new InvalidOperationException($"'{full}' is a Unity project, but it is not a Basis checkout. Clone BasisVR/Basis first.");
         _basisPath = FindRepoRoot(full, detection.ResolvedPath!);
         if (!quiet) WriteSuccess($"Using Basis clone: {_basisPath}");
     }
@@ -211,7 +210,7 @@ internal sealed class ConsoleApplication
             if (name.Equals(entry.Name, StringComparison.OrdinalIgnoreCase) || PackageIsBundled(install, name)) continue;
             install.Manifest.Dependencies[name] = version.Url ?? version.Version;
         }
-        await _projects.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
+        await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
 
         if (!string.IsNullOrWhiteSpace(entry.Url) && _git.IsAvailable)
         {
@@ -225,7 +224,7 @@ internal sealed class ConsoleApplication
         else
         {
             install.Manifest.Dependencies[entry.Name] = entry.Url ?? entry.Version;
-            await _projects.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
+            await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
         }
         WriteSuccess($"Installed {entry.DisplayName} into {install.DisplayName}.");
     }
@@ -257,7 +256,7 @@ internal sealed class ConsoleApplication
             }
             install.Manifest.Dependencies[package.Id] = value.Trim();
         }
-        await _projects.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
+        await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
         WriteSuccess($"Installed package list {list.Name}; bundled Basis packages were skipped.");
     }
 
@@ -294,80 +293,6 @@ internal sealed class ConsoleApplication
             settings.UnityHubPath, extraEditors);
         if (!opened) throw new InvalidOperationException($"Unity {install.UnityVersion} could not be opened.");
         WriteSuccess($"Opening {install.DisplayName} in Unity {install.UnityVersion}.");
-    }
-
-    private async Task BuildServerAsync()
-    {
-        var install = await LoadInstallAsync();
-        Console.WriteLine("Building the Basis server…");
-        (bool success, string output) result = (false, "");
-        await RunOperationAsync(async ct => result = await _servers.BuildAsync(install.RepoRoot, ct));
-        if (!result.success) throw new InvalidOperationException($"Server build failed: {Tail(result.output)}");
-        WriteSuccess($"Server built in {_servers.GetPaths(install.RepoRoot).RuntimeDirectory}");
-    }
-
-    private async Task RunServerAsync()
-    {
-        var install = await LoadInstallAsync();
-        _servers.Start(install.RepoRoot);
-        WriteSuccess("Basis server started in its console.");
-    }
-
-    private async Task ServerConfigAsync(IReadOnlyList<string> values)
-    {
-        RequireRange(values, 0, 2, "server-config [name value]");
-        var install = await LoadInstallAsync();
-        var fields = _servers.LoadConfig(install.RepoRoot).ToList();
-        if (fields.Count == 0) throw new InvalidOperationException("Run the server once to generate config/config.xml.");
-        if (values.Count == 0)
-        {
-            foreach (var field in fields) Console.WriteLine($"{field.Name,-42} {field.Value}");
-            return;
-        }
-        if (values.Count != 2) throw new ArgumentException("Usage: server-config [name value]");
-        var index = fields.FindIndex(x => x.Name.Equals(values[0], StringComparison.OrdinalIgnoreCase));
-        if (index < 0) throw new InvalidOperationException($"Unknown server setting '{values[0]}'.");
-        fields[index] = fields[index] with { Value = values[1] };
-        _servers.SaveConfig(install.RepoRoot, fields);
-        WriteSuccess($"Set {fields[index].Name}. Restart the server to apply it.");
-    }
-
-    private async Task ListServerContentAsync()
-    {
-        var install = await LoadInstallAsync();
-        foreach (var item in _servers.ListContent(install.RepoRoot))
-            Console.WriteLine($"{(item.IsDefaultLibrary ? "library" : "startup"),-9} {item.Name}");
-    }
-
-    private async Task AddServerContentAsync(IReadOnlyList<string> values, bool library)
-    {
-        RequireRange(values, 2, 3, library
-            ? "server-add-library <avatar|world|prop> <url> [password]"
-            : "server-add-startup <avatar|world|prop> <url> [password]");
-        var install = await LoadInstallAsync();
-        var logicalMode = values[0].ToLowerInvariant() switch
-        {
-            "avatar" => 0, "world" or "scene" => 1, "prop" => 2,
-            _ => throw new ArgumentException("Content type must be avatar, world, or prop."),
-        };
-        var password = values.Count == 3 ? values[2] : "";
-        var path = library
-            ? _servers.AddDefaultLibraryItem(install.RepoRoot, logicalMode, values[1], password)
-            : _servers.AddInitialResource(install.RepoRoot, logicalMode switch { 0 => 2, 2 => 0, _ => 1 }, values[1], password);
-        WriteSuccess($"Added {Path.GetFileName(path)}.");
-    }
-
-    private async Task ConnectClientAsync(IReadOnlyList<string> values)
-    {
-        RequireRange(values, 0, 3, "connect-client [host] [port] [password]");
-        _ = await LoadInstallAsync();
-        var host = values.Count > 0 ? values[0] : "127.0.0.1";
-        if (!ushort.TryParse(values.Count > 1 ? values[1] : "4296", out var port) || port == 0)
-            throw new ArgumentException("Port must be between 1 and 65535.");
-        var password = values.Count > 2 ? values[2] : "";
-        if (!_servers.LaunchSteamClient(BasisServerService.BuildConnection(host, port, password)))
-            throw new InvalidOperationException("Steam could not be found.");
-        WriteSuccess($"Launching Basis Labs and connecting to {host}:{port}.");
     }
 
     private async Task<BasisInstall> LoadInstallAsync()
@@ -437,15 +362,6 @@ Packages
 
 Unity
   open-unity                           Open the selected project in its required editor
-
-Server
-  server-build                         Publish the server from the selected Basis clone
-  server-run                           Start the built server in its console
-  server-config [name value]           List or change generated config.xml settings
-  server-content                       List default-library and startup content files
-  server-add-library <type> <url> [pw] Add avatar/world/prop to the client library
-  server-add-startup <type> <url> [pw] Load avatar/world/prop when the server starts
-  connect-client [host] [port] [pw]    Launch Basis Labs through Steam and connect
 
 General
   help                                 Show this help

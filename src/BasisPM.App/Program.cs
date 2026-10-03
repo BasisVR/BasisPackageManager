@@ -1,5 +1,6 @@
 using Avalonia;
 using BasisPM.App.Services;
+using BasisPM.Core.Services;
 using Velopack;
 
 namespace BasisPM.App;
@@ -23,7 +24,7 @@ internal static class Program
                 return;
             }
         }
-        catch { /* any failure → continue as a normal launch */ }
+        catch (Exception ex) { DiagnosticLog.Write("Establishing the primary application instance", ex); /* continue as a normal launch */ }
 
         // Primary instance only: record unhandled exceptions / unclean shutdowns for the next launch.
         CrashReporter.Install();
@@ -31,13 +32,13 @@ internal static class Program
         try
         {
             var packaged = false;
-            try { packaged = new UpdateService().IsSupported; } catch { }
+            try { packaged = new UpdateService().IsSupported; } catch (Exception ex) { DiagnosticLog.Write("Detecting installed update support", ex); }
             DeepLink.RegisterProtocolIfPackaged(packaged);
         }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write("Registering the basispm protocol handler", ex); }
 
         DeepLinkDispatcher.Pending = uri;
-        try { SingleInstance.StartServer(DeepLinkDispatcher.Raise); } catch { }
+        try { SingleInstance.StartServer(DeepLinkDispatcher.Raise); } catch (Exception ex) { DiagnosticLog.Write("Starting the deep-link listener", ex); }
 
         try
         {
@@ -45,6 +46,7 @@ internal static class Program
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Running the application", ex);
             CrashReporter.Write(ex, "Main");
             throw;
         }

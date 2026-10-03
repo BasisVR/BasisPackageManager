@@ -99,7 +99,7 @@ public sealed class GitHubApiService
             return await res.Content.ReadFromJsonAsync<List<GitHubRelease>>(cancellationToken: ct).ConfigureAwait(false)
                    ?? (IReadOnlyList<GitHubRelease>)Array.Empty<GitHubRelease>();
         }
-        catch { return Array.Empty<GitHubRelease>(); }
+        catch (Exception ex) { DiagnosticLog.Write("Loading GitHub releases", ex); return Array.Empty<GitHubRelease>(); }
     }
 }
 

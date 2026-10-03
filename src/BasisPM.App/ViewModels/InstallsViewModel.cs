@@ -128,6 +128,7 @@ public sealed class InstallsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write($"Refreshing Git state for {row.RepoRoot}", ex);
             row.GitSummary = L.Tr("installs.git.error", ex.Message);
         }
         finally
@@ -171,6 +172,7 @@ public sealed class InstallsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write($"Loading branches for {row.RepoRoot}", ex);
             _shell.SetStatus(L.Tr("installs.status.branchListFailed", ex.Message), StatusKind.Error);
             return;
         }
@@ -210,6 +212,7 @@ public sealed class InstallsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write($"Switching branches for {row.RepoRoot}", ex);
             _shell.SetStatus(L.Tr("installs.status.switchBranchError", ex.Message), StatusKind.Error);
         }
         finally
@@ -243,6 +246,7 @@ public sealed class InstallsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write($"Backing up Basis installation {row.RepoRoot}", ex);
             _shell.SetStatus(L.Tr("installs.status.backupFailed", ex.Message), StatusKind.Error);
         }
         finally
@@ -373,6 +377,7 @@ public sealed class InstallsViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Cloning a Basis installation", ex);
             _shell.SetStatus(L.Tr("installs.status.cloneError", ex.Message), StatusKind.Error);
         }
     }
@@ -412,6 +417,7 @@ public sealed class InstallsViewModel : ObservableObject
             }
             catch (Exception ex)
             {
+                DiagnosticLog.Write($"Deleting Basis installation {row.RepoRoot}", ex);
                 row.IsBusy = false;
                 // Leave the row in place so the user can retry (e.g. after closing Unity, which locks files).
                 _shell.SetStatus(L.Tr("installs.status.deleteFailed", row.Name, ex.Message), StatusKind.Error);

@@ -10,6 +10,18 @@ namespace BasisPM.Core.Tests;
 
 public sealed class BasisServerServiceTests
 {
+    [Fact]
+    public void Runtime_uses_the_servers_normal_release_build_directory()
+    {
+        using var t = new TempDir();
+        var root = t.CreateDir("Basis");
+        var paths = new BasisServerService().GetPaths(root);
+
+        Assert.Equal(Path.Combine(root, "Basis Server", "BasisServerConsole", "bin", "Release", "net10.0"),
+            paths.RuntimeDirectory);
+        Assert.Equal(Path.Combine(paths.RuntimeDirectory, "config", "config.xml"), paths.ConfigFile);
+    }
+
     [Theory]
     [InlineData("localhost", true)]
     [InlineData("127.0.0.1", true)]

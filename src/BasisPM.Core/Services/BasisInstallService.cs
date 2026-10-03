@@ -32,7 +32,7 @@ public sealed class BasisInstallService
                 version = info.UnityVersion;
                 manifest = info.Manifest;
             }
-            catch { }
+            catch (Exception ex) { DiagnosticLog.Write($"Loading Unity project metadata from {unityPath}", ex); }
         }
 
         return new BasisInstall

@@ -89,8 +89,9 @@ public sealed class GitHubService
         {
             return await _http.GetFromJsonAsync<UpmPackageJson>(url, JsonOpts, ct).ConfigureAwait(false);
         }
-        catch
+        catch (Exception ex)
         {
+            DiagnosticLog.Write($"Loading package metadata for {loc.Owner}/{loc.Repo}", ex);
             return null;
         }
     }

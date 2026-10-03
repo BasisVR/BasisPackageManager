@@ -141,7 +141,7 @@ public sealed partial class UnityEditorLocator
             var plist = Path.Combine(appBundlePath, "Contents", "Info.plist");
             return File.Exists(plist) ? VersionFromInfoPlistText(File.ReadAllText(plist)) : null;
         }
-        catch { return null; }
+        catch (Exception ex) { DiagnosticLog.Write($"Reading Unity version from macOS editor at {appBundlePath}", ex); return null; }
     }
 
     private static string? VersionFromWindowsExe(string exePath)
@@ -151,7 +151,7 @@ public sealed partial class UnityEditorLocator
             if (!File.Exists(exePath)) return null;
             return VersionFromProductVersion(FileVersionInfo.GetVersionInfo(exePath).ProductVersion);
         }
-        catch { return null; }
+        catch (Exception ex) { DiagnosticLog.Write($"Reading Unity version from executable {exePath}", ex); return null; }
     }
 
     [GeneratedRegex(@"^\d+\.\d+\.\d+[abfpx]\d+$", RegexOptions.IgnoreCase)]

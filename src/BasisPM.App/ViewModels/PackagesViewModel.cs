@@ -23,8 +23,8 @@ public sealed class PackagesViewModel : ObservableObject
     private readonly GitHubApiService _ghApi;
     private readonly GitService _gitService;
     private readonly GitHubService _githubService;
-    private readonly VersionService _versionService = new();
-    private readonly PackageListService _packageListService = new();
+    private readonly VersionService _versionService;
+    private readonly PackageListService _packageListService;
     private readonly MainWindowViewModel _shell;
     private bool _isGridView;
 
@@ -219,6 +219,8 @@ public sealed class PackagesViewModel : ObservableObject
         _ghApi = ghApi;
         _gitService = gitService;
         _githubService = new GitHubService();
+        _versionService = new VersionService();
+        _packageListService = new PackageListService();
         _shell = shell;
 
         InstallCommand = new RelayCommand<CatalogPackageVersion>(EnqueueInstall);
@@ -268,7 +270,7 @@ public sealed class PackagesViewModel : ObservableObject
             settings.PackagesGridView = grid;
             await _settingsService.SaveAsync(settings);
         }
-        catch { /* a view preference isn't worth surfacing a settings-write error */ }
+        catch (Exception ex) { DiagnosticLog.Write("Saving the package view preference", ex); /* a view preference isn't worth surfacing a settings-write error */ }
     }
 
     public void SetActiveInstall(BasisInstall install)
@@ -342,7 +344,7 @@ public sealed class PackagesViewModel : ObservableObject
                 var reloaded = await _projectService.LoadAsync(_install.UnityProjectPath);
                 _install.Manifest = reloaded.Manifest;
             }
-            catch { }
+            catch (Exception ex) { DiagnosticLog.Write("Reloading project metadata after removing a package", ex); }
             RefreshInstalled();
         }
     }
@@ -585,7 +587,7 @@ public sealed class PackagesViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(range)) return false;
         try { SemVerRange.Parse(range); return true; }
-        catch { return false; }
+        catch (Exception ex) { DiagnosticLog.Write($"Validating semantic version range {range}", ex); return false; }
     }
 
     // Installs a package by cloning its repository into Packages/ as an editable working copy (a "mount"),
@@ -616,7 +618,7 @@ public sealed class PackagesViewModel : ObservableObject
             }
         }
         target.Manifest.Dependencies[packageId] = gitUrl;
-        await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
+        await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
         return false;
     }
 
@@ -695,7 +697,7 @@ public sealed class PackagesViewModel : ObservableObject
                 InstallProgressDetail = "";
                 ApplyInstallQueueState();
                 try { await InstallCuratedAsync(target, entry); }
-                catch (Exception ex) { _shell.SetStatus(L.Tr("packages.status.installError", ex.Message), StatusKind.Error); }
+                catch (Exception ex) { DiagnosticLog.Write($"Installing queued package {entry.Name}", ex); _shell.SetStatus(L.Tr("packages.status.installError", ex.Message), StatusKind.Error); }
                 finally
                 {
                     _queuedInstallIds.Remove(entry.Name);
@@ -767,7 +769,7 @@ public sealed class PackagesViewModel : ObservableObject
             foreach (var (name, ver) in result.Resolved)
                 if (!string.Equals(name, entry.Name, StringComparison.OrdinalIgnoreCase) && !IsPackagePresentInSource(target, name))
                     target.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
-            await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
+            await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
             // Install the requested package by cloning its repo into Packages/ (an editable mount),
             // pinned to its latest published release. Its registry deps stay as manifest git URLs.
@@ -777,7 +779,7 @@ public sealed class PackagesViewModel : ObservableObject
             {
                 // No repository to clone — record the version dependency so Unity can still resolve it.
                 target.Manifest.Dependencies[entry.Name] = mainVer?.Version ?? entry.Version;
-                await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
+                await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
                 _shell.SetStatus(L.Tr("packages.status.installed", entry.DisplayName, target.DisplayName), StatusKind.Success);
             }
             else
@@ -790,6 +792,7 @@ public sealed class PackagesViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Installing a curated package", ex);
             _shell.SetStatus(L.Tr("packages.status.installError", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
@@ -840,14 +843,14 @@ public sealed class PackagesViewModel : ObservableObject
             var versionUrl = loc.ToManifestUrl(chosen.Ref, loc.Path);
             AddCatalogDependencies(target, new[] { (entry.Name, "*") });   // pull in its registry deps too
             target.Manifest.Dependencies.Remove(entry.Name);              // cloned below, not added as a git-URL dep
-            await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
+            await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
             // Clone the chosen release into Packages/ as an editable mount (falls back to a git-URL dep without git).
             await CloneInstallAsync(target, entry.Name, versionUrl);
             _shell.SetStatus(L.Tr("packages.status.installedVersion", entry.DisplayName, chosen.Ref ?? L.Tr("packages.status.defaultBranch"), target.DisplayName), StatusKind.Success);
             RefreshInstalled();
         }
-        catch (Exception ex) { _shell.SetStatus(L.Tr("packages.status.versionInstallError", ex.Message), StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Installing the selected package version", ex); _shell.SetStatus(L.Tr("packages.status.versionInstallError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
     }
 
@@ -877,7 +880,7 @@ public sealed class PackagesViewModel : ObservableObject
 
         if (wasMounted || hadDep)
         {
-            await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
+            await UnityProjectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
             _shell.SetStatus(L.Tr("packages.status.removed", displayName), StatusKind.Success);
             RefreshInstalled();
         }
@@ -904,6 +907,7 @@ public sealed class PackagesViewModel : ObservableObject
             try { loc = GitHubService.Parse(GitHubInput); }
             catch (Exception ex)
             {
+                DiagnosticLog.Write($"Parsing GitHub package reference {GitHubInput}", ex);
                 _shell.SetStatus(L.Tr("packages.status.invalidGitHub", ex.Message), StatusKind.Error);
                 return;
             }
@@ -924,7 +928,7 @@ public sealed class PackagesViewModel : ObservableObject
             var deps = pkg.Dependencies is { Count: > 0 }
                 ? AddCatalogDependencies(target, pkg.Dependencies.Select(d => (d.Key, d.Value)))
                 : 0;
-            await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
+            await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
             var depNote = deps > 0 ? L.Tr("packages.status.depNote", deps, deps == 1 ? "" : "s") : "";
             _shell.SetStatus(L.Tr("packages.status.addedFromGitHub", existed ? L.Tr("packages.status.updated") : L.Tr("packages.status.added"), pkg.Name, depNote), StatusKind.Success);
@@ -933,6 +937,7 @@ public sealed class PackagesViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Adding a package from GitHub", ex);
             _shell.SetStatus(L.Tr("packages.status.gitHubAddFailed", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
@@ -962,13 +967,14 @@ public sealed class PackagesViewModel : ObservableObject
             _install.Manifest.Dependencies[id] = gitUrl.Trim();
             // If the package is in the registry, add its Basis-ecosystem dependencies too.
             var deps = AddCatalogDependencies(_install, new[] { (id!, "*") });
-            await _projectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
+            await UnityProjectService.SaveManifestAsync(_install.UnityProjectPath, _install.Manifest);
             var depNote = deps > 0 ? L.Tr("packages.status.depNote", deps, deps == 1 ? "" : "s") : "";
             _shell.SetStatus(L.Tr("packages.status.addedDeepLink", existed ? L.Tr("packages.status.updated") : L.Tr("packages.status.added"), name ?? id, depNote, _install.Name), StatusKind.Success);
             RefreshInstalled();
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Installing a package from a deep link", ex);
             _shell.SetStatus(L.Tr("packages.status.deepLinkFailed", ex.Message), StatusKind.Error);
         }
     }
@@ -1004,7 +1010,7 @@ public sealed class PackagesViewModel : ObservableObject
                 return;
             }
             try { TryForceDelete(dest); }
-            catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.clearFailed", row.Name, ex.Message), StatusKind.Error); return; }
+            catch (Exception ex) { DiagnosticLog.Write($"Clearing the existing mount for {row.Name}", ex); _shell.SetStatus(L.Tr("develop.status.clearFailed", row.Name, ex.Message), StatusKind.Error); return; }
         }
 
         IsBusy = true;
@@ -1022,7 +1028,7 @@ public sealed class PackagesViewModel : ObservableObject
             }
             else _shell.SetStatus(result.Error ?? L.Tr("develop.status.mountFailed"), StatusKind.Error);
         }
-        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.mountError", ex.Message), StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write($"Mounting package {row.Name}", ex); _shell.SetStatus(L.Tr("develop.status.mountError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
     }
 
@@ -1078,7 +1084,7 @@ public sealed class PackagesViewModel : ObservableObject
             }
             else _shell.SetStatus(result.Error ?? L.Tr("develop.status.prFailed"), StatusKind.Error);
         }
-        catch (Exception ex) { _shell.SetStatus(L.Tr("develop.status.prError", ex.Message), StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Creating a package contribution pull request", ex); _shell.SetStatus(L.Tr("develop.status.prError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
     }
 
@@ -1099,7 +1105,7 @@ public sealed class PackagesViewModel : ObservableObject
         if (_install is not null && _install.HasUnityProject)
         {
             try { var reloaded = await _projectService.LoadAsync(_install.UnityProjectPath); _install.Manifest = reloaded.Manifest; }
-            catch { }
+            catch (Exception ex) { DiagnosticLog.Write("Reloading project metadata after unmounting a package", ex); }
         }
         RefreshInstalled();
     }
@@ -1110,7 +1116,7 @@ public sealed class PackagesViewModel : ObservableObject
         if (!Directory.Exists(path)) return;
         foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
         {
-            try { File.SetAttributes(file, FileAttributes.Normal); } catch { }
+            try { File.SetAttributes(file, FileAttributes.Normal); } catch (Exception ex) { DiagnosticLog.Write($"Clearing file attributes for {file}", ex); }
         }
         Directory.Delete(path, recursive: true);
     }
@@ -1162,7 +1168,7 @@ public sealed class PackagesViewModel : ObservableObject
                         summaries[rec.PackageId] = SummarizeChanges(changes);
                     }
                 }
-                catch { }
+                catch (Exception ex) { DiagnosticLog.Write($"Scanning mounted package {rec.PackageId} for edits", ex); }
             }
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
@@ -1217,7 +1223,7 @@ public sealed class PackagesViewModel : ObservableObject
                 foreach (var r in Available) r.HasDrift = _drift.ContainsKey(r.Name);
             });
         }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write("Scanning cached packages for local changes", ex); }
         finally { _scanningDrift = false; }
     }
 
@@ -1333,6 +1339,7 @@ public sealed class PackagesViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Reading a package-list file", ex);
             _shell.SetStatus(L.Tr("packages.status.packageListFileInvalid", ex.Message), StatusKind.Error);
             return;
         }
@@ -1372,7 +1379,7 @@ public sealed class PackagesViewModel : ObservableObject
                 if (!target.Manifest.Dependencies.ContainsKey(p.Id) && !string.IsNullOrWhiteSpace(p.Version))
                     target.Manifest.Dependencies[p.Id] = p.Version!.Trim();
             }
-            await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
+            await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
             var skipNote = skipped > 0 ? L.Tr("packages.status.skipNote", skipped) : "";
             _shell.SetStatus(L.Tr("packages.status.addedPackageList", packageList.Name, packageList.Packages.Count, skipNote, target.DisplayName),
                 skipped > 0 ? StatusKind.Info : StatusKind.Success);
@@ -1380,6 +1387,7 @@ public sealed class PackagesViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            DiagnosticLog.Write("Installing a package list", ex);
             _shell.SetStatus(L.Tr("packages.status.packageListInstallFailed", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }

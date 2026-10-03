@@ -89,29 +89,45 @@ public sealed class AnnouncementCard
 
     public bool HasDate => !string.IsNullOrWhiteSpace(_a.Date);
 
-    public string DateDisplay =>
-        DateTimeOffset.TryParse(_a.Date, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var d)
+    public string DateDisplay
+    {
+        get
+        {
+            return DateTimeOffset.TryParse(_a.Date, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var d)
             ? d.ToString("d MMM yyyy", CultureInfo.InvariantCulture)
             : _a.Date ?? "";
+        }
+    }
 
-    public string LevelLabel => Norm switch
+    public string LevelLabel
     {
-        "update" => L.Tr("announcements.level.update"),
-        "alert" => L.Tr("announcements.level.alert"),
-        _ => L.Tr("announcements.level.news"),
-    };
+        get
+        {
+            return Norm switch
+            {
+                "update" => L.Tr("announcements.level.update"),
+                "alert" => L.Tr("announcements.level.alert"),
+                _ => L.Tr("announcements.level.news"),
+            };
+        }
+    }
 
-    public IBrush LevelBrush => new SolidColorBrush(Color.Parse(Norm switch
+    public IBrush LevelBrush
     {
-        "update" => "#9333EA",
-        "alert" => "#EF1237",
-        _ => "#3B82F6",
-    }));
+        get
+        {
+            return new SolidColorBrush(Color.Parse(Norm switch
+            {
+                "update" => "#9333EA",
+                "alert" => "#EF1237",
+                _ => "#3B82F6",
+            }));
+        }
+    }
 
     public bool HasLink => !string.IsNullOrWhiteSpace(_a.Url);
 
-    public string LinkText =>
-        (string.IsNullOrWhiteSpace(_a.LinkText) ? L.Tr("announcements.card.learnMore") : _a.LinkText!) + "  ↗";
+    public string LinkText => (string.IsNullOrWhiteSpace(_a.LinkText) ? L.Tr("announcements.card.learnMore") : _a.LinkText!) + "  ↗";
 
     public RelayCommand OpenLinkCommand { get; }
 

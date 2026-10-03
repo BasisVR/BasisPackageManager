@@ -3,19 +3,11 @@ using BasisPM.Core.Models;
 
 namespace BasisPM.Core.Services;
 
-public sealed class UserSettingsService
+public sealed class UserSettingsService(string? overridePath = null)
 {
     private static readonly JsonSerializerOptions JsonOpts = new() { WriteIndented = true };
 
-    public string SettingsPath { get; }
-
-    public UserSettingsService(string? overridePath = null)
-    {
-        SettingsPath = overridePath ?? Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "BasisPM",
-            "settings.json");
-    }
+    public string SettingsPath { get; } = overridePath ?? Path.Combine(AppDataPaths.Root, AppDataPaths.SettingsFileName);
 
     // Synchronous load for the one place that needs settings before the UI exists: applying the
     // saved UI language at startup (avoids a flash of English before the async load completes).
@@ -27,8 +19,9 @@ public sealed class UserSettingsService
             using var fs = File.OpenRead(SettingsPath);
             return JsonSerializer.Deserialize<UserSettings>(fs, JsonOpts) ?? new UserSettings();
         }
-        catch
+        catch (Exception ex)
         {
+            DiagnosticLog.Write($"Loading settings synchronously from {SettingsPath}", ex);
             return new UserSettings();
         }
     }
@@ -39,11 +32,11 @@ public sealed class UserSettingsService
         try
         {
             await using var fs = File.OpenRead(SettingsPath);
-            return await JsonSerializer.DeserializeAsync<UserSettings>(fs, JsonOpts, ct).ConfigureAwait(false)
-                   ?? new UserSettings();
+            return await JsonSerializer.DeserializeAsync<UserSettings>(fs, JsonOpts, ct).ConfigureAwait(false) ?? new UserSettings();
         }
-        catch
+        catch (Exception ex)
         {
+            DiagnosticLog.Write($"Loading settings asynchronously from {SettingsPath}", ex);
             return new UserSettings();
         }
     }

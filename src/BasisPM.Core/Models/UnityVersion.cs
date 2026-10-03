@@ -2,13 +2,11 @@ using System.Globalization;
 
 namespace BasisPM.Core.Models;
 
-public sealed record UnityVersion(int Major, int Minor, int Patch, int ChannelRank, char Channel, int Build)
-    : IComparable<UnityVersion>
+public sealed record UnityVersion(int Major, int Minor, int Patch, int ChannelRank, char Channel, int Build): IComparable<UnityVersion>
 {
     public static UnityVersion Parse(string s)
     {
-        if (!TryParse(s, out var v)) throw new FormatException($"Invalid Unity version: {s}");
-        return v;
+        return !TryParse(s, out var v) ? throw new FormatException($"Invalid Unity version: {s}") : v;
     }
 
     public static bool TryParse(string? s, out UnityVersion version)

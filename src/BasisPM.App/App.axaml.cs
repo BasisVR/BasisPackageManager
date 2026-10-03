@@ -19,8 +19,10 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Apply the saved UI language before any view is built so the first paint is localized.
-            try { Localizer.Instance.SetLanguage(new UserSettingsService().Load().Language); } catch { }
+            // Both operations have explicit fallback behavior: malformed/missing settings return
+            // defaults, and an unknown language falls back to English. Do not mask startup defects.
+            var startupSettings = new UserSettingsService().Load();
+            Localizer.Instance.SetLanguage(startupSettings.Language);
 
             var vm = new MainWindowViewModel();
             var window = new MainWindow { DataContext = vm };
@@ -49,6 +51,6 @@ public partial class App : Application
             window.Show();
             window.Activate();
         }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write("Restoring and activating the main window", ex); }
     }
 }

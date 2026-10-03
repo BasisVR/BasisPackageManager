@@ -1,4 +1,5 @@
 using System.IO.Pipes;
+using BasisPM.Core.Services;
 
 namespace BasisPM.App.Services;
 
@@ -30,7 +31,7 @@ public static class SingleInstance
             using var writer = new StreamWriter(client) { AutoFlush = true };
             writer.WriteLine(uri);
         }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write("Forwarding a deep link to the primary application instance", ex); }
     }
 
     public static void StartServer(Action<string> onUri)
@@ -55,7 +56,7 @@ public static class SingleInstance
                         if (DeepLink.IsDeepLink(line)) onUri(line);
                     }
                 }
-                catch { Thread.Sleep(200); }
+                catch (Exception ex) { DiagnosticLog.Write("Receiving a deep link from the single-instance pipe", ex); Thread.Sleep(200); }
             }
         })
         {

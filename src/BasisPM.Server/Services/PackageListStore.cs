@@ -1,5 +1,6 @@
 using System.Text.Json;
 using BasisPM.Core.Models;
+using BasisPM.Core.Services;
 
 namespace BasisPM.Server.Services;
 
@@ -28,7 +29,7 @@ public sealed class PackageListStore
                 var list = JsonSerializer.Deserialize<List<PackageList>>(File.ReadAllText(seedPath), FileOpts);
                 if (list is not null) return list;
             }
-            catch { }
+            catch (Exception ex) { DiagnosticLog.Write($"Loading package-list seed from {seedPath}", ex); }
         }
         return new List<PackageList>();
     }

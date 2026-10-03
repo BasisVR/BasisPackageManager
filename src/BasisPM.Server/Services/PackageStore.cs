@@ -28,7 +28,7 @@ public sealed class PackageStore
         if (File.Exists(_path))
         {
             try { _packages = Read(_path) ?? LoadSeed(seedPath); }
-            catch { _packages = LoadSeed(seedPath); }
+            catch (Exception ex) { DiagnosticLog.Write($"Loading registry data from {_path}", ex); _packages = LoadSeed(seedPath); }
         }
         else
         {
@@ -50,7 +50,7 @@ public sealed class PackageStore
                     return list;
                 }
             }
-            catch { }
+            catch (Exception ex) { DiagnosticLog.Write($"Loading package registry seed from {seedPath}", ex); }
         }
         return new List<RegistryPackage>();
     }

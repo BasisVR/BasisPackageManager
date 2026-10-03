@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Testing;
+using BasisPM.Core.Services;
 
 namespace BasisPM.Server.Tests.Infrastructure;
 
@@ -37,12 +38,12 @@ public abstract class RegistryFactory : WebApplicationFactory<Program>
                 TryDelete(RegistryPath);
             }
         }
-        catch {  }
+        catch (Exception ex) { DiagnosticLog.Write($"Restoring registry test data at {RegistryPath}", ex); }
     }
 
     private static void TryDelete(string path)
     {
-        try { if (File.Exists(path)) File.Delete(path); } catch { }
+        try { if (File.Exists(path)) File.Delete(path); } catch (Exception ex) { DiagnosticLog.Write($"Deleting registry test data at {path}", ex); }
     }
 }
 

@@ -121,7 +121,7 @@ public sealed class UnityProjectServiceTests
         manifest.Dependencies["com.a"] = "1.0.0";
         manifest.Dependencies["com.b"] = "https://github.com/x/b.git";
 
-        await _svc.SaveManifestAsync(root, manifest);
+        await UnityProjectService.SaveManifestAsync(root, manifest);
         var reloaded = await _svc.LoadAsync(root);
 
         Assert.Equal("1.0.0", reloaded.Manifest.Dependencies["com.a"]);
@@ -138,7 +138,7 @@ public sealed class UnityProjectServiceTests
 
         var info = await _svc.LoadAsync(root);
         info.Manifest.Dependencies["com.new"] = "2.0.0";
-        await _svc.SaveManifestAsync(root, info.Manifest);
+        await UnityProjectService.SaveManifestAsync(root, info.Manifest);
 
         var text = await File.ReadAllTextAsync(Path.Combine(root, "Packages", "manifest.json"));
         Assert.Contains("enableLockFile", text);

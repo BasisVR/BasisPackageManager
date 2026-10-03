@@ -12,17 +12,27 @@ public sealed class UnityProjectService
         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
     };
 
-    public bool IsUnityProject(string path) => IsUnityRoot(path);
+    public bool IsUnityProject(string path)
+    {
+        return IsUnityRoot(path);
+    }
 
     public DetectionResult Detect(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
+        {
             return DetectionResult.Fail("No path provided.");
+        }
+
         if (!Directory.Exists(path))
+        {
             return DetectionResult.Fail("Folder does not exist.");
+        }
 
         if (IsUnityRoot(path))
+        {
             return DetectionResult.Ok(path);
+        }
 
         var cursor = new DirectoryInfo(path).Parent;
         while (cursor is not null)
@@ -40,7 +50,7 @@ public sealed class UnityProjectService
                     return DetectionResult.Ok(sub, $"Resolved into subfolder {Path.GetFileName(sub)}.");
             }
         }
-        catch { }
+        catch (Exception ex) { DiagnosticLog.Write($"Detecting Unity project at {path}", ex); }
 
         return DetectionResult.Fail(IdentifyReason(path));
     }
@@ -56,19 +66,21 @@ public sealed class UnityProjectService
 
     private static string IdentifyReason(string path)
     {
-        if (!Directory.Exists(Path.Combine(path, "Assets")))
-            return "Not a Unity project: missing Assets folder.";
-        if (!Directory.Exists(Path.Combine(path, "ProjectSettings")))
-            return "Not a Unity project: missing ProjectSettings folder.";
-        if (!File.Exists(Path.Combine(path, "ProjectSettings", "ProjectVersion.txt")))
-            return "Not a Unity project: missing ProjectSettings/ProjectVersion.txt.";
-        return "Not a Unity project.";
+        return !Directory.Exists(Path.Combine(path, "Assets"))
+            ? "Not a Unity project: missing Assets folder."
+            : !Directory.Exists(Path.Combine(path, "ProjectSettings"))
+            ? "Not a Unity project: missing ProjectSettings folder."
+            : !File.Exists(Path.Combine(path, "ProjectSettings", "ProjectVersion.txt"))
+            ? "Not a Unity project: missing ProjectSettings/ProjectVersion.txt."
+            : "Not a Unity project.";
     }
 
     public async Task<UnityProjectInfo> LoadAsync(string path, CancellationToken ct = default)
     {
         if (!IsUnityProject(path))
+        {
             throw new InvalidOperationException($"Not a Unity project: {path}");
+        }
 
         var version = await ReadProjectVersionAsync(path, ct).ConfigureAwait(false);
         var manifest = await ReadManifestAsync(path, ct).ConfigureAwait(false);
@@ -82,25 +94,25 @@ public sealed class UnityProjectService
         };
     }
 
-    public Task SaveManifestAsync(UnityProjectInfo project, CancellationToken ct = default) =>
-        SaveManifestAsync(project.Path, project.Manifest, ct);
+    public static Task SaveManifestAsync(UnityProjectInfo project, CancellationToken ct = default) => SaveManifestAsync(project.Path, project.Manifest, ct);
 
-    public async Task SaveManifestAsync(string unityProjectPath, PackageManifest manifest, CancellationToken ct = default)
+    public static async Task SaveManifestAsync(string unityProjectPath, PackageManifest manifest, CancellationToken ct = default)
     {
         var manifestPath = Path.Combine(unityProjectPath, "Packages", "manifest.json");
         Directory.CreateDirectory(Path.GetDirectoryName(manifestPath)!);
         await using var fs = File.Create(manifestPath);
         await JsonSerializer.SerializeAsync(fs, manifest, JsonOpts, ct).ConfigureAwait(false);
     }
-
     private static readonly JsonSerializerOptions ReadOpts = new() { PropertyNameCaseInsensitive = true };
-
     /// <summary>Enumerates the embedded packages (each <c>Packages/&lt;folder&gt;/package.json</c>) of a Unity project.</summary>
     public IReadOnlyList<LocalPackage> ListEmbeddedPackages(string unityProjectPath)
     {
         var result = new List<LocalPackage>();
         var packagesDir = Path.Combine(unityProjectPath, "Packages");
-        if (!Directory.Exists(packagesDir)) return result;
+        if (!Directory.Exists(packagesDir))
+        {
+            return result;
+        }
 
         foreach (var dir in Directory.EnumerateDirectories(packagesDir))
         {
@@ -109,7 +121,7 @@ public sealed class UnityProjectService
 
             UpmPackageJson? meta = null;
             try { meta = JsonSerializer.Deserialize<UpmPackageJson>(File.ReadAllText(packageJson), ReadOpts); }
-            catch { }
+            catch (Exception ex) { DiagnosticLog.Write($"Reading embedded package metadata from {packageJson}", ex); }
 
             var folder = Path.GetFileName(dir);
             var id = string.IsNullOrWhiteSpace(meta?.Name) ? folder : meta!.Name;
@@ -131,12 +143,19 @@ public sealed class UnityProjectService
     private static async Task<string> ReadProjectVersionAsync(string path, CancellationToken ct)
     {
         var versionPath = Path.Combine(path, "ProjectSettings", "ProjectVersion.txt");
-        if (!File.Exists(versionPath)) return "unknown";
-        var lines = await File.ReadAllLinesAsync(versionPath, ct).ConfigureAwait(false);
-        foreach (var line in lines)
+        if (!File.Exists(versionPath))
         {
+            return "unknown";
+        }
+
+        var lines = await File.ReadAllLinesAsync(versionPath, ct).ConfigureAwait(false);
+        for (int LineIndex = 0; LineIndex < lines.Length; LineIndex++)
+        {
+            string? line = lines[LineIndex];
             if (line.StartsWith("m_EditorVersion:", StringComparison.Ordinal))
+            {
                 return line["m_EditorVersion:".Length..].Trim();
+            }
         }
         return "unknown";
     }
@@ -144,9 +163,12 @@ public sealed class UnityProjectService
     private static async Task<PackageManifest> ReadManifestAsync(string path, CancellationToken ct)
     {
         var manifestPath = Path.Combine(path, "Packages", "manifest.json");
-        if (!File.Exists(manifestPath)) return new PackageManifest();
+        if (!File.Exists(manifestPath))
+        {
+            return new PackageManifest();
+        }
+
         await using var fs = File.OpenRead(manifestPath);
-        return await JsonSerializer.DeserializeAsync<PackageManifest>(fs, JsonOpts, ct).ConfigureAwait(false)
-               ?? new PackageManifest();
+        return await JsonSerializer.DeserializeAsync<PackageManifest>(fs, JsonOpts, ct).ConfigureAwait(false) ?? new PackageManifest();
     }
 }
