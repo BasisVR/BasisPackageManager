@@ -178,6 +178,12 @@
                             <TextBlock Text="{loc:Tr nav.settings}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
+                    <Button Classes="nav" Classes.active="{Binding IsServer}" Tag="server" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.server}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <PathIcon Width="18" Height="18" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr nav.server}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" Margin="22,0,22,22" Spacing="6">
@@ -234,32 +240,54 @@
                     </TransitioningContentControl.PageTransition>
                 </TransitioningContentControl>
 
-                <!-- Floating download card: shows the current package-install queue's progress in the
-                     bottom-right while the install worker runs (stays visible across nav tab switches). -->
-                <Border Grid.Row="1" Classes="reveal"
-                        IsVisible="{Binding PackagesVM.IsInstalling}"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,24,24"
-                        Width="330" Padding="16,13" CornerRadius="12"
-                        Background="{StaticResource BasisSurfaceBrush}"
-                        BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
-                    <StackPanel Spacing="9">
-                        <StackPanel Orientation="Horizontal" Spacing="9">
-                            <PathIcon Width="16" Height="16" Data="{StaticResource IconDownload}"
-                                      Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
-                            <TextBlock Text="{Binding PackagesVM.InstallProgressText}" FontWeight="SemiBold" FontSize="13"
-                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                <!-- Cross-page operation cards stay visible while the user changes tabs. -->
+                <StackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                            Margin="0,0,24,24" Width="330" Spacing="10">
+                    <Border Classes="reveal" IsVisible="{Binding IsActivityVisible}"
+                            Padding="16,13" CornerRadius="12"
+                            Background="{StaticResource BasisSurfaceBrush}"
+                            BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                        <StackPanel Spacing="9">
+                            <StackPanel Orientation="Horizontal" Spacing="9">
+                                <PathIcon Width="16" Height="16" Data="{StaticResource IconDownload}"
+                                          Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding ActivityTitle}" FontWeight="SemiBold" FontSize="13"
+                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                            <ProgressBar Minimum="0" Maximum="100"
+                                         Value="{Binding ActivityProgress}"
+                                         IsIndeterminate="{Binding ActivityIsIndeterminate}"
+                                         Height="7" CornerRadius="4"/>
+                            <TextBlock Text="{Binding ActivityDetail}" Classes="dim" FontSize="11"
+                                       TextTrimming="CharacterEllipsis"
+                                       IsVisible="{Binding HasActivityDetail}"/>
                         </StackPanel>
-                        <ProgressBar Minimum="0" Maximum="100"
-                                     Value="{Binding PackagesVM.InstallProgress}"
-                                     IsIndeterminate="{Binding PackagesVM.InstallProgressIndeterminate}"
-                                     Height="7" CornerRadius="4"/>
-                        <TextBlock Text="{Binding PackagesVM.InstallProgressDetail}" Classes="dim" FontSize="11"
-                                   TextTrimming="CharacterEllipsis"
-                                   IsVisible="{Binding PackagesVM.HasInstallProgressDetail}"/>
-                        <TextBlock Text="{Binding PackagesVM.InstallQueueLabel}" Classes="muted" FontSize="11"
-                                   IsVisible="{Binding PackagesVM.HasInstallQueue}"/>
-                    </StackPanel>
-                </Border>
+                    </Border>
+
+                    <!-- Package installs have their own queue count and per-clone percentage. -->
+                    <Border Classes="reveal" IsVisible="{Binding PackagesVM.IsInstalling}"
+                            Padding="16,13" CornerRadius="12"
+                            Background="{StaticResource BasisSurfaceBrush}"
+                            BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                        <StackPanel Spacing="9">
+                            <StackPanel Orientation="Horizontal" Spacing="9">
+                                <PathIcon Width="16" Height="16" Data="{StaticResource IconDownload}"
+                                          Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding PackagesVM.InstallProgressText}" FontWeight="SemiBold" FontSize="13"
+                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                            <ProgressBar Minimum="0" Maximum="100"
+                                         Value="{Binding PackagesVM.InstallProgress}"
+                                         IsIndeterminate="{Binding PackagesVM.InstallProgressIndeterminate}"
+                                         Height="7" CornerRadius="4"/>
+                            <TextBlock Text="{Binding PackagesVM.InstallProgressDetail}" Classes="dim" FontSize="11"
+                                       TextTrimming="CharacterEllipsis"
+                                       IsVisible="{Binding PackagesVM.HasInstallProgressDetail}"/>
+                            <TextBlock Text="{Binding PackagesVM.InstallQueueLabel}" Classes="muted" FontSize="11"
+                                       IsVisible="{Binding PackagesVM.HasInstallQueue}"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
             </Grid>
 
             <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"

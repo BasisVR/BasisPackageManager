@@ -26,6 +26,9 @@
         <DataTemplate DataType="vm:PackagesViewModel">
             <views:PackagesView />
         </DataTemplate>
+        <DataTemplate DataType="vm:ServerViewModel">
+            <views:ServerView />
+        </DataTemplate>
         <DataTemplate DataType="vm:UnityViewModel">
             <views:UnityView />
         </DataTemplate>

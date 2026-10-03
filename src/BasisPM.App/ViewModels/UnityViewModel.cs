@@ -213,11 +213,14 @@ public sealed class UnityViewModel : ObservableObject
         }
 
         IsBusy = true;
+        Guid activity = default;
         try
         {
             var release = SelectedRelease.Release;
             var modules = ModuleOptions.Where(m => m.Selected).Select(m => m.Name).ToList();
-            _shell.SetStatus(L.Tr("unity.status.installing", release.Version));
+            var installingText = L.Tr("unity.status.installing", release.Version);
+            _shell.SetStatus(installingText);
+            activity = _shell.BeginActivity(installingText);
             var code = await _hubService.InstallEditorAsync(release.Version, release.ShortRevision, modules);
             if (code == 0)
                 _shell.SetStatus(L.Tr("unity.status.installKickedOff", release.Version), StatusKind.Success);
@@ -229,7 +232,11 @@ public sealed class UnityViewModel : ObservableObject
         {
             _shell.SetStatus(L.Tr("unity.status.installError", ex.Message), StatusKind.Error);
         }
-        finally { IsBusy = false; }
+        finally
+        {
+            IsBusy = false;
+            if (activity != default) _shell.EndActivity(activity);
+        }
     }
 
     private async Task InstallSelectedEditorModulesAsync()
@@ -244,9 +251,12 @@ public sealed class UnityViewModel : ObservableObject
         }
 
         IsBusy = true;
+        Guid activity = default;
         try
         {
-            _shell.SetStatus(L.Tr("unity.status.installingModules", editor.Version));
+            var installingText = L.Tr("unity.status.installingModules", editor.Version);
+            _shell.SetStatus(installingText);
+            activity = _shell.BeginActivity(installingText);
             var code = await _hubService.InstallModulesAsync(editor.Version, modules);
             if (code == 0)
             {
@@ -261,7 +271,11 @@ public sealed class UnityViewModel : ObservableObject
         {
             _shell.SetStatus(L.Tr("unity.status.modulesError", ex.Message), StatusKind.Error);
         }
-        finally { IsBusy = false; }
+        finally
+        {
+            IsBusy = false;
+            if (activity != default) _shell.EndActivity(activity);
+        }
     }
 
     // Fold the user's hand-added editors into the list, skipping any the Hub already reports

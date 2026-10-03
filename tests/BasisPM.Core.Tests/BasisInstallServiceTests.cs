@@ -72,6 +72,21 @@ public sealed class BasisInstallServiceTests
     }
 
     [Fact]
+    public async Task LoadAsync_only_identifies_projects_with_the_bundled_basis_framework()
+    {
+        using var t = new TempDir();
+        var root = MakeProject(t, "Basis");
+        var ordinary = await _svc.LoadAsync(root);
+        Assert.False(ordinary.IsBasisCheckout);
+
+        t.WriteFile("Basis/Packages/com.basis.framework/package.json",
+            """{ "name": "com.basis.framework", "version": "1.0.0" }""");
+        var basis = await _svc.LoadAsync(root);
+        Assert.True(basis.IsBasisCheckout);
+        Assert.True(_svc.IsBasisCheckout(root));
+    }
+
+    [Fact]
     public async Task DeleteFolderAsync_removes_the_folder_including_readonly_files()
     {
         using var t = new TempDir();

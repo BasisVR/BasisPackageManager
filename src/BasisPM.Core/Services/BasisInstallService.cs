@@ -4,6 +4,9 @@ namespace BasisPM.Core.Services;
 
 public sealed class BasisInstallService
 {
+    public const string BasisRepoUrl = "https://github.com/BasisVR/Basis.git";
+    public const string DefaultBranch = "developer";
+
     private readonly UnityProjectService _projects;
     private readonly GitService _git;
 
@@ -41,6 +44,7 @@ public sealed class BasisInstallService
             UnityVersion = version,
             IsGitRepo = _git.IsGitRepo(repoRoot),
             HasUnityProject = hasUnity,
+            IsBasisCheckout = hasUnity && HasBasisPackage(unityPath),
             Manifest = manifest,
         };
     }
@@ -53,13 +57,16 @@ public sealed class BasisInstallService
         Manifest = install.Manifest,
     };
 
-    public bool IsUnityProject(string path) => _projects.IsUnityProject(path);
-
-    public async Task<BasisInstall> CreateNewProjectAsync(string rootPath, string unityVersion, string? alias = null, CancellationToken ct = default)
+    public bool IsBasisCheckout(string path)
     {
-        await _projects.CreateNewProjectAsync(rootPath, unityVersion, ct).ConfigureAwait(false);
-        return await LoadAsync(rootPath, alias, ct).ConfigureAwait(false);
+        var detection = _projects.Detect(path);
+        return detection.IsValid
+            && detection.ResolvedPath is not null
+            && HasBasisPackage(detection.ResolvedPath);
     }
+
+    private static bool HasBasisPackage(string unityProjectPath) =>
+        File.Exists(Path.Combine(unityProjectPath, "Packages", "com.basis.framework", "package.json"));
 
     /// <summary>
     /// Permanently deletes an install's folder (the whole clone) from disk. Runs off the calling

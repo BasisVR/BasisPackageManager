@@ -29,6 +29,10 @@ That's it. [`.github/workflows/release.yml`](.github/workflows/release.yml) runs
 **Verify:** install the previous version, publish a higher tag, and confirm the in-app
 banner offers the update and one click installs + restarts onto it.
 
+Every published application directory also contains the companion `basispm` console executable
+(`basispm.exe` on Windows). The release workflow publishes the GUI and CLI into the same RID output
+before Velopack creates installers and portable archives.
+
 ## Architectures
 
 Every architecture that both .NET 9 and Velopack support is built: the three OS jobs

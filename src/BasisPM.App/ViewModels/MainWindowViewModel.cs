@@ -7,7 +7,7 @@ using Velopack;
 
 namespace BasisPM.App.ViewModels;
 
-public enum NavPage { Installs, Packages, Unity, Settings, Support, Announcements, Documentation, Logs, Community }
+public enum NavPage { Installs, Packages, Server, Unity, Settings, Support, Announcements, Documentation, Logs, Community }
 
 public enum StatusKind { Info, Success, Error }
 
@@ -43,8 +43,16 @@ public sealed class MainWindowViewModel : ObservableObject
     private bool _isUpdating;
     private int _updateProgress;
 
+    private Guid _activityId;
+    private bool _isActivityVisible;
+    private string _activityTitle = "";
+    private string _activityDetail = "";
+    private double _activityProgress;
+    private bool _activityIsIndeterminate = true;
+
     public InstallsViewModel InstallsVM { get; }
     public PackagesViewModel PackagesVM { get; }
+    public ServerViewModel ServerVM { get; }
     public UnityViewModel UnityVM { get; }
     public SettingsViewModel SettingsVM { get; }
     public FundingViewModel FundingVM { get; }
@@ -68,6 +76,7 @@ public sealed class MainWindowViewModel : ObservableObject
         // The mount / contribute / cache-drift workflow (formerly the Develop tab) now lives on the Packages page.
         PackagesVM = new PackagesViewModel(_settingsService, _catalogService, _projectService, _mountRegistry,
             mountService, contributeService, cacheDriftService, _ghAuth, _ghApi, _gitService, this);
+        ServerVM = new ServerViewModel(new BasisServerService(), this);
         UnityVM = new UnityViewModel(_hubService, _releaseService, _settingsService, this);
         LogsVM = new LogsViewModel(_log);
         // Logs live inside the Settings page (merged), so Settings gets a reference to the logs view-model.
@@ -98,6 +107,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 {
                     NavPage.Installs => InstallsVM,
                     NavPage.Packages => PackagesVM,
+                    NavPage.Server => ServerVM,
                     NavPage.Unity => UnityVM,
                     NavPage.Settings => SettingsVM,
                     NavPage.Support => FundingVM,
@@ -108,6 +118,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 };
                 OnPropertyChanged(nameof(IsInstalls));
                 OnPropertyChanged(nameof(IsPackages));
+                OnPropertyChanged(nameof(IsServer));
                 OnPropertyChanged(nameof(IsUnity));
                 OnPropertyChanged(nameof(IsSettings));
                 OnPropertyChanged(nameof(IsSupport));
@@ -124,6 +135,7 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public bool IsInstalls => CurrentPage == NavPage.Installs;
     public bool IsPackages => CurrentPage == NavPage.Packages;
+    public bool IsServer => CurrentPage == NavPage.Server;
     public bool IsUnity => CurrentPage == NavPage.Unity;
     public bool IsSettings => CurrentPage == NavPage.Settings;
     public bool IsSupport => CurrentPage == NavPage.Support;
@@ -158,10 +170,62 @@ public sealed class MainWindowViewModel : ObservableObject
     public bool IsUpdating { get => _isUpdating; private set => SetField(ref _isUpdating, value); }
     public int UpdateProgress { get => _updateProgress; private set => SetField(ref _updateProgress, value); }
 
+    public bool IsActivityVisible { get => _isActivityVisible; private set => SetField(ref _isActivityVisible, value); }
+    public string ActivityTitle { get => _activityTitle; private set => SetField(ref _activityTitle, value); }
+    public string ActivityDetail
+    {
+        get => _activityDetail;
+        private set
+        {
+            if (SetField(ref _activityDetail, value))
+                OnPropertyChanged(nameof(HasActivityDetail));
+        }
+    }
+    public bool HasActivityDetail => !string.IsNullOrWhiteSpace(ActivityDetail);
+    public double ActivityProgress { get => _activityProgress; private set => SetField(ref _activityProgress, value); }
+    public bool ActivityIsIndeterminate { get => _activityIsIndeterminate; private set => SetField(ref _activityIsIndeterminate, value); }
+
+    /// <summary>
+    /// Shows a cross-page activity card for a long-running operation. The returned id prevents an
+    /// older operation from hiding a newer one if two tasks briefly overlap.
+    /// </summary>
+    public Guid BeginActivity(string title)
+    {
+        _activityId = Guid.NewGuid();
+        ActivityTitle = title;
+        ActivityDetail = "";
+        ActivityProgress = 0;
+        ActivityIsIndeterminate = true;
+        IsActivityVisible = true;
+        return _activityId;
+    }
+
+    public void ReportActivity(Guid id, string detail)
+    {
+        if (id != _activityId || !IsActivityVisible) return;
+        ActivityDetail = detail;
+
+        var match = System.Text.RegularExpressions.Regex.Match(detail, @"(\d{1,3})%");
+        if (match.Success && int.TryParse(match.Groups[1].Value, out var percentage)
+                          && percentage is >= 0 and <= 100)
+        {
+            ActivityProgress = percentage;
+            ActivityIsIndeterminate = false;
+        }
+    }
+
+    public void EndActivity(Guid id)
+    {
+        if (id != _activityId) return;
+        IsActivityVisible = false;
+        ActivityDetail = "";
+    }
+
     public void SetActiveInstall(BasisInstall install)
     {
         ActiveInstall = install;
         PackagesVM.SetActiveInstall(install);
+        ServerVM.SetActiveInstall(install);
         UnityVM.SetRequiredVersion(install.UnityVersion);
     }
 
@@ -443,53 +507,6 @@ public sealed class MainWindowViewModel : ObservableObject
         return await Dialogs.PickInstallAsync(L.Tr("shell.installPicker.prompt", label), targets);
     }
 
-    /// <summary>
-    /// Turns any Unity project into a Basis project: adds the minimum package list, then runs com.basis.setup
-    /// (Update mode, so a fresh project's default Assets/ProjectSettings get overwritten with the Basis config).
-    /// </summary>
-    public async Task SetUpAsBasisProjectAsync(BasisInstall install)
-    {
-        if (install is null || !install.HasUnityProject) { SetStatus(L.Tr("shell.status.noUnityProject"), StatusKind.Error); return; }
-
-        SetStatus(L.Tr("shell.status.settingUpProject", install.DisplayName));
-        var lists = await _packageListService.LoadAsync(_catalogUrl);
-        var minimum = lists.FirstOrDefault(pl => string.Equals(pl.Id, PackageListService.MinimumPackageListId, StringComparison.OrdinalIgnoreCase));
-        if (minimum is null)
-        {
-            SetStatus(L.Tr("shell.status.minimumListNotFound", PackageListService.MinimumPackageListId), StatusKind.Error);
-            return;
-        }
-
-        try
-        {
-            await PackagesVM.AddPackageListAsync(minimum, install);
-
-            SetStatus(L.Tr("shell.status.creatingAssets", install.DisplayName));
-            var settings = await _settingsService.LoadAsync();
-            var manualEditors = settings.ManualEditors.Select(m => m.ToInstalledEditor());
-            var result = await _hubService.RunProjectSetupAsync(install.UnityProjectPath, install.UnityVersion, update: true, settings.UnityHubPath, manualEditors);
-            if (!result.EditorFound)
-                SetStatus(L.Tr("shell.status.unityNotInstalled", install.UnityVersion), StatusKind.Error);
-            else if (result.Success)
-                SetStatus(L.Tr("shell.status.projectSetUp", install.DisplayName), StatusKind.Success);
-            else
-                SetStatus(L.Tr("shell.status.assetsFailed", result.ExitCode, result.LogPath ?? ""), StatusKind.Error);
-        }
-        catch (Exception ex) { SetStatus(L.Tr("shell.status.setUpProjectError", ex.Message), StatusKind.Error); }
-    }
-
-    /// <summary>Newest editor version across Hub-installed and manually-added editors — the default for a new project's ProjectVersion.txt.</summary>
-    public async Task<string?> NewestInstalledEditorVersionAsync()
-    {
-        var settings = await _settingsService.LoadAsync();
-        var editors = new List<InstalledEditor>(await _hubService.ListInstalledAsync(settings.UnityHubPath));
-        editors.AddRange(settings.ManualEditors.Select(m => m.ToInstalledEditor()));
-        return editors.Select(e => e.Version)
-            .Where(v => !string.IsNullOrWhiteSpace(v))
-            .OrderByDescending(v => v, StringComparer.Ordinal)
-            .FirstOrDefault();
-    }
-
     /// <summary>Applies a change to the prerelease-channel preference and re-checks for updates.</summary>
     public void ApplyPrerelease(bool prerelease)
     {
@@ -626,6 +643,7 @@ public sealed class MainWindowViewModel : ObservableObject
         {
             "installs" => NavPage.Installs,
             "packages" => NavPage.Packages,
+            "server" => NavPage.Server,
             "unity" => NavPage.Unity,
             "settings" => NavPage.Settings,
             "support" => NavPage.Support,

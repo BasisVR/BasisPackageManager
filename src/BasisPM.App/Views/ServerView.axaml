@@ -1,0 +1,115 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             xmlns:models="using:BasisPM.Core.Models"
+             x:Class="BasisPM.App.Views.ServerView"
+             x:DataType="vm:ServerViewModel">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="40,32" Spacing="24" HorizontalAlignment="Stretch">
+      <Border CornerRadius="14" Padding="32,28" Background="{StaticResource BasisHeroGradient}"
+              BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Spacing="6">
+            <TextBlock Text="BASIS SERVER" Classes="tagline"/>
+            <TextBlock Text="Build, run and configure" Classes="h1"/>
+            <TextBlock Text="{Binding ProjectName}" Classes="muted" FontSize="14"/>
+          </StackPanel>
+          <Button Grid.Column="1" Classes="iconBtn" Command="{Binding RefreshCommand}" ToolTip.Tip="Reload configuration and content">
+            <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+          </Button>
+        </Grid>
+      </Border>
+
+      <Border Classes="card" Padding="20">
+        <StackPanel Spacing="14">
+          <TextBlock Text="Server runtime" Classes="h3"/>
+          <TextBlock Text="Builds are kept outside the Git checkout. The first run opens the server console so you can complete its built-in setup wizard." Classes="muted" TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding RuntimeDirectory}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+          <Border CornerRadius="10" Padding="14" Background="{StaticResource BasisSurfaceHoverBrush}"
+                  BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="4">
+                <TextBlock Text="Build requirement: .NET 10 SDK" FontWeight="SemiBold"/>
+                <TextBlock Text="Install the SDK—not only the runtime. Visual Studio is not required." Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding DotNetStatus}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+              </StackPanel>
+              <Button Grid.Column="1" Classes="secondary" Command="{Binding OpenDotNetDownloadCommand}"
+                      IsVisible="{Binding !HasDotNet10Sdk}" Margin="16,0,0,0"
+                      VerticalAlignment="Center" Content="Download .NET 10 SDK"/>
+            </Grid>
+          </Border>
+          <WrapPanel>
+            <Button Classes="primary" Command="{Binding BuildCommand}" Margin="0,0,10,8"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}"/><TextBlock Text="Build server"/></StackPanel></Button>
+            <Button Classes="secondary" Command="{Binding RunCommand}" Margin="0,0,10,8"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}"/><TextBlock Text="Run server"/></StackPanel></Button>
+            <Button Classes="secondary" Command="{Binding StopCommand}" Margin="0,0,10,8" Content="Stop server"/>
+            <Button Classes="secondary" Command="{Binding OpenRuntimeCommand}" Margin="0,0,10,8"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}"/><TextBlock Text="Open runtime folder"/></StackPanel></Button>
+          </WrapPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card" Padding="20">
+        <StackPanel Spacing="14">
+          <TextBlock Text="Connect Steam client" Classes="h3"/>
+          <TextBlock Text="Launches Basis Labs through Steam with the server connection argument." Classes="muted" TextWrapping="Wrap"/>
+          <Grid ColumnDefinitions="2*,12,*,12,2*">
+            <StackPanel><TextBlock Text="Host" Classes="muted" FontSize="11"/><TextBox Text="{Binding Host}"/></StackPanel>
+            <StackPanel Grid.Column="2"><TextBlock Text="Port" Classes="muted" FontSize="11"/><TextBox Text="{Binding Port}"/></StackPanel>
+            <StackPanel Grid.Column="4"><TextBlock Text="Password (optional)" Classes="muted" FontSize="11"/><TextBox Text="{Binding ConnectionPassword}" PasswordChar="●"/></StackPanel>
+          </Grid>
+          <Button Classes="primary" Command="{Binding LaunchClientCommand}" HorizontalAlignment="Left"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}"/><TextBlock Text="Launch and connect"/></StackPanel></Button>
+        </StackPanel>
+      </Border>
+
+      <Expander IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+        <Expander.Header><TextBlock Text="Server configuration" Classes="h3"/></Expander.Header>
+        <StackPanel Spacing="12" Margin="0,10,0,0" HorizontalAlignment="Stretch">
+          <TextBlock Text="Run the server once to generate config.xml. Every setting in that file appears below." Classes="muted" TextWrapping="Wrap"/>
+          <TextBlock Text="No configuration exists yet." Classes="muted" IsVisible="{Binding !HasConfig}"/>
+          <ItemsControl ItemsSource="{Binding ConfigFields}" HorizontalAlignment="Stretch">
+            <ItemsControl.Styles>
+              <Style Selector="ContentPresenter">
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+              </Style>
+            </ItemsControl.Styles>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:ServerConfigFieldRow">
+                <Border Classes="card" Padding="14" Margin="0,0,0,10" HorizontalAlignment="Stretch">
+                  <Grid ColumnDefinitions="280,16,*" HorizontalAlignment="Stretch">
+                    <StackPanel Margin="0,4,0,0"><TextBlock Text="{Binding Name}" FontWeight="SemiBold"/><TextBlock Text="{Binding Description}" Classes="dim" FontSize="11" TextWrapping="Wrap"/></StackPanel>
+                    <Grid Grid.Column="2" HorizontalAlignment="Stretch">
+                      <TextBox Text="{Binding Value}" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsVisible="{Binding IsNotSecret}"/>
+                      <TextBox Text="{Binding Value}" PasswordChar="●" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsVisible="{Binding IsSecret}"/>
+                    </Grid>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <Button Classes="primary" Command="{Binding SaveConfigCommand}" HorizontalAlignment="Left" IsVisible="{Binding HasConfig}"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconSave}"/><TextBlock Text="Save configuration"/></StackPanel></Button>
+        </StackPanel>
+      </Expander>
+
+      <Expander IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+        <Expander.Header><TextBlock Text="Default content" Classes="h3"/></Expander.Header>
+        <StackPanel Spacing="12" Margin="0,10,0,0">
+          <TextBlock Text="Add an avatar, world or prop to the client library, or load it into the server on startup." Classes="muted" TextWrapping="Wrap"/>
+          <Grid ColumnDefinitions="180,12,*">
+            <StackPanel><TextBlock Text="Type" Classes="muted" FontSize="11"/><ComboBox ItemsSource="{Binding ContentModes}" SelectedItem="{Binding SelectedMode}"><ComboBox.ItemTemplate><DataTemplate DataType="vm:ContentModeOption"><TextBlock Text="{Binding Name}"/></DataTemplate></ComboBox.ItemTemplate></ComboBox></StackPanel>
+            <StackPanel Grid.Column="2"><TextBlock Text="Content URL" Classes="muted" FontSize="11"/><TextBox Text="{Binding ContentUrl}" Watermark="https://…"/></StackPanel>
+          </Grid>
+          <StackPanel><TextBlock Text="Unlock password (optional)" Classes="muted" FontSize="11"/><TextBox Text="{Binding ContentPassword}" PasswordChar="●"/></StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="18"><RadioButton Content="Default client library" IsChecked="{Binding AddToDefaultLibrary}"/><RadioButton Content="Load on server startup" IsChecked="{Binding AddAsInitialResource}"/></StackPanel>
+          <Button Classes="primary" Command="{Binding AddContentCommand}" HorizontalAlignment="Left"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}"/><TextBlock Text="Add content"/></StackPanel></Button>
+          <ItemsControl ItemsSource="{Binding ContentFiles}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="models:ServerContentFile">
+                <Border Classes="card" Padding="12" Margin="0,0,0,8"><Grid ColumnDefinitions="*,Auto"><StackPanel><TextBlock Text="{Binding Name}" FontWeight="SemiBold"/><TextBlock Text="{Binding IsDefaultLibrary, StringFormat='Default library: {0}'}" Classes="dim" FontSize="11"/></StackPanel><Button Grid.Column="1" Classes="iconBtn" Command="{Binding $parent[ItemsControl].((vm:ServerViewModel)DataContext).RemoveContentCommand}" CommandParameter="{Binding}" ToolTip.Tip="Remove content file"><PathIcon Width="15" Height="15" Data="{StaticResource IconClose}"/></Button></Grid></Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Expander>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

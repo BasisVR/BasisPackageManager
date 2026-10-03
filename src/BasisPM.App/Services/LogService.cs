@@ -29,7 +29,11 @@ public sealed class LogService
             Directory.CreateDirectory(LogDirectory);
             _file = Path.Combine(LogDirectory, $"session-{DateTime.Now:yyyyMMdd-HHmmss}.log");
         }
-        catch { _file = null; }
+        catch
+        {
+            _file = null;
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
     }
 
     public IReadOnlyList<LogEntry> Snapshot()
@@ -39,7 +43,11 @@ public sealed class LogService
 
     public void Add(LogLevel level, string message)
     {
-        if (string.IsNullOrWhiteSpace(message)) return;
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
         var entry = new LogEntry(DateTime.Now, level, Redact.Scrub(message));
         lock (_gate)
         {
@@ -47,7 +55,10 @@ public sealed class LogService
             if (_entries.Count > MaxInMemory) _entries.RemoveAt(0);
         }
         try { if (_file is not null) File.AppendAllText(_file, $"{entry.Time:yyyy-MM-dd HH:mm:ss} [{level}] {message}\n"); }
-        catch { }
+        catch (Exception E)
+        {
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
         Added?.Invoke(entry);
     }
 
@@ -59,7 +70,11 @@ public sealed class LogService
     public string AllText()
     {
         var sb = new StringBuilder();
-        foreach (var e in Snapshot()) sb.AppendLine($"{e.Time:HH:mm:ss} [{e.Level}] {e.Message}");
+        foreach (var e in Snapshot())
+        {
+            sb.AppendLine($"{e.Time:HH:mm:ss} [{e.Level}] {e.Message}");
+        }
+
         return sb.ToString();
     }
 }

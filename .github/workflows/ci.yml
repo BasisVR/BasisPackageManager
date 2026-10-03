@@ -32,4 +32,6 @@ jobs:
           for rid in win-arm64 linux-arm64 osx-x64; do
             dotnet publish src/BasisPM.App/BasisPM.App.csproj \
               -c Release -r "$rid" --self-contained true -o "/tmp/pub-$rid"
+            dotnet publish src/BasisPM.Cli/BasisPM.Cli.csproj \
+              -c Release -r "$rid" --self-contained true -o "/tmp/pub-$rid"
           done

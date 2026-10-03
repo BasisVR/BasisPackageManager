@@ -48,6 +48,9 @@ public sealed class PackagesViewModel : ObservableObject
     // (or a "file:" manifest dep), not the registry git URL, so they read as "Locally mounted" rather
     // than "available to install".
     private readonly HashSet<string> _mountedIds = new(StringComparer.OrdinalIgnoreCase);
+    // Packages that are part of the Basis checkout itself (Basis/Packages/<id>). They are already
+    // available to Unity and must not be cloned or added to manifest.json a second time.
+    private readonly Dictionary<string, LocalPackage> _embeddedPackages = new(StringComparer.OrdinalIgnoreCase);
     // Mount records for the active project (id → folder + original manifest value) so a package row
     // can Open folder / Swap back / Submit PR without re-reading the registry each time.
     private readonly Dictionary<string, MountRecord> _mounts = new(StringComparer.OrdinalIgnoreCase);
@@ -360,10 +363,12 @@ public sealed class PackagesViewModel : ObservableObject
         foreach (var v in SortEntries(catalog, _sortKey))
         {
             var installedVersion = _install?.Manifest.Dependencies.GetValueOrDefault(v.Name);
-            if (_showInstalledOnly && installedVersion is null && !_mountedIds.Contains(v.Name)) continue;
+            _embeddedPackages.TryGetValue(v.Name, out var embedded);
+            if (_showInstalledOnly && installedVersion is null && !_mountedIds.Contains(v.Name) && embedded is null) continue;
             _mounts.TryGetValue(v.Name, out var rec);
             Available.Add(new PackageRow(v, installedVersion, _unofficialIds.Contains(v.Name),
-                _mountedIds.Contains(v.Name), rec?.FolderPath, _mountEditedIds.Contains(v.Name), rec?.OriginalManifestValue));
+                _mountedIds.Contains(v.Name), rec?.FolderPath, _mountEditedIds.Contains(v.Name), rec?.OriginalManifestValue,
+                isEmbedded: embedded is not null, embeddedVersion: embedded?.Version));
             shown.Add(v.Name);
         }
 
@@ -510,7 +515,11 @@ public sealed class PackagesViewModel : ObservableObject
     {
         _mountedIds.Clear();
         _mounts.Clear();
+        _embeddedPackages.Clear();
         if (_install is null || !_install.HasUnityProject) { Refilter(); OnPropertyChanged(nameof(GitMissing)); OnPropertyChanged(nameof(CanUpdateAll)); return; }
+
+        foreach (var package in _projectService.ListEmbeddedPackages(_install.UnityProjectPath))
+            _embeddedPackages[package.Id] = package;
 
         // Packages mounted for editing are present as a local folder, not the registry git URL: a
         // root-level mount drops the manifest line entirely (cloned into Packages/<id>/), and a
@@ -555,7 +564,7 @@ public sealed class PackagesViewModel : ObservableObject
         var added = 0;
         foreach (var (name, ver) in result.Resolved)
         {
-            if (target.Manifest.Dependencies.ContainsKey(name) || IsMountedIn(target, name)) continue;
+            if (target.Manifest.Dependencies.ContainsKey(name) || IsPackagePresentInSource(target, name)) continue;
             target.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
             added++;
         }
@@ -565,6 +574,11 @@ public sealed class PackagesViewModel : ObservableObject
     // Writing a git URL over a mounted package's manifest line would contradict its working clone.
     private bool IsMountedIn(BasisInstall target, string id) =>
         _mountRegistry.Find(target.UnityProjectPath, id) is { } rec && Directory.Exists(rec.FolderPath);
+
+    private bool IsPackagePresentInSource(BasisInstall target, string id) =>
+        IsMountedIn(target, id)
+        || _projectService.ListEmbeddedPackages(target.UnityProjectPath)
+            .Any(package => string.Equals(package.Id, id, StringComparison.OrdinalIgnoreCase));
 
     // A manifest value like "1.2.3" / "^1.0" is a version range; a git URL or "file:.." is not.
     private static bool IsSemverRange(string? range)
@@ -751,7 +765,7 @@ public sealed class PackagesViewModel : ObservableObject
             // Add every registry dependency (but NOT the requested package itself — it's cloned below);
             // anything not in the catalog (e.g. com.unity.*) is left for Unity to resolve at import.
             foreach (var (name, ver) in result.Resolved)
-                if (!string.Equals(name, entry.Name, StringComparison.OrdinalIgnoreCase) && !IsMountedIn(target, name))
+                if (!string.Equals(name, entry.Name, StringComparison.OrdinalIgnoreCase) && !IsPackagePresentInSource(target, name))
                     target.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
             await _projectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
@@ -1346,7 +1360,7 @@ public sealed class PackagesViewModel : ObservableObject
             foreach (var p in packageList.Packages)
             {
                 if (string.IsNullOrWhiteSpace(p.Id)) continue;
-                if (IsMountedIn(target, p.Id)) continue;   // already in the project as an editable clone
+                if (IsPackagePresentInSource(target, p.Id)) continue; // already bundled or mounted in the project
                 if (!string.IsNullOrWhiteSpace(p.GitUrl))
                 {
                     if (!GitUrlPolicy.IsSafeUrl(p.GitUrl)) { skipped++; continue; }  // never write an unsafe transport to the manifest
@@ -1385,7 +1399,8 @@ public sealed class PackagesViewModel : ObservableObject
 public sealed class PackageRow : ObservableObject
 {
     public PackageRow(CatalogPackageVersion entry, string? installedVersion, bool isUnofficial = false,
-        bool isMounted = false, string? mountFolder = null, bool mountedHasEdits = false, string? mountOriginalValue = null)
+        bool isMounted = false, string? mountFolder = null, bool mountedHasEdits = false, string? mountOriginalValue = null,
+        bool isEmbedded = false, string? embeddedVersion = null)
     {
         Entry = entry;
         InstalledVersion = installedVersion;
@@ -1394,12 +1409,16 @@ public sealed class PackageRow : ObservableObject
         MountFolder = mountFolder;
         _mountedHasEdits = mountedHasEdits;
         MountOriginalValue = mountOriginalValue;
+        IsEmbedded = isEmbedded;
+        EmbeddedVersion = embeddedVersion;
     }
 
     public CatalogPackageVersion Entry { get; }
     public string? InstalledVersion { get; }
     public bool IsUnofficial { get; }
     public bool IsMounted { get; }
+    public bool IsEmbedded { get; }
+    public string? EmbeddedVersion { get; }
     // The mounted working-clone folder (Packages/<id> or .basisdev/<id>); null when not mounted.
     public string? MountFolder { get; }
     // The manifest line the mount was cloned from (git URL + ref) — the version source while mounted,
@@ -1434,11 +1453,13 @@ public sealed class PackageRow : ObservableObject
     public string Name => Entry.Name;
     public string Version => Entry.Version;
     public string Description => Entry.Description;
-    public bool IsInstalled => !string.IsNullOrEmpty(InstalledVersion);
+    public bool IsInstalled => IsEmbedded || !string.IsNullOrEmpty(InstalledVersion);
     public bool IsNotInstalled => !IsInstalled;
     // A mounted package's live manifest value is a local folder ("file:" or nothing), so read its version
     // from the git URL it was cloned from; an unmounted package reads it straight from the manifest.
-    public string? InstalledLabel => VersionLabelFor(IsMounted ? MountOriginalValue : InstalledVersion);
+    public string? InstalledLabel => IsEmbedded
+        ? (string.IsNullOrWhiteSpace(EmbeddedVersion) ? L.Tr("packages.state.included") : EmbeddedVersion)
+        : VersionLabelFor(IsMounted ? MountOriginalValue : InstalledVersion);
 
     private static string? VersionLabelFor(string? manifestValue)
     {
@@ -1454,7 +1475,7 @@ public sealed class PackageRow : ObservableObject
     // package that's neither shows the Install button. A mounted clone also offers Open folder / Submit PR
     // and goes amber once it has local edits.
     public bool IsAvailableToInstall => !IsInstalled && !IsMounted;
-    public bool IsManageable => IsInstalled && !IsMounted;
+    public bool IsManageable => IsInstalled && !IsMounted && !IsEmbedded;
 
     // Install-queue state (set by the VM): a queued/installing row keeps its Install button visible but
     // disabled, relabels it "Queued…" / "Installing…", and shows a progress bar — so pressing Install on
@@ -1477,11 +1498,11 @@ public sealed class PackageRow : ObservableObject
         : InstallPending ? L.Tr("packages.button.queued")
         : L.Tr("packages.button.install");
 
-    public bool CanUpdate => IsInstalled || IsMounted;
-    public bool CanRemove => IsInstalled || IsMounted;
+    public bool CanUpdate => !IsEmbedded && (IsInstalled || IsMounted);
+    public bool CanRemove => !IsEmbedded && (IsInstalled || IsMounted);
     // Installed straight from git (there's a URL to clone) and not already mounted → can be mounted for editing.
-    public bool CanMountToEdit => IsInstalled && !IsMounted && InstalledVersion is not null && UpmGitUrl.Parse(InstalledVersion) is not null;
-    public bool CanChooseVersion => HasGit;
+    public bool CanMountToEdit => !IsEmbedded && IsInstalled && !IsMounted && InstalledVersion is not null && UpmGitUrl.Parse(InstalledVersion) is not null;
+    public bool CanChooseVersion => !IsEmbedded && HasGit;
     public string MountedLabel => L.Tr("packages.state.mounted");
     // The inline mounted pill: "Locally mounted", or "Local edits" once the working clone is dirty.
     public string MountedStateLabel => MountedHasEdits ? L.Tr("packages.state.mountedEdited") : L.Tr("packages.state.mounted");
@@ -1503,9 +1524,9 @@ public sealed class PackageRow : ObservableObject
     public string Initial => string.IsNullOrWhiteSpace(DisplayName) ? "?" : DisplayName.TrimStart()[..1].ToUpperInvariant();
     // Icon-tile glyph: the package's registry emoji when set, else its initial letter.
     public string TileGlyph => string.IsNullOrWhiteSpace(Entry.Icon) ? Initial : Entry.Icon!.Trim();
-    public bool HasGit => !string.IsNullOrWhiteSpace(Entry.Url);
+    public bool HasGit => !IsEmbedded && !string.IsNullOrWhiteSpace(Entry.Url);
     public string? GitUrl => Entry.Url;
-    public bool HasGitUrl => !string.IsNullOrWhiteSpace(Entry.Url);
+    public bool HasGitUrl => !IsEmbedded && !string.IsNullOrWhiteSpace(Entry.Url);
     public bool HasDependencies => Entry.Dependencies is { Count: > 0 };
     public IReadOnlyList<string> DependencyList =>
         Entry.Dependencies?.Select(d => $"{d.Key}  {d.Value}").ToList() ?? (IReadOnlyList<string>)Array.Empty<string>();

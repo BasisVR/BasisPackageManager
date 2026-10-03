@@ -28,7 +28,6 @@ public sealed class InstallsViewModel : ObservableObject
     public RelayCommand<InstallRow> CheckUpdatesCommand { get; }
     public RelayCommand<InstallRow> OpenInUnityCommand { get; }
     public RelayCommand<InstallRow> OpenFolderCommand { get; }
-    public RelayCommand<InstallRow> SetUpCommand { get; }
     public RelayCommand<InstallRow> ManagePackagesCommand { get; }
     public RelayCommand<InstallRow> RemoveCommand { get; }
     public RelayCommand<InstallRow> SetActiveCommand { get; }
@@ -48,7 +47,6 @@ public sealed class InstallsViewModel : ObservableObject
         CheckUpdatesCommand = new RelayCommand<InstallRow>(r => RefreshGitInfoAsync(r, fetch: true));
         OpenInUnityCommand = new RelayCommand<InstallRow>(OpenInUnity);
         OpenFolderCommand = new RelayCommand<InstallRow>(r => { if (r is not null) BasisPM.App.Services.ExternalLink.OpenFolder(r.RepoRoot); });
-        SetUpCommand = new RelayCommand<InstallRow>(SetUpAsync);
         ManagePackagesCommand = new RelayCommand<InstallRow>(r => Activate(r, "packages"));
         RemoveCommand = new RelayCommand<InstallRow>(RemoveAsync);
         SetActiveCommand = new RelayCommand<InstallRow>(r => Activate(r, null));
@@ -62,6 +60,7 @@ public sealed class InstallsViewModel : ObservableObject
         {
             if (!Directory.Exists(root)) continue;
             var install = await _installService.LoadAsync(root, settings.InstallAliases.GetValueOrDefault(root));
+            if (!install.IsBasisCheckout) continue;
             AddRow(install, activate: false);
         }
 
@@ -110,12 +109,13 @@ public sealed class InstallsViewModel : ObservableObject
         if (row is null) return;
         if (!row.Install.IsGitRepo) { row.GitSummary = L.Tr("installs.git.notGitRepo"); return; }
         row.IsBusy = true;
+        var activity = fetch ? _shell.BeginActivity(L.Tr("installs.git.checkingRemote")) : Guid.Empty;
         try
         {
             if (fetch)
             {
                 row.GitSummary = L.Tr("installs.git.checkingRemote");
-                await _git.FetchAsync(row.RepoRoot);
+                await _git.FetchAsync(row.RepoRoot, line => ReportActivity(activity, line));
             }
             var status = await _git.GetStatusAsync(row.RepoRoot);
             row.Branch = status.Branch;
@@ -130,7 +130,11 @@ public sealed class InstallsViewModel : ObservableObject
         {
             row.GitSummary = L.Tr("installs.git.error", ex.Message);
         }
-        finally { row.IsBusy = false; }
+        finally
+        {
+            row.IsBusy = false;
+            if (fetch) _shell.EndActivity(activity);
+        }
     }
 
     private static string DescribeStatus(GitStatus status)
@@ -156,11 +160,12 @@ public sealed class InstallsViewModel : ObservableObject
         // Fetch first so branches added on the remote since clone show up, then list what we can switch to.
         row.IsBusy = true;
         _shell.SetStatus(L.Tr("installs.status.loadingBranches", row.Name));
+        var fetchActivity = _shell.BeginActivity(L.Tr("installs.status.loadingBranches", row.Name));
         IReadOnlyList<string> branches;
         string current;
         try
         {
-            await _git.FetchAsync(row.RepoRoot);
+            await _git.FetchAsync(row.RepoRoot, line => ReportActivity(fetchActivity, line));
             branches = await _git.ListBranchesAsync(row.RepoRoot);
             current = await _git.GetBranchAsync(row.RepoRoot);
         }
@@ -169,7 +174,11 @@ public sealed class InstallsViewModel : ObservableObject
             _shell.SetStatus(L.Tr("installs.status.branchListFailed", ex.Message), StatusKind.Error);
             return;
         }
-        finally { row.IsBusy = false; }
+        finally
+        {
+            row.IsBusy = false;
+            _shell.EndActivity(fetchActivity);
+        }
 
         if (branches.Count == 0) { _shell.SetStatus(L.Tr("installs.status.noBranches", row.Name), StatusKind.Info); return; }
 
@@ -182,6 +191,7 @@ public sealed class InstallsViewModel : ObservableObject
 
         row.IsBusy = true;
         _shell.SetStatus(L.Tr("installs.status.switchingBranch", row.Name, picked));
+        var switchActivity = _shell.BeginActivity(L.Tr("installs.status.switchingBranch", row.Name, picked));
         try
         {
             var result = await _git.CheckoutAsync(row.RepoRoot, picked);
@@ -202,7 +212,11 @@ public sealed class InstallsViewModel : ObservableObject
         {
             _shell.SetStatus(L.Tr("installs.status.switchBranchError", ex.Message), StatusKind.Error);
         }
-        finally { row.IsBusy = false; }
+        finally
+        {
+            row.IsBusy = false;
+            _shell.EndActivity(switchActivity);
+        }
     }
 
     private async Task BackupAsync(InstallRow? row)
@@ -215,18 +229,27 @@ public sealed class InstallsViewModel : ObservableObject
         }
         row.IsBusy = true;
         _shell.SetStatus(L.Tr("installs.status.backingUp", row.Name));
+        var activity = _shell.BeginActivity(L.Tr("installs.status.backingUp", row.Name));
         try
         {
             var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
             var zip = await BackupService.CreateBackupAsync(row.UnityProjectPath, DefaultBackupDir(row), stamp,
-                msg => Dispatcher.UIThread.Post(() => _shell.SetStatus(msg)));
+                msg => Dispatcher.UIThread.Post(() =>
+                {
+                    _shell.SetStatus(msg);
+                    _shell.ReportActivity(activity, msg);
+                }));
             _shell.SetStatus(L.Tr("installs.status.backedUp", row.Name, zip), StatusKind.Success);
         }
         catch (Exception ex)
         {
             _shell.SetStatus(L.Tr("installs.status.backupFailed", ex.Message), StatusKind.Error);
         }
-        finally { row.IsBusy = false; }
+        finally
+        {
+            row.IsBusy = false;
+            _shell.EndActivity(activity);
+        }
     }
 
     /// <summary>
@@ -268,6 +291,11 @@ public sealed class InstallsViewModel : ObservableObject
         }
 
         var install = await _installService.LoadAsync(picked);
+        if (!install.IsBasisCheckout)
+        {
+            _shell.SetStatus(L.Tr("installs.status.notBasisCheckout"), StatusKind.Error);
+            return;
+        }
         var alias = await BasisPM.App.Services.Dialogs.PromptAliasAsync(L.Tr("installs.dialog.nameThisInstall"), picked, install.Name);
         install.Alias = string.IsNullOrWhiteSpace(alias) ? null : alias;
         AddRow(install, activate: true);
@@ -278,6 +306,12 @@ public sealed class InstallsViewModel : ObservableObject
 
     private async Task NewProjectAsync()
     {
+        if (!_git.IsAvailable)
+        {
+            _shell.SetStatus(L.Tr("installs.status.gitNotFound"), StatusKind.Error);
+            return;
+        }
+
         var window = GetMainWindow();
         if (window is null) return;
         var folders = await window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
@@ -293,31 +327,53 @@ public sealed class InstallsViewModel : ObservableObject
             _shell.SetStatus(L.Tr("installs.status.alreadyInList"), StatusKind.Info);
             return;
         }
-        if (_installService.IsUnityProject(picked))
+        if (Directory.EnumerateFileSystemEntries(picked).Any())
         {
-            _shell.SetStatus(L.Tr("installs.status.newAlreadyProject"), StatusKind.Error);
-            return;
-        }
-
-        var version = await _shell.NewestInstalledEditorVersionAsync();
-        if (string.IsNullOrWhiteSpace(version))
-        {
-            _shell.SetStatus(L.Tr("installs.status.newNoEditor"), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.cloneFolderNotEmpty"), StatusKind.Error);
             return;
         }
 
         try
         {
-            var install = await _installService.CreateNewProjectAsync(picked, version);
+            var cloningText = L.Tr("installs.status.cloningBasis");
+            _shell.SetStatus(cloningText);
+            var activity = _shell.BeginActivity(cloningText);
+            GitResult result;
+            try
+            {
+                result = await _git.CloneAsync(
+                    BasisInstallService.BasisRepoUrl,
+                    picked,
+                    BasisInstallService.DefaultBranch,
+                    line => ReportActivity(activity, line));
+            }
+            finally
+            {
+                _shell.EndActivity(activity);
+            }
+            if (!result.Ok)
+            {
+                _shell.SetStatus(L.Tr("installs.status.cloneFailed", Tail(result.Output)), StatusKind.Error);
+                return;
+            }
+
+            var install = await _installService.LoadAsync(picked);
+            if (!install.IsBasisCheckout)
+            {
+                _shell.SetStatus(L.Tr("installs.status.cloneMissingProject"), StatusKind.Error);
+                return;
+            }
+
             var alias = await BasisPM.App.Services.Dialogs.PromptAliasAsync(L.Tr("installs.dialog.nameThisInstall"), picked, install.Name);
             install.Alias = string.IsNullOrWhiteSpace(alias) ? null : alias;
             AddRow(install, activate: true);
             await PersistAsync();
-            await _shell.SetUpAsBasisProjectAsync(install);
+            _shell.SetStatus(L.Tr("installs.status.basisCloned", install.DisplayName), StatusKind.Success);
+            _shell.NavigateTo("packages");
         }
         catch (Exception ex)
         {
-            _shell.SetStatus(L.Tr("installs.status.projectCreateFailed", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.cloneError", ex.Message), StatusKind.Error);
         }
     }
 
@@ -328,14 +384,6 @@ public sealed class InstallsViewModel : ObservableObject
     {
         if (row is null) return;
         _ = _shell.OpenProjectInUnityAsync(row.Install);
-    }
-
-    private async Task SetUpAsync(InstallRow? row)
-    {
-        if (row is null) return;
-        row.IsBusy = true;
-        try { await _shell.SetUpAsBasisProjectAsync(row.Install); }
-        finally { row.IsBusy = false; }
     }
 
     private async Task RemoveAsync(InstallRow? row)
@@ -403,6 +451,13 @@ public sealed class InstallsViewModel : ObservableObject
         var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
         return lines.Length == 0 ? "" : lines[^1].Trim();
     }
+
+    private void ReportActivity(Guid activity, string message) =>
+        Dispatcher.UIThread.Post(() =>
+        {
+            _shell.SetStatus(message);
+            _shell.ReportActivity(activity, message);
+        });
 
     private static Window? GetMainWindow() =>
         Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime d ? d.MainWindow : null;

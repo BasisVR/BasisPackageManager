@@ -40,23 +40,48 @@ Running from source (`dotnet run`) skips the in-app updater — update with `git
 
 ## Features
 
-- **Installs** — clone `BasisVR/Basis` (choose folder + branch), or register an existing
-  clone. Each install shows its branch, commit, required Unity version, and whether it is
+- **Installs** — clone the complete `BasisVR/Basis` repository (the `developer` branch), or
+  register an existing clone and switch branches afterward. Each install shows its branch,
+  commit, required Unity version, and whether it is
   behind upstream or has local changes. One-click **Update Core** runs `git pull --ff-only`.
-- **Packages** — install official Basis packages, or add any community UPM package from a
+- **Packages** — packages bundled in the Basis checkout are detected automatically; install
+  additional official packages, or add any community UPM package from a
   **GitHub or GitLab** git URL. Discovery is powered by the registry (below).
 - **Local Changes** — a `git status` of your install with a per-file unified diff, so you
   can see what you have modified in the Basis source.
 - **Unity Editors** — detect installed editors and install the exact version Basis targets
   via Unity Hub, choosing the platform modules (Windows, Android, Linux, macOS, …).
+- **Basis Server** — build and run the server included in the active checkout, edit every
+  generated `config.xml` setting, manage default-library and startup content, and launch
+  Basis Labs through Steam with an automatic server connection.
 - **Settings** — default clone location, catalog URL, Unity Hub override, and detected
   tooling paths.
 
 ## Requirements
 
 - .NET 9 SDK
+- .NET 10 SDK to build the Basis server from the Server tab
 - [Git](https://git-scm.com/) on your `PATH` (used for clone / pull / status / diff)
 - [Unity Hub](https://unity.com/download) for editor installs
+
+## Console mode
+
+Releases also include the `basispm` (`basispm.exe` on Windows) console application. Run it
+without arguments for an interactive prompt, or use `--project` for scripts and one-shot commands:
+
+```text
+basispm clone-basis C:\BasisVR\Basis
+basispm --project C:\BasisVR\Basis status
+basispm --project C:\BasisVR\Basis list-packages
+basispm --project C:\BasisVR\Basis install-package com.example.package
+basispm --project C:\BasisVR\Basis server-build
+basispm --project C:\BasisVR\Basis connect-client
+```
+
+The console follows the same project model as the desktop app: it clones `BasisVR/Basis` first,
+detects packages already bundled under `Basis/Packages`, and only installs additional packages.
+Converting an arbitrary Unity project into Basis is not supported; use a complete Basis checkout.
+Run `basispm help` for branch, package-list, update, Unity, and server commands.
 
 ## Package registry server
 

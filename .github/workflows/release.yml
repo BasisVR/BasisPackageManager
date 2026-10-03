@@ -84,6 +84,9 @@ jobs:
             dotnet publish src/BasisPM.App/BasisPM.App.csproj \
               -c Release -r "$RID" --self-contained true \
               -o "publish/$RID" -p:Version=$VERSION
+            dotnet publish src/BasisPM.Cli/BasisPM.Cli.csproj \
+              -c Release -r "$RID" --self-contained true \
+              -o "publish/$RID" -p:Version=$VERSION
           done
 
       - name: Download previous releases (enables delta updates)

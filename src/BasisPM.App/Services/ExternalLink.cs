@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using BasisPM.Core.Services;
+using System.Diagnostics;
 
 namespace BasisPM.App.Services;
 
@@ -13,16 +13,30 @@ public static class ExternalLink
 {
     public static void Open(string? url)
     {
-        if (!GitUrlPolicy.IsWebUrl(url)) return;
+        if (!GitUrlPolicy.IsWebUrl(url))
+        {
+            return;
+        }
+
         try { Process.Start(new ProcessStartInfo(url!.Trim()) { UseShellExecute = true }); }
-        catch { /* best effort — a failed browser launch shouldn't crash the app */ }
+        catch (Exception E)
+        {
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
     }
 
     /// <summary>Opens a local folder in the OS file manager. Only accepts an existing directory.</summary>
     public static void OpenFolder(string? path)
     {
-        if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path)) return;
+        if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
+        {
+            return;
+        }
+
         try { Process.Start(new ProcessStartInfo(path) { UseShellExecute = true }); }
-        catch { }
+        catch (Exception E)
+        {
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
     }
 }

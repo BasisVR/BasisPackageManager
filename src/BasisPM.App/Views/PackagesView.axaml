@@ -251,6 +251,9 @@
                                                             <TextBlock Text="{loc:Tr packages.badge.mounted}" FontSize="9" FontWeight="Bold"
                                                                        Foreground="{StaticResource BasisBlueBrush}"/>
                                                         </Border>
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsEmbedded}">
+                                                            <TextBlock Text="{loc:Tr packages.badge.included}" FontSize="9" FontWeight="Bold" Classes="brand"/>
+                                                        </Border>
                                                         <!-- License sits with the name/description (identity), not down with the version/branch pills. -->
                                                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasLicense}"
                                                                 ToolTip.Tip="{loc:Tr packages.label.license}">
@@ -337,6 +340,9 @@
                                                                 Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="999" Padding="8,2">
                                                             <TextBlock Text="{loc:Tr packages.badge.mounted}" FontSize="9" FontWeight="Bold"
                                                                        Foreground="{StaticResource BasisBlueBrush}"/>
+                                                        </Border>
+                                                        <Border Classes="versionPill" HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding IsEmbedded}">
+                                                            <TextBlock Text="{loc:Tr packages.badge.included}" FontSize="9" FontWeight="Bold" Classes="brand"/>
                                                         </Border>
                                                         <Border Classes="versionPill" HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding HasLicense}"
                                                                 ToolTip.Tip="{Binding License}">
@@ -453,6 +459,9 @@
                                         Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="999" Padding="8,2">
                                     <TextBlock Text="{loc:Tr packages.badge.mounted}" FontSize="9" FontWeight="Bold"
                                                Foreground="{StaticResource BasisBlueBrush}"/>
+                                </Border>
+                                <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsEmbedded}">
+                                    <TextBlock Text="{loc:Tr packages.badge.included}" FontSize="9" FontWeight="Bold" Classes="brand"/>
                                 </Border>
                             </StackPanel>
                         </StackPanel>

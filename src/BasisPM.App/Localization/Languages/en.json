@@ -11,6 +11,14 @@
       "value": "Close"
     },
     {
+      "key": "packages.badge.included",
+      "value": "Included with Basis"
+    },
+    {
+      "key": "packages.state.included",
+      "value": "included"
+    },
+    {
       "key": "settings.licenses.title",
       "value": "Licenses & attributions"
     },
@@ -61,6 +69,10 @@
     {
       "key": "nav.packages",
       "value": "Packages"
+    },
+    {
+      "key": "nav.server",
+      "value": "Server"
     },
     {
       "key": "nav.settings",
@@ -145,38 +157,6 @@
     {
       "key": "shell.status.installLinkMissingGit",
       "value": "Install link for {0} was missing its git URL."
-    },
-    {
-      "key": "shell.status.assetsCreated",
-      "value": "Created default assets for {0}."
-    },
-    {
-      "key": "shell.status.assetsError",
-      "value": "Create-assets error: {0}"
-    },
-    {
-      "key": "shell.status.assetsFailed",
-      "value": "Basis Setup failed (exit code {0}). Log: {1}"
-    },
-    {
-      "key": "shell.status.creatingAssets",
-      "value": "Running Basis Setup for {0} (this can take a few minutes)…"
-    },
-    {
-      "key": "shell.status.minimumListNotFound",
-      "value": "Minimum package list '{0}' isn't published in the registry yet."
-    },
-    {
-      "key": "shell.status.projectSetUp",
-      "value": "{0} is set up as a Basis project."
-    },
-    {
-      "key": "shell.status.settingUpProject",
-      "value": "Setting up {0} as a Basis project…"
-    },
-    {
-      "key": "shell.status.setUpProjectError",
-      "value": "Set-up error: {0}"
     },
     {
       "key": "shell.status.loadingPackageList",
@@ -295,14 +275,6 @@
       "value": "Switch this project to a different git branch"
     },
     {
-      "key": "installs.tooltip.createAssets",
-      "value": "Generate the Assets-level config (Addressables, XR, rendering…) by running Basis Setup in the matching Unity editor. Close Unity for this project first."
-    },
-    {
-      "key": "installs.tooltip.setUpProject",
-      "value": "Add the minimum Basis packages, then generate the Assets/ProjectSettings config (runs Basis Setup in Unity). Close Unity for this project first."
-    },
-    {
       "key": "installs.action.changeBranch",
       "value": "Change branch"
     },
@@ -367,16 +339,8 @@
       "value": "Changes"
     },
     {
-      "key": "installs.button.createAssets",
-      "value": "Create default assets"
-    },
-    {
-      "key": "installs.button.setUpProject",
-      "value": "Set up as Basis project"
-    },
-    {
       "key": "installs.button.newProject",
-      "value": "New project"
+      "value": "Clone Basis"
     },
     {
       "key": "installs.button.open",
@@ -420,7 +384,7 @@
     },
     {
       "key": "installs.empty.body",
-      "value": "Use New project to create a Basis-ready Unity project, or Add existing to register one you already have."
+      "value": "Clone BasisVR/Basis first to get the complete Unity project and its Packages folders, or add a clone you already have."
     },
     {
       "key": "installs.empty.title",
@@ -464,7 +428,7 @@
     },
     {
       "key": "installs.hero.subtitle",
-      "value": "Create a Unity project with the Basis packages, then manage each project's packages, updates and local changes."
+      "value": "Clone the complete BasisVR/Basis repository first, then install and manage additional packages for that project."
     },
     {
       "key": "installs.hero.tagline",
@@ -480,7 +444,7 @@
     },
     {
       "key": "installs.picker.newProjectFolder",
-      "value": "Choose an empty folder for the new project"
+      "value": "Choose an empty folder for the Basis clone"
     },
     {
       "key": "installs.row.noUnityProject",
@@ -499,20 +463,32 @@
       "value": "That install is already in the list."
     },
     {
-      "key": "installs.status.newAlreadyProject",
-      "value": "That folder already has a Unity project — use Add existing."
+      "key": "installs.status.notBasisCheckout",
+      "value": "That folder is not a Basis checkout. Clone BasisVR/Basis first, or select an existing Basis clone."
     },
     {
-      "key": "installs.status.newNoEditor",
-      "value": "No Unity editor found. Add one on the Unity Editors tab first."
+      "key": "installs.status.cloneFolderNotEmpty",
+      "value": "Choose an empty folder. The complete Basis repository will be cloned into it."
     },
     {
-      "key": "installs.status.projectCreated",
-      "value": "Created {0}. Click ‘Set up as Basis project’ to add Basis."
+      "key": "installs.status.cloningBasis",
+      "value": "Cloning BasisVR/Basis (developer branch)…"
     },
     {
-      "key": "installs.status.projectCreateFailed",
-      "value": "Couldn't create project: {0}"
+      "key": "installs.status.cloneFailed",
+      "value": "Couldn't clone Basis: {0}"
+    },
+    {
+      "key": "installs.status.cloneMissingProject",
+      "value": "Basis was cloned, but the Basis Unity project could not be found in the checkout."
+    },
+    {
+      "key": "installs.status.basisCloned",
+      "value": "Cloned {0}. You can now install additional packages."
+    },
+    {
+      "key": "installs.status.cloneError",
+      "value": "Basis clone error: {0}"
     },
     {
       "key": "installs.status.backedUp",
@@ -2416,11 +2392,11 @@
     },
     {
       "key": "installs.tooltip.addExisting",
-      "value": "Register a Unity project that already exists on disk"
+      "value": "Register an existing BasisVR/Basis clone from disk"
     },
     {
       "key": "installs.tooltip.newProject",
-      "value": "Create a new Unity project set up for Basis"
+      "value": "Clone the complete BasisVR/Basis repository, including its Packages folders"
     },
     {
       "key": "installs.tooltip.openInUnity",
@@ -2441,6 +2417,10 @@
     {
       "key": "nav.tooltip.packages",
       "value": "Browse the registry and manage the active project's packages"
+    },
+    {
+      "key": "nav.tooltip.server",
+      "value": "Build, run and configure the Basis server"
     },
     {
       "key": "nav.tooltip.settings",

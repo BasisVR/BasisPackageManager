@@ -12,13 +12,19 @@ public static class DeepLink
 {
     public const string Scheme = "basispm";
 
-    public static bool IsDeepLink(string? arg) =>
-        !string.IsNullOrEmpty(arg) && arg.StartsWith(Scheme + "://", StringComparison.OrdinalIgnoreCase);
+    public static bool IsDeepLink(string? arg)
+    {
+        return !string.IsNullOrEmpty(arg) && arg.StartsWith(Scheme + "://", StringComparison.OrdinalIgnoreCase);
+    }
 
     public static bool TryParseInstall(string? uri, out DeepLinkRequest request)
     {
         request = new DeepLinkRequest(null, null, null, null);
-        if (!TryParse(uri, out var get, "install")) return false;
+        if (!TryParse(uri, out var get, "install"))
+        {
+            return false;
+        }
+
         request = new DeepLinkRequest(get("id"), get("name"), get("git"), get("repo"));
         return true;
     }
@@ -30,7 +36,11 @@ public static class DeepLink
     public static bool TryParsePackageList(string? uri, out string? id)
     {
         id = null;
-        if (!TryParse(uri, out var get, "packagelist", "bundle")) return false;
+        if (!TryParse(uri, out var get, "packagelist", "bundle"))
+        {
+            return false;
+        }
+
         id = get("id");
         return !string.IsNullOrWhiteSpace(id);
     }
@@ -39,15 +49,28 @@ public static class DeepLink
     private static bool TryParse(string? uri, out Func<string, string?> get, params string[] expectedHosts)
     {
         get = _ => null;
-        if (!IsDeepLink(uri)) return false;
+        if (!IsDeepLink(uri))
+        {
+            return false;
+        }
 
         var rest = uri!.Trim()[(Scheme.Length + 3)..];               // strip "basispm://"
         var q = rest.IndexOf('?');
         var host = (q >= 0 ? rest[..q] : rest).Trim('/');
         var hostMatches = false;
         foreach (var h in expectedHosts)
-            if (string.Equals(host, h, StringComparison.OrdinalIgnoreCase)) { hostMatches = true; break; }
-        if (!hostMatches) return false;
+        {
+            if (!string.Equals(host, h, StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+            hostMatches = true; break;
+        }
+
+        if (!hostMatches)
+        {
+            return false;
+        }
 
         var query = q >= 0 ? rest[(q + 1)..] : "";
         get = key =>
@@ -57,7 +80,14 @@ public static class DeepLink
                 var kv = pair.Split('=', 2);
                 if (kv.Length == 2 && string.Equals(kv[0], key, StringComparison.OrdinalIgnoreCase))
                 {
-                    try { return Uri.UnescapeDataString(kv[1]); } catch { return kv[1]; }
+                    try
+                    {
+                        return Uri.UnescapeDataString(kv[1]);
+                    }
+                    catch
+                    {
+                        return kv[1];
+                    }
                 }
             }
             return null;
@@ -74,12 +104,25 @@ public static class DeepLink
     /// </summary>
     public static void RegisterProtocolIfPackaged(bool isPackaged)
     {
-        if (!isPackaged) return;
-        var exe = Environment.ProcessPath;
-        if (string.IsNullOrEmpty(exe)) return;
+        if (!isPackaged)
+        {
+            return;
+        }
 
-        if (OperatingSystem.IsWindows()) RegisterWindows(exe);
-        else if (OperatingSystem.IsLinux()) RegisterLinux(exe);
+        var exe = Environment.ProcessPath;
+        if (string.IsNullOrEmpty(exe))
+        {
+            return;
+        }
+
+        if (OperatingSystem.IsWindows())
+        {
+            RegisterWindows(exe);
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            RegisterLinux(exe);
+        }
         // macOS handled at packaging time (Info.plist), see summary.
     }
 
@@ -92,7 +135,10 @@ public static class DeepLink
             Reg(root, "/v", "URL Protocol", "/d", "");
             Reg($@"{root}\shell\open\command", "/ve", "/d", $"\"{exe}\" \"%1\"");
         }
-        catch { /* best effort — deep links simply won't route until next successful run */ }
+        catch (Exception E)
+        {
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
     }
 
     private static void Reg(string key, params string[] rest)
@@ -100,7 +146,11 @@ public static class DeepLink
         var psi = new ProcessStartInfo("reg.exe") { UseShellExecute = false, CreateNoWindow = true };
         psi.ArgumentList.Add("add");
         psi.ArgumentList.Add(key);
-        foreach (var r in rest) psi.ArgumentList.Add(r);
+        foreach (var r in rest)
+        {
+            psi.ArgumentList.Add(r);
+        }
+
         psi.ArgumentList.Add("/f");
         Process.Start(psi)?.WaitForExit(3000);
     }
@@ -131,7 +181,10 @@ public static class DeepLink
             RunQuiet("xdg-mime", "default", LinuxDesktopFile, $"x-scheme-handler/{Scheme}");
             RunQuiet("update-desktop-database", appsDir);
         }
-        catch { /* best effort — deep links simply won't route until next successful run */ }
+        catch (Exception E)
+        {
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
     }
 
     private static void RunQuiet(string exe, params string[] args)
@@ -142,6 +195,9 @@ public static class DeepLink
             foreach (var a in args) psi.ArgumentList.Add(a);
             Process.Start(psi)?.WaitForExit(3000);
         }
-        catch { }
+        catch (Exception E)
+        {
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
     }
 }

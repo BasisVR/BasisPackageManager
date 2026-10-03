@@ -36,10 +36,8 @@ public sealed class TrExtension : MarkupExtension
         public static readonly TrConverter Instance = new();
 
         // Ignores the bound value (the language code) and returns the translation for the key parameter.
-        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-            => Localizer.Instance.Get(parameter as string ?? "");
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) => Localizer.Instance.Get(parameter as string ?? "");
 
-        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-            => throw new NotSupportedException();
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotSupportedException();
     }
 }

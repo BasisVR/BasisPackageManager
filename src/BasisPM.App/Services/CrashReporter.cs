@@ -20,7 +20,14 @@ public static class CrashReporter
 
     public static void Install()
     {
-        try { _previousUnclean = File.Exists(MarkerFile); } catch { }   // a leftover marker = last session didn't exit cleanly
+        try
+        {
+            _previousUnclean = File.Exists(MarkerFile);
+        }
+        catch (Exception E)
+        {
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
         ArmSession();
 
         AppDomain.CurrentDomain.UnhandledException += (_, e) => Write(e.ExceptionObject as Exception, "AppDomain");
@@ -35,18 +42,36 @@ public static class CrashReporter
             Directory.CreateDirectory(Dir);
             File.WriteAllText(MarkerFile, DateTime.UtcNow.ToString("o"));
         }
-        catch { }
+        catch (Exception E)
+        {
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
     }
 
     /// <summary>Clears the marker so the next launch knows the session ended normally (clean exit OR an update restart).</summary>
     public static void MarkCleanExit()
     {
-        try { if (File.Exists(MarkerFile)) File.Delete(MarkerFile); } catch { }
+        try
+        {
+            if (File.Exists(MarkerFile))
+            {
+                File.Delete(MarkerFile);
+            }
+        }
+        catch (Exception E)
+        {
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
     }
+
 
     public static void Write(Exception? ex, string source)
     {
-        if (ex is null || _written) return;
+        if (ex is null || _written)
+        {
+            return;
+        }
+
         _written = true;   // keep the first (usually root) crash, not a cascade
         try
         {
@@ -61,7 +86,10 @@ public static class CrashReporter
                 $"exception:\n{ex}";
             File.WriteAllText(CrashFile, Redact.Scrub(text));
         }
-        catch { }
+        catch (Exception E)
+        {
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
     }
 
     /// <summary>
@@ -72,7 +100,10 @@ public static class CrashReporter
     {
         string? detail = null;
         try { if (File.Exists(CrashFile)) { detail = File.ReadAllText(CrashFile); File.Delete(CrashFile); } }
-        catch { }
+        catch (Exception E)
+        {
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
         if (string.IsNullOrWhiteSpace(detail)) detail = null;
         return (detail, _previousUnclean);
     }

@@ -9,6 +9,7 @@ public sealed class BasisInstall
     public string UnityVersion { get; set; } = "unknown";
     public bool IsGitRepo { get; init; }
     public bool HasUnityProject { get; init; }
+    public bool IsBasisCheckout { get; init; }
     public PackageManifest Manifest { get; set; } = new();
 
     /// <summary>The user-given alias when set, otherwise the folder name.</summary>

@@ -14,12 +14,12 @@ public sealed class UpdateService
 {
     private const string RepoUrl = "https://github.com/BasisVR/BasisPackageManager";
 
-    private UpdateManager _mgr;
+    private UpdateManager? _mgr;
     private bool _prerelease;
 
     public UpdateService()
     {
-        _mgr = Build(false);
+        _mgr = VelopackLocator.IsCurrentSet ? Build(false) : null;
     }
 
     // accessToken null = public repo; the prerelease flag picks the stable vs prerelease channel.
@@ -34,20 +34,20 @@ public sealed class UpdateService
     {
         if (prerelease == _prerelease) return;
         _prerelease = prerelease;
-        _mgr = Build(prerelease);
+        _mgr = VelopackLocator.IsCurrentSet ? Build(prerelease) : null;
     }
 
     /// <summary>True only when launched from a Velopack install (i.e. self-update is possible).</summary>
-    public bool IsSupported => _mgr.IsInstalled;
+    public bool IsSupported => _mgr?.IsInstalled == true;
 
     /// <summary>The running version — Velopack's installed version, or the assembly version in dev.</summary>
     public string CurrentVersion =>
-        _mgr.IsInstalled && _mgr.CurrentVersion is { } v ? v.ToString() : AssemblyVersion();
+        _mgr?.IsInstalled == true && _mgr.CurrentVersion is { } v ? v.ToString() : AssemblyVersion();
 
     /// <summary>Returns update info when a newer stable release exists, otherwise null.</summary>
     public async Task<UpdateInfo?> CheckAsync()
     {
-        if (!_mgr.IsInstalled) return null;
+        if (_mgr?.IsInstalled != true) return null;
         return await _mgr.CheckForUpdatesAsync().ConfigureAwait(false);
     }
 
@@ -57,6 +57,7 @@ public sealed class UpdateService
     /// </summary>
     public async Task DownloadAndApplyAsync(UpdateInfo info, Action<int> progress, CancellationToken ct = default)
     {
+        if (_mgr is null) throw new InvalidOperationException("Self-update is unavailable outside a Velopack installation.");
         await _mgr.DownloadUpdatesAsync(info, progress, ct).ConfigureAwait(false);
         _mgr.ApplyUpdatesAndRestart(info.TargetFullRelease);
     }
@@ -64,7 +65,7 @@ public sealed class UpdateService
     /// <summary>Creates a Desktop shortcut for the installed app (Windows + Velopack-installed only).</summary>
     public void CreateDesktopShortcut()
     {
-        if (!OperatingSystem.IsWindows() || !_mgr.IsInstalled || !VelopackLocator.IsCurrentSet) return;
+        if (!OperatingSystem.IsWindows() || _mgr?.IsInstalled != true || !VelopackLocator.IsCurrentSet) return;
 #pragma warning disable CS0618 // Shortcuts is auto-managed for Desktop/StartMenuRoot; we add a Desktop icon on demand.
         new Velopack.Windows.Shortcuts(VelopackLocator.Current)
             .CreateShortcutForThisExe(Velopack.Windows.ShortcutLocation.Desktop);

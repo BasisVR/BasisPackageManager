@@ -39,6 +39,21 @@ public sealed class PackageRowTests
     }
 
     [AvaloniaFact]
+    public void Embedded_basis_package_is_included_but_not_reinstallable_or_removable()
+    {
+        var row = new PackageRow(Entry(), installedVersion: null, isEmbedded: true, embeddedVersion: "1.2.3");
+
+        Assert.True(row.IsInstalled);
+        Assert.True(row.IsEmbedded);
+        Assert.False(row.IsAvailableToInstall);
+        Assert.False(row.IsManageable);
+        Assert.False(row.CanUpdate);
+        Assert.False(row.CanRemove);
+        Assert.False(row.CanChooseVersion);
+        Assert.Equal("1.2.3", row.InstalledLabel);
+    }
+
+    [AvaloniaFact]
     public void Passes_through_catalog_fields()
     {
         var row = new PackageRow(Entry(display: "Basis SDK", version: "2.1.0"), null);

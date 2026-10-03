@@ -11,8 +11,7 @@ namespace BasisPM.App.Services;
 /// <summary>Modal prompts shown over the main window.</summary>
 public static class Dialogs
 {
-    private static Window? Owner =>
-        Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime d ? d.MainWindow : null;
+    private static Window? Owner => Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime d ? d.MainWindow : null;
 
     private static FilePickerFileType PackageListFileType => new("Basis package list")
     {
@@ -24,47 +23,46 @@ public static class Dialogs
     public static async Task<string?> PromptAliasAsync(string title, string path, string suggested)
     {
         var owner = Owner;
-        if (owner is null) return null;
-        return await new AliasPromptWindow(title, path, suggested).ShowDialog<string?>(owner);
+        return owner is null ? null : await new AliasPromptWindow(title, path, suggested).ShowDialog<string?>(owner);
     }
 
     /// <summary>Asks which install to target; returns the chosen one, or null if cancelled.</summary>
     public static async Task<BasisInstall?> PickInstallAsync(string title, IReadOnlyList<BasisInstall> installs)
     {
         var owner = Owner;
-        if (owner is null) return null;
-        return await new InstallPickerWindow(title, installs).ShowDialog<BasisInstall?>(owner);
+        return owner is null ? null : await new InstallPickerWindow(title, installs).ShowDialog<BasisInstall?>(owner);
     }
 
     /// <summary>Shows the registry package-list picker; returns the chosen list, or null if cancelled.</summary>
     public static async Task<PackageList?> PickPackageListAsync(IReadOnlyList<PackageList> lists)
     {
         var owner = Owner;
-        if (owner is null) return null;
-        return await new PackageListPickerWindow(lists).ShowDialog<PackageList?>(owner);
+        return owner is null ? null : await new PackageListPickerWindow(lists).ShowDialog<PackageList?>(owner);
     }
 
     /// <summary>A yes/no prompt; returns true only if the user chose Yes.</summary>
     public static async Task<bool> ConfirmAsync(string title, string message)
     {
         var owner = Owner;
-        if (owner is null) return false;
-        return await new ConfirmWindow(title, message).ShowDialog<bool>(owner);
+        return owner is not null && await new ConfirmWindow(title, message).ShowDialog<bool>(owner);
     }
 
     /// <summary>Shows the create-package-list dialog; returns the draft, or null if cancelled.</summary>
     public static async Task<PackageListDraft?> CreatePackageListAsync(string suggestedName, string basisLine, IReadOnlyList<PackageListEntry> candidates)
     {
         var owner = Owner;
-        if (owner is null) return null;
-        return await new CreatePackageListWindow(suggestedName, basisLine, candidates).ShowDialog<PackageListDraft?>(owner);
+        return owner is null ? null : await new CreatePackageListWindow(suggestedName, basisLine, candidates).ShowDialog<PackageListDraft?>(owner);
     }
 
     /// <summary>Prompts for a save location and writes the package-list JSON there; returns the saved path, or null if cancelled.</summary>
     public static async Task<string?> SavePackageListFileAsync(string suggestedFileName, string json)
     {
         var owner = Owner;
-        if (owner is null) return null;
+        if (owner is null)
+        {
+            return null;
+        }
+
         var file = await owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = L.Tr("packages.picker.savePackageList"),
@@ -73,7 +71,11 @@ public static class Dialogs
             FileTypeChoices = new[] { PackageListFileType },
         });
         var path = file?.TryGetLocalPath();
-        if (string.IsNullOrEmpty(path)) return null;
+        if (string.IsNullOrEmpty(path))
+        {
+            return null;
+        }
+
         await File.WriteAllTextAsync(path, json);
         return path;
     }
@@ -82,12 +84,16 @@ public static class Dialogs
     public static async Task<string?> OpenPackageListFileAsync()
     {
         var owner = Owner;
-        if (owner is null) return null;
+        if (owner is null)
+        {
+            return null;
+        }
+
         var files = await owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = L.Tr("packages.picker.openPackageList"),
             AllowMultiple = false,
-            FileTypeFilter = new[] { PackageListFileType },
+            FileTypeFilter = [PackageListFileType],
         });
         return files?.FirstOrDefault()?.TryGetLocalPath();
     }
@@ -96,7 +102,11 @@ public static class Dialogs
     public static async Task<PrRequest?> SubmitPrAsync(string packageId)
     {
         var owner = Owner;
-        if (owner is null) return null;
+        if (owner is null)
+        {
+            return null;
+        }
+
         var id = string.IsNullOrWhiteSpace(packageId) ? "package" : packageId;
         var slug = new string(id.Select(c => char.IsLetterOrDigit(c) ? char.ToLowerInvariant(c) : '-').ToArray()).Trim('-');
         return await new SubmitPrWindow(id, $"basis-edit-{slug}").ShowDialog<PrRequest?>(owner);
@@ -106,23 +116,20 @@ public static class Dialogs
     public static async Task<string?> SignInAsync()
     {
         var owner = Owner;
-        if (owner is null) return null;
-        return await new SignInPromptWindow().ShowDialog<string?>(owner);
+        return owner is null ? null : await new SignInPromptWindow().ShowDialog<string?>(owner);
     }
 
     /// <summary>Shows the version picker; returns the chosen version, or null if cancelled.</summary>
     public static async Task<PackageVersionOption?> PickVersionAsync(string title, PackageVersions versions)
     {
         var owner = Owner;
-        if (owner is null) return null;
-        return await new VersionPickerWindow(title, versions).ShowDialog<PackageVersionOption?>(owner);
+        return owner is null ? null : await new VersionPickerWindow(title, versions).ShowDialog<PackageVersionOption?>(owner);
     }
 
     /// <summary>Shows the branch picker; returns the chosen branch, or null if cancelled.</summary>
     public static async Task<string?> PickBranchAsync(string title, IReadOnlyList<string> branches, string current)
     {
         var owner = Owner;
-        if (owner is null) return null;
-        return await new BranchPickerWindow(title, branches, current).ShowDialog<string?>(owner);
+        return owner is null ? null : await new BranchPickerWindow(title, branches, current).ShowDialog<string?>(owner);
     }
 }

@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Avalonia.Platform;
@@ -19,7 +17,7 @@ namespace BasisPM.App.Localization;
 public sealed class Localizer : INotifyPropertyChanged
 {
     public static Localizer Instance { get; } = new();
-
+    public static Uri folder = new("avares://BasisPM.App/Localization/Languages");
     private static readonly JsonSerializerOptions JsonOpts = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -28,6 +26,7 @@ public sealed class Localizer : INotifyPropertyChanged
     // code -> (key -> value)
     private readonly Dictionary<string, Dictionary<string, string>> _tables = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<LanguageInfo> _available = new();
+    private readonly object _loadLock = new();
     private Dictionary<string, string> _fallback = new(StringComparer.Ordinal);
     private Dictionary<string, string> _current = new(StringComparer.Ordinal);
     private string _currentCode = "en";
@@ -45,13 +44,14 @@ public sealed class Localizer : INotifyPropertyChanged
     }
 
     /// <summary>Languages discovered from the embedded files, English first then by native name.</summary>
-    public IReadOnlyList<LanguageInfo> Available => _available;
+    public IReadOnlyList<LanguageInfo> Available { get { EnsureLoaded(); return _available; } }
 
     public string CurrentCode => _currentCode;
 
     /// <summary>Resolve a key: active language → English → the key itself (so gaps are visible, not blank).</summary>
     public string Get(string key)
     {
+        EnsureLoaded();
         if (string.IsNullOrEmpty(key)) return key ?? "";
         if (_current.TryGetValue(key, out var v)) return v;
         if (_fallback.TryGetValue(key, out var f)) return f;
@@ -69,6 +69,7 @@ public sealed class Localizer : INotifyPropertyChanged
 
     public void SetLanguage(string? code)
     {
+        EnsureLoaded();
         code = string.IsNullOrWhiteSpace(code) ? "en" : code.Trim();
         if (!_tables.TryGetValue(code, out var table))
         {
@@ -88,24 +89,37 @@ public sealed class Localizer : INotifyPropertyChanged
 
     private void LoadAllTables()
     {
-        Uri folder = new("avares://BasisPM.App/Localization/Languages");
         IEnumerable<Uri> assets;
-        try { assets = AssetLoader.GetAssets(folder, null); }
+        try
+        {
+            assets = AssetLoader.GetAssets(folder, null);
+        }
         catch { return; }
 
         foreach (var uri in assets)
         {
-            if (!uri.AbsolutePath.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) continue;
+            if (!uri.AbsolutePath.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
             try
             {
                 using var stream = AssetLoader.Open(uri);
                 var file = JsonSerializer.Deserialize<LanguageFile>(stream, JsonOpts);
-                if (string.IsNullOrWhiteSpace(file?.Code)) continue;
+                if (string.IsNullOrWhiteSpace(file?.Code))
+                {
+                    continue;
+                }
 
                 var map = new Dictionary<string, string>(StringComparer.Ordinal);
                 if (file!.Entries is { } entries)
+                {
                     foreach (var e in entries)
+                    {
                         if (!string.IsNullOrEmpty(e.Key)) map[e.Key] = e.Value ?? "";
+                    }
+                }
 
                 _tables[file.Code] = map;
                 _available.Add(new LanguageInfo(file.Code, string.IsNullOrWhiteSpace(file.NativeName) ? file.Code : file.NativeName!));
@@ -115,10 +129,31 @@ public sealed class Localizer : INotifyPropertyChanged
 
         _available.Sort((a, b) =>
         {
-            if (string.Equals(a.Code, "en", StringComparison.OrdinalIgnoreCase)) return -1;
-            if (string.Equals(b.Code, "en", StringComparison.OrdinalIgnoreCase)) return 1;
-            return string.Compare(a.NativeName, b.NativeName, StringComparison.CurrentCultureIgnoreCase);
+            return string.Equals(a.Code, "en", StringComparison.OrdinalIgnoreCase)? -1 : string.Equals(b.Code, "en", StringComparison.OrdinalIgnoreCase)  ? 1: string.Compare(a.NativeName, b.NativeName, StringComparison.CurrentCultureIgnoreCase);
         });
+    }
+
+    // Unit tests can touch the singleton before Avalonia's asset system is initialized. An empty
+    // first attempt is not permanent: retry once the application/test host has initialized assets.
+    private void EnsureLoaded()
+    {
+        if (_tables.Count > 0)
+        {
+            return;
+        }
+
+        lock (_loadLock)
+        {
+            if (_tables.Count > 0)
+            {
+                return;
+            }
+
+            _available.Clear();
+            LoadAllTables();
+            _fallback = _tables.TryGetValue("en", out var en) ? en : new(StringComparer.Ordinal);
+            _current = _tables.TryGetValue(_currentCode, out var current) ? current : _fallback;
+        }
     }
 
     private sealed class LanguageFile
