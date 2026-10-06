@@ -2179,6 +2179,10 @@
       "value": "Install a package list from the registry"
     },
     {
+      "key": "packages.button.packageLists",
+      "value": "Package lists"
+    },
+    {
       "key": "packages.status.loadingPackageLists",
       "value": "Loading package lists…"
     },

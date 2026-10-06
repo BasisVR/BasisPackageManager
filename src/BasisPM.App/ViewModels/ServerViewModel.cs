@@ -161,7 +161,9 @@ public sealed class ServerViewModel : ObservableObject
         if (_install is null) { MissingInstall(); return; }
         if (!ushort.TryParse(Port, out var port) || port == 0) { _shell.SetStatus("Enter a valid server port.", StatusKind.Error); return; }
         var local = BasisServerService.IsLocalHost(Host);
-        var reachable = await BasisServerService.CanConnectAsync(Host, port, TimeSpan.FromMilliseconds(350));
+        // SetPort is a UDP listener, so a TCP probe always says "not listening" even when the
+        // server is ready. Local launches use the server's configured HTTP health endpoint.
+        var reachable = !local || await _service.IsReadyAsync(_install.RepoRoot, TimeSpan.FromMilliseconds(750));
         var trackedRunning = _serverProcess is { HasExited: false };
 
         if (local && !reachable && !trackedRunning)
@@ -186,10 +188,13 @@ public sealed class ServerViewModel : ObservableObject
 
         if (local && trackedRunning && !reachable)
         {
-            reachable = await WaitForServerAsync(Host, port, TimeSpan.FromSeconds(60));
+            var serverProcess = _serverProcess!;
+            reachable = await WaitForServerAsync(_install.RepoRoot, serverProcess, TimeSpan.FromMinutes(10));
             if (!reachable)
             {
-                _shell.SetStatus("The server is not listening yet. Complete its first-run setup in the server console, then launch again.", StatusKind.Error);
+                _shell.SetStatus(serverProcess.HasExited
+                    ? $"The server exited before becoming ready (exit code {serverProcess.ExitCode})."
+                    : "The server did not become ready. Check its console and health-endpoint configuration.", StatusKind.Error);
                 return;
             }
         }
@@ -264,12 +269,12 @@ public sealed class ServerViewModel : ObservableObject
         }
     }
 
-    private static async Task<bool> WaitForServerAsync(string host, ushort port, TimeSpan timeout)
+    private async Task<bool> WaitForServerAsync(string repoRoot, Process process, TimeSpan timeout)
     {
         var until = DateTime.UtcNow + timeout;
-        while (DateTime.UtcNow < until)
+        while (DateTime.UtcNow < until && !process.HasExited)
         {
-            if (await BasisServerService.CanConnectAsync(host, port, TimeSpan.FromMilliseconds(500))) return true;
+            if (await _service.IsReadyAsync(repoRoot, TimeSpan.FromSeconds(1))) return true;
             await Task.Delay(500);
         }
         return false;

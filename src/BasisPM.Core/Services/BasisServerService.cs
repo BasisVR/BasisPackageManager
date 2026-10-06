@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using BasisPM.Core.Models;
@@ -9,6 +10,7 @@ namespace BasisPM.Core.Services;
 public sealed class BasisServerService
 {
     public const string SteamAppId = "3157090";
+    private static readonly HttpClient HealthClient = new();
 
     public BasisServerPaths GetPaths(string repoRoot)
     {
@@ -84,6 +86,79 @@ public sealed class BasisServerService
             return true;
         }
         catch (Exception ex) { DiagnosticLog.Write($"Checking server connectivity to {host}:{port}", ex); return false; }
+    }
+
+    /// <summary>
+    /// Reads the server's generated health-endpoint settings and asks the endpoint whether the
+    /// UDP game listener is ready. A TCP connection to SetPort is not a valid readiness probe:
+    /// Basis uses LiteNetLib/UDP there and therefore never opens a TCP listener on that port.
+    /// </summary>
+    public async Task<bool> IsReadyAsync(string repoRoot, TimeSpan timeout, CancellationToken cancellationToken = default)
+    {
+        var endpoint = TryGetHealthEndpoint(repoRoot);
+        if (endpoint is null) return false; // First-run setup has not written config.xml yet.
+
+        using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutSource.CancelAfter(timeout);
+        try
+        {
+            using var response = await HealthClient.GetAsync(endpoint, timeoutSource.Token).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode) return false;
+            using var document = await JsonDocument.ParseAsync(
+                await response.Content.ReadAsStreamAsync(timeoutSource.Token).ConfigureAwait(false),
+                cancellationToken: timeoutSource.Token).ConfigureAwait(false);
+            var root = document.RootElement;
+            return root.TryGetProperty("ready", out var ready) && ready.ValueKind == JsonValueKind.True
+                && (!root.TryGetProperty("listening", out var listening) || listening.ValueKind == JsonValueKind.True);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return false;
+        }
+        catch (HttpRequestException)
+        {
+            return false; // Expected while the server is starting or the setup wizard is open.
+        }
+        catch (IOException)
+        {
+            return false; // The server may close a probe while transitioning into the ready state.
+        }
+        catch (JsonException ex)
+        {
+            DiagnosticLog.Write($"Reading the Basis server health response from {endpoint}", ex);
+            return false;
+        }
+    }
+
+    private Uri? TryGetHealthEndpoint(string repoRoot)
+    {
+        var configFile = GetPaths(repoRoot).ConfigFile;
+        if (!File.Exists(configFile)) return null;
+        try
+        {
+            var root = XDocument.Load(configFile).Root;
+            var host = root?.Element("HealthCheckHost")?.Value.Trim();
+            var portText = root?.Element("HealthCheckPort")?.Value.Trim();
+            var path = root?.Element("HealthPath")?.Value.Trim();
+            if (string.IsNullOrWhiteSpace(host) || !ushort.TryParse(portText, out var port) || port == 0)
+                return null;
+
+            if (host is "0.0.0.0" or "::" or "[::]") host = "localhost";
+            if (host.Contains(':') && !host.StartsWith('[')) host = $"[{host}]";
+            if (string.IsNullOrWhiteSpace(path)) path = "/health";
+            if (!path.StartsWith('/')) path = "/" + path;
+            return Uri.TryCreate($"http://{host}:{port}{path}", UriKind.Absolute, out var endpoint)
+                ? endpoint
+                : null;
+        }
+        catch (IOException)
+        {
+            return null; // config.xml can briefly be unavailable while the server rewrites it.
+        }
+        catch (System.Xml.XmlException)
+        {
+            return null; // Likewise, tolerate observing the file between write operations.
+        }
     }
 
     public Process Start(string repoRoot)

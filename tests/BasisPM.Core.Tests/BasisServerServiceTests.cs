@@ -45,6 +45,50 @@ public sealed class BasisServerServiceTests
         finally { listener.Stop(); }
     }
 
+    [Fact]
+    public async Task IsReady_uses_the_configured_health_endpoint_instead_of_the_udp_game_port()
+    {
+        using var t = new TempDir();
+        var service = new BasisServerService();
+        var root = t.CreateDir("Basis");
+        var paths = service.GetPaths(root);
+        var listener = new TcpListener(IPAddress.Loopback, 0);
+        listener.Start();
+        try
+        {
+            var healthPort = ((IPEndPoint)listener.LocalEndpoint).Port;
+            Directory.CreateDirectory(Path.GetDirectoryName(paths.ConfigFile)!);
+            File.WriteAllText(paths.ConfigFile, $"""
+                <Configuration>
+                  <SetPort>4296</SetPort>
+                  <HealthCheckHost>127.0.0.1</HealthCheckHost>
+                  <HealthCheckPort>{healthPort}</HealthCheckPort>
+                  <HealthPath>/health</HealthPath>
+                </Configuration>
+                """);
+
+            var response = Task.Run(async () =>
+            {
+                using var connection = await listener.AcceptTcpClientAsync();
+                using var stream = connection.GetStream();
+                using var reader = new StreamReader(stream, leaveOpen: true);
+                while (!string.IsNullOrEmpty(await reader.ReadLineAsync())) { }
+                const string body = "{\"listening\":true,\"ready\":true}";
+                var bytes = System.Text.Encoding.ASCII.GetBytes(
+                    $"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {body.Length}\r\nConnection: close\r\n\r\n{body}");
+                await stream.WriteAsync(bytes);
+            });
+
+            Assert.True(await service.IsReadyAsync(root, TimeSpan.FromSeconds(2)));
+            await response;
+        }
+        finally
+        {
+            listener.Stop();
+            if (Directory.Exists(paths.RuntimeDirectory)) Directory.Delete(paths.RuntimeDirectory, true);
+        }
+    }
+
     [Theory]
     [InlineData("127.0.0.1", 4296, "", "127.0.0.1:4296")]
     [InlineData("example.org", 5000, "secret", "example.org:5000#secret")]

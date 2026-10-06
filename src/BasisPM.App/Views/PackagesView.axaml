@@ -122,10 +122,12 @@
                                 <TextBlock Text="{loc:Tr packages.button.createPackageList}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Classes="iconBtn" Command="{Binding InstallPackageListFromRegistryCommand}" VerticalAlignment="Bottom"
-                                IsVisible="{Binding HasInstalls}"
+                        <Button Command="{Binding InstallPackageListFromRegistryCommand}" VerticalAlignment="Bottom"
                                 ToolTip.Tip="{loc:Tr packages.button.installPackageList}">
-                            <PathIcon Width="16" Height="16" Data="{StaticResource IconDownload}"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.packageLists}" VerticalAlignment="Center"/>
+                            </StackPanel>
                         </Button>
                         <Button Classes="iconBtn" Command="{Binding InstallPackageListFromFileCommand}" VerticalAlignment="Bottom"
                                 IsVisible="{Binding HasInstalls}"
@@ -148,23 +150,28 @@
                 </StackPanel>
             </Border>
 
-            <StackPanel Spacing="20" IsVisible="{Binding HasInstall}">
+            <!-- Keep the registry visible even before a project is selected. Browsing packages and
+                 curated package lists should not require a clone; install actions will ask for a
+                 target project when one is available. -->
+            <StackPanel Spacing="20">
 
                 <!-- Git preflight: mounting and PRs shell out to git, so nudge the user to install it. -->
-                <Border Classes="card" Padding="16,12" IsVisible="{Binding GitMissing}"
-                        Background="#26F59E0B" BorderBrush="#80F59E0B">
-                    <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                        <TextBlock Grid.Column="0" Margin="0,0,12,0" Text="{loc:Tr develop.git.requiredDescription}"
-                                   Classes="muted" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
-                        <Button Grid.Column="1" Classes="primary" Command="{Binding InstallGitCommand}" VerticalAlignment="Center"
-                                ToolTip.Tip="{loc:Tr packages.tooltip.installGit}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr develop.button.installGit}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </Grid>
-                </Border>
+                <Panel IsVisible="{Binding HasInstall}">
+                    <Border Classes="card" Padding="16,12" IsVisible="{Binding GitMissing}"
+                            Background="#26F59E0B" BorderBrush="#80F59E0B">
+                        <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                            <TextBlock Grid.Column="0" Margin="0,0,12,0" Text="{loc:Tr develop.git.requiredDescription}"
+                                       Classes="muted" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                            <Button Grid.Column="1" Classes="primary" Command="{Binding InstallGitCommand}" VerticalAlignment="Center"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.installGit}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr develop.button.installGit}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Panel>
 
                 <!-- Available to install (Basis registry / basisvr.org/packages) -->
                 <Border Classes="card" Padding="0">
@@ -187,6 +194,7 @@
                                     </Button>
                                     <Button Content="{Binding InstalledToggleLabel}" Command="{Binding ToggleInstalledCommand}"
                                             FontSize="12" Padding="14,7"
+                                            IsVisible="{Binding HasInstall}"
                                             ToolTip.Tip="{loc:Tr packages.tooltip.showInstalled}"/>
                                     <Button Content="{Binding LayoutToggleLabel}" Command="{Binding ToggleLayoutCommand}"
                                             FontSize="12" Padding="14,7"
@@ -401,7 +409,7 @@
                 </Border>
 
                 <!-- Community from GitHub -->
-                <Border Classes="card" Padding="20,16">
+                <Border Classes="card" Padding="20,16" IsVisible="{Binding HasInstall}">
                     <StackPanel Spacing="10">
                         <TextBlock Text="{loc:Tr packages.header.community}" Classes="h3"/>
                         <TextBlock Classes="muted" FontSize="11" TextWrapping="Wrap"
