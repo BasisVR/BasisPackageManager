@@ -52,6 +52,7 @@ public sealed class GitHubService
         var stripped = raw
             .Replace("https://", "", StringComparison.OrdinalIgnoreCase)
             .Replace("http://", "", StringComparison.OrdinalIgnoreCase)
+            .Replace("www.github.com", "github.com", StringComparison.OrdinalIgnoreCase)
             .Replace("git@", "", StringComparison.OrdinalIgnoreCase)
             .Replace("github.com:", "", StringComparison.OrdinalIgnoreCase)
             .Replace("github.com/", "", StringComparison.OrdinalIgnoreCase)

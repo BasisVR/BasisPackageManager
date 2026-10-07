@@ -111,4 +111,24 @@ public sealed class ModelsTests
     {
         Assert.Empty(new PackageManifest().Dependencies);
     }
+
+    [Fact]
+    public void LatestStable_skips_tags_that_are_not_versions()
+    {
+        var versions = new PackageVersions(new[]
+        {
+            new PackageVersionOption("v2.0.0-rc.1", "v2.0.0-rc.1", true, VersionKind.Tag),
+            new PackageVersionOption("experiment", "experiment", false, VersionKind.Tag),
+            new PackageVersionOption(null, "Latest", false, VersionKind.Branch),
+        }, false);
+
+        Assert.Null(versions.LatestStable);
+    }
+
+    [Fact]
+    public void LatestStable_accepts_prefixed_version_tags_and_any_release()
+    {
+        Assert.Equal("upm/1.10.0", new PackageVersions(new[] { new PackageVersionOption("upm/1.10.0", "upm/1.10.0", false, VersionKind.Tag) }, false).LatestStable?.Ref);
+        Assert.Equal("nightly", new PackageVersions(new[] { new PackageVersionOption("nightly", "nightly", false, VersionKind.Release) }, true).LatestStable?.Ref);
+    }
 }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using BasisPM.Core.Services;
 
@@ -28,7 +29,7 @@ public sealed class LogService
         try
         {
             Directory.CreateDirectory(LogDirectory);
-            _file = Path.Combine(LogDirectory, $"session-{DateTime.Now:yyyyMMdd-HHmmss}.log");
+            _file = Path.Combine(LogDirectory, string.Create(CultureInfo.InvariantCulture, $"session-{DateTime.Now:yyyyMMdd-HHmmss}.log"));
         }
         catch (Exception E)
         {
@@ -56,7 +57,7 @@ public sealed class LogService
             _entries.Add(entry);
             if (_entries.Count > MaxInMemory) _entries.RemoveAt(0);
         }
-        try { if (_file is not null) File.AppendAllText(_file, $"{entry.Time:yyyy-MM-dd HH:mm:ss} [{level}] {message}\n"); }
+        try { if (_file is not null) File.AppendAllText(_file, string.Create(CultureInfo.InvariantCulture, $"{entry.Time:yyyy-MM-dd HH:mm:ss} [{level}] {entry.Message}\n")); }
         catch (Exception E)
         {
             DiagnosticLog.Write("Writing the session activity log", E);

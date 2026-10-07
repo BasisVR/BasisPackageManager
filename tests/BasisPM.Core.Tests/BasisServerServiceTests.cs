@@ -134,6 +134,7 @@ public sealed class BasisServerServiceTests
         var service = new BasisServerService();
         var root = t.CreateDir("Basis");
         var paths = service.GetPaths(root);
+        t.WriteFile("Basis/Basis Server/BasisServerConsole/BasisNetworkConsole.csproj", "<Project />");
         try
         {
             var library = service.AddDefaultLibraryItem(root, 1, "https://example/world.bee", "pw");
@@ -146,6 +147,17 @@ public sealed class BasisServerServiceTests
             Assert.Equal(2, service.ListContent(root).Count);
         }
         finally { if (Directory.Exists(paths.RuntimeDirectory)) Directory.Delete(paths.RuntimeDirectory, true); }
+    }
+
+    [Fact]
+    public void Adding_content_without_a_server_project_creates_nothing()
+    {
+        using var t = new TempDir();
+        var service = new BasisServerService();
+        var root = t.CreateDir("Basis");
+        Assert.Throws<InvalidOperationException>(() => service.AddDefaultLibraryItem(root, 0, "https://example/avatar.bee", ""));
+        Assert.Throws<InvalidOperationException>(() => service.AddInitialResource(root, 0, "https://example/prop.bee", ""));
+        Assert.False(Directory.Exists(t.Combine("Basis/Basis Server")));
     }
 
     [Fact]

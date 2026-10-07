@@ -48,7 +48,7 @@ public sealed class VersionService(GitHubApiService? github = null, GitService? 
                     continue;
                 }
 
-                bool pre = SemVer.TryParse(t, out var sv) && sv.PreRelease is not null;
+                bool pre = SemVer.TryParseTag(t, out var sv) && sv.PreRelease is not null;
                 options.Add(new PackageVersionOption(t, t, pre, VersionKind.Tag));
             }
         }
@@ -67,7 +67,7 @@ public sealed class VersionService(GitHubApiService? github = null, GitService? 
         var keyed = new List<(PackageVersionOption o, SemVer? v, int i)>(options.Count);
         for (var i = 0; i < options.Count; i++)
         {
-            var ok = SemVer.TryParse(options[i].Ref, out var v);
+            var ok = SemVer.TryParseTag(options[i].Ref, out var v);
             keyed.Add((options[i], ok ? v : null, i));
         }
         keyed.Sort((a, b) =>

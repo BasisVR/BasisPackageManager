@@ -23,6 +23,8 @@ public sealed class RepoStatsServiceTests
     [InlineData("git@github.com:owner/repo.git", "github", "owner", "repo")]
     [InlineData("https://github.com/owner/repo?tab=readme", "github", "owner", "repo")]
     [InlineData("https://gitlab.com/group/repo", "gitlab", "group", "repo")]
+    [InlineData("https://gitlab.com/group/sub/repo.git", "gitlab", "group/sub", "repo")]
+    [InlineData("https://gitlab.com/group/sub/repo/-/tree/main", "gitlab", "group/sub", "repo")]
     public void Parse_extracts_host_owner_repo(string url, string host, string owner, string repo)
     {
         Assert.Equal((host, owner, repo), Parse(url));

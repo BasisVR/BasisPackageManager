@@ -17,6 +17,7 @@ public sealed class SettingsViewModel : ObservableObject
     private string _newCatalogUrl = "";
     private string _unityHubPath = "";
     private bool _prereleaseUpdates;
+    private bool _autoCheckBasisUpdates = true;
     private string _settingsPath = "";
     private string _gitDetected = "";
     private string _hubDetected = "";
@@ -28,6 +29,7 @@ public sealed class SettingsViewModel : ObservableObject
     public string NewCatalogUrl { get => _newCatalogUrl; set => SetField(ref _newCatalogUrl, value); }
     public string UnityHubPath { get => _unityHubPath; set => SetField(ref _unityHubPath, value); }
     public bool PrereleaseUpdates { get => _prereleaseUpdates; set => SetField(ref _prereleaseUpdates, value); }
+    public bool AutoCheckBasisUpdates { get => _autoCheckBasisUpdates; set => SetField(ref _autoCheckBasisUpdates, value); }
     public string SettingsPath { get => _settingsPath; private set => SetField(ref _settingsPath, value); }
     public string GitDetected { get => _gitDetected; private set => SetField(ref _gitDetected, value); }
     public string HubDetected { get => _hubDetected; private set => SetField(ref _hubDetected, value); }
@@ -79,6 +81,7 @@ public sealed class SettingsViewModel : ObservableObject
             if (!string.IsNullOrWhiteSpace(u)) ExtraCatalogs.Add(new CatalogUrlItem(u));
         UnityHubPath = settings.UnityHubPath ?? "";
         PrereleaseUpdates = settings.PrereleaseUpdates;
+        AutoCheckBasisUpdates = settings.AutoCheckBasisUpdates;
         // Reflect the persisted language in the picker without re-triggering a save.
         _selectedLanguage = FindLanguage(string.IsNullOrWhiteSpace(settings.Language) ? Localizer.Instance.CurrentCode : settings.Language!);
         OnPropertyChanged(nameof(SelectedLanguage));
@@ -115,10 +118,12 @@ public sealed class SettingsViewModel : ObservableObject
             .ToList();
         settings.UnityHubPath = string.IsNullOrWhiteSpace(UnityHubPath) ? null : UnityHubPath.Trim();
         settings.PrereleaseUpdates = PrereleaseUpdates;
+        settings.AutoCheckBasisUpdates = AutoCheckBasisUpdates;
         await _settingsService.SaveAsync(settings);
 
         await _shell.PackagesVM.LoadCatalogAsync(settings.CatalogUrl, settings.ExtraCatalogUrls);
         _shell.ApplyPrerelease(settings.PrereleaseUpdates);
+        _shell.ApplyBasisUpdateChecks(settings.AutoCheckBasisUpdates);
         RefreshDetected();
         _shell.SetStatus(L.Tr("settings.status.saved"), StatusKind.Success);
     }

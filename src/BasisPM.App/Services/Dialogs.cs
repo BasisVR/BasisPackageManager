@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using BasisPM.App.Localization;
+using BasisPM.App.ViewModels;
 using BasisPM.App.Views;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
@@ -131,5 +132,19 @@ public static class Dialogs
     {
         var owner = Owner;
         return owner is null ? null : await new BranchPickerWindow(title, branches, current).ShowDialog<string?>(owner);
+    }
+
+    public static async Task<BasisUpdateDecision> ReviewBasisUpdateAsync(BasisUpdateReviewViewModel model)
+    {
+        var owner = Owner;
+        return owner is null
+            ? BasisUpdateDecision.Cancel
+            : await new BasisUpdateWindow(model).ShowDialog<BasisUpdateDecision>(owner);
+    }
+
+    public static async Task<BasisUpdateResult?> ResolveBasisConflictsAsync(MergeConflictsViewModel model)
+    {
+        var owner = Owner;
+        return owner is null ? null : await new MergeConflictsWindow(model).ShowDialog<BasisUpdateResult?>(owner);
     }
 }

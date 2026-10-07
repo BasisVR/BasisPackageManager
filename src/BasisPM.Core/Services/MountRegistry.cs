@@ -28,7 +28,11 @@ public sealed class MountRegistry
             if (File.Exists(_path))
                 return JsonSerializer.Deserialize<List<MountRecord>>(File.ReadAllText(_path)) ?? new();
         }
-        catch (Exception ex) { DiagnosticLog.Write($"Loading mount registry from {_path}", ex); }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write($"Loading mount registry from {_path}", ex);
+            if (ex is JsonException) AtomicFile.KeepUnreadableCopy(_path);
+        }
         return new();
     }
 
@@ -36,8 +40,7 @@ public sealed class MountRegistry
     {
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
-            File.WriteAllText(_path, JsonSerializer.Serialize(records, Opts));
+            AtomicFile.WriteAllText(_path, JsonSerializer.Serialize(records, Opts));
         }
         catch (Exception ex) { DiagnosticLog.Write($"Saving mount registry to {_path}", ex); }
     }

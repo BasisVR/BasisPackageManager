@@ -73,6 +73,27 @@
                                             <TextBlock Text="{Binding ChangeCount, StringFormat='{}{0} changed'}"
                                                        FontSize="11" Classes="brand" FontWeight="Bold"/>
                                         </Border>
+                                        <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisUpdateAvailable}"
+                                                ToolTip.Tip="{Binding BasisPillTooltip}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconUpdate}"
+                                                          Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisUpdateInProgress}"
+                                                ToolTip.Tip="{Binding UpdateButtonTooltip}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconWarning}"
+                                                          Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding BasisPillText}" FontSize="11" FontWeight="Bold"
+                                                           Foreground="{StaticResource BasisWarningBrush}"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisPillMuted}"
+                                                ToolTip.Tip="{Binding BasisPillTooltip}">
+                                            <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="muted"/>
+                                        </Border>
                                     </WrapPanel>
                                     <TextBlock Text="{Binding GitSummary}" Classes="muted" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
@@ -87,6 +108,15 @@
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
                                             <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes.cta="{Binding HighlightBasisUpdate}"
+                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).UpdateBasisCommand}"
+                                            CommandParameter="{Binding}"
+                                            ToolTip.Tip="{Binding UpdateButtonTooltip}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding UpdateButtonLabel}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <Button IsVisible="{Binding IsGitRepo}"

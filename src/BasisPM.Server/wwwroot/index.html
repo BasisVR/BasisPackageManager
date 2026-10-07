@@ -462,7 +462,7 @@ function installMethods(p){
     <div class="${method}">
       <h5 class="mb-2 flex items-center gap-2 font-semibold"><span class="${num}">1</span> In the Basis Package Manager</h5>
       <p class="mb-2 text-sm text-gray-600 dark:text-gray-300">Open <b>Packages → Add from Git URL</b> and paste:</p>
-      <div class="${code}"><pre class="${pre}">${esc(p.repoUrl||p.gitUrl||'')}</pre><button class="${cbtn} copy" data-copy="${esc(p.repoUrl||p.gitUrl||'')}">Copy</button></div>
+      <div class="${code}"><pre class="${pre}">${esc(p.gitUrl||p.repoUrl||'')}</pre><button class="${cbtn} copy" data-copy="${esc(p.gitUrl||p.repoUrl||'')}">Copy</button></div>
     </div>
     <div class="${method}">
       <h5 class="mb-2 flex items-center gap-2 font-semibold"><span class="${num}">2</span> Or add to Packages/manifest.json</h5>
@@ -683,7 +683,7 @@ function submitStep2(){
     const url = resolveImageUrl(raw, f.elements.repoUrl.value, f.elements.gitUrl.value);
     if(raw && !url){ imgHint.innerHTML = '<span class="text-brand">Point to a PNG/WebP/JPG/GIF hosted in your own repo.</span>'; imgPrev.textContent = p.icon||'📦'; return; }
     imgHint.textContent = url || '';
-    imgPrev.innerHTML = url ? `<img src="${esc(url)}" alt="" referrerpolicy="no-referrer" class="h-full w-full object-cover" onerror="this.parentElement.textContent='⚠️'">` : (p.icon||'📦');
+    imgPrev.innerHTML = url ? `<img src="${esc(url)}" alt="" referrerpolicy="no-referrer" class="h-full w-full object-cover" onerror="this.parentElement.textContent='⚠️'">` : esc(p.icon||'📦');
   };
   const upd = () => {
     const s = deriveSource(f.elements.repoUrl.value, f.elements.gitUrl.value);

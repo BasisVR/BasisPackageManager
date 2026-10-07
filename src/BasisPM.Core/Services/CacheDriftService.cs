@@ -1,3 +1,4 @@
+using System.Text.Json;
 using BasisPM.Core.Models;
 
 namespace BasisPM.Core.Services;
@@ -31,22 +32,23 @@ public sealed class CacheDriftService
 
         TryDelete(WorkRoot);
         Directory.CreateDirectory(WorkRoot);
+        var lockedCommits = ReadLockedCommits(install.UnityProjectPath);
 
-        foreach (var (id, value) in install.Manifest.Dependencies)
+        foreach (var (id, value) in install.Manifest.Dependencies.ToList())
         {
             ct.ThrowIfCancellationRequested();
 
             var parsed = UpmGitUrl.Parse(value);
             if (parsed is null || !(parsed.IsGitHub || parsed.IsGitLab)) continue;
-            if (!GitUrlPolicy.IsSafeUrl(parsed.CloneUrl)) continue;
+            if (!GitUrlPolicy.IsSafeUrl(parsed.CloneUrl) || !GitUrlPolicy.IsSafeSubPath(parsed.Path)) continue;
 
-            // Unity names the cache folder "<id>@<resolved-revision>".
+            // Unity names the cache folder "<id>@<suffix>"; packages-lock.json holds the resolved commit.
             var cacheFolder = SafeEnumerate(cacheDir, id + "@*").FirstOrDefault();
             if (cacheFolder is null) continue;
             var folderName = Path.GetFileName(cacheFolder);
             var at = folderName.IndexOf('@');
             if (at < 0) continue;
-            var hash = folderName[(at + 1)..];
+            var hash = lockedCommits.GetValueOrDefault(id) ?? folderName[(at + 1)..];
             if (!GitUrlPolicy.IsSafeRef(hash)) continue;
 
             // Fast bail-out: skip packages whose cache files all still sit at their checkout time.
@@ -81,6 +83,24 @@ public sealed class CacheDriftService
         }
 
         return results;
+    }
+
+    private static Dictionary<string, string> ReadLockedCommits(string unityProjectPath)
+    {
+        var commits = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var lockFile = Path.Combine(unityProjectPath, "Packages", "packages-lock.json");
+        try
+        {
+            if (!File.Exists(lockFile)) return commits;
+            using var doc = JsonDocument.Parse(File.ReadAllText(lockFile));
+            if (!doc.RootElement.TryGetProperty("dependencies", out var deps) || deps.ValueKind != JsonValueKind.Object) return commits;
+            foreach (var dep in deps.EnumerateObject())
+                if (dep.Value.ValueKind == JsonValueKind.Object && dep.Value.TryGetProperty("hash", out var hash)
+                    && hash.ValueKind == JsonValueKind.String && hash.GetString() is { Length: > 0 } commit)
+                    commits[dep.Name] = commit;
+        }
+        catch (Exception ex) { DiagnosticLog.Write($"Reading resolved package commits from {lockFile}", ex); }
+        return commits;
     }
 
     private static IEnumerable<string> SafeEnumerate(string dir, string pattern)

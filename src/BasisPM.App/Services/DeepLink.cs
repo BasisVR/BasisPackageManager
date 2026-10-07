@@ -12,6 +12,7 @@ public sealed record DeepLinkRequest(string? Id, string? Name, string? Git, stri
 public static class DeepLink
 {
     public const string Scheme = "basispm";
+    public const string ActivateUri = Scheme + "://activate";
 
     public static bool IsDeepLink(string? arg)
     {
@@ -111,7 +112,7 @@ public static class DeepLink
             return;
         }
 
-        var exe = Environment.ProcessPath;
+        var exe = OperatingSystem.IsLinux() && Environment.GetEnvironmentVariable("APPIMAGE") is { Length: > 0 } appImage ? appImage : Environment.ProcessPath;
         if (string.IsNullOrEmpty(exe))
         {
             return;

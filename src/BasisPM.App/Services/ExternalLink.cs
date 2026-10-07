@@ -26,6 +26,31 @@ public static class ExternalLink
         }
     }
 
+    private static readonly HashSet<string> OpenableExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".cs", ".txt", ".md", ".json", ".xml", ".yml", ".yaml", ".asmdef", ".asmref", ".shader", ".hlsl", ".cginc",
+        ".compute", ".uss", ".uxml", ".inputactions", ".csv", ".ini", ".cfg", ".props", ".targets", ".gitignore",
+        ".gitattributes", ".editorconfig",
+    };
+
+    public static bool CanOpenFile(string? path) =>
+        !string.IsNullOrWhiteSpace(path) && OpenableExtensions.Contains(Path.GetExtension(path));
+
+    public static void OpenFile(string? path)
+    {
+        if (!CanOpenFile(path) || !File.Exists(path))
+        {
+            return;
+        }
+
+        try { Process.Start(new ProcessStartInfo(path!) { UseShellExecute = true }); }
+        catch (Exception E)
+        {
+            DiagnosticLog.Write($"Opening file {path}", E);
+            Console.WriteLine($"{E.Message} {E.StackTrace}");
+        }
+    }
+
     /// <summary>Opens a local folder in the OS file manager. Only accepts an existing directory.</summary>
     public static void OpenFolder(string? path)
     {

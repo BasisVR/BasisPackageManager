@@ -45,6 +45,36 @@ public sealed class MountServiceTests
     }
 
     [Fact]
+    public void IsWorkingClone_requires_a_git_directory_in_the_folder_itself()
+    {
+        using var t = new TempDir();
+        Assert.False(MountService.IsWorkingClone(t.CreateDir("plain")));
+        t.CreateDir("clone/.git");
+        Assert.True(MountService.IsWorkingClone(t.Combine("clone")));
+        Assert.False(MountService.IsWorkingClone(t.CreateDir("clone/inner")));
+        Assert.False(MountService.IsWorkingClone(null));
+    }
+
+    [Fact]
+    public async Task SwapBack_leaves_a_registered_folder_that_is_not_a_clone_untouched()
+    {
+        using var t = new TempDir();
+        var project = t.CreateDir("Basis");
+        var manifest = t.WriteFile("Basis/Packages/manifest.json", """{ "dependencies": {} }""");
+        var package = t.WriteFile("Basis/Packages/com.x/package.json", """{ "name": "com.x" }""");
+        var registry = new MountRegistry(t.Combine("data"));
+        registry.Add(new MountRecord(project, "com.x", t.Combine("Basis/Packages/com.x"), "https://github.com/o/r.git"));
+        var service = new MountService(new GitService(), new UnityProjectService(), registry);
+        var install = new BasisInstall { RepoRoot = t.Path, UnityProjectPath = project, Name = "Basis" };
+
+        var result = await service.SwapBackAsync(install, "com.x");
+
+        Assert.False(result.Ok);
+        Assert.True(File.Exists(package));
+        Assert.DoesNotContain("com.x", File.ReadAllText(manifest));
+    }
+
+    [Fact]
     public void MountResult_helpers()
     {
         Assert.True(MountResult.Success("folder").Ok);

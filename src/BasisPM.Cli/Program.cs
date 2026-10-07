@@ -27,6 +27,7 @@ internal sealed class ConsoleApplication
     private readonly MountRegistry _mountRegistry;
     private readonly BasisInstallService _installs;
     private readonly MountService _mounts;
+    private readonly BasisUpdateService _updates;
     private CancellationTokenSource? _activeOperation;
     private string? _basisPath;
     private Catalog? _catalog;
@@ -44,6 +45,7 @@ internal sealed class ConsoleApplication
         _mountRegistry = new MountRegistry();
         _installs = new BasisInstallService(_projects, _git);
         _mounts = new MountService(_git, _projects, _mountRegistry);
+        _updates = new BasisUpdateService(_git);
         Console.CancelKeyPress += (_, e) =>
         {
             if (_activeOperation is null) return;
@@ -83,7 +85,8 @@ internal sealed class ConsoleApplication
         if (projectOption >= 0)
         {
             if (projectOption + 1 >= args.Count) { WriteError("--project requires a path."); return 2; }
-            UseProject(args[projectOption + 1], quiet: true);
+            try { UseProject(args[projectOption + 1], quiet: true); }
+            catch (Exception ex) { DiagnosticLog.Write("Selecting the CLI project", ex); WriteError(ex.Message); return 2; }
             args.RemoveRange(projectOption, 2);
         }
         if (args.Count == 0) { WriteHelp(); return 0; }
@@ -104,7 +107,11 @@ internal sealed class ConsoleApplication
                 case "install-package-list": case "install-list": await InstallPackageListAsync(values); break;
                 case "branches": await ListBranchesAsync(); break;
                 case "change-branch": case "checkout": await ChangeBranchAsync(values); break;
-                case "update-basis": case "pull": await UpdateBasisAsync(); break;
+                case "update-basis": case "update": case "pull": await UpdateBasisAsync(values); break;
+                case "check-updates": case "check": await CheckUpdatesAsync(); break;
+                case "conflicts": await ShowConflictsAsync(); break;
+                case "resolve": await ResolveConflictAsync(values); break;
+                case "basis-branch": await BasisBranchAsync(values); break;
                 case "open-unity": await OpenUnityAsync(); break;
                 case "exit": case "quit": break;
                 default: WriteError($"Unknown command '{args[0]}'. Type 'help' to see available commands."); return 2;
@@ -249,7 +256,7 @@ internal sealed class ConsoleApplication
             if (string.IsNullOrWhiteSpace(package.Id) || PackageIsBundled(install, package.Id)) continue;
             var value = !string.IsNullOrWhiteSpace(package.GitUrl) ? package.GitUrl : package.Version;
             if (string.IsNullOrWhiteSpace(value)) continue;
-            if (!string.IsNullOrWhiteSpace(package.GitUrl) && !GitUrlPolicy.IsSafeUrl(package.GitUrl))
+            if (!string.IsNullOrWhiteSpace(package.GitUrl) && !GitUrlPolicy.IsSafeDependencyUrl(package.GitUrl))
             {
                 WriteWarning($"Skipped {package.Id}: unsupported git URL.");
                 continue;
@@ -276,13 +283,289 @@ internal sealed class ConsoleApplication
         WriteSuccess($"Switched to {values[0]}.");
     }
 
-    private async Task UpdateBasisAsync()
+    private async Task UpdateBasisAsync(IReadOnlyList<string> values)
+    {
+        var options = values.ToList();
+        var install = await LoadInstallAsync();
+        if (TakeFlag(options, "--continue"))
+        {
+            BasisUpdateResult continued = null!;
+            await RunOperationAsync(async ct => continued = await _updates.ContinueAsync(install.RepoRoot, Console.WriteLine, ct));
+            await ReportUpdateAsync(install, continued);
+            return;
+        }
+        if (TakeFlag(options, "--abort"))
+        {
+            await ReportUpdateAsync(install, await _updates.AbortAsync(install.RepoRoot));
+            return;
+        }
+        var assumeYes = TakeFlag(options, "--yes") | TakeFlag(options, "-y");
+        var link = TakeFlag(options, "--link");
+        var initGit = TakeFlag(options, "--init-git");
+        var branch = TakeValue(options, "--branch");
+        if (options.Count > 0)
+            throw new ArgumentException("Usage: update-basis [--branch <name>] [--yes] [--link] [--init-git] | --continue | --abort");
+
+        var plan = await PlanUpdateAsync(install, branch);
+        if (plan.Kind == BasisUpdateKind.NotGitRepo)
+        {
+            if (!initGit)
+                throw new InvalidOperationException("This project isn't tracked by git. Run 'update-basis --init-git' to record it in a new local git repository first (nothing is uploaded).");
+            var init = await _updates.InitializeRepositoryAsync(install.RepoRoot, install.UnityProjectPath, Console.WriteLine);
+            if (!init.Ok) throw new InvalidOperationException(DescribeFailure(init.Failure, init.Detail));
+            plan = await PlanUpdateAsync(install, branch);
+        }
+        if (plan.Kind == BasisUpdateKind.Unrelated)
+        {
+            var match = plan.SuggestedBase
+                ?? throw new InvalidOperationException("This project's git history isn't connected to Basis, and no matching Basis version was found to start from.");
+            Console.WriteLine($"Closest Basis version: {match.ShortSha} {match.Date:yyyy-MM-dd} \"{match.Subject}\" ({match.MatchRatio:P0} of its files match).");
+            if (!link)
+                throw new InvalidOperationException("Run 'update-basis --link' to record that version as this project's starting point and merge the newer Basis changes.");
+            var linked = await _updates.LinkAsync(install.RepoRoot, match.Sha);
+            if (!linked.Ok) throw new InvalidOperationException(DescribeFailure(linked.Failure, linked.Detail));
+            plan = await PlanUpdateAsync(install, branch);
+        }
+
+        switch (plan.Kind)
+        {
+            case BasisUpdateKind.InProgress:
+                WriteWarning("A Basis update is already in progress.");
+                await ShowConflictsAsync();
+                return;
+            case BasisUpdateKind.UpToDate:
+                WriteSuccess($"Already up to date with Basis {plan.BasisBranch} ({Short(plan.UpstreamSha)}).");
+                return;
+            case BasisUpdateKind.Blocked:
+                throw new InvalidOperationException(DescribeBlock(plan));
+            case BasisUpdateKind.FastForward or BasisUpdateKind.Merge:
+                break;
+            default:
+                throw new InvalidOperationException("This project can't be updated automatically.");
+        }
+
+        PrintPlan(plan);
+        if (plan.BlockingPaths.Count > 0)
+            throw new InvalidOperationException("Files ignored by git are in the way of new Basis files. Remove or move them, then try again:\n  " + string.Join("\n  ", plan.BlockingPaths.Take(10)));
+        if (UnityProjectService.IsOpenInUnity(install.UnityProjectPath))
+        {
+            if (OperatingSystem.IsWindows()) throw new InvalidOperationException("Unity has this project open. Close Unity, then run the update again.");
+            WriteWarning("Unity may still have this project open. Close it first if it is running.");
+        }
+        if (!assumeYes)
+        {
+            if (Console.IsInputRedirected) throw new InvalidOperationException("Add --yes to update without a confirmation prompt.");
+            Console.Write("Update now? [y/N] ");
+            if (!string.Equals(Console.ReadLine()?.Trim(), "y", StringComparison.OrdinalIgnoreCase))
+            {
+                WriteWarning("Update cancelled.");
+                return;
+            }
+        }
+
+        BasisUpdateResult result = null!;
+        await RunOperationAsync(async ct => result = await _updates.ApplyAsync(install.RepoRoot, plan, Console.WriteLine, ct));
+        await ReportUpdateAsync(install, result);
+    }
+
+    private async Task<BasisUpdatePlan> PlanUpdateAsync(BasisInstall install, string? branch)
+    {
+        BasisUpdatePlan plan = null!;
+        await RunOperationAsync(async ct => plan = await _updates.PlanAsync(install.RepoRoot, branch, Console.WriteLine, ct));
+        return plan;
+    }
+
+    private static void PrintPlan(BasisUpdatePlan plan)
+    {
+        Console.WriteLine($"Basis {plan.BasisBranch} -> {plan.LocalBranch}: {plan.IncomingCount} new Basis commit(s).");
+        foreach (var commit in plan.IncomingCommits.Take(15))
+            Console.WriteLine($"  {commit.ShortSha} {commit.Date:yyyy-MM-dd} {commit.Subject}");
+        if (plan.IncomingCount > 15) Console.WriteLine($"  … and {plan.IncomingCount - 15} more");
+        Console.WriteLine(plan.Kind == BasisUpdateKind.FastForward
+            ? "Your branch has no commits of its own, so it moves straight to the new Basis."
+            : $"Your {plan.LocalCommitCount} commit(s) will be merged with Basis in a new merge commit.");
+        if (plan.UncommittedCount > 0)
+            Console.WriteLine($"{plan.UncommittedCount} uncommitted change(s) stay as they are; {plan.CollidingPaths.Count} of them are files Basis also changes and will be merged back after the update.");
+        if (plan.PredictedConflicts is { Count: > 0 } predicted)
+        {
+            Console.WriteLine($"{predicted.Count} file(s) changed on both sides will need a decision:");
+            foreach (var path in predicted.Take(10)) Console.WriteLine($"  {path}");
+        }
+    }
+
+    private async Task ReportUpdateAsync(BasisInstall before, BasisUpdateResult result)
+    {
+        switch (result.Kind)
+        {
+            case BasisUpdateResultKind.Updated:
+                var after = await _installs.LoadAsync(before.RepoRoot);
+                WriteSuccess($"Updated {after.DisplayName} to the latest Basis ({Short(result.NewHead)}).");
+                if (!string.Equals(before.UnityVersion, after.UnityVersion, StringComparison.Ordinal))
+                    WriteWarning($"Basis now uses Unity {after.UnityVersion} (was {before.UnityVersion}).");
+                break;
+            case BasisUpdateResultKind.Aborted:
+                WriteSuccess("Update cancelled. The project is back to how it was before the update.");
+                break;
+            case BasisUpdateResultKind.Conflicts:
+                PrintConflicts(result.Phase ?? BasisUpdatePhase.Merging, result.Conflicts ?? Array.Empty<BasisConflict>());
+                break;
+            default:
+                throw new InvalidOperationException(DescribeFailure(result.Failure, result.Detail));
+        }
+    }
+
+    private async Task CheckUpdatesAsync()
     {
         var install = await LoadInstallAsync();
-        var result = await _git.PullAsync(install.RepoRoot, line => Console.WriteLine(line));
-        if (!result.Ok) throw new InvalidOperationException(result.Output);
-        WriteSuccess("Basis is up to date.");
+        BasisUpdateCheck check = null!;
+        await RunOperationAsync(async ct => check = await _updates.CheckAsync(install.RepoRoot, allowFetch: true, Console.WriteLine, ct));
+        switch (check.Status)
+        {
+            case BasisUpdateStatus.UpToDate:
+                WriteSuccess($"Up to date with Basis {check.BasisBranch}.");
+                break;
+            case BasisUpdateStatus.UpdateAvailable when check.InProgress:
+                WriteWarning("A Basis update is in progress. Run 'conflicts' to see what still needs a decision.");
+                break;
+            case BasisUpdateStatus.UpdateAvailable:
+                WriteWarning(check.Behind is int behind
+                    ? $"Basis {check.BasisBranch} has {behind} new commit(s). Run 'update-basis' to update."
+                    : $"A newer Basis {check.BasisBranch} is available. Run 'update-basis' to update.");
+                break;
+            case BasisUpdateStatus.NotGitRepo:
+                WriteWarning("This project isn't tracked by git, so updates can't be checked. Run 'update-basis --init-git' to set that up.");
+                break;
+            default:
+                throw new InvalidOperationException(check.Detail ?? "Couldn't check for Basis updates.");
+        }
     }
+
+    private async Task ShowConflictsAsync()
+    {
+        var install = await LoadInstallAsync();
+        var state = await _updates.LoadStateAsync(install.RepoRoot);
+        if (state is null)
+        {
+            WriteSuccess("No Basis update is in progress.");
+            return;
+        }
+        PrintConflicts(state.Phase, await _updates.GetConflictsAsync(install.RepoRoot));
+    }
+
+    private static void PrintConflicts(BasisUpdatePhase phase, IReadOnlyList<BasisConflict> conflicts)
+    {
+        WriteWarning(phase == BasisUpdatePhase.Merging
+            ? "Basis and your project changed the same files. Choose a version for each one:"
+            : "Basis is updated, but some of your uncommitted edits overlap the new Basis changes. Choose a version for each one:");
+        foreach (var conflict in conflicts)
+            Console.WriteLine($"  [{DescribeConflict(conflict.Kind)}] {conflict.Path}{(conflict.IsUnityAsset ? "  (Unity asset: pick a version, don't hand-merge)" : "")}");
+        Console.WriteLine(conflicts.Count == 0
+            ? "Nothing left to decide. Run 'update-basis --continue' to finish."
+            : "Use 'resolve <path> mine|basis|done' (or 'resolve --all mine|basis'), then 'update-basis --continue'. 'update-basis --abort' puts everything back.");
+    }
+
+    private async Task ResolveConflictAsync(IReadOnlyList<string> values)
+    {
+        RequireCount(values, 2, "resolve <path>|--all mine|basis|done");
+        var choice = values[1].ToLowerInvariant() switch
+        {
+            "mine" => ConflictChoice.Mine,
+            "basis" => ConflictChoice.Basis,
+            "done" => ConflictChoice.Resolved,
+            _ => throw new ArgumentException("Usage: resolve <path>|--all mine|basis|done"),
+        };
+        var install = await LoadInstallAsync();
+        var conflicts = await _updates.GetConflictsAsync(install.RepoRoot);
+        var targets = values[0] == "--all"
+            ? conflicts.Select(c => c.Path).ToList()
+            : new List<string> { values[0].Replace('\\', '/') };
+        if (values[0] == "--all" && choice == ConflictChoice.Resolved) throw new ArgumentException("'--all' needs mine or basis.");
+        foreach (var path in targets)
+        {
+            var resolved = await _updates.ResolveAsync(install.RepoRoot, path, choice);
+            if (!resolved.Ok) throw new InvalidOperationException(DescribeFailure(resolved.Failure, resolved.Detail));
+            WriteSuccess($"Resolved {path}.");
+        }
+        var remaining = (await _updates.GetConflictsAsync(install.RepoRoot)).Count;
+        Console.WriteLine(remaining == 0
+            ? "All files are decided. Run 'update-basis --continue' to finish the update."
+            : $"{remaining} file(s) still need a decision.");
+    }
+
+    private async Task BasisBranchAsync(IReadOnlyList<string> values)
+    {
+        RequireRange(values, 0, 1, "basis-branch [branch]");
+        var install = await LoadInstallAsync();
+        if (values.Count == 1)
+        {
+            var set = await _updates.SetBasisBranchAsync(install.RepoRoot, values[0]);
+            if (!set.Ok) throw new InvalidOperationException("Couldn't save the Basis branch. Make sure the project is on a git branch.");
+            WriteSuccess($"This branch now follows Basis {values[0]}.");
+            return;
+        }
+        var heads = await _updates.GetBasisHeadsAsync(refresh: true);
+        Console.WriteLine($"Follows Basis: {await _updates.ResolveBasisBranchAsync(install.RepoRoot, heads)}");
+        foreach (var name in BasisUpdateService.OrderBranches(heads.Keys).Take(12)) Console.WriteLine($"  {name}");
+    }
+
+    private static string DescribeBlock(BasisUpdatePlan plan) => plan.Block switch
+    {
+        BasisUpdateBlock.GitMissing => "Git was not found on PATH.",
+        BasisUpdateBlock.GitTooOld => $"Git {plan.Detail} is too old; Basis updates need Git {BasisUpdateService.MinimumGitVersion.ToString(2)} or newer.",
+        BasisUpdateBlock.DetachedHead => "The project isn't on a branch. Switch to a branch first (change-branch <name>).",
+        BasisUpdateBlock.OperationInProgress => $"A git {plan.Detail} is already in progress in this project. Finish or abort it first.",
+        BasisUpdateBlock.BranchNotFound => $"Basis has no branch called '{plan.Detail}'. Pick another with --branch.",
+        BasisUpdateBlock.ShallowClone => "This is a shallow clone, so its history can't be matched to Basis. Run 'git fetch --unshallow' first.",
+        _ => $"Couldn't download Basis: {plan.Detail}",
+    };
+
+    private static string DescribeFailure(BasisUpdateFailure failure, string? detail) => failure switch
+    {
+        BasisUpdateFailure.HeadMoved => "The project changed since the update was checked. Run update-basis again.",
+        BasisUpdateFailure.AlreadyInProgress => "A Basis update is already in progress. Run 'conflicts' to see it.",
+        BasisUpdateFailure.NoUpdateInProgress => "No Basis update is in progress.",
+        BasisUpdateFailure.IgnoredFilesInTheWay => "Files ignored by git are in the way of new Basis files:\n  " + detail?.Replace("\n", "\n  "),
+        BasisUpdateFailure.MarkersRemain => $"{detail} still contains conflict markers (<<<<<<< / >>>>>>>). Finish editing it first.",
+        BasisUpdateFailure.LibraryNotIgnored => $"'{detail}' isn't covered by a .gitignore, so git would record the Library cache. Add a Unity .gitignore first.",
+        BasisUpdateFailure.SetAsideFailed => $"Couldn't set your edits aside before updating: {detail}",
+        BasisUpdateFailure.MergeFailed => $"Git couldn't merge Basis, so nothing was changed: {detail}",
+        BasisUpdateFailure.CommitFailed => $"Couldn't record the merge: {detail}",
+        BasisUpdateFailure.RestoreFailed => $"Basis is updated, but your edits couldn't be put back yet (they are safe in the git stash): {detail}",
+        BasisUpdateFailure.AbortFailed => $"Couldn't undo the update: {detail}",
+        BasisUpdateFailure.ResolveFailed => $"Couldn't resolve that file: {detail}",
+        BasisUpdateFailure.LinkFailed => $"Couldn't link the project to Basis: {detail}",
+        BasisUpdateFailure.InitFailed => $"Couldn't record the project in git: {detail}",
+        _ => "This project can't be updated automatically.",
+    };
+
+    private static string DescribeConflict(ConflictKind kind) => kind switch
+    {
+        ConflictKind.BothChanged => "both changed",
+        ConflictKind.BothAdded => "both added",
+        ConflictKind.DeletedByYou => "you deleted, Basis changed",
+        ConflictKind.DeletedByBasis => "Basis deleted, you changed",
+        _ => "both deleted",
+    };
+
+    private static bool TakeFlag(List<string> options, string flag)
+    {
+        var index = options.FindIndex(o => o.Equals(flag, StringComparison.OrdinalIgnoreCase));
+        if (index < 0) return false;
+        options.RemoveAt(index);
+        return true;
+    }
+
+    private static string? TakeValue(List<string> options, string name)
+    {
+        var index = options.FindIndex(o => o.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (index < 0) return null;
+        if (index + 1 >= options.Count) throw new ArgumentException($"{name} needs a value.");
+        var value = options[index + 1];
+        options.RemoveRange(index, 2);
+        return value;
+    }
+
+    private static string Short(string? sha) => string.IsNullOrEmpty(sha) ? "" : sha.Length > 9 ? sha[..9] : sha;
 
     private async Task OpenUnityAsync()
     {
@@ -310,7 +593,8 @@ internal sealed class ConsoleApplication
     }
 
     private bool PackageIsBundled(BasisInstall install, string id) =>
-        _projects.ListEmbeddedPackages(install.UnityProjectPath)
+        _mountRegistry.Find(install.UnityProjectPath, id) is { } mount && Directory.Exists(mount.FolderPath)
+        || _projects.ListEmbeddedPackages(install.UnityProjectPath)
             .Any(p => p.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
 
     private async Task RunOperationAsync(Func<CancellationToken, Task> operation)
@@ -352,7 +636,13 @@ Basis
   status                               Show clone, Unity and bundled-package details
   branches                             List local and remote branches
   change-branch <branch>               Fetch and switch branch
-  update-basis                         Fast-forward the selected Basis clone
+  check-updates                        Check BasisVR/Basis for a newer version
+  update-basis [--branch <name>]       Merge the latest BasisVR/Basis into the current branch
+               [--yes] [--link] [--init-git]
+  update-basis --continue | --abort    Finish or undo an update that is waiting on decisions
+  conflicts                            List files an update needs a decision on
+  resolve <path>|--all mine|basis|done Keep your version, take Basis's, or mark an edited file done
+  basis-branch [branch]                Show or set the Basis branch this branch follows
 
 Packages
   list-packages [search]               Show included, installed and available packages
@@ -390,10 +680,10 @@ Press Ctrl+C to cancel a clone or package download.
             if (quote is not null)
             {
                 if (c == quote) quote = null;
-                else if (c == '\\' && i + 1 < input.Length && input[i + 1] == quote) token.Append(input[++i]);
+                else if (c == '\\' && i + 2 < input.Length && input[i + 1] == quote && !char.IsWhiteSpace(input[i + 2])) token.Append(input[++i]);
                 else token.Append(c);
             }
-            else if (c is '\'' or '"') quote = c;
+            else if (c is '\'' or '"' && token.Length == 0) quote = c;
             else if (char.IsWhiteSpace(c)) { if (token.Length > 0) { yield return token.ToString(); token.Clear(); } }
             else token.Append(c);
         }

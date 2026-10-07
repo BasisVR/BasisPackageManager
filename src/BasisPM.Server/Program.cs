@@ -129,9 +129,11 @@ static async Task GenerateStaticSiteAsync(string outDir)
     // Bake real stars / forks / last-updated from GitHub/GitLab into the static bundle.
     var stats = new RepoStatsService(Environment.GetEnvironmentVariable("GITHUB_TOKEN"));
     var github = new GitHubService();
+    var missingStats = 0;
     foreach (var p in packages)
     {
         var s = await stats.FetchAsync(p.RepoUrl ?? p.GitUrl);
+        if (s is null) missingStats++;
 
         // Read the package's package.json once (authoritative for UPM): version + license.
         var upm = await FetchUpmPackageAsync(github, p.GitUrl ?? p.RepoUrl);
@@ -192,11 +194,14 @@ static async Task GenerateStaticSiteAsync(string outDir)
     File.Copy(indexPath, Path.Combine(outDir, "index.html"), overwrite: true);
 
     Console.WriteLine($"Generated static registry ({packages.Count} packages, {packageLists.Count} package lists) → {Path.GetFullPath(outDir)}");
+    if (missingStats > 0)
+        Console.Error.WriteLine($"Warning: repository stats could not be read for {missingStats} of {packages.Count} packages, so they ship with 0 stars and forks. Set GITHUB_TOKEN if the GitHub API rate limit was hit.");
+    if (missingStats * 2 > packages.Count) Environment.ExitCode = 1;
 }
 
 static async Task<UpmPackageJson?> FetchUpmPackageAsync(GitHubService github, string? gitOrRepoUrl)
 {
-    if (string.IsNullOrWhiteSpace(gitOrRepoUrl)) return null;
+    if (string.IsNullOrWhiteSpace(gitOrRepoUrl) || UpmGitUrl.Parse(gitOrRepoUrl) is not { IsGitHub: true }) return null;
     try
     {
         var loc = GitHubService.Parse(gitOrRepoUrl);
@@ -213,16 +218,15 @@ static async Task<HashSet<string>> FetchBuiltInIdsAsync(string? token)
     var branch = Environment.GetEnvironmentVariable("BASIS_MANIFEST_BRANCH") ?? "developer";
     var path = Environment.GetEnvironmentVariable("BASIS_MANIFEST_PATH") ?? "Basis/Packages/manifest.json";
     var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+    http.DefaultRequestHeaders.UserAgent.ParseAdd("BasisPackageManager/1.0");
+    http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github.raw");
+    if (!string.IsNullOrWhiteSpace(token))
+        http.DefaultRequestHeaders.Authorization = new("Bearer", token.Trim());
+    string ContentsUrl(string file) => $"https://api.github.com/repos/{repo}/contents/{Uri.EscapeDataString(file).Replace("%2F", "/")}?ref={Uri.EscapeDataString(branch)}";
     try
     {
-        using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
-        http.DefaultRequestHeaders.UserAgent.ParseAdd("BasisPackageManager/1.0");
-        http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github.raw");
-        if (!string.IsNullOrWhiteSpace(token))
-            http.DefaultRequestHeaders.Authorization = new("Bearer", token.Trim());
-        var url = $"https://api.github.com/repos/{repo}/contents/{Uri.EscapeDataString(path).Replace("%2F", "/")}?ref={Uri.EscapeDataString(branch)}";
-        var json = await http.GetStringAsync(url);
-        using var doc = JsonDocument.Parse(json);
+        using var doc = JsonDocument.Parse(await http.GetStringAsync(ContentsUrl(path)));
         if (doc.RootElement.TryGetProperty("dependencies", out var deps) && deps.ValueKind == JsonValueKind.Object)
             foreach (var dep in deps.EnumerateObject())
                 ids.Add(dep.Name);
@@ -231,7 +235,20 @@ static async Task<HashSet<string>> FetchBuiltInIdsAsync(string? token)
     {
         DiagnosticLog.Write($"Detecting built-in packages from {repo}@{branch}", ex);
         Console.Error.WriteLine($"  (built-in detection skipped — could not read {repo}@{branch}: {ex.Message})");
+        return ids;
     }
+
+    var lockPath = path[..(path.LastIndexOf('/') + 1)] + "packages-lock.json";
+    try
+    {
+        using var lockDoc = JsonDocument.Parse(await http.GetStringAsync(ContentsUrl(lockPath)));
+        if (lockDoc.RootElement.TryGetProperty("dependencies", out var locked) && locked.ValueKind == JsonValueKind.Object)
+            foreach (var dep in locked.EnumerateObject())
+                if (dep.Value.ValueKind == JsonValueKind.Object && dep.Value.TryGetProperty("source", out var source)
+                    && source.ValueKind == JsonValueKind.String && source.GetString() == "embedded")
+                    ids.Add(dep.Name);
+    }
+    catch (Exception ex) { DiagnosticLog.Write($"Reading embedded packages from {repo}@{branch}:{lockPath}", ex); }
     return ids;
 }
 

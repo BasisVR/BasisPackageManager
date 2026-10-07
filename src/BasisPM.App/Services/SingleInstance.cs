@@ -1,4 +1,5 @@
 using System.IO.Pipes;
+using System.Runtime.InteropServices;
 using BasisPM.Core.Services;
 
 namespace BasisPM.App.Services;
@@ -22,10 +23,14 @@ public static class SingleInstance
         return createdNew;
     }
 
+    [DllImport("user32.dll")]
+    private static extern bool AllowSetForegroundWindow(int processId);
+
     public static void ForwardToPrimary(string uri)
     {
         try
         {
+            if (OperatingSystem.IsWindows()) AllowSetForegroundWindow(-1);
             using var client = new NamedPipeClientStream(".", PipeName, PipeDirection.Out);
             client.Connect(2000);
             using var writer = new StreamWriter(client) { AutoFlush = true };

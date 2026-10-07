@@ -62,6 +62,66 @@ public sealed class GitHubApiServiceTests
     }
 
     [Fact]
+    public async Task RepoExists_is_true_when_github_returns_the_repo()
+    {
+        var (api, handler) = Api(_ => Ok("""{ "name": "repo", "full_name": "o/repo" }"""));
+
+        Assert.True(await api.RepoExistsAsync("o", "repo"));
+        Assert.EndsWith("/repos/o/repo", handler.Requests[0].RequestUri!.AbsolutePath);
+        Assert.Null(handler.Requests[0].Headers.Authorization);
+    }
+
+    [Fact]
+    public async Task RepoExists_sends_the_token_when_given()
+    {
+        var (api, handler) = Api(_ => Ok("{}"));
+
+        Assert.True(await api.RepoExistsAsync("o", "repo", "tok"));
+        Assert.Equal("Bearer", handler.Requests[0].Headers.Authorization?.Scheme);
+        Assert.Equal("tok", handler.Requests[0].Headers.Authorization?.Parameter);
+    }
+
+    [Fact]
+    public async Task RepoExists_is_false_on_not_found()
+    {
+        var (api, _) = Api(_ => new HttpResponseMessage(HttpStatusCode.NotFound));
+        Assert.False(await api.RepoExistsAsync("o", "missing"));
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.Unauthorized)]
+    [InlineData(HttpStatusCode.Forbidden)]
+    [InlineData(HttpStatusCode.TooManyRequests)]
+    [InlineData(HttpStatusCode.InternalServerError)]
+    public async Task RepoExists_is_unknown_when_github_cant_answer(HttpStatusCode status)
+    {
+        var (api, _) = Api(_ => new HttpResponseMessage(status));
+        Assert.Null(await api.RepoExistsAsync("o", "r"));
+    }
+
+    [Fact]
+    public async Task RepoExists_is_unknown_on_network_failure()
+    {
+        var (api, _) = Api(_ => throw new HttpRequestException("down"));
+        Assert.Null(await api.RepoExistsAsync("o", "r"));
+    }
+
+    [Theory]
+    [InlineData("..", "r")]
+    [InlineData("o", "..")]
+    [InlineData("o", ".")]
+    [InlineData("o", @"r\..\..\users\x")]
+    [InlineData("o", "a b")]
+    [InlineData("", "r")]
+    public async Task RepoExists_is_false_without_a_request_for_names_github_cant_have(string owner, string repo)
+    {
+        var (api, handler) = Api(_ => Ok("{}"));
+
+        Assert.False(await api.RepoExistsAsync(owner, repo));
+        Assert.Empty(handler.Requests);
+    }
+
+    [Fact]
     public async Task CreateRepo_posts_and_returns_repo()
     {
         var (api, handler) = Api(_ => StubHttpMessageHandler.Json(HttpStatusCode.Created,

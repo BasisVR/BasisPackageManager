@@ -29,6 +29,7 @@ public sealed record UpmGitUrl(string Host, string Owner, string Repo, string Cl
     {
         if (string.IsNullOrWhiteSpace(url)) return null;
         var raw = url.Trim();
+        if (raw.StartsWith("file:", StringComparison.OrdinalIgnoreCase)) return null;
 
         string? refName = null, path = null;
         var hash = raw.IndexOf('#');
@@ -47,22 +48,36 @@ public sealed record UpmGitUrl(string Host, string Owner, string Repo, string Cl
             }
         }
 
-        raw = raw.Replace("git+", "", StringComparison.OrdinalIgnoreCase);
-        var m = Regex.Match(raw, @"^(?:https?://|ssh://git@|git@)?([^/:]+)[/:]+(.+)$", RegexOptions.IgnoreCase);
-        if (!m.Success) return null;
+        if (raw.StartsWith("git+", StringComparison.OrdinalIgnoreCase)) raw = raw[4..];
 
-        var host = m.Groups[1].Value.ToLowerInvariant();
-        var rest = m.Groups[2].Value.TrimEnd('/');
+        string host, rest;
+        if (raw.Contains("://", StringComparison.Ordinal))
+        {
+            if (!Uri.TryCreate(raw, UriKind.Absolute, out var uri) || string.IsNullOrEmpty(uri.Host)) return null;
+            host = uri.Host;
+            rest = Uri.UnescapeDataString(uri.AbsolutePath);
+        }
+        else
+        {
+            var m = Regex.Match(raw, @"^(?:[^@/:]+@)?([^/:]+)[:/](.+)$");
+            if (!m.Success) return null;
+            host = m.Groups[1].Value;
+            rest = m.Groups[2].Value;
+        }
+
+        host = host.ToLowerInvariant();
+        if (host is "www.github.com" or "www.gitlab.com") host = host[4..];
+        rest = rest.Trim('/');
         if (rest.EndsWith(".git", StringComparison.OrdinalIgnoreCase)) rest = rest[..^4];
 
         var segs = rest.Split('/', StringSplitOptions.RemoveEmptyEntries);
         if (segs.Length < 2) return null;
 
         string owner, repo;
-        if (host == "gitlab.com") { repo = segs[^1]; owner = string.Join('/', segs[..^1]); }
-        else { owner = segs[0]; repo = segs[1]; }
+        if (host == "github.com") { owner = segs[0]; repo = segs[1]; }
+        else { repo = segs[^1]; owner = string.Join('/', segs[..^1]); }
 
-        var cloneUrl = $"https://{host}/{owner}/{repo}.git";
+        var cloneUrl = host is "github.com" or "gitlab.com" ? $"https://{host}/{owner}/{repo}.git" : raw;
         return new UpmGitUrl(host, owner, repo, cloneUrl,
             string.IsNullOrEmpty(refName) ? null : refName,
             string.IsNullOrEmpty(path) ? null : path);

@@ -64,6 +64,31 @@ public sealed class PackageStoreTests
     }
 
     [Fact]
+    public void Seed_edits_reach_a_store_that_already_has_registry_data()
+    {
+        using var t = new TempDir();
+        StoreWith(t, Pkg("com.a", "Old name"));
+        t.WriteFile("seed/packages.json", JsonSerializer.Serialize(new[] { Pkg("com.a", "New name"), Pkg("com.b", "Added") }));
+
+        var reopened = new PackageStore(t.Combine("data"), t.Combine("seed/packages.json"));
+
+        Assert.Equal("New name", reopened.Get("com.a")!.Name);
+        Assert.NotNull(reopened.Get("com.b"));
+    }
+
+    [Fact]
+    public void Corrupt_registry_is_kept_aside()
+    {
+        using var t = new TempDir();
+        var seed = t.WriteFile("seed/packages.json", JsonSerializer.Serialize(new[] { Pkg("com.a", "A") }));
+        t.WriteFile("data/registry.json", "{ not valid json");
+
+        _ = new PackageStore(t.Combine("data"), seed);
+
+        Assert.Equal("{ not valid json", File.ReadAllText(t.Combine("data/registry.json.corrupt")));
+    }
+
+    [Fact]
     public void Corrupt_registry_falls_back_to_seed()
     {
         using var t = new TempDir();

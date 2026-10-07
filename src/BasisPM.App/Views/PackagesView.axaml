@@ -583,7 +583,7 @@
                             </StackPanel>
                         </Button>
                         <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding IsMounted}"
+                                IsVisible="{Binding CanSubmitPr}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SubmitPrCommand}"
                                 CommandParameter="{Binding}"
                                 ToolTip.Tip="{loc:Tr develop.tooltip.submitPr}">

@@ -72,6 +72,9 @@ public static class GitUrlPolicy
         return !r.Any(c => char.IsControl(c) || char.IsWhiteSpace(c));
     }
 
+    public static bool IsSafeDependencyUrl(string? url) =>
+        IsSafeUrl(url) && (Models.UpmGitUrl.Parse(url) is not { } parsed || (IsSafeRef(parsed.Ref) && IsSafeSubPath(parsed.Path)));
+
     /// <summary>A UPM sub-path (<c>?path=</c>) that stays inside the clone: relative, no <c>..</c>, no NUL.</summary>
     public static bool IsSafeSubPath(string? path)
     {

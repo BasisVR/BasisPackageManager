@@ -114,6 +114,23 @@ public sealed class DependencyResolverTests
     }
 
     [Fact]
+    public void Upgrading_a_package_pulls_in_the_new_versions_dependencies()
+    {
+        var catalog = Build(
+            ("x", "1.0.0", new[] { ("c", "^1.0.0") }),
+            ("y", "1.0.0", new[] { ("c", "^2.0.0") }),
+            ("c", "1.0.0", new[] { ("d1", "*") }),
+            ("c", "2.0.0", new[] { ("d2", "*") }),
+            ("d1", "1.0.0", null),
+            ("d2", "1.0.0", null));
+
+        var result = NewResolver().Resolve(catalog, new[] { ("x", "*"), ("y", "*") });
+
+        Assert.Equal("2.0.0", result.Resolved["c"].Version);
+        Assert.Contains("d2", result.Resolved.Keys);
+    }
+
+    [Fact]
     public void Empty_request_resolves_to_nothing()
     {
         var result = NewResolver().Resolve(Build(("a", "1.0.0", null)), Array.Empty<(string, string)>());

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using BasisPM.Core;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
 using BasisPM.Server.Models;
@@ -16,7 +17,8 @@ public sealed class PackageStore
 
     private readonly string _path;
     private readonly object _gate = new();
-    private List<RegistryPackage> _packages;
+    private readonly List<RegistryPackage> _packages;
+    private readonly HashSet<string> _seedIds;
 
     // Canonical package data lives in seed/packages.json (committed, PR-editable).
     // Runtime submissions on a live server are written to dataDir/registry.json on top of the seed.
@@ -24,17 +26,16 @@ public sealed class PackageStore
     {
         Directory.CreateDirectory(dataDir);
         _path = Path.Combine(dataDir, "registry.json");
+        _packages = LoadSeed(seedPath);
+        _seedIds = new HashSet<string>(_packages.Select(p => p.Id), StringComparer.OrdinalIgnoreCase);
 
-        if (File.Exists(_path))
-        {
-            try { _packages = Read(_path) ?? LoadSeed(seedPath); }
-            catch (Exception ex) { DiagnosticLog.Write($"Loading registry data from {_path}", ex); _packages = LoadSeed(seedPath); }
-        }
-        else
-        {
-            _packages = LoadSeed(seedPath);
-            Save();
-        }
+        if (!File.Exists(_path)) { Save(); return; }
+        List<RegistryPackage>? stored = null;
+        try { stored = Read(_path); }
+        catch (Exception ex) { DiagnosticLog.Write($"Loading registry data from {_path}", ex); AtomicFile.KeepUnreadableCopy(_path); }
+        foreach (var p in stored ?? new List<RegistryPackage>())
+            if (p is not null && !string.IsNullOrEmpty(p.Id) && !_packages.Any(s => string.Equals(s.Id, p.Id, StringComparison.OrdinalIgnoreCase)))
+                _packages.Add(p);
     }
 
     public static List<RegistryPackage> LoadSeed(string? seedPath)
@@ -118,6 +119,7 @@ public sealed class PackageStore
     // Caps that stop a public submission endpoint being used to fill the disk or push oversized
     // fields to every client. Generous enough for any real package.
     private const int MaxPackages = 5000;
+    private const int MaxIdLen = 214;
     private const int MaxFieldLen = 2000;
     private const int MaxTags = 24;
     private const int MaxTagLen = 64;
@@ -139,8 +141,18 @@ public sealed class PackageStore
         var id = sub.Id.Trim();
         if (!IsSafeId(id))
             throw new ArgumentException("Package id may contain only letters, digits, '.', '_' and '-'.");
+        if (id.Length > MaxIdLen)
+            throw new ArgumentException("Package id is too long.");
         if (!GitUrlPolicy.IsHostedGitUrl(sub.GitUrl))
             throw new ArgumentException("gitUrl must be an https URL on github.com or gitlab.com.");
+        if (!GitUrlPolicy.IsSafeDependencyUrl(sub.GitUrl))
+            throw new ArgumentException("gitUrl has an invalid ?path= sub-folder or #ref.");
+        if (!string.IsNullOrWhiteSpace(sub.Version) && !SemVer.TryParse(sub.Version, out _))
+            throw new ArgumentException("version must be a semantic version such as 1.2.0.");
+        if (sub.Dependencies is not null && sub.Dependencies.Any(d => !IsSafeId(d.Key) || d.Key.Length > MaxIdLen
+                || string.IsNullOrWhiteSpace(d.Value) || TooLong(d.Value)
+                || !(SemVerRange.TryParse(d.Value, out _) || GitUrlPolicy.IsHostedGitUrl(d.Value))))
+            throw new ArgumentException("Each dependency needs a package id and a version range or hosted git URL.");
         if (!string.IsNullOrWhiteSpace(sub.RepoUrl) && !GitUrlPolicy.IsWebUrl(sub.RepoUrl))
             throw new ArgumentException("repoUrl must be an http(s) URL.");
         if (!string.IsNullOrWhiteSpace(sub.AuthorUrl) && !GitUrlPolicy.IsWebUrl(sub.AuthorUrl))
@@ -198,7 +210,8 @@ public sealed class PackageStore
             };
 
             _packages.Add(pkg);
-            Save();
+            try { Save(); }
+            catch { _packages.Remove(pkg); throw; }
             return pkg;
         }
     }
@@ -345,6 +358,6 @@ public sealed class PackageStore
 
     private void Save()
     {
-        File.WriteAllText(_path, JsonSerializer.Serialize(_packages, FileOpts));
+        AtomicFile.WriteAllText(_path, JsonSerializer.Serialize(_packages.Where(p => !_seedIds.Contains(p.Id)).ToList(), FileOpts));
     }
 }

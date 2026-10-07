@@ -28,6 +28,20 @@ public sealed class PackageListServiceTests
     }
 
     [Fact]
+    public void PackageListsUrlFor_requires_the_whole_catalog_file_name()
+    {
+        Assert.Equal("https://basisvr.org/packages/packagelists.json",
+            PackageListService.PackageListsUrlFor("https://example.com/reg/mycatalog.json"));
+    }
+
+    [Fact]
+    public void PackageListsUrlFor_keeps_the_query_of_a_catalog_url()
+    {
+        Assert.Equal("https://example.com/reg/packagelists.json?token=abc",
+            PackageListService.PackageListsUrlFor("https://example.com/reg/catalog.json?token=abc"));
+    }
+
+    [Fact]
     public void PackageListsUrlFor_unrecognised_url_uses_the_default()
     {
         Assert.Equal("https://basisvr.org/packages/packagelists.json",

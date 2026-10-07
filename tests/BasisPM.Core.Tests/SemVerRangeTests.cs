@@ -75,6 +75,34 @@ public sealed class SemVerRangeTests
         Assert.Equal("^1.2.3", SemVerRange.Parse("^1.2.3").ToString());
     }
 
+    [Theory]
+    [InlineData(">=1.0.0 <2.0.0", "1.5.0", true)]
+    [InlineData(">=1.0.0 <2.0.0", "2.0.0", false)]
+    [InlineData(">= 1.0.0 < 2.0.0", "1.5.0", true)]
+    [InlineData("^1.0.0 || ^2.0.0", "2.3.0", true)]
+    [InlineData("^1.0.0 || ^2.0.0", "3.0.0", false)]
+    [InlineData("=1.2.3", "1.2.3", true)]
+    [InlineData("1.x", "1.9.0", true)]
+    [InlineData("1.x", "2.0.0", false)]
+    [InlineData("1.x", "2.0.0-beta", false)]
+    [InlineData("1.2.*", "1.2.7", true)]
+    [InlineData("1.2.*", "1.3.0", false)]
+    [InlineData("1.0.0 - 2.0.0", "2.0.0", true)]
+    [InlineData("1.0.0 - 2.0.0", "2.0.1", false)]
+    public void Compound_ranges(string range, string version, bool expected)
+    {
+        Assert.Equal(expected, Sat(range, version));
+    }
+
+    [Fact]
+    public void TryParse_reports_a_non_range_without_throwing()
+    {
+        Assert.False(SemVerRange.TryParse("https://github.com/o/r.git", out _));
+        Assert.False(SemVerRange.TryParse("file:../com.x", out _));
+        Assert.True(SemVerRange.TryParse("^1.0.0", out var range));
+        Assert.True(range!.Satisfies(SemVer.Parse("1.2.0")));
+    }
+
     [Fact]
     public void Parse_throws_on_garbage_bound()
     {

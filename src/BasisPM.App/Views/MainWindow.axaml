@@ -138,12 +138,23 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Spacing="0" Margin="10,0">
-                    <Button Classes="nav" Classes.active="{Binding IsInstalls}" Tag="installs" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.installs}">
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <PathIcon Width="18" Height="18" Data="{StaticResource IconInstalls}" VerticalAlignment="Center"/>
-                            <TextBlock Text="{loc:Tr nav.installs}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+                    <Grid>
+                        <Button Classes="nav" Classes.active="{Binding IsInstalls}" Tag="installs" Click="OnNavClick" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr nav.tooltip.installs}">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <PathIcon Width="18" Height="18" Data="{StaticResource IconInstalls}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr nav.installs}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Border Classes="brandBadge" Padding="7,1" MinWidth="18"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding HasBasisUpdates}"
+                                ToolTip.Tip="{loc:Tr shell.basisUpdate.badgeTooltip}">
+                            <TextBlock Text="{Binding BasisUpdateCount}"
+                                       FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                    </Grid>
                     <Grid>
                         <Button Classes="nav" Classes.active="{Binding IsCommunity}" Tag="community" Click="OnNavClick" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr nav.tooltip.community}">
                             <StackPanel Orientation="Horizontal" Spacing="12">
@@ -211,8 +222,8 @@
             </Grid>
 
             <Grid Grid.Column="1" Grid.Row="0" RowDefinitions="Auto,*">
-                <Border Grid.Row="0"
-                        Classes="reveal"
+                <StackPanel Grid.Row="0">
+                <Border Classes="reveal"
                         IsVisible="{Binding UpdateAvailable}"
                         Background="{StaticResource BasisBrandGradient}"
                         CornerRadius="12"
@@ -245,6 +256,36 @@
                         </StackPanel>
                     </Grid>
                 </Border>
+
+                <Border Classes="reveal"
+                        IsVisible="{Binding BasisBannerVisible}"
+                        Background="{StaticResource BasisSurfaceBrush}"
+                        BorderBrush="{StaticResource BasisPurpleBrush}" BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="18,12" Margin="18,16,18,0">
+                    <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                        <PathIcon Grid.Column="0" Width="18" Height="18" Data="{StaticResource IconUpdate}"
+                                  Foreground="{StaticResource BasisBrandBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{Binding BasisBannerText}"
+                                   FontWeight="SemiBold" FontSize="13"
+                                   TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10"
+                                    Margin="16,0,0,0" VerticalAlignment="Center">
+                            <Button Classes="primary"
+                                    Command="{Binding ReviewBasisUpdateCommand}"
+                                    ToolTip.Tip="{loc:Tr shell.basisUpdate.reviewTooltip}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BasisBannerAction}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Content="{loc:Tr shell.basisUpdate.later}"
+                                    Command="{Binding DismissBasisUpdateCommand}"
+                                    ToolTip.Tip="{loc:Tr shell.basisUpdate.laterTooltip}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                </StackPanel>
 
                 <!-- Cross-fade the content when switching nav tabs instead of snapping between views. -->
                 <TransitioningContentControl Grid.Row="1" Content="{Binding CurrentView}">

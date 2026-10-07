@@ -15,15 +15,14 @@ public sealed class RepoStatsService
     private static readonly JsonSerializerOptions JsonOpts = new() { PropertyNameCaseInsensitive = true };
 
     private readonly HttpClient _http;
+    private readonly string? _githubToken;
     private readonly ConcurrentDictionary<string, RepoStats?> _cache = new(StringComparer.OrdinalIgnoreCase);
 
     public RepoStatsService(string? githubToken = null)
     {
         _http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BasisPackageManager/1.0");
-        _http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
-        if (!string.IsNullOrWhiteSpace(githubToken))
-            _http.DefaultRequestHeaders.Authorization = new("Bearer", githubToken.Trim());
+        _githubToken = string.IsNullOrWhiteSpace(githubToken) ? null : githubToken.Trim();
     }
 
     public async Task<RepoStats?> FetchAsync(string? repoUrl, CancellationToken ct = default)
@@ -42,7 +41,12 @@ public sealed class RepoStatsService
         {
             if (host == "github")
             {
-                var r = await _http.GetFromJsonAsync<GitHubRepo>($"https://api.github.com/repos/{owner}/{repo}", JsonOpts, ct).ConfigureAwait(false);
+                using var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.github.com/repos/{owner}/{repo}");
+                request.Headers.Accept.ParseAdd("application/vnd.github+json");
+                if (_githubToken is not null) request.Headers.Authorization = new("Bearer", _githubToken);
+                using var response = await _http.SendAsync(request, ct).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+                var r = await response.Content.ReadFromJsonAsync<GitHubRepo>(JsonOpts, ct).ConfigureAwait(false);
                 if (r is not null) stats = new RepoStats(r.StargazersCount, r.ForksCount, r.Description, r.PushedAt);
             }
             else if (host == "gitlab")
@@ -69,10 +73,14 @@ public sealed class RepoStatsService
         var rest = url[(url.IndexOf(marker, StringComparison.OrdinalIgnoreCase) + marker.Length)..].Trim('/', ':');
         var cut = rest.IndexOfAny(new[] { '?', '#' });
         if (cut >= 0) rest = rest[..cut];
+        var webPath = rest.IndexOf("/-/", StringComparison.Ordinal);
+        if (webPath >= 0) rest = rest[..webPath];
+        rest = rest.TrimEnd('/');
         if (rest.EndsWith(".git", StringComparison.OrdinalIgnoreCase)) rest = rest[..^4];
 
         var parts = rest.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length >= 2 ? (host, parts[0], parts[1]) : (host, null, null);
+        if (parts.Length < 2) return (host, null, null);
+        return host == "gitlab" ? (host, string.Join('/', parts[..^1]), parts[^1]) : (host, parts[0], parts[1]);
     }
 
     private sealed class GitHubRepo

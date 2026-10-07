@@ -74,6 +74,36 @@ public sealed class SemVerTests
         Assert.Equal(0, SemVer.Parse("1.0.0-rc").CompareTo(SemVer.Parse("1.0.0-rc")));
     }
 
+    [Theory]
+    [InlineData("1.0.0+build.5", null)]
+    [InlineData("1.0.0-beta+exp.sha", "beta")]
+    [InlineData("v1.0.0+unity2022", null)]
+    public void TryParse_ignores_build_metadata(string input, string? pre)
+    {
+        Assert.True(SemVer.TryParse(input, out var v));
+        Assert.Equal(new SemVer(1, 0, 0, pre), v);
+    }
+
+    [Theory]
+    [InlineData("1.0.0-beta.9", "1.0.0-beta.10", -1)]
+    [InlineData("1.0.0-alpha", "1.0.0-alpha.1", -1)]
+    [InlineData("1.0.0-alpha.1", "1.0.0-alpha.beta", -1)]
+    [InlineData("1.0.0-rc.1", "1.0.0-beta.11", 1)]
+    public void CompareTo_follows_semver_prerelease_precedence(string a, string b, int sign)
+    {
+        Assert.Equal(sign, Math.Sign(SemVer.Parse(a).CompareTo(SemVer.Parse(b))));
+    }
+
+    [Theory]
+    [InlineData("upm/1.10.0", 1, 10, 0)]
+    [InlineData("release/v2.0.0", 2, 0, 0)]
+    [InlineData("v3.1.0", 3, 1, 0)]
+    public void TryParseTag_reads_a_version_after_a_path_prefix(string tag, int major, int minor, int patch)
+    {
+        Assert.True(SemVer.TryParseTag(tag, out var v));
+        Assert.Equal(new SemVer(major, minor, patch), v);
+    }
+
     [Fact]
     public void CompareTo_null_is_greater()
     {

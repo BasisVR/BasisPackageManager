@@ -111,6 +111,22 @@ public sealed class CatalogServiceTests
     }
 
     [Fact]
+    public async Task TryLoad_drops_null_entries_from_a_malformed_catalog()
+    {
+        var svc = new CatalogService(StubHttpMessageHandler.Always("""
+            { "packages": { "a": null, "b": { "versions": null },
+              "c": { "versions": { "1.0.0": null, "1.1.0": { "name": null, "displayName": null, "description": null } } } } }
+            """));
+
+        var catalog = await svc.TryLoadAsync("https://example.com/catalog.json");
+
+        var latest = Assert.Single(svc.AllLatest(catalog!));
+        Assert.Equal("c", latest.Name);
+        Assert.Equal("c", latest.DisplayName);
+        Assert.Equal("", latest.Description);
+    }
+
+    [Fact]
     public void DefaultCatalogUrl_points_at_the_registry()
     {
         Assert.Equal("https://basisvr.org/packages/catalog.json", CatalogService.DefaultCatalogUrl);

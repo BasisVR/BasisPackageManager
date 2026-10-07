@@ -50,6 +50,7 @@ public sealed class BackupServiceTests
         Assert.Contains("UserSettings/u.txt", entries);
         Assert.DoesNotContain(entries, e => e.StartsWith("Library/"));
         Assert.DoesNotContain(entries, e => e.StartsWith("Temp/"));
+        Assert.Empty(Directory.GetFiles(dest, "*.partial"));
     }
 
     [Fact]

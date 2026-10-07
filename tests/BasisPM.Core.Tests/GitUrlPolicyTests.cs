@@ -81,6 +81,15 @@ public sealed class GitUrlPolicyTests
     public void IsSafeSubPath_stays_inside_the_clone(string? path, bool expected)
         => Assert.Equal(expected, GitUrlPolicy.IsSafeSubPath(path));
 
+    [Theory]
+    [InlineData("https://github.com/o/r.git?path=Packages/com.x#v1", true)]
+    [InlineData("https://github.com/o/r.git?path=../../escape", false)]
+    [InlineData("https://github.com/o/r.git?path=Packages/../../escape", false)]
+    [InlineData("https://github.com/o/r.git#--upload-pack=x", false)]
+    [InlineData("ext::sh -c x", false)]
+    public void IsSafeDependencyUrl_checks_the_sub_path_and_ref_too(string url, bool expected)
+        => Assert.Equal(expected, GitUrlPolicy.IsSafeDependencyUrl(url));
+
     [Fact]
     public void AllowedGitProtocols_constant_is_the_fetch_only_set()
     {

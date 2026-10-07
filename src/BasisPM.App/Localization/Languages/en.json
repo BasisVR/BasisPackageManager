@@ -243,6 +243,50 @@
       "value": "Download the update and restart"
     },
     {
+      "key": "shell.basisUpdate.bannerOne",
+      "value": "A Basis update is available for {0}."
+    },
+    {
+      "key": "shell.basisUpdate.bannerOneCount",
+      "value": "A Basis update is available for {0}: {1} new commits."
+    },
+    {
+      "key": "shell.basisUpdate.bannerMany",
+      "value": "Basis updates are available for {0} projects."
+    },
+    {
+      "key": "shell.basisUpdate.bannerInProgress",
+      "value": "{0} has a Basis update waiting for your decisions."
+    },
+    {
+      "key": "shell.basisUpdate.review",
+      "value": "Review update"
+    },
+    {
+      "key": "shell.basisUpdate.finish",
+      "value": "Finish update"
+    },
+    {
+      "key": "shell.basisUpdate.viewProjects",
+      "value": "View projects"
+    },
+    {
+      "key": "shell.basisUpdate.later",
+      "value": "Later"
+    },
+    {
+      "key": "shell.basisUpdate.reviewTooltip",
+      "value": "Open the Basis update"
+    },
+    {
+      "key": "shell.basisUpdate.laterTooltip",
+      "value": "Hide until Basis changes again"
+    },
+    {
+      "key": "shell.basisUpdate.badgeTooltip",
+      "value": "Projects with a Basis update"
+    },
+    {
       "key": "shell.version.tooltip",
       "value": "Installed version — check for updates in Settings"
     },
@@ -311,6 +355,210 @@
       "value": "Branch switch error: {0}"
     },
     {
+      "key": "installs.button.updateBasis",
+      "value": "Update Basis"
+    },
+    {
+      "key": "installs.button.finishUpdate",
+      "value": "Finish update"
+    },
+    {
+      "key": "installs.tooltip.updateBasis",
+      "value": "Merge the latest Basis from BasisVR/Basis into this project. Your own git remotes are not touched."
+    },
+    {
+      "key": "installs.tooltip.finishUpdate",
+      "value": "A Basis update is waiting for your decisions"
+    },
+    {
+      "key": "installs.basis.checking",
+      "value": "Checking Basis…"
+    },
+    {
+      "key": "installs.basis.upToDate",
+      "value": "Up to date with Basis {0}"
+    },
+    {
+      "key": "installs.basis.updateCountOne",
+      "value": "Basis update: 1 new commit"
+    },
+    {
+      "key": "installs.basis.updateCount",
+      "value": "Basis update: {0} new commits"
+    },
+    {
+      "key": "installs.basis.updateAvailable",
+      "value": "Basis update available"
+    },
+    {
+      "key": "installs.basis.inProgress",
+      "value": "Basis update paused"
+    },
+    {
+      "key": "installs.basis.checkFailed",
+      "value": "Couldn't check for Basis updates"
+    },
+    {
+      "key": "installs.basis.tooltip",
+      "value": "Compared with Basis {0} on github.com/BasisVR/Basis"
+    },
+    {
+      "key": "installs.status.checkingBasis",
+      "value": "Checking projects for Basis updates…"
+    },
+    {
+      "key": "installs.status.basisAllUpToDate",
+      "value": "Every project is up to date with Basis."
+    },
+    {
+      "key": "installs.status.basisChecked",
+      "value": "{0} of {1} projects can be updated to the latest Basis."
+    },
+    {
+      "key": "installs.status.basisCheckFailed",
+      "value": "Couldn't check for Basis updates: {0}"
+    },
+    {
+      "key": "installs.status.planningUpdate",
+      "value": "Checking {0} against the latest Basis…"
+    },
+    {
+      "key": "installs.status.updatingBasis",
+      "value": "Updating {0} to the latest Basis…"
+    },
+    {
+      "key": "installs.status.basisUpdated",
+      "value": "Updated {0} to Basis {1} ({2})."
+    },
+    {
+      "key": "installs.status.basisUpdatedUnity",
+      "value": "Updated {0} to Basis {1}. Basis now uses Unity {2} (was {3}); install it from the Unity tab."
+    },
+    {
+      "key": "installs.status.basisUpdateAborted",
+      "value": "Update undone. {0} is back to how it was before the update."
+    },
+    {
+      "key": "installs.status.basisUpdateFailed",
+      "value": "Couldn't update {0}: {1}"
+    },
+    {
+      "key": "installs.status.basisUpdatePaused",
+      "value": "{0} has a Basis update waiting for your decisions. Use Finish update to continue."
+    },
+    {
+      "key": "installs.status.unityOpen",
+      "value": "Close Unity before updating {0}. It has the project open and would lock or regenerate files mid-update."
+    },
+    {
+      "key": "installs.status.updateInProgressNoBranch",
+      "value": "Finish or undo the Basis update for {0} before changing branches."
+    },
+    {
+      "key": "installs.status.linking",
+      "value": "Linking {0} to Basis {1}…"
+    },
+    {
+      "key": "installs.status.linkFailed",
+      "value": "Couldn't link {0} to Basis: {1}"
+    },
+    {
+      "key": "installs.status.gitSetup",
+      "value": "Recording {0} in a new git repository…"
+    },
+    {
+      "key": "installs.status.gitSetupFailed",
+      "value": "Couldn't set up git for {0}: {1}"
+    },
+    {
+      "key": "update.block.gitMissing",
+      "value": "Git was not found. Install Git and make sure it is on your PATH."
+    },
+    {
+      "key": "update.block.gitTooOld",
+      "value": "Git {0} is too old. Basis updates need Git {1} or newer."
+    },
+    {
+      "key": "update.block.detached",
+      "value": "This project isn't on a branch. Use Change branch to pick one first."
+    },
+    {
+      "key": "update.block.operation",
+      "value": "A git {0} is already in progress in this project. Finish or abort it first."
+    },
+    {
+      "key": "update.block.branchMissing",
+      "value": "Basis has no branch called {0}. Choose another Basis branch."
+    },
+    {
+      "key": "update.block.shallow",
+      "value": "This is a shallow clone, so its history can't be matched to Basis. Run \"git fetch --unshallow\" in the project, then try again."
+    },
+    {
+      "key": "update.block.fetch",
+      "value": "Couldn't download Basis: {0}"
+    },
+    {
+      "key": "update.failure.headMoved",
+      "value": "The project changed after the update was checked. Try again."
+    },
+    {
+      "key": "update.failure.inProgress",
+      "value": "A Basis update is already in progress for this project."
+    },
+    {
+      "key": "update.failure.noUpdate",
+      "value": "There's no Basis update in progress."
+    },
+    {
+      "key": "update.failure.ignoredInTheWay",
+      "value": "Files ignored by git are where Basis now adds files: {0}. Move or remove them (installed packages can be removed in the Packages tab), then try again."
+    },
+    {
+      "key": "update.failure.setAside",
+      "value": "Couldn't set your edits aside before updating: {0}"
+    },
+    {
+      "key": "update.failure.merge",
+      "value": "Git couldn't merge Basis, so nothing was changed: {0}"
+    },
+    {
+      "key": "update.failure.commit",
+      "value": "Couldn't record the merge: {0}"
+    },
+    {
+      "key": "update.failure.restore",
+      "value": "Basis is updated, but your edits couldn't be put back yet. They are safe in the git stash: {0}"
+    },
+    {
+      "key": "update.failure.abort",
+      "value": "Couldn't undo the update: {0}"
+    },
+    {
+      "key": "update.failure.resolve",
+      "value": "Couldn't resolve that file: {0}"
+    },
+    {
+      "key": "update.failure.markers",
+      "value": "{0} still has conflict markers (<<<<<<< or >>>>>>>). Finish editing it first."
+    },
+    {
+      "key": "update.failure.library",
+      "value": "{0} isn't covered by a .gitignore, so git would record Unity's Library cache. Add a Unity .gitignore first."
+    },
+    {
+      "key": "update.failure.init",
+      "value": "Couldn't record the project in git: {0}"
+    },
+    {
+      "key": "update.failure.link",
+      "value": "Couldn't link the project to Basis: {0}"
+    },
+    {
+      "key": "update.failure.generic",
+      "value": "This project can't be updated automatically."
+    },
+    {
       "key": "dialog.branchPicker.title",
       "value": "Switch branch"
     },
@@ -325,6 +573,298 @@
     {
       "key": "dialog.branchPicker.switch",
       "value": "Switch"
+    },
+    {
+      "key": "dialog.basisUpdate.title",
+      "value": "Update Basis"
+    },
+    {
+      "key": "dialog.basisUpdate.sub",
+      "value": "{0} · your branch {1}"
+    },
+    {
+      "key": "dialog.basisUpdate.branchLabel",
+      "value": "Basis branch"
+    },
+    {
+      "key": "dialog.basisUpdate.source",
+      "value": "Downloaded from github.com/BasisVR/Basis. Your project's own git remotes are not used or changed."
+    },
+    {
+      "key": "dialog.basisUpdate.changeBranch",
+      "value": "Change"
+    },
+    {
+      "key": "dialog.basisUpdate.tooltip.changeBranch",
+      "value": "Follow a different Basis branch, such as a long-term-support branch"
+    },
+    {
+      "key": "dialog.basisUpdate.pickBranchTitle",
+      "value": "Basis branch to follow"
+    },
+    {
+      "key": "dialog.basisUpdate.newCommitsOne",
+      "value": "1 new Basis commit"
+    },
+    {
+      "key": "dialog.basisUpdate.newCommits",
+      "value": "{0} new Basis commits"
+    },
+    {
+      "key": "dialog.basisUpdate.yourCommits",
+      "value": "{0} commits of yours"
+    },
+    {
+      "key": "dialog.basisUpdate.uncommitted",
+      "value": "{0} uncommitted changes"
+    },
+    {
+      "key": "dialog.basisUpdate.note.fastForward",
+      "value": "Your branch has no commits of its own, so it moves straight to the new Basis."
+    },
+    {
+      "key": "dialog.basisUpdate.note.merge",
+      "value": "Your commits are kept and merged with Basis in a new merge commit."
+    },
+    {
+      "key": "dialog.basisUpdate.note.uncommitted",
+      "value": "Your uncommitted changes stay as they are."
+    },
+    {
+      "key": "dialog.basisUpdate.note.colliding",
+      "value": "{0} files you're editing are also changed by Basis. They're set aside, Basis is updated, then your edits are merged back in. You choose if any of them overlap."
+    },
+    {
+      "key": "dialog.basisUpdate.note.conflicts",
+      "value": "{0} files were changed by both you and Basis. You'll choose which version to keep for each:"
+    },
+    {
+      "key": "dialog.basisUpdate.note.conflictsUnknown",
+      "value": "If you and Basis changed the same lines, you'll choose which version to keep."
+    },
+    {
+      "key": "dialog.basisUpdate.note.blocking",
+      "value": "These files are ignored by git but sit where Basis now adds files. Move or remove them first (installed packages can be removed in the Packages tab):"
+    },
+    {
+      "key": "dialog.basisUpdate.note.unity",
+      "value": "Unity has this project open. Close Unity before updating so it doesn't lock or regenerate files mid-update."
+    },
+    {
+      "key": "dialog.basisUpdate.whatsNew",
+      "value": "What's new in Basis"
+    },
+    {
+      "key": "dialog.basisUpdate.moreCommits",
+      "value": "…and {0} more"
+    },
+    {
+      "key": "dialog.basisUpdate.upToDate.title",
+      "value": "You're up to date"
+    },
+    {
+      "key": "dialog.basisUpdate.upToDate.body",
+      "value": "{0} already has everything in Basis {1} ({2})."
+    },
+    {
+      "key": "dialog.basisUpdate.unrelated.title",
+      "value": "Connect this project to Basis"
+    },
+    {
+      "key": "dialog.basisUpdate.unrelated.body",
+      "value": "This project's git history isn't connected to Basis, so BasisPM compared your files with Basis's history to find the version you started from."
+    },
+    {
+      "key": "dialog.basisUpdate.unrelated.match",
+      "value": "Closest match: {0} from {1}, \"{2}\". {3} of its {4} files are identical in your project."
+    },
+    {
+      "key": "dialog.basisUpdate.unrelated.explain",
+      "value": "BasisPM records that version as your starting point (one extra commit, no files change), then shows you everything Basis has added since."
+    },
+    {
+      "key": "dialog.basisUpdate.unrelated.noMatch",
+      "value": "No Basis version matched closely enough. The project may use a different folder layout than BasisVR/Basis, or not be based on Basis."
+    },
+    {
+      "key": "dialog.basisUpdate.notGit.title",
+      "value": "Set up git for updates"
+    },
+    {
+      "key": "dialog.basisUpdate.notGit.body",
+      "value": "This project isn't tracked by git. To merge Basis updates without overwriting your work, BasisPM first records the project in a new local git repository. Nothing is uploaded."
+    },
+    {
+      "key": "dialog.basisUpdate.notGit.first",
+      "value": "The first update downloads Basis's full history, which can take a while."
+    },
+    {
+      "key": "dialog.basisUpdate.working",
+      "value": "Checking Basis…"
+    },
+    {
+      "key": "dialog.basisUpdate.backup",
+      "value": "Back up the project first (a zip of Assets, Packages and ProjectSettings)"
+    },
+    {
+      "key": "dialog.basisUpdate.tooltip.backup",
+      "value": "Creates a zip in a BasisBackups folder next to the project before anything changes"
+    },
+    {
+      "key": "dialog.basisUpdate.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key": "dialog.basisUpdate.close",
+      "value": "Close"
+    },
+    {
+      "key": "dialog.basisUpdate.update",
+      "value": "Update Basis"
+    },
+    {
+      "key": "dialog.basisUpdate.link",
+      "value": "Link and continue"
+    },
+    {
+      "key": "dialog.basisUpdate.setUpGit",
+      "value": "Set up git and continue"
+    },
+    {
+      "key": "dialog.basisUpdate.tooltip.cancel",
+      "value": "Close without changing anything"
+    },
+    {
+      "key": "dialog.basisUpdate.tooltip.primary",
+      "value": "Continue with the update"
+    },
+    {
+      "key": "dialog.conflicts.title",
+      "value": "Finish updating Basis"
+    },
+    {
+      "key": "dialog.conflicts.merging",
+      "value": "You and Basis both changed these files. For each one, keep your version, take Basis's, or edit the file to combine them and mark it done."
+    },
+    {
+      "key": "dialog.conflicts.restoring",
+      "value": "Basis is updated. Some of your uncommitted edits overlap the new Basis changes. For each file, keep your edit or take Basis's version."
+    },
+    {
+      "key": "dialog.conflicts.keepMine",
+      "value": "Keep mine"
+    },
+    {
+      "key": "dialog.conflicts.useBasis",
+      "value": "Use Basis"
+    },
+    {
+      "key": "dialog.conflicts.keepAllMine",
+      "value": "Keep mine for all"
+    },
+    {
+      "key": "dialog.conflicts.useAllBasis",
+      "value": "Use Basis for all"
+    },
+    {
+      "key": "dialog.conflicts.abort",
+      "value": "Undo update"
+    },
+    {
+      "key": "dialog.conflicts.later",
+      "value": "Later"
+    },
+    {
+      "key": "dialog.conflicts.finish",
+      "value": "Finish update"
+    },
+    {
+      "key": "dialog.conflicts.kind.bothChanged",
+      "value": "Changed by you and by Basis"
+    },
+    {
+      "key": "dialog.conflicts.kind.bothAdded",
+      "value": "Added by you and by Basis"
+    },
+    {
+      "key": "dialog.conflicts.kind.deletedByYou",
+      "value": "You deleted it; Basis changed it"
+    },
+    {
+      "key": "dialog.conflicts.kind.deletedByBasis",
+      "value": "Basis deleted it; you changed it"
+    },
+    {
+      "key": "dialog.conflicts.kind.bothDeleted",
+      "value": "Deleted on both sides"
+    },
+    {
+      "key": "dialog.conflicts.unityHint",
+      "value": "Unity asset: pick a version. Editing it by hand can break the file."
+    },
+    {
+      "key": "dialog.conflicts.allDone",
+      "value": "Everything is decided. Finish the update to wrap up."
+    },
+    {
+      "key": "dialog.conflicts.remaining",
+      "value": "{0} files still need a decision."
+    },
+    {
+      "key": "dialog.conflicts.unityOpen",
+      "value": "Close Unity first. It has the project open and would lock or regenerate files."
+    },
+    {
+      "key": "dialog.conflicts.confirmAbortTitle",
+      "value": "Undo this update?"
+    },
+    {
+      "key": "dialog.conflicts.confirmAbortBody",
+      "value": "Your project goes back to exactly how it was before the update, including your uncommitted edits."
+    },
+    {
+      "key": "dialog.conflicts.tooltip.keepMine",
+      "value": "Keep your version of this file"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.useBasis",
+      "value": "Take the new Basis version of this file"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.keepAllMine",
+      "value": "Keep your version of every file in the list"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.useAllBasis",
+      "value": "Take the Basis version of every file in the list"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.open",
+      "value": "Open the file to combine the changes by hand"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.openFolder",
+      "value": "Show the file's folder"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.markDone",
+      "value": "Mark this file done after editing it"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.refresh",
+      "value": "Check the files again"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.abort",
+      "value": "Put the project back exactly as it was before the update"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.later",
+      "value": "Close and come back to this later"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.finish",
+      "value": "Record the update once every file is decided"
     },
     {
       "key": "installs.button.addExisting",
@@ -893,6 +1433,22 @@
     {
       "key": "packages.status.installError",
       "value": "Install error: {0}"
+    },
+    {
+      "key": "packages.status.removeError",
+      "value": "Couldn't remove {0}: {1}"
+    },
+    {
+      "key": "packages.status.cannotUpdate",
+      "value": "{0} has no git repository or registry version to update from."
+    },
+    {
+      "key": "packages.status.packageListSaveFailed",
+      "value": "Couldn't save the package list: {0}"
+    },
+    {
+      "key": "packages.status.catalogLoadFailed",
+      "value": "Couldn't load the package catalog: {0}"
     },
     {
       "key": "packages.status.installLinkMissing",
@@ -1613,6 +2169,14 @@
     {
       "key": "settings.toggle.prerelease.tip",
       "value": "Get early builds as soon as they're published — frequent and sometimes unstable. Off = stable releases only. Applies on Save."
+    },
+    {
+      "key": "settings.toggle.autoCheckBasis",
+      "value": "Check projects for Basis updates automatically"
+    },
+    {
+      "key": "settings.toggle.autoCheckBasis.tip",
+      "value": "Checks BasisVR/Basis when the app starts and every two hours, and tells you when a project can be updated"
     },
     {
       "key": "settings.unityHub.description",

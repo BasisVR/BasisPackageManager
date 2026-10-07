@@ -69,6 +69,30 @@ public sealed class UserSettingsServiceTests
     }
 
     [Fact]
+    public async Task Load_keeps_a_copy_of_an_unreadable_settings_file()
+    {
+        using var t = new TempDir();
+        var path = t.WriteFile("settings.json", "{ this is not valid json ");
+
+        await new UserSettingsService(path).LoadAsync();
+
+        Assert.Equal("{ this is not valid json ", File.ReadAllText(path + ".corrupt"));
+    }
+
+    [Fact]
+    public async Task Save_replaces_the_file_without_leaving_temporary_files()
+    {
+        using var t = new TempDir();
+        var svc = new UserSettingsService(t.Combine("settings.json"));
+
+        await svc.SaveAsync(new UserSettings { CatalogUrl = "first" });
+        await svc.SaveAsync(new UserSettings { CatalogUrl = "second" });
+
+        Assert.Equal("second", (await svc.LoadAsync()).CatalogUrl);
+        Assert.Empty(Directory.GetFiles(t.Path, "*.tmp"));
+    }
+
+    [Fact]
     public async Task Load_returns_defaults_on_corrupt_json()
     {
         using var t = new TempDir();

@@ -68,6 +68,7 @@ public static class AppLauncher
                 var openArgs = new List<string> { bundle };
                 if (args.Count > 0)
                 {
+                    openArgs.Insert(0, "-n");
                     openArgs.Add("--args");
                     openArgs.AddRange(args);
                 }

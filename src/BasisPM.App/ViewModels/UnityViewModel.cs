@@ -137,13 +137,14 @@ public sealed class UnityViewModel : ObservableObject
         IsBusy = true;
         try
         {
-            var hub = _hubService.FindHubPath();
+            var settings = await _settingsService.LoadAsync();
+            var hub = _hubService.FindHubPath(settings.UnityHubPath);
             HubStatus = hub is null ? L.Tr("unity.status.hubNotDetected") : L.Tr("unity.status.hubPath", hub);
 
+            var list = await _hubService.ListInstalledAsync(settings.UnityHubPath);
             InstalledEditors.Clear();
-            var list = await _hubService.ListInstalledAsync();
             foreach (var e in list) InstalledEditors.Add(e);
-            await MergeManualEditorsAsync();
+            MergeManualEditors(settings);
             OnPropertyChanged(nameof(HasInstalledEditors));
             // Default the dropdown to the editor the active project needs, else the first installed.
             SelectedEditor = InstalledEditors.FirstOrDefault(e => string.Equals(e.Version, _requiredVersion, StringComparison.OrdinalIgnoreCase))
@@ -224,7 +225,8 @@ public sealed class UnityViewModel : ObservableObject
             var installingText = L.Tr("unity.status.installing", release.Version);
             _shell.SetStatus(installingText);
             activity = _shell.BeginActivity(installingText);
-            var code = await _hubService.InstallEditorAsync(release.Version, release.ShortRevision, modules);
+            var settings = await _settingsService.LoadAsync();
+            var code = await _hubService.InstallEditorAsync(release.Version, release.ShortRevision, modules, settings.UnityHubPath);
             if (code == 0)
                 _shell.SetStatus(L.Tr("unity.status.installKickedOff", release.Version), StatusKind.Success);
             else
@@ -261,7 +263,8 @@ public sealed class UnityViewModel : ObservableObject
             var installingText = L.Tr("unity.status.installingModules", editor.Version);
             _shell.SetStatus(installingText);
             activity = _shell.BeginActivity(installingText);
-            var code = await _hubService.InstallModulesAsync(editor.Version, modules);
+            var settings = await _settingsService.LoadAsync();
+            var code = await _hubService.InstallModulesAsync(editor.Version, modules, settings.UnityHubPath);
             if (code == 0)
             {
                 _shell.SetStatus(L.Tr("unity.status.modulesInstalled", editor.Version), StatusKind.Success);
@@ -285,9 +288,8 @@ public sealed class UnityViewModel : ObservableObject
 
     // Fold the user's hand-added editors into the list, skipping any the Hub already reports
     // (same version or same folder) so nothing shows twice.
-    private async Task MergeManualEditorsAsync()
+    private void MergeManualEditors(UserSettings settings)
     {
-        var settings = await _settingsService.LoadAsync();
         foreach (var m in settings.ManualEditors)
         {
             if (string.IsNullOrWhiteSpace(m.Path)) continue;

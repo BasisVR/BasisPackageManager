@@ -1,0 +1,129 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BasisPM.App.ViewModels"
+        xmlns:loc="using:BasisPM.App.Localization"
+        x:Class="BasisPM.App.Views.MergeConflictsWindow"
+        x:DataType="vm:MergeConflictsViewModel"
+        Name="Root"
+        Title="{loc:Tr dialog.conflicts.title}"
+        Width="780" Height="620" MinWidth="580" MinHeight="440"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto,Auto" Margin="26">
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,10">
+            <TextBlock Text="{loc:Tr dialog.conflicts.title}" Classes="h2"/>
+            <TextBlock Text="{Binding ProjectName}" Classes="dim" FontSize="12" TextTrimming="CharacterEllipsis"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="1" Text="{Binding PhaseText}" Classes="muted" FontSize="13" TextWrapping="Wrap" Margin="0,0,0,14"/>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" IsVisible="{Binding HasConflicts}">
+                <Button Command="{Binding KeepAllMineCommand}" IsEnabled="{Binding IsIdle}"
+                        ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.keepAllMine}">
+                    <TextBlock Text="{loc:Tr dialog.conflicts.keepAllMine}"/>
+                </Button>
+                <Button Command="{Binding UseAllBasisCommand}" IsEnabled="{Binding IsIdle}"
+                        ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.useAllBasis}">
+                    <TextBlock Text="{loc:Tr dialog.conflicts.useAllBasis}"/>
+                </Button>
+            </StackPanel>
+            <Button Grid.Column="1" Classes="iconBtn" Command="{Binding RefreshCommand}" IsEnabled="{Binding IsIdle}"
+                    ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.refresh}">
+                <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+            </Button>
+        </Grid>
+
+        <Panel Grid.Row="3">
+            <ScrollViewer IsVisible="{Binding HasConflicts}">
+                <ItemsControl ItemsSource="{Binding Conflicts}" Margin="0,0,6,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="8"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ConflictRow">
+                            <Border Classes="glass" Padding="14,12">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0" Spacing="3" VerticalAlignment="Center" Margin="0,0,12,0">
+                                        <TextBlock Text="{Binding Path}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12"
+                                                   TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Path}"/>
+                                        <TextBlock Text="{Binding KindLabel}" Classes="dim" FontSize="11"/>
+                                        <TextBlock Text="{loc:Tr dialog.conflicts.unityHint}" IsVisible="{Binding IsUnityAsset}"
+                                                   Foreground="{StaticResource BasisWarningBrush}" FontSize="11" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <WrapPanel Grid.Column="1" VerticalAlignment="Center" MaxWidth="360"
+                                               IsEnabled="{Binding #Root.((vm:MergeConflictsViewModel)DataContext).IsIdle}">
+                                        <WrapPanel.Styles>
+                                            <Style Selector="Button"><Setter Property="Margin" Value="6,3,0,3"/><Setter Property="Padding" Value="12,6"/></Style>
+                                        </WrapPanel.Styles>
+                                        <Button Command="{Binding #Root.((vm:MergeConflictsViewModel)DataContext).KeepMineCommand}"
+                                                CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.keepMine}">
+                                            <TextBlock Text="{loc:Tr dialog.conflicts.keepMine}" FontSize="12"/>
+                                        </Button>
+                                        <Button Command="{Binding #Root.((vm:MergeConflictsViewModel)DataContext).UseBasisCommand}"
+                                                CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.useBasis}">
+                                            <TextBlock Text="{loc:Tr dialog.conflicts.useBasis}" FontSize="12"/>
+                                        </Button>
+                                        <Button Classes="iconBtn" IsVisible="{Binding CanOpen}"
+                                                Command="{Binding #Root.((vm:MergeConflictsViewModel)DataContext).OpenFileCommand}"
+                                                CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.open}">
+                                            <PathIcon Width="14" Height="14" Data="{StaticResource IconEdit}"/>
+                                        </Button>
+                                        <Button Classes="iconBtn"
+                                                Command="{Binding #Root.((vm:MergeConflictsViewModel)DataContext).OpenFolderCommand}"
+                                                CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.openFolder}">
+                                            <PathIcon Width="14" Height="14" Data="{StaticResource IconFolderOpen}"/>
+                                        </Button>
+                                        <Button Classes="iconBtn"
+                                                Command="{Binding #Root.((vm:MergeConflictsViewModel)DataContext).MarkDoneCommand}"
+                                                CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.markDone}">
+                                            <PathIcon Width="14" Height="14" Data="{StaticResource IconCheck}"/>
+                                        </Button>
+                                    </WrapPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <StackPanel IsVisible="{Binding !HasConflicts}" Spacing="10"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                <PathIcon Width="34" Height="34" Data="{StaticResource IconCheck}" Foreground="{StaticResource BasisSuccessBrush}"/>
+                <TextBlock Text="{Binding RemainingText}" Classes="muted" FontSize="13" TextAlignment="Center"
+                           TextWrapping="Wrap" MaxWidth="420"/>
+            </StackPanel>
+        </Panel>
+
+        <StackPanel Grid.Row="4" Spacing="6" Margin="0,12,0,0">
+            <TextBlock Text="{Binding RemainingText}" IsVisible="{Binding HasConflicts}" Classes="dim" FontSize="12"/>
+            <TextBlock Text="{Binding Message}" IsVisible="{Binding HasMessage}" Foreground="{StaticResource BasisDangerBrush}"
+                       FontSize="12" TextWrapping="Wrap"/>
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsWorking}" Height="4" CornerRadius="2"/>
+        </StackPanel>
+
+        <Grid Grid.Row="5" ColumnDefinitions="Auto,*,Auto" Margin="0,14,0,0">
+            <Button Grid.Column="0" Classes="danger" Click="OnAbort" IsEnabled="{Binding IsIdle}"
+                    ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.abort}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconUndo}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.conflicts.abort}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10">
+                <Button Click="OnLater" ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.later}">
+                    <TextBlock Text="{loc:Tr dialog.conflicts.later}"/>
+                </Button>
+                <Button Classes="cta" Command="{Binding FinishCommand}" IsEnabled="{Binding CanFinish}"
+                        ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.finish}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconCheck}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr dialog.conflicts.finish}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

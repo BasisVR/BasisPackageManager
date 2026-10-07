@@ -92,9 +92,18 @@ public sealed class BasisInstallService
         if (!dir.Exists) return;
 
         dir.Attributes = FileAttributes.Directory;
-        foreach (var info in dir.EnumerateFileSystemInfos("*", SearchOption.AllDirectories))
-            if ((info.Attributes & FileAttributes.ReadOnly) != 0)
-                info.Attributes &= ~FileAttributes.ReadOnly;
+        var pending = new Stack<DirectoryInfo>();
+        pending.Push(dir);
+        while (pending.Count > 0)
+        {
+            foreach (var info in pending.Pop().EnumerateFileSystemInfos())
+            {
+                if ((info.Attributes & FileAttributes.ReadOnly) != 0)
+                    info.Attributes &= ~FileAttributes.ReadOnly;
+                if (info is DirectoryInfo sub && (sub.Attributes & FileAttributes.ReparsePoint) == 0)
+                    pending.Push(sub);
+            }
+        }
 
         dir.Delete(recursive: true);
     }

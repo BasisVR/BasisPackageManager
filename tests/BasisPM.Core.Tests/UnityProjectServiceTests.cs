@@ -190,6 +190,39 @@ public sealed class UnityProjectServiceTests
     }
 
     [Fact]
+    public async Task SaveManifest_refuses_to_overwrite_a_manifest_that_is_not_valid_json()
+    {
+        using var t = new TempDir();
+        var root = MakeProject(t, "Proj");
+        var path = t.WriteFile("Proj/Packages/manifest.json", """{ "dependencies": { "com.a": "1.0.0", } }""");
+        var before = File.ReadAllText(path);
+
+        await Assert.ThrowsAsync<InvalidDataException>(() => UnityProjectService.SaveManifestAsync(root, new PackageManifest()));
+        Assert.Equal(before, File.ReadAllText(path));
+    }
+
+    [Fact]
+    public async Task SaveManifest_keeps_unknown_registry_keys_and_does_not_escape_urls()
+    {
+        using var t = new TempDir();
+        var root = MakeProject(t, "Proj");
+        var path = t.WriteFile("Proj/Packages/manifest.json", """
+            {
+              "dependencies": { "com.x": "https://github.com/o/r.git?path=a&b=c#v1+build" },
+              "scopedRegistries": [ { "name": "r", "url": "https://r.example", "scopes": [ "com.r" ], "overrideBuiltIns": true } ]
+            }
+            """);
+
+        var info = await _svc.LoadAsync(root);
+        await UnityProjectService.SaveManifestAsync(root, info.Manifest);
+
+        var text = File.ReadAllText(path);
+        Assert.Contains("overrideBuiltIns", text);
+        Assert.Contains("?path=a&b=c#v1+build", text);
+        Assert.Empty(Directory.GetFiles(t.Combine("Proj/Packages"), "*.tmp"));
+    }
+
+    [Fact]
     public void ListEmbeddedPackages_returns_empty_without_packages_folder()
     {
         using var t = new TempDir();

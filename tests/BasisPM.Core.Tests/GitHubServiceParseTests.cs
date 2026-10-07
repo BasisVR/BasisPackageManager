@@ -30,6 +30,14 @@ public sealed class GitHubServiceParseTests
     }
 
     [Fact]
+    public void Www_prefix_is_ignored()
+    {
+        var loc = GitHubService.Parse("https://www.github.com/owner/repo");
+        Assert.Equal("owner", loc.Owner);
+        Assert.Equal("repo", loc.Repo);
+    }
+
+    [Fact]
     public void Extracts_branch_from_tree_url()
     {
         var loc = GitHubService.Parse("https://github.com/owner/repo/tree/dev");

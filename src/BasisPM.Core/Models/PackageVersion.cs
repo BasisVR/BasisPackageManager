@@ -15,5 +15,5 @@ public sealed record PackageVersions(IReadOnlyList<PackageVersionOption> Options
 
     /// <summary>Newest stable release/tag (not a prerelease, not the default-branch fallback), or null.</summary>
     public PackageVersionOption? LatestStable =>
-        Options.FirstOrDefault(o => !o.IsPrerelease && o.Kind != VersionKind.Branch);
+        Options.FirstOrDefault(o => !o.IsPrerelease && (o.Kind == VersionKind.Release || o.Kind == VersionKind.Tag && SemVer.TryParseTag(o.Ref, out _)));
 }

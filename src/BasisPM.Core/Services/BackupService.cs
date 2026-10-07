@@ -33,25 +33,56 @@ public sealed class BackupService
         Directory.CreateDirectory(destDir);
         var name = new DirectoryInfo(projectPath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).Name;
         var zipPath = Path.Combine(destDir, $"{name}-backup-{timestamp}.zip");
+        var partialPath = zipPath + ".partial";
 
-        await Task.Run(() =>
+        try
         {
-            using var zip = ZipFile.Open(zipPath, ZipArchiveMode.Create);
-            foreach (var folder in BackupFolders)
+            await Task.Run(() =>
             {
-                var src = Path.Combine(projectPath, folder);
-                if (!Directory.Exists(src)) continue;
-                onProgress?.Invoke($"Backing up {folder}…");
-                foreach (var file in Directory.EnumerateFiles(src, "*", SearchOption.AllDirectories))
+                using (var zip = ZipFile.Open(partialPath, ZipArchiveMode.Create))
                 {
-                    ct.ThrowIfCancellationRequested();
-                    var rel = Path.GetRelativePath(projectPath, file).Replace('\\', '/');
-                    try { zip.CreateEntryFromFile(file, rel, CompressionLevel.Fastest); }
-                    catch (IOException ex) { DiagnosticLog.Write($"Skipping locked backup file {file}", ex); }
+                    foreach (var folder in BackupFolders)
+                    {
+                        var src = Path.Combine(projectPath, folder);
+                        if (!Directory.Exists(src)) continue;
+                        onProgress?.Invoke($"Backing up {folder}…");
+                        foreach (var file in EnumerateFilesWithoutLinks(src))
+                        {
+                            ct.ThrowIfCancellationRequested();
+                            var rel = Path.GetRelativePath(projectPath, file).Replace('\\', '/');
+                            try { zip.CreateEntryFromFile(file, rel, CompressionLevel.Fastest); }
+                            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write($"Skipping unreadable backup file {file}", ex); }
+                        }
+                    }
                 }
-            }
-        }, ct).ConfigureAwait(false);
+                File.Move(partialPath, zipPath, overwrite: true);
+            }, ct).ConfigureAwait(false);
+        }
+        catch
+        {
+            try { if (File.Exists(partialPath)) File.Delete(partialPath); }
+            catch (Exception ex) { DiagnosticLog.Write($"Deleting incomplete backup {partialPath}", ex); }
+            throw;
+        }
 
         return zipPath;
+    }
+
+    private static IEnumerable<string> EnumerateFilesWithoutLinks(string root)
+    {
+        var pending = new Stack<string>();
+        pending.Push(root);
+        while (pending.Count > 0)
+        {
+            var dir = pending.Pop();
+            List<FileSystemInfo> entries;
+            try { entries = new DirectoryInfo(dir).EnumerateFileSystemInfos().ToList(); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write($"Skipping unreadable backup folder {dir}", ex); continue; }
+            foreach (var entry in entries)
+            {
+                if (entry is not DirectoryInfo) yield return entry.FullName;
+                else if ((entry.Attributes & FileAttributes.ReparsePoint) == 0) pending.Push(entry.FullName);
+            }
+        }
     }
 }

@@ -26,6 +26,8 @@ public sealed class MountService
         _registry = registry;
     }
 
+    public static bool IsWorkingClone(string? folder) => !string.IsNullOrEmpty(folder) && Directory.Exists(Path.Combine(folder, ".git"));
+
     public async Task<MountResult> MountAsync(BasisInstall install, string packageId, string manifestGitValue, Action<string>? onProgress = null, CancellationToken ct = default)
     {
         var parsed = UpmGitUrl.Parse(manifestGitValue);
@@ -49,8 +51,13 @@ public sealed class MountService
             var clone = await _git.CloneAtAsync(parsed.CloneUrl, dest, parsed.Ref, onProgress, ct).ConfigureAwait(false);
             if (!clone.Ok) { TryForceDelete(dest); return MountResult.Fail($"Clone failed: {clone.Output}"); }
 
-            info.Manifest.Dependencies.Remove(packageId);
-            await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
+            try
+            {
+                info = await _projects.LoadAsync(install.UnityProjectPath, ct).ConfigureAwait(false);
+                info.Manifest.Dependencies.Remove(packageId);
+                await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
+            }
+            catch { TryForceDelete(dest); throw; }
             install.Manifest = info.Manifest;
 
             _registry.Add(new MountRecord(install.UnityProjectPath, packageId, dest, manifestGitValue));
@@ -77,8 +84,13 @@ public sealed class MountService
 
         var packagesDir = Path.Combine(install.UnityProjectPath, "Packages");
         var relative = Path.GetRelativePath(packagesDir, pkgDir).Replace('\\', '/');
-        info.Manifest.Dependencies[packageId] = "file:" + relative;
-        await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
+        try
+        {
+            info = await _projects.LoadAsync(install.UnityProjectPath, ct).ConfigureAwait(false);
+            info.Manifest.Dependencies[packageId] = "file:" + relative;
+            await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
+        }
+        catch { TryForceDelete(workspace); throw; }
         install.Manifest = info.Manifest;
 
         _registry.Add(new MountRecord(install.UnityProjectPath, packageId, workspace, manifestGitValue));
@@ -90,6 +102,8 @@ public sealed class MountService
     {
         var record = _registry.Find(install.UnityProjectPath, packageId);
         var dest = record?.FolderPath ?? Path.Combine(install.UnityProjectPath, "Packages", packageId);
+        if (Directory.Exists(dest) && !IsWorkingClone(dest))
+            return MountResult.Fail($"{dest} isn't a mounted git clone, so it was left untouched.");
 
         // Prefer the exact original line; otherwise reconstruct from the clone's origin.
         var restore = record?.OriginalManifestValue;

@@ -11,6 +11,7 @@ public sealed class ServerViewModel : ObservableObject
     private readonly BasisServerService _service;
     private readonly MainWindowViewModel _shell;
     private BasisInstall? _install;
+    private string? _configRoot;
     private Process? _serverProcess;
     private bool _isBusy;
     private string _host = "127.0.0.1";
@@ -86,14 +87,32 @@ public sealed class ServerViewModel : ObservableObject
         _ = RefreshBuildRequirementsAsync();
     }
 
+    public void ClearActiveInstall()
+    {
+        _install = null;
+        OnPropertyChanged(nameof(HasInstall));
+        OnPropertyChanged(nameof(ProjectName));
+        OnPropertyChanged(nameof(RuntimeDirectory));
+        _ = RefreshAsync();
+    }
+
     public async Task RefreshAsync()
     {
+        var edited = new Dictionary<string, string>(StringComparer.Ordinal);
+        if (_install is not null && Platform.PathsEqual(_configRoot, _install.RepoRoot))
+            foreach (var row in ConfigFields.Where(x => x.IsEdited)) edited[row.Name] = row.Value;
         ConfigFields.Clear();
         ContentFiles.Clear();
+        _configRoot = _install?.RepoRoot;
         if (_install is null) { RaiseCollections(); return; }
         try
         {
-            foreach (var field in _service.LoadConfig(_install.RepoRoot)) ConfigFields.Add(new ServerConfigFieldRow(field));
+            foreach (var field in _service.LoadConfig(_install.RepoRoot))
+            {
+                var row = new ServerConfigFieldRow(field);
+                if (edited.TryGetValue(row.Name, out var value)) row.Value = value;
+                ConfigFields.Add(row);
+            }
             foreach (var item in _service.ListContent(_install.RepoRoot)) ContentFiles.Add(item);
             var port = ConfigFields.FirstOrDefault(x => x.Name == "SetPort")?.Value;
             if (ushort.TryParse(port, out _)) Port = port!;
@@ -111,7 +130,10 @@ public sealed class ServerViewModel : ObservableObject
 
     private async Task<bool> BuildServerAsync(BasisInstall install)
     {
-        if (!await _service.HasRequiredDotNetSdkAsync())
+        bool hasSdk;
+        try { hasSdk = await _service.HasRequiredDotNetSdkAsync(); }
+        catch (Exception ex) { DiagnosticLog.Write("Detecting the installed .NET SDK", ex); hasSdk = false; }
+        if (!hasSdk)
         {
             HasDotNet10Sdk = false;
             DotNetStatus = ".NET 10 SDK not detected — install it before building the server.";
@@ -200,10 +222,13 @@ public sealed class ServerViewModel : ObservableObject
         }
 
         var connection = BasisServerService.BuildConnection(Host, port, ConnectionPassword);
-        if (_service.LaunchSteamClient(connection))
-            _shell.SetStatus($"Launching Basis Labs through Steam and connecting to {Host}:{port}.", StatusKind.Success);
-        else _shell.SetStatus("Steam could not be found. Install Steam or add it to PATH.", StatusKind.Error);
-        await Task.CompletedTask;
+        try
+        {
+            if (_service.LaunchSteamClient(connection))
+                _shell.SetStatus($"Launching Basis Labs through Steam and connecting to {Host}:{port}.", StatusKind.Success);
+            else _shell.SetStatus("Steam could not be found. Install Steam or add it to PATH.", StatusKind.Error);
+        }
+        catch (Exception ex) { DiagnosticLog.Write("Launching the Basis client through Steam", ex); _shell.SetStatus($"Could not launch Steam: {ex.Message}", StatusKind.Error); }
     }
 
     private async Task SaveConfigAsync()
@@ -212,6 +237,7 @@ public sealed class ServerViewModel : ObservableObject
         try
         {
             _service.SaveConfig(_install.RepoRoot, ConfigFields.Select(x => x.ToModel()));
+            foreach (var row in ConfigFields) row.MarkSaved();
             _shell.SetStatus("Server configuration saved. Restart the server to apply it.", StatusKind.Success);
         }
         catch (Exception ex) { DiagnosticLog.Write("Saving the Basis server configuration", ex); _shell.SetStatus($"Could not save server configuration: {ex.Message}", StatusKind.Error); }
@@ -244,7 +270,9 @@ public sealed class ServerViewModel : ObservableObject
     private void OpenRuntime()
     {
         if (_install is null) return;
-        Directory.CreateDirectory(RuntimeDirectory);
+        if (!_service.HasServerProject(_install.RepoRoot)) { _shell.SetStatus(BasisServerService.MissingProjectMessage, StatusKind.Error); return; }
+        try { Directory.CreateDirectory(RuntimeDirectory); }
+        catch (Exception ex) { DiagnosticLog.Write("Creating the Basis server runtime folder", ex); _shell.SetStatus($"Could not open the runtime folder: {ex.Message}", StatusKind.Error); return; }
         ExternalLink.OpenFolder(RuntimeDirectory);
     }
 
@@ -305,6 +333,7 @@ public sealed class ServerViewModel : ObservableObject
 public sealed class ServerConfigFieldRow : ObservableObject
 {
     private string _value;
+    private string _savedValue;
     public string Name { get; }
     public string Description { get; }
     public bool IsSecret => Name.Contains("password", StringComparison.OrdinalIgnoreCase)
@@ -313,7 +342,9 @@ public sealed class ServerConfigFieldRow : ObservableObject
         || Name.EndsWith("Key", StringComparison.OrdinalIgnoreCase);
     public bool IsNotSecret => !IsSecret;
     public string Value { get => _value; set => SetField(ref _value, value); }
-    public ServerConfigFieldRow(ServerConfigField field) { Name = field.Name; _value = field.Value; Description = field.Description; }
+    public bool IsEdited => !string.Equals(_value, _savedValue, StringComparison.Ordinal);
+    public ServerConfigFieldRow(ServerConfigField field) { Name = field.Name; _value = _savedValue = field.Value; Description = field.Description; }
+    public void MarkSaved() => _savedValue = _value;
     public ServerConfigField ToModel() => new(Name, Value, Description);
 }
 

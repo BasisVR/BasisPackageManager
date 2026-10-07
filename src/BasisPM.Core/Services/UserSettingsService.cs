@@ -6,6 +6,7 @@ namespace BasisPM.Core.Services;
 public sealed class UserSettingsService(string? overridePath = null)
 {
     private static readonly JsonSerializerOptions JsonOpts = new() { WriteIndented = true };
+    private static readonly SemaphoreSlim Gate = new(1, 1);
 
     public string SettingsPath { get; } = overridePath ?? Path.Combine(AppDataPaths.Root, AppDataPaths.SettingsFileName);
 
@@ -13,38 +14,41 @@ public sealed class UserSettingsService(string? overridePath = null)
     // saved UI language at startup (avoids a flash of English before the async load completes).
     public UserSettings Load()
     {
-        if (!File.Exists(SettingsPath)) return new UserSettings();
+        Gate.Wait();
         try
         {
+            if (!File.Exists(SettingsPath)) return new UserSettings();
             using var fs = File.OpenRead(SettingsPath);
             return JsonSerializer.Deserialize<UserSettings>(fs, JsonOpts) ?? new UserSettings();
         }
-        catch (Exception ex)
-        {
-            DiagnosticLog.Write($"Loading settings synchronously from {SettingsPath}", ex);
-            return new UserSettings();
-        }
+        catch (Exception ex) { return Unreadable($"Loading settings synchronously from {SettingsPath}", ex); }
+        finally { Gate.Release(); }
     }
 
     public async Task<UserSettings> LoadAsync(CancellationToken ct = default)
     {
-        if (!File.Exists(SettingsPath)) return new UserSettings();
+        await Gate.WaitAsync(ct).ConfigureAwait(false);
         try
         {
+            if (!File.Exists(SettingsPath)) return new UserSettings();
             await using var fs = File.OpenRead(SettingsPath);
             return await JsonSerializer.DeserializeAsync<UserSettings>(fs, JsonOpts, ct).ConfigureAwait(false) ?? new UserSettings();
         }
-        catch (Exception ex)
-        {
-            DiagnosticLog.Write($"Loading settings asynchronously from {SettingsPath}", ex);
-            return new UserSettings();
-        }
+        catch (Exception ex) when (ex is not OperationCanceledException) { return Unreadable($"Loading settings asynchronously from {SettingsPath}", ex); }
+        finally { Gate.Release(); }
     }
 
     public async Task SaveAsync(UserSettings settings, CancellationToken ct = default)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath)!);
-        await using var fs = File.Create(SettingsPath);
-        await JsonSerializer.SerializeAsync(fs, settings, JsonOpts, ct).ConfigureAwait(false);
+        await Gate.WaitAsync(ct).ConfigureAwait(false);
+        try { await AtomicFile.WriteAsync(SettingsPath, stream => JsonSerializer.SerializeAsync(stream, settings, JsonOpts, ct), ct).ConfigureAwait(false); }
+        finally { Gate.Release(); }
+    }
+
+    private UserSettings Unreadable(string context, Exception ex)
+    {
+        DiagnosticLog.Write(context, ex);
+        if (ex is JsonException) AtomicFile.KeepUnreadableCopy(SettingsPath);
+        return new UserSettings();
     }
 }

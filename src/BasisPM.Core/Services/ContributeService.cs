@@ -25,15 +25,25 @@ public sealed class ContributeService
         _api = api;
     }
 
+    public async Task<UpmGitUrl?> GetUpstreamAsync(string folderPath, CancellationToken ct = default)
+    {
+        if (!MountService.IsWorkingClone(folderPath)) return null;
+        var upstream = UpmGitUrl.Parse(await _git.GetRemoteUrlAsync(folderPath, "origin", ct).ConfigureAwait(false));
+        return upstream is { IsGitHub: true } ? upstream : null;
+    }
+
     public async Task<ContributeResult> SubmitPrAsync(string folderPath, string token, GitHubUser user, PrRequest pr, Action<string>? onProgress = null, CancellationToken ct = default)
     {
-        var origin = await _git.GetRemoteUrlAsync(folderPath, "origin", ct).ConfigureAwait(false);
-        var upstream = UpmGitUrl.Parse(origin);
-        if (upstream is null || !upstream.IsGitHub)
+        if (!MountService.IsWorkingClone(folderPath))
+            return ContributeResult.Fail($"{folderPath} isn't a cloned package repository, so no pull request was made from it.");
+        var upstream = await GetUpstreamAsync(folderPath, ct).ConfigureAwait(false);
+        if (upstream is null)
             return ContributeResult.Fail("The mounted package's origin isn't a GitHub repo — pull requests are GitHub-only right now.");
 
         var repo = await _api.GetRepoAsync(token, upstream.Owner, upstream.Repo, ct).ConfigureAwait(false);
-        var baseBranch = repo?.DefaultBranch is { Length: > 0 } db ? db : "main";
+        if (repo is null)
+            return ContributeResult.Fail($"Couldn't look up {upstream.Owner}/{upstream.Repo} on GitHub. Check your connection and sign-in, then try again.");
+        var baseBranch = repo.DefaultBranch is { Length: > 0 } db ? db : "main";
 
         onProgress?.Invoke($"Creating branch {pr.Branch}…");
         var branch = await _git.CheckoutNewBranchAsync(folderPath, pr.Branch, ct).ConfigureAwait(false);

@@ -51,4 +51,10 @@ public sealed class UserSettings
     // Packages tab: show the "Available" list as a grid of cards instead of rows.
     [JsonPropertyName("packagesGridView")]
     public bool PackagesGridView { get; set; }
+
+    [JsonPropertyName("autoCheckBasisUpdates")]
+    public bool AutoCheckBasisUpdates { get; set; } = true;
+
+    [JsonPropertyName("dismissedBasisUpdates")]
+    public List<string> DismissedBasisUpdates { get; set; } = new();
 }

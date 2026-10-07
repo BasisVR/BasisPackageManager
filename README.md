@@ -43,7 +43,14 @@ Running from source (`dotnet run`) skips the in-app updater — update with `git
 - **Installs** — clone the complete `BasisVR/Basis` repository (the `developer` branch), or
   register an existing clone and switch branches afterward. Each install shows its branch,
   commit, required Unity version, and whether it is
-  behind upstream or has local changes. One-click **Update Core** runs `git pull --ff-only`.
+  behind upstream or has local changes. **Update Basis** brings in the latest Basis (below).
+- **Basis updates**: whatever git setup a project has (a clone of `BasisVR/Basis`, a fork,
+  your own repository, or no git at all), **Update Basis** fetches the latest Basis straight
+  from GitHub and merges it into your current branch. You see the incoming commits first.
+  Uncommitted edits to files Basis also changes are set aside and merged back afterwards;
+  any file changed on both sides is listed so you can keep yours, take Basis's, or combine
+  them, and **Undo update** puts everything back. Projects are checked for Basis updates at
+  startup and every two hours, with a banner and a badge on **Projects** when one is ready.
 - **Packages** — packages bundled in the Basis checkout are detected automatically; install
   additional official packages, or add any community UPM package from a
   **GitHub or GitLab** git URL. Discovery is powered by the registry (below).
@@ -61,7 +68,7 @@ Running from source (`dotnet run`) skips the in-app updater — update with `git
 
 - .NET 9 SDK
 - .NET 10 SDK to build the Basis server from the Server tab
-- [Git](https://git-scm.com/) on your `PATH` (used for clone / pull / status / diff)
+- [Git](https://git-scm.com/) 2.28 or newer on your `PATH` (used for clone / update / status / diff)
 - [Unity Hub](https://unity.com/download) for editor installs
 
 ## Console mode
@@ -72,16 +79,23 @@ without arguments for an interactive prompt, or use `--project` for scripts and 
 ```text
 basispm clone-basis C:\BasisVR\Basis
 basispm --project C:\BasisVR\Basis status
+basispm --project C:\BasisVR\Basis check-updates
+basispm --project C:\BasisVR\Basis update-basis
 basispm --project C:\BasisVR\Basis list-packages
 basispm --project C:\BasisVR\Basis install-package com.example.package
-basispm --project C:\BasisVR\Basis server-build
-basispm --project C:\BasisVR\Basis connect-client
 ```
 
 The console follows the same project model as the desktop app: it clones `BasisVR/Basis` first,
 detects packages already bundled under `Basis/Packages`, and only installs additional packages.
 Converting an arbitrary Unity project into Basis is not supported; use a complete Basis checkout.
-Run `basispm help` for branch, package-list, update, Unity, and server commands.
+Run `basispm help` for branch, package-list, update, and Unity commands.
+
+`update-basis` shows what is coming and asks before merging (`--yes` skips the prompt,
+`--branch <name>` follows another Basis branch such as a long-term-support one). If files need a
+decision, run `conflicts`, settle each with `resolve <path> mine|basis|done`, then
+`update-basis --continue`; `update-basis --abort` puts the project back as it was. A project
+whose history isn't connected to Basis is linked with `update-basis --link`, and one without git
+is recorded first with `update-basis --init-git`.
 
 ## Package registry server
 
@@ -103,10 +117,11 @@ dotnet run --project src/BasisPM.Server   # → http://localhost:5133
 - **Static export** for any static host (e.g. GitHub Pages):
 
   ```
-  dotnet run --project src/BasisPM.Server -- generate ./dist
+  dotnet run --project src/BasisPM.Server -- generate "$PWD/dist"
   ```
 
-  writes `index.html` + `packages.json` + `catalog.json` with the real stats baked in.
+  writes `index.html` + `packages.json` + `catalog.json` with the real stats baked in. Pass an
+  absolute folder: `dotnet run` starts in `src/BasisPM.Server`, so a relative path lands there.
 - `catalog.json` is **format-compatible with the desktop app** — point Settings →
   *Package Catalog URL* at `…/catalog.json` and the app's Packages tab serves from the registry.
 - **Package images** — give a package a promo image on its card (like
@@ -143,3 +158,68 @@ code-signing certificates (Windows + macOS). Every push/PR to `main` is compile-
 - `src/BasisPM.Core` — services and models (`GitService`, `UnityHubService`,
   `BasisInstallService`, catalog + manifest handling)
 - `src/BasisPM.Server` — package registry: browse UI + JSON API + static-site generator
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+## Third-Party Licenses
+
+The packages below ship in every release build (desktop app and `basispm` console).
+
+### MIT
+
+- [Avalonia](https://github.com/AvaloniaUI/Avalonia) - Copyright (c) AvaloniaUI OÜ. The UI
+  framework: `Avalonia`, `Avalonia.Desktop`, `Avalonia.Themes.Fluent`, `Avalonia.Fonts.Inter`
+  and the platform backends they pull in.
+- [SkiaSharp and HarfBuzzSharp](https://github.com/mono/SkiaSharp) - Copyright (c) 2015-2016
+  Xamarin, Inc., Copyright (c) 2017-2018 Microsoft Corporation. Rendering and text shaping
+  for Avalonia. The native libraries they bundle are listed in their
+  [third-party notices](https://github.com/mono/SkiaSharp/blob/v2.88.9/External-Dependency-Info.txt).
+- [MicroCom](https://github.com/kekekeks/MicroCom) - Copyright (c) 2021 Nikita Tsukanov.
+  `MicroCom.Runtime`, used by Avalonia.
+- [Tmds.DBus](https://github.com/tmds/Tmds.DBus) - Copyright 2006 Alp Toker, 2016 Tom Deseyn
+  and contributors. `Tmds.DBus.Protocol`, used by Avalonia on Linux.
+- [Velopack](https://github.com/velopack/velopack) - Copyright 2021 Caelan Sayler, 2024
+  Velopack Ltd. Installers and in-app updates.
+- [.NET](https://github.com/dotnet/runtime) - Copyright (c) .NET Foundation and Contributors.
+  The runtime bundled into every release, plus `System.IO.Pipelines`.
+- [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) - Copyright (c)
+  2020 Microsoft Corporation. Icon shapes in `src/BasisPM.App/Styles/Icons.axaml`.
+
+### BSD-3-Clause
+
+- [Skia](https://github.com/google/skia) - Copyright (c) 2011 Google Inc. The native graphics
+  library inside SkiaSharp.
+- [ANGLE](https://github.com/google/angle) - Copyright 2018 The ANGLE Project Authors.
+  `Avalonia.Angle.Windows.Natives`, Windows only.
+
+### Old MIT
+
+- [HarfBuzz](https://github.com/harfbuzz/harfbuzz) - Copyright 1998-2012 Google, Red Hat,
+  Mozilla Foundation and other contributors. The native text shaping library inside
+  HarfBuzzSharp.
+
+### SIL Open Font License 1.1
+
+- [Inter](https://github.com/rsms/inter) - Copyright 2020 The Inter Project Authors. The UI
+  font, bundled through `Avalonia.Fonts.Inter`.
+
+### Package registry page
+
+`src/BasisPM.Server/wwwroot/index.html` loads these from a CDN at runtime; they are not bundled:
+
+- [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) (MIT) - Copyright (c) Tailwind
+  Labs, Inc.
+- [Inter](https://github.com/rsms/inter) (OFL 1.1), served by [Bunny Fonts](https://fonts.bunny.net).
+
+### Development only
+
+Used to build and test the project; not shipped:
+
+- [xUnit](https://github.com/xunit/xunit) (Apache-2.0): `xunit`, `xunit.runner.visualstudio`
+- [VSTest](https://github.com/microsoft/vstest) (MIT): `Microsoft.NET.Test.Sdk`
+- [coverlet](https://github.com/coverlet-coverage/coverlet) (MIT): `coverlet.collector`
+- [Avalonia](https://github.com/AvaloniaUI/Avalonia) (MIT): `Avalonia.Headless.XUnit`
+- [ASP.NET Core](https://github.com/dotnet/aspnetcore) (MIT): the registry server and
+  `Microsoft.AspNetCore.Mvc.Testing`

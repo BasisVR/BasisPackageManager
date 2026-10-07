@@ -139,6 +139,7 @@ public sealed partial class UnityHubService
                 args.Add(m);
             }
         }
+        if (args.Contains("-m")) args.Add("--childModules");
 
         var (code, _, _) = await RunAsync(hub, args, ct).ConfigureAwait(false);
         return code;

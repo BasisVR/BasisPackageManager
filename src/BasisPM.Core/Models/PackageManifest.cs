@@ -19,4 +19,7 @@ public sealed class ScopedRegistry
     [JsonPropertyName("name")] public string Name { get; set; } = "";
     [JsonPropertyName("url")] public string Url { get; set; } = "";
     [JsonPropertyName("scopes")] public List<string> Scopes { get; set; } = new();
+
+    [JsonExtensionData]
+    public Dictionary<string, System.Text.Json.JsonElement>? Extra { get; set; }
 }

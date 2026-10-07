@@ -27,6 +27,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly GitHubApiService _ghApi;
     private readonly MountRegistry _mountRegistry;
     private readonly LogService _log;
+    private readonly BasisUpdateService _basisUpdates;
 
     private NavPage _currentPage = NavPage.Installs;
     private object? _currentView;
@@ -50,6 +51,16 @@ public sealed class MainWindowViewModel : ObservableObject
     private double _activityProgress;
     private bool _activityIsIndeterminate = true;
 
+    private static readonly TimeSpan BasisUpdateCheckInterval = TimeSpan.FromHours(2);
+    private readonly HashSet<string> _dismissedBasisUpdates = new(StringComparer.OrdinalIgnoreCase);
+    private List<InstallRow> _basisBannerRows = new();
+    private DispatcherTimer? _basisUpdateTimer;
+    private bool _autoCheckBasisUpdates = true;
+    private int _basisUpdateCount;
+    private bool _basisBannerVisible;
+    private string _basisBannerText = "";
+    private string _basisBannerAction = "";
+
     public InstallsViewModel InstallsVM { get; }
     public PackagesViewModel PackagesVM { get; }
     public ServerViewModel ServerVM { get; }
@@ -65,6 +76,8 @@ public sealed class MainWindowViewModel : ObservableObject
     public RelayCommand DismissUpdateCommand { get; }
     public RelayCommand CheckForUpdatesCommand { get; }
     public RelayCommand OpenIssueCommand { get; }
+    public RelayCommand ReviewBasisUpdateCommand { get; }
+    public RelayCommand DismissBasisUpdateCommand { get; }
 
     public MainWindowViewModel()
     {
@@ -84,7 +97,8 @@ public sealed class MainWindowViewModel : ObservableObject
         _mountRegistry = new MountRegistry();
         _log = new LogService();
         _installService = new BasisInstallService(_projectService, _gitService);
-        InstallsVM = new InstallsViewModel(_settingsService, _installService, _gitService, this);
+        _basisUpdates = new BasisUpdateService(_gitService);
+        InstallsVM = new InstallsViewModel(_settingsService, _installService, _gitService, _basisUpdates, this);
         var mountService = new MountService(_gitService, _projectService, _mountRegistry);
         var contributeService = new ContributeService(_gitService, _ghApi);
         var cacheDriftService = new CacheDriftService(_gitService);
@@ -105,6 +119,8 @@ public sealed class MainWindowViewModel : ObservableObject
         DismissUpdateCommand = new RelayCommand(() => { UpdateAvailable = false; });
         CheckForUpdatesCommand = new RelayCommand(() => CheckForUpdatesAsync(manual: true));
         OpenIssueCommand = new RelayCommand(OpenIssue);
+        ReviewBasisUpdateCommand = new RelayCommand(ReviewBasisUpdate);
+        DismissBasisUpdateCommand = new RelayCommand(DismissBasisUpdateAsync);
         CrashReporter.BreadcrumbProvider = () => string.Join("\n", _breadcrumbs);
         CrashReporter.VersionProvider = () => AppVersion;
 
@@ -180,6 +196,16 @@ public sealed class MainWindowViewModel : ObservableObject
     }
     public bool HasUnreadAnnouncements => _announcementsUnread > 0;
 
+    public int BasisUpdateCount
+    {
+        get => _basisUpdateCount;
+        private set { if (SetField(ref _basisUpdateCount, value)) OnPropertyChanged(nameof(HasBasisUpdates)); }
+    }
+    public bool HasBasisUpdates => _basisUpdateCount > 0;
+    public bool BasisBannerVisible { get => _basisBannerVisible; private set => SetField(ref _basisBannerVisible, value); }
+    public string BasisBannerText { get => _basisBannerText; private set => SetField(ref _basisBannerText, value); }
+    public string BasisBannerAction { get => _basisBannerAction; private set => SetField(ref _basisBannerAction, value); }
+
     public bool UpdateAvailable { get => _updateAvailable; private set => SetField(ref _updateAvailable, value); }
     public string UpdateBannerText { get => _updateBannerText; private set => SetField(ref _updateBannerText, value); }
     public bool IsUpdating { get => _isUpdating; private set => SetField(ref _isUpdating, value); }
@@ -239,9 +265,18 @@ public sealed class MainWindowViewModel : ObservableObject
     public void SetActiveInstall(BasisInstall install)
     {
         ActiveInstall = install;
+        InstallsVM.MarkActive(install);
         PackagesVM.SetActiveInstall(install);
         ServerVM.SetActiveInstall(install);
         UnityVM.SetRequiredVersion(install.UnityVersion);
+    }
+
+    public void ClearActiveInstall()
+    {
+        ActiveInstall = null;
+        PackagesVM.ClearActiveInstall();
+        ServerVM.ClearActiveInstall();
+        UnityVM.SetRequiredVersion(null);
     }
 
     public string StatusMessage
@@ -344,6 +379,8 @@ public sealed class MainWindowViewModel : ObservableObject
         _ = CheckForUpdatesAsync(manual: false);
         _ = LoadAnnouncementsAsync();
         _ = RunFirstRunPromptsAsync();
+        StartBasisUpdateTimer();
+        if (_autoCheckBasisUpdates) _ = InstallsVM.CheckBasisUpdatesAsync(manual: false);
     }
 
     // Pushes a settings snapshot into every tab / view-model. Shared by first launch (InitializeAsync)
@@ -352,6 +389,9 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         _catalogUrl = settings.CatalogUrl;
         _updateService.SetPrerelease(settings.PrereleaseUpdates);
+        _autoCheckBasisUpdates = settings.AutoCheckBasisUpdates;
+        _dismissedBasisUpdates.Clear();
+        _dismissedBasisUpdates.UnionWith(settings.DismissedBasisUpdates);
         SettingsVM.Apply(settings);
         PackagesVM.SetInitialGridView(settings.PackagesGridView);
         await InstallsVM.LoadAsync(settings);
@@ -529,6 +569,67 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         _updateService.SetPrerelease(prerelease);
         _ = CheckForUpdatesAsync(manual: false);
+    }
+
+    public void ApplyBasisUpdateChecks(bool enabled)
+    {
+        var turnedOn = enabled && !_autoCheckBasisUpdates;
+        _autoCheckBasisUpdates = enabled;
+        if (turnedOn) _ = InstallsVM.CheckBasisUpdatesAsync(manual: false);
+    }
+
+    private void StartBasisUpdateTimer()
+    {
+        if (_basisUpdateTimer is not null) return;
+        _basisUpdateTimer = new DispatcherTimer { Interval = BasisUpdateCheckInterval };
+        _basisUpdateTimer.Tick += (_, _) =>
+        {
+            if (_autoCheckBasisUpdates) _ = InstallsVM.CheckBasisUpdatesAsync(manual: false);
+        };
+        _basisUpdateTimer.Start();
+    }
+
+    public void RefreshBasisUpdateNotice()
+    {
+        var pending = InstallsVM.Installs.Where(r => r.BasisUpdateAvailable || r.BasisUpdateInProgress).ToList();
+        BasisUpdateCount = pending.Count;
+        _basisBannerRows = pending.Where(r => r.BasisUpdateInProgress || !_dismissedBasisUpdates.Contains(BasisNoticeKey(r))).ToList();
+        BasisBannerVisible = _basisBannerRows.Count > 0;
+        if (_basisBannerRows.Count == 1)
+        {
+            var row = _basisBannerRows[0];
+            BasisBannerText = row.BasisUpdateInProgress ? L.Tr("shell.basisUpdate.bannerInProgress", row.Name)
+                : row.BasisBehind is > 1 and var behind ? L.Tr("shell.basisUpdate.bannerOneCount", row.Name, behind)
+                : L.Tr("shell.basisUpdate.bannerOne", row.Name);
+            BasisBannerAction = row.BasisUpdateInProgress ? L.Tr("shell.basisUpdate.finish") : L.Tr("shell.basisUpdate.review");
+        }
+        else if (_basisBannerRows.Count > 1)
+        {
+            BasisBannerText = L.Tr("shell.basisUpdate.bannerMany", _basisBannerRows.Count);
+            BasisBannerAction = L.Tr("shell.basisUpdate.viewProjects");
+        }
+    }
+
+    private static string BasisNoticeKey(InstallRow row) => $"{row.RepoRoot}|{row.BasisRemoteSha}";
+
+    private void ReviewBasisUpdate()
+    {
+        NavigateTo("installs");
+        if (_basisBannerRows.Count == 1) InstallsVM.UpdateBasisCommand.Execute(_basisBannerRows[0]);
+    }
+
+    private async Task DismissBasisUpdateAsync()
+    {
+        foreach (var row in _basisBannerRows.Where(r => !r.BasisUpdateInProgress))
+            _dismissedBasisUpdates.Add(BasisNoticeKey(row));
+        BasisBannerVisible = false;
+        try
+        {
+            var settings = await _settingsService.LoadAsync();
+            settings.DismissedBasisUpdates = _dismissedBasisUpdates.TakeLast(100).ToList();
+            await _settingsService.SaveAsync(settings);
+        }
+        catch (Exception ex) { DiagnosticLog.Write("Saving dismissed Basis update notices", ex); }
     }
 
     /// <summary>Opens an install's Unity project in the matching editor (or Unity Hub if that version isn't installed).</summary>

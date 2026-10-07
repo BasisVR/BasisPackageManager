@@ -2,12 +2,15 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace BasisPM.Core.Services;
 
 /// <summary>Authenticated GitHub REST calls the publish wizard needs (whoami, look up + create a repo).</summary>
 public sealed class GitHubApiService
 {
+    private static readonly Regex RepoPartPattern = new(@"^[A-Za-z0-9_.-]+$", RegexOptions.Compiled);
+
     private readonly HttpClient _http;
 
     public GitHubApiService(HttpClient? http = null)
@@ -40,6 +43,23 @@ public sealed class GitHubApiService
         var res = await _http.SendAsync(req, ct).ConfigureAwait(false);
         return res.IsSuccessStatusCode ? await res.Content.ReadFromJsonAsync<GitHubRepo>(cancellationToken: ct).ConfigureAwait(false) : null;
     }
+
+    public async Task<bool?> RepoExistsAsync(string owner, string name, string? token = null, CancellationToken ct = default)
+    {
+        if (!IsRepoPart(owner) || !IsRepoPart(name)) return false;
+        using var req = new HttpRequestMessage(HttpMethod.Get, $"repos/{owner}/{name}");
+        if (!string.IsNullOrEmpty(token)) req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        try
+        {
+            using var res = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false);
+            if (res.IsSuccessStatusCode) return true;
+            return res.StatusCode == HttpStatusCode.NotFound ? false : null;
+        }
+        catch (Exception ex) { DiagnosticLog.Write($"Checking whether GitHub repository {owner}/{name} exists", ex); return null; }
+    }
+
+    private static bool IsRepoPart(string? part) =>
+        !string.IsNullOrEmpty(part) && RepoPartPattern.IsMatch(part) && part.Trim('.').Length > 0;
 
     /// <summary>Creates an empty repo under the authenticated user's account (no auto-init — we push our own tree).</summary>
     public async Task<GitHubRepo> CreateRepoAsync(string token, string name, string? description, bool isPrivate, CancellationToken ct = default)

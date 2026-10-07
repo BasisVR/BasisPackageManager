@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 
 namespace BasisPM.Core.Services;
@@ -22,7 +23,7 @@ public static class DiagnosticLog
         try
         {
             var entry = new StringBuilder()
-                .Append(DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff zzz"))
+                .Append(DateTimeOffset.Now.ToString("yyyy-MM-dd HH:mm:ss.fff zzz", CultureInfo.InvariantCulture))
                 .Append(" [handled] ").Append(context)
                 .Append(" | process=").Append(Environment.ProcessId)
                 .Append(" thread=").Append(Environment.CurrentManagedThreadId)

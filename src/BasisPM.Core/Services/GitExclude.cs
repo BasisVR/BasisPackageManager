@@ -16,8 +16,10 @@ public static class GitExclude
     {
         try
         {
-            var pattern = PatternFor(repoRoot, mountFolder);
-            var gitDir = ResolveGitDir(repoRoot, commonDirResolver);
+            var root = FindRepoRoot(repoRoot);
+            if (root is null) return;
+            var pattern = PatternFor(root, mountFolder);
+            var gitDir = ResolveGitDir(root, commonDirResolver);
             if (pattern is null || gitDir is null) return;
 
             var infoDir = Path.Combine(gitDir, "info");
@@ -37,8 +39,10 @@ public static class GitExclude
     {
         try
         {
-            var pattern = PatternFor(repoRoot, mountFolder);
-            var gitDir = ResolveGitDir(repoRoot, commonDirResolver);
+            var root = FindRepoRoot(repoRoot);
+            if (root is null) return;
+            var pattern = PatternFor(root, mountFolder);
+            var gitDir = ResolveGitDir(root, commonDirResolver);
             if (pattern is null || gitDir is null) return;
 
             var excludePath = Path.Combine(gitDir, "info", "exclude");
@@ -73,6 +77,16 @@ public static class GitExclude
     /// (<c>git rev-parse --git-common-dir</c>); if git can't answer, we resolve it off the filesystem.</item>
     /// </list>
     /// </summary>
+    private static string? FindRepoRoot(string start)
+    {
+        for (var dir = new DirectoryInfo(start); dir is not null; dir = dir.Parent)
+        {
+            var dotGit = Path.Combine(dir.FullName, ".git");
+            if (Directory.Exists(dotGit) || File.Exists(dotGit)) return dir.FullName;
+        }
+        return null;
+    }
+
     private static string? ResolveGitDir(string repoRoot, Func<string, string?>? commonDirResolver)
     {
         var dotGit = Path.Combine(repoRoot, ".git");

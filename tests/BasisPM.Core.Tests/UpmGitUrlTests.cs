@@ -91,6 +91,34 @@ public sealed class UpmGitUrlTests
     }
 
     [Theory]
+    [InlineData("https://gitea.example:3000/team/repo.git", "gitea.example", "team", "repo")]
+    [InlineData("https://gitlab.example.com/group/sub/repo.git", "gitlab.example.com", "group/sub", "repo")]
+    [InlineData("ssh://git@git.example.org:2222/team/repo.git", "git.example.org", "team", "repo")]
+    [InlineData("git@git.example.org:team/repo.git", "git.example.org", "team", "repo")]
+    [InlineData("git://git.example.org/team/repo", "git.example.org", "team", "repo")]
+    public void Other_hosts_keep_the_clone_url_as_written(string input, string host, string owner, string repo)
+    {
+        var u = UpmGitUrl.Parse(input + "?path=Packages/com.x#v1")!;
+        Assert.Equal(host, u.Host);
+        Assert.Equal(owner, u.Owner);
+        Assert.Equal(repo, u.Repo);
+        Assert.Equal(input, u.CloneUrl);
+        Assert.Equal("Packages/com.x", u.Path);
+        Assert.Equal("v1", u.Ref);
+    }
+
+    [Fact]
+    public void Www_github_is_treated_as_github()
+    {
+        var u = UpmGitUrl.Parse("https://www.github.com/owner/repo")!;
+        Assert.True(u.IsGitHub);
+        Assert.Equal("https://github.com/owner/repo.git", u.CloneUrl);
+    }
+
+    [Fact]
+    public void File_dependencies_are_not_git_urls() => Assert.Null(UpmGitUrl.Parse("file:../Local/com.x"));
+
+    [Theory]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]

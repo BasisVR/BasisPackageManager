@@ -10,6 +10,7 @@ namespace BasisPM.Core.Services;
 public sealed class BasisServerService
 {
     public const string SteamAppId = "3157090";
+    public const string MissingProjectMessage = "The Basis server project was not found in this checkout.";
     private static readonly HttpClient HealthClient = new();
 
     public BasisServerPaths GetPaths(string repoRoot)
@@ -23,10 +24,12 @@ public sealed class BasisServerService
             Path.Combine(runtime, "defaultlibrary"));
     }
 
+    public bool HasServerProject(string repoRoot) => File.Exists(GetPaths(repoRoot).ProjectFile);
+
     public async Task<(bool Success, string Output)> BuildAsync(string repoRoot, CancellationToken cancellationToken = default)
     {
         var paths = GetPaths(repoRoot);
-        if (!File.Exists(paths.ProjectFile)) return (false, "The Basis server project was not found in this checkout.");
+        if (!File.Exists(paths.ProjectFile)) return (false, MissingProjectMessage);
         var psi = new ProcessStartInfo("dotnet")
         {
             WorkingDirectory = Path.GetDirectoryName(paths.ProjectFile)!,
@@ -60,8 +63,10 @@ public sealed class BasisServerService
         using var process = Process.Start(psi);
         if (process is null) return false;
         var outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+        var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
         await process.WaitForExitAsync(cancellationToken);
         var output = await outputTask;
+        await errorTask;
         return process.ExitCode == 0 && output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
             .Any(line => line.TrimStart().StartsWith("10.", StringComparison.Ordinal));
     }
@@ -202,6 +207,7 @@ public sealed class BasisServerService
     public string AddDefaultLibraryItem(string repoRoot, int mode, string url, string password)
     {
         if (string.IsNullOrWhiteSpace(url)) throw new ArgumentException("A content URL is required.");
+        if (!HasServerProject(repoRoot)) throw new InvalidOperationException(MissingProjectMessage);
         var folder = GetPaths(repoRoot).DefaultLibraryDirectory;
         Directory.CreateDirectory(folder);
         var path = UniqueXmlPath(folder, mode switch { 0 => "avatar", 1 => "world", 2 => "prop", _ => "item" });
@@ -213,6 +219,7 @@ public sealed class BasisServerService
     public string AddInitialResource(string repoRoot, int mode, string url, string password)
     {
         if (string.IsNullOrWhiteSpace(url)) throw new ArgumentException("A content URL is required.");
+        if (!HasServerProject(repoRoot)) throw new InvalidOperationException(MissingProjectMessage);
         var folder = GetPaths(repoRoot).InitialResourcesDirectory;
         Directory.CreateDirectory(folder);
         var path = UniqueXmlPath(folder, "resource");

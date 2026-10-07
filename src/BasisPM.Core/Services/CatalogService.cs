@@ -45,9 +45,28 @@ public sealed class CatalogService
         try
         {
             var json = await _http.GetStringAsync(url, ct).ConfigureAwait(false);
-            return JsonSerializer.Deserialize<Catalog>(json, JsonOpts);
+            return Sanitize(JsonSerializer.Deserialize<Catalog>(json, JsonOpts));
         }
         catch (Exception ex) { DiagnosticLog.Write("Parsing package catalog JSON", ex); return null; }
+    }
+
+    private static Catalog? Sanitize(Catalog? catalog)
+    {
+        if (catalog is null) return null;
+        catalog.Packages ??= new();
+        foreach (var (id, package) in catalog.Packages.ToList())
+        {
+            if (package?.Versions is null) { catalog.Packages.Remove(id); continue; }
+            foreach (var (key, version) in package.Versions.ToList())
+            {
+                if (version is null) { package.Versions.Remove(key); continue; }
+                version.Name ??= id;
+                version.DisplayName ??= version.Name;
+                version.Description ??= "";
+                version.Version ??= key;
+            }
+        }
+        return catalog;
     }
 
     public static Catalog LoadEmbedded()

@@ -20,7 +20,7 @@ internal static class Program
         {
             if (!SingleInstance.TryBecomePrimary())
             {
-                if (uri is not null) SingleInstance.ForwardToPrimary(uri);
+                SingleInstance.ForwardToPrimary(uri ?? DeepLink.ActivateUri);
                 return;
             }
         }

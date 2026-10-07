@@ -41,7 +41,11 @@ public sealed class DependencyResolver
                 if (bestVer.CompareTo(existingVer) > 0)
                 {
                     if (!range.Satisfies(existingVer))
+                    {
                         resolved[name] = best;
+                        foreach (var (depName, depRange) in best.Dependencies ?? new Dictionary<string, string>())
+                            queue.Enqueue((depName, depRange, $"{name}@{best.Version}"));
+                    }
                 }
                 else if (!range.Satisfies(existingVer))
                 {

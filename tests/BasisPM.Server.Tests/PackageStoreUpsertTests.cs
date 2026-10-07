@@ -123,6 +123,38 @@ public sealed class PackageStoreUpsertTests
     }
 
     [Fact]
+    public void Upsert_requires_a_semantic_version()
+    {
+        using var t = new TempDir();
+        var sub = Sub();
+        sub.Version = "main";
+        var ex = Assert.Throws<ArgumentException>(() => EmptyStore(t).Upsert(sub));
+        Assert.Contains("semantic version", ex.Message);
+    }
+
+    [Theory]
+    [InlineData("com.dep", "")]
+    [InlineData("com dep", "1.0.0")]
+    [InlineData("com.dep", "not a range")]
+    [InlineData("com.dep", "file:../x")]
+    public void Upsert_rejects_malformed_dependencies(string key, string value)
+    {
+        using var t = new TempDir();
+        var sub = Sub();
+        sub.Dependencies = new Dictionary<string, string> { [key] = value };
+        var ex = Assert.Throws<ArgumentException>(() => EmptyStore(t).Upsert(sub));
+        Assert.Contains("dependency", ex.Message);
+    }
+
+    [Fact]
+    public void Upsert_rejects_an_escaping_sub_path()
+    {
+        using var t = new TempDir();
+        var ex = Assert.Throws<ArgumentException>(() => EmptyStore(t).Upsert(Sub(gitUrl: "https://github.com/someone/repo.git?path=../../x")));
+        Assert.Contains("?path=", ex.Message);
+    }
+
+    [Fact]
     public void Upsert_rejects_too_many_dependencies()
     {
         using var t = new TempDir();

@@ -71,7 +71,7 @@ public sealed class PlatformTests
             new[] { "-projectPath", "/Users/u/Proj" });
         Assert.Equal("open", spec.FileName);
         Assert.Equal(
-            new[] { "/Applications/Unity/Hub/Editor/6000.0.0f1/Unity.app", "--args", "-projectPath", "/Users/u/Proj" },
+            new[] { "-n", "/Applications/Unity/Hub/Editor/6000.0.0f1/Unity.app", "--args", "-projectPath", "/Users/u/Proj" },
             spec.Arguments);
     }
 

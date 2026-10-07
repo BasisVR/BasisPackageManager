@@ -81,6 +81,18 @@ public sealed class GitExcludeTests
     // ---- linked worktrees & submodules (.git is a "gitdir:" pointer file) ----
 
     [Fact]
+    public void Add_finds_the_repository_above_an_inner_project_folder()
+    {
+        using var t = new TempDir();
+        t.CreateDir(".git");
+        var inner = t.CreateDir("Basis");
+
+        GitExclude.Add(inner, t.Combine("Basis/Packages/com.x"));
+
+        Assert.Contains("/Basis/Packages/com.x/", File.ReadAllLines(t.Combine(".git/info/exclude")));
+    }
+
+    [Fact]
     public void Add_and_Remove_use_the_resolved_common_dir_for_a_worktree()
     {
         using var t = new TempDir();

@@ -35,19 +35,27 @@ public sealed class PackageListService
 
     private static string UrlFor(string? catalogUrl, string leafName, string fallback)
     {
-        var b = string.IsNullOrWhiteSpace(catalogUrl) ? CatalogService.DefaultCatalogUrl : catalogUrl;
-        const string leaf = "catalog.json";
-        return b.EndsWith(leaf, StringComparison.OrdinalIgnoreCase)
-            ? b[..^leaf.Length] + leafName
-            : fallback;
+        var b = string.IsNullOrWhiteSpace(catalogUrl) ? CatalogService.DefaultCatalogUrl : catalogUrl.Trim();
+        if (!Uri.TryCreate(b, UriKind.Absolute, out var uri)) return fallback;
+        var path = uri.AbsolutePath;
+        var slash = path.LastIndexOf('/');
+        if (!string.Equals(path[(slash + 1)..], "catalog.json", StringComparison.OrdinalIgnoreCase)) return fallback;
+        return new UriBuilder(uri) { Path = path[..(slash + 1)] + leafName }.Uri.AbsoluteUri;
     }
 
     public async Task<List<PackageList>> LoadAsync(string? catalogUrl, CancellationToken ct = default)
     {
         // Prefer the new feed; fall back to the legacy bundles.json for registries published before the rename.
         var list = await TryFetchAsync(PackageListsUrlFor(catalogUrl), ct).ConfigureAwait(false)
-                ?? await TryFetchAsync(LegacyPackageListsUrlFor(catalogUrl), ct).ConfigureAwait(false);
-        return list ?? new List<PackageList>();
+                ?? await TryFetchAsync(LegacyPackageListsUrlFor(catalogUrl), ct).ConfigureAwait(false)
+                ?? new List<PackageList>();
+        list.RemoveAll(l => l is null);
+        foreach (var l in list)
+        {
+            l.Packages ??= new();
+            l.Packages.RemoveAll(p => p is null);
+        }
+        return list;
     }
 
     private async Task<List<PackageList>?> TryFetchAsync(string url, CancellationToken ct)

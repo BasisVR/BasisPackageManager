@@ -10,6 +10,7 @@ public sealed class UnityProjectService
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
     public bool IsUnityProject(string path)
@@ -99,9 +100,19 @@ public sealed class UnityProjectService
     public static async Task SaveManifestAsync(string unityProjectPath, PackageManifest manifest, CancellationToken ct = default)
     {
         var manifestPath = Path.Combine(unityProjectPath, "Packages", "manifest.json");
-        Directory.CreateDirectory(Path.GetDirectoryName(manifestPath)!);
-        await using var fs = File.Create(manifestPath);
-        await JsonSerializer.SerializeAsync(fs, manifest, JsonOpts, ct).ConfigureAwait(false);
+        if (File.Exists(manifestPath))
+        {
+            try
+            {
+                await using var existing = File.OpenRead(manifestPath);
+                await JsonSerializer.DeserializeAsync<PackageManifest>(existing, JsonOpts, ct).ConfigureAwait(false);
+            }
+            catch (JsonException ex)
+            {
+                throw new InvalidDataException($"{manifestPath} isn't valid JSON, so it was left unchanged. Fix or restore it, then try again.", ex);
+            }
+        }
+        await AtomicFile.WriteAsync(manifestPath, stream => JsonSerializer.SerializeAsync(stream, manifest, JsonOpts, ct), ct).ConfigureAwait(false);
     }
     private static readonly JsonSerializerOptions ReadOpts = new() { PropertyNameCaseInsensitive = true };
     /// <summary>Enumerates the embedded packages (each <c>Packages/&lt;folder&gt;/package.json</c>) of a Unity project.</summary>
@@ -138,6 +149,26 @@ public sealed class UnityProjectService
 
         result.Sort((a, b) => string.Compare(a.DisplayName, b.DisplayName, StringComparison.OrdinalIgnoreCase));
         return result;
+    }
+
+    public static bool IsOpenInUnity(string unityProjectPath)
+    {
+        var lockFile = Path.Combine(unityProjectPath, "Temp", "UnityLockfile");
+        if (!File.Exists(lockFile)) return false;
+        if (!OperatingSystem.IsWindows()) return true;
+        try
+        {
+            using var probe = new FileStream(lockFile, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            return false;
+        }
+        catch (FileNotFoundException)
+        {
+            return false;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return true;
+        }
     }
 
     private static async Task<string> ReadProjectVersionAsync(string path, CancellationToken ct)

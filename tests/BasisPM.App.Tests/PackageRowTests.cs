@@ -261,6 +261,20 @@ public sealed class PackageRowTests
         Assert.True(row.IsChanged);
     }
 
+    [AvaloniaFact]
+    public void Mounted_row_hides_submit_pr_until_the_repo_is_confirmed()
+    {
+        var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), installedVersion: null, isMounted: true, mountFolder: "C:/proj/Packages/com.x");
+        Assert.False(row.CanSubmitPr);
+
+        var changed = new List<string?>();
+        row.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+        row.CanSubmitPr = true;
+
+        Assert.True(row.CanSubmitPr);
+        Assert.Contains(nameof(PackageRow.CanSubmitPr), changed);
+    }
+
     // The mounted working-clone folder is surfaced for the Open-folder action.
     [AvaloniaFact]
     public void MountFolder_is_exposed_when_provided()
