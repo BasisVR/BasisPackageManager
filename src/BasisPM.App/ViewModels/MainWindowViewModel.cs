@@ -105,7 +105,7 @@ public sealed class MainWindowViewModel : ObservableObject
         // The mount / contribute / cache-drift workflow (formerly the Develop tab) now lives on the Packages page.
         PackagesVM = new PackagesViewModel(_settingsService, _catalogService, _projectService, _mountRegistry,
             mountService, contributeService, cacheDriftService, _ghAuth, _ghApi, _gitService, this);
-        ServerVM = new ServerViewModel(new BasisServerService(), this);
+        ServerVM = new ServerViewModel(new BasisServerService(), new ServerPackageService(_gitService), _catalogService, _settingsService, new VersionService(_ghApi, _gitService), this);
         UnityVM = new UnityViewModel(_hubService, _releaseService, _settingsService, this);
         LogsVM = new LogsViewModel(_log);
         // Logs live inside the Settings page (merged), so Settings gets a reference to the logs view-model.

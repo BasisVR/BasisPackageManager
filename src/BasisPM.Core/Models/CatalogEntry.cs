@@ -45,6 +45,7 @@ public sealed class CatalogPackageVersion
     [JsonPropertyName("stars")] public int Stars { get; set; }
     [JsonPropertyName("forks")] public int Forks { get; set; }
     [JsonPropertyName("updated")] public string? Updated { get; set; }
+    [JsonPropertyName("server"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool Server { get; set; }
 }
 
 public sealed class CatalogAuthor

@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:BasisPM.App.ViewModels"
              xmlns:models="using:BasisPM.Core.Models"
+             xmlns:loc="using:BasisPM.App.Localization"
              x:Class="BasisPM.App.Views.ServerView"
              x:DataType="vm:ServerViewModel">
   <ScrollViewer HorizontalScrollBarVisibility="Disabled">
@@ -44,6 +45,95 @@
             <Button Classes="secondary" Command="{Binding StopCommand}" Margin="0,0,10,8" Content="Stop server"/>
             <Button Classes="secondary" Command="{Binding OpenRuntimeCommand}" Margin="0,0,10,8"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}"/><TextBlock Text="Open runtime folder"/></StackPanel></Button>
           </WrapPanel>
+        </StackPanel>
+      </Border>
+
+      <Border Classes="card" Padding="20">
+        <StackPanel Spacing="14">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="4">
+              <TextBlock Text="{loc:Tr server.packages.title}" Classes="h3"/>
+              <TextBlock Text="{loc:Tr server.packages.intro}" Classes="muted" TextWrapping="Wrap"/>
+            </StackPanel>
+            <Button Grid.Column="1" Classes="secondary" Command="{Binding RestoreServerPackagesCommand}" IsEnabled="{Binding CanManageServerPackages}"
+                    VerticalAlignment="Top" Margin="16,0,0,0" ToolTip.Tip="{loc:Tr server.packages.restoreTip}">
+              <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}"/><TextBlock Text="{loc:Tr server.packages.restore}"/></StackPanel>
+            </Button>
+          </Grid>
+          <Border CornerRadius="10" Padding="12" Background="#26F59E0B" BorderBrush="#80F59E0B" BorderThickness="1" IsVisible="{Binding HasServerPackagesNotice}">
+            <TextBlock Text="{Binding ServerPackagesNotice}" TextWrapping="Wrap"/>
+          </Border>
+          <Grid ColumnDefinitions="*,12,Auto" IsVisible="{Binding CanManageServerPackages}">
+            <TextBox Text="{Binding ServerPackageSource}" Watermark="{loc:Tr server.packages.sourceWatermark}"/>
+            <Button Grid.Column="2" Classes="primary" Command="{Binding AddServerPackageCommand}">
+              <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}"/><TextBlock Text="{loc:Tr server.packages.add}"/></StackPanel>
+            </Button>
+          </Grid>
+          <TextBlock Text="{loc:Tr server.packages.empty}" Classes="muted" IsVisible="{Binding !HasServerPackages}"/>
+          <ItemsControl ItemsSource="{Binding ServerPackages}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate DataType="vm:ServerPackageRow">
+                <Border Classes="card" Padding="14" Margin="0,0,0,8">
+                  <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="3">
+                      <WrapPanel>
+                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <Border Classes="versionPill" VerticalAlignment="Center" Margin="0,0,6,0" IsVisible="{Binding HasVersion}">
+                          <TextBlock Text="{Binding Version}" FontSize="11" Classes="muted"/>
+                        </Border>
+                        <Border Classes="versionPill" VerticalAlignment="Center" Background="#2622C55E" BorderBrush="#8022C55E" IsVisible="{Binding IsReady}">
+                          <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="{StaticResource BasisSuccessBrush}"/>
+                        </Border>
+                        <Border Classes="versionPill" VerticalAlignment="Center" Background="#26F59E0B" BorderBrush="#80F59E0B" IsVisible="{Binding NeedsAttention}">
+                          <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="{StaticResource BasisWarningBrush}"/>
+                        </Border>
+                      </WrapPanel>
+                      <TextBlock Text="{Binding Id}" Classes="dim" FontSize="11"/>
+                      <TextBlock Text="{Binding AssembliesText}" Classes="dim" FontSize="11" IsVisible="{Binding HasAssemblies}"/>
+                      <TextBlock Text="{Binding SourceText}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                      <TextBlock Text="{Binding Detail}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasDetail}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Top" Margin="12,0,0,0">
+                      <Button Classes="iconBtn" Command="{Binding $parent[ItemsControl].((vm:ServerViewModel)DataContext).UpdateServerPackageCommand}" CommandParameter="{Binding}"
+                              IsVisible="{Binding CanUpdate}" ToolTip.Tip="{loc:Tr server.packages.updateTip}">
+                        <PathIcon Width="15" Height="15" Data="{StaticResource IconUpdate}"/>
+                      </Button>
+                      <Button Classes="iconBtn" Command="{Binding $parent[ItemsControl].((vm:ServerViewModel)DataContext).OpenServerPackageFolderCommand}" CommandParameter="{Binding}"
+                              ToolTip.Tip="{loc:Tr server.packages.openFolderTip}">
+                        <PathIcon Width="15" Height="15" Data="{StaticResource IconFolderOpen}"/>
+                      </Button>
+                      <Button Classes="iconBtn" Command="{Binding $parent[ItemsControl].((vm:ServerViewModel)DataContext).RemoveServerPackageCommand}" CommandParameter="{Binding}"
+                              ToolTip.Tip="{loc:Tr server.packages.removeTip}">
+                        <PathIcon Width="15" Height="15" Data="{StaticResource IconDelete}"/>
+                      </Button>
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <StackPanel Spacing="8" IsVisible="{Binding HasAvailableServerPackages}">
+            <TextBlock Text="{loc:Tr server.packages.available}" FontWeight="SemiBold"/>
+            <ItemsControl ItemsSource="{Binding AvailableServerPackages}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="models:CatalogPackageVersion">
+                  <Border Classes="card" Padding="12" Margin="0,0,0,8">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Spacing="2">
+                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding Description}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding Name}" Classes="dim" FontSize="11"/>
+                      </StackPanel>
+                      <Button Grid.Column="1" Classes="secondary" VerticalAlignment="Center" Margin="12,0,0,0"
+                              Command="{Binding $parent[ItemsControl].((vm:ServerViewModel)DataContext).InstallServerCatalogPackageCommand}" CommandParameter="{Binding}">
+                        <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}"/><TextBlock Text="{loc:Tr server.packages.install}"/></StackPanel>
+                      </Button>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
         </StackPanel>
       </Border>
 

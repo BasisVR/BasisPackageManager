@@ -207,6 +207,7 @@ public sealed class PackageStore
                 Discord = sub.Discord?.Trim(),
                 Donate = sub.Donate?.Trim(),
                 Link = sub.Link?.Trim(),
+                Server = sub.Server == true,
             };
 
             _packages.Add(pkg);
@@ -253,6 +254,7 @@ public sealed class PackageStore
                         Stars = p.Stars,
                         Forks = p.Forks,
                         Updated = p.Updated,
+                        Server = p.Server,
                     },
                 },
             };

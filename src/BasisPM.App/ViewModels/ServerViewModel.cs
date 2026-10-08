@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Avalonia.Threading;
+using BasisPM.App.Localization;
 using BasisPM.App.Services;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
@@ -9,7 +11,15 @@ namespace BasisPM.App.ViewModels;
 public sealed class ServerViewModel : ObservableObject
 {
     private readonly BasisServerService _service;
+    private readonly ServerPackageService _packages;
+    private readonly CatalogService _catalogs;
+    private readonly UserSettingsService _settings;
+    private readonly VersionService _versions;
     private readonly MainWindowViewModel _shell;
+    private Catalog? _catalog;
+    private string _serverPackageSource = "";
+    private string _serverPackagesNotice = "";
+    private bool _canManageServerPackages;
     private BasisInstall? _install;
     private string? _configRoot;
     private Process? _serverProcess;
@@ -48,6 +58,19 @@ public sealed class ServerViewModel : ObservableObject
     public bool AddToDefaultLibrary { get => _addToDefaultLibrary; set { if (SetField(ref _addToDefaultLibrary, value)) OnPropertyChanged(nameof(AddAsInitialResource)); } }
     public bool AddAsInitialResource { get => !_addToDefaultLibrary; set { if (value) AddToDefaultLibrary = false; OnPropertyChanged(); } }
 
+    public ObservableCollection<ServerPackageRow> ServerPackages { get; } = new();
+    public ObservableCollection<CatalogPackageVersion> AvailableServerPackages { get; } = new();
+    public bool HasServerPackages => ServerPackages.Count > 0;
+    public bool HasAvailableServerPackages => AvailableServerPackages.Count > 0;
+    public bool CanManageServerPackages { get => _canManageServerPackages; private set => SetField(ref _canManageServerPackages, value); }
+    public string ServerPackageSource { get => _serverPackageSource; set => SetField(ref _serverPackageSource, value); }
+    public string ServerPackagesNotice
+    {
+        get => _serverPackagesNotice;
+        private set { if (SetField(ref _serverPackagesNotice, value)) OnPropertyChanged(nameof(HasServerPackagesNotice)); }
+    }
+    public bool HasServerPackagesNotice => !string.IsNullOrEmpty(_serverPackagesNotice);
+
     public RelayCommand BuildCommand { get; }
     public RelayCommand RunCommand { get; }
     public RelayCommand StopCommand { get; }
@@ -58,11 +81,27 @@ public sealed class ServerViewModel : ObservableObject
     public RelayCommand<ServerContentFile> RemoveContentCommand { get; }
     public RelayCommand OpenRuntimeCommand { get; }
     public RelayCommand OpenDotNetDownloadCommand { get; }
+    public RelayCommand AddServerPackageCommand { get; }
+    public RelayCommand RestoreServerPackagesCommand { get; }
+    public RelayCommand<ServerPackageRow> UpdateServerPackageCommand { get; }
+    public RelayCommand<ServerPackageRow> RemoveServerPackageCommand { get; }
+    public RelayCommand<ServerPackageRow> OpenServerPackageFolderCommand { get; }
+    public RelayCommand<CatalogPackageVersion> InstallServerCatalogPackageCommand { get; }
 
-    public ServerViewModel(BasisServerService service, MainWindowViewModel shell)
+    public ServerViewModel(BasisServerService service, ServerPackageService packages, CatalogService catalogs, UserSettingsService settings, VersionService versions, MainWindowViewModel shell)
     {
         _service = service;
+        _packages = packages;
+        _catalogs = catalogs;
+        _settings = settings;
+        _versions = versions;
         _shell = shell;
+        AddServerPackageCommand = new RelayCommand(AddServerPackageAsync);
+        RestoreServerPackagesCommand = new RelayCommand(RestoreServerPackagesAsync);
+        UpdateServerPackageCommand = new RelayCommand<ServerPackageRow>(UpdateServerPackageAsync);
+        RemoveServerPackageCommand = new RelayCommand<ServerPackageRow>(RemoveServerPackageAsync);
+        OpenServerPackageFolderCommand = new RelayCommand<ServerPackageRow>(OpenServerPackageFolder);
+        InstallServerCatalogPackageCommand = new RelayCommand<CatalogPackageVersion>(InstallServerCatalogPackageAsync);
         _selectedMode = ContentModes[0];
         BuildCommand = new RelayCommand(BuildAsync);
         RunCommand = new RelayCommand(RunAsync);
@@ -104,7 +143,7 @@ public sealed class ServerViewModel : ObservableObject
         ConfigFields.Clear();
         ContentFiles.Clear();
         _configRoot = _install?.RepoRoot;
-        if (_install is null) { RaiseCollections(); return; }
+        if (_install is null) { RaiseCollections(); await RefreshServerPackagesAsync(); return; }
         try
         {
             foreach (var field in _service.LoadConfig(_install.RepoRoot))
@@ -119,7 +158,176 @@ public sealed class ServerViewModel : ObservableObject
         }
         catch (Exception ex) { DiagnosticLog.Write("Loading the Basis server configuration", ex); _shell.SetStatus($"Could not load server configuration: {ex.Message}", StatusKind.Error); }
         RaiseCollections();
-        await Task.CompletedTask;
+        await RefreshServerPackagesAsync();
+    }
+
+    private async Task RefreshServerPackagesAsync()
+    {
+        var install = _install;
+        if (install is null || !ServerPackageService.HasServer(install.RepoRoot))
+        {
+            ServerPackages.Clear();
+            AvailableServerPackages.Clear();
+            CanManageServerPackages = false;
+            ServerPackagesNotice = install is null ? "" : L.Tr("server.packages.noServer");
+            RaiseServerPackages();
+            return;
+        }
+        CanManageServerPackages = ServerPackageService.SupportsPackages(install.RepoRoot);
+        ServerPackagesNotice = CanManageServerPackages ? "" : L.Tr("server.packages.unsupported");
+        try
+        {
+            var packages = await _packages.ListAsync(install.RepoRoot);
+            if (!ReferenceEquals(install, _install)) return;
+            ServerPackages.Clear();
+            foreach (var package in packages) ServerPackages.Add(new ServerPackageRow(package));
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write("Listing the Basis server packages", ex);
+            ServerPackagesNotice = L.Tr("server.packages.listError", ex.Message);
+        }
+        RaiseServerPackages();
+        if (CanManageServerPackages) _ = RefreshAvailableServerPackagesAsync(install);
+    }
+
+    private async Task RefreshAvailableServerPackagesAsync(BasisInstall install)
+    {
+        try
+        {
+            var catalog = await LoadCatalogAsync();
+            if (!ReferenceEquals(install, _install)) return;
+            var installed = ServerPackages.Select(p => p.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            AvailableServerPackages.Clear();
+            foreach (var entry in _catalogs.AllLatest(catalog)
+                .Where(e => e.Server && !string.IsNullOrWhiteSpace(e.Url) && !installed.Contains(e.Name))
+                .OrderBy(e => e.DisplayName, StringComparer.OrdinalIgnoreCase))
+                AvailableServerPackages.Add(entry);
+        }
+        catch (Exception ex) { DiagnosticLog.Write("Loading server packages from the package catalog", ex); }
+        OnPropertyChanged(nameof(HasAvailableServerPackages));
+    }
+
+    private async Task<Catalog> LoadCatalogAsync()
+    {
+        if (_catalog is not null) return _catalog;
+        var settings = await _settings.LoadAsync();
+        return _catalog = await _catalogs.LoadAsync(settings.CatalogUrl);
+    }
+
+    private async Task AddServerPackageAsync()
+    {
+        if (_install is null) { MissingInstall(); return; }
+        var install = _install;
+        var input = ServerPackageSource.Trim();
+        var looksLikeId = ServerPackageService.IsValidId(input) && !input.Contains('/') && !input.Contains(':');
+        BasisPM.Core.Models.ServerPackageSource resolved;
+        try { resolved = ServerPackageService.ResolveSource(install.RepoRoot, input, looksLikeId ? await LoadCatalogAsync() : null); }
+        catch (Exception ex) { DiagnosticLog.Write("Resolving a Basis server package source", ex); _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); return; }
+        if (resolved.Error is not null) { _shell.SetStatus(resolved.Error, StatusKind.Error); return; }
+        var source = resolved.Entry is null ? resolved.Source : await LatestReleaseAsync(resolved.Source) ?? resolved.Source;
+        if (await InstallServerPackageAsync(install, source, resolved.ExpectedId, resolved.Entry?.DisplayName ?? input)) ServerPackageSource = "";
+    }
+
+    private async Task InstallServerCatalogPackageAsync(CatalogPackageVersion? entry)
+    {
+        if (entry?.Url is not { Length: > 0 } url || _install is null) return;
+        var install = _install;
+        await InstallServerPackageAsync(install, await LatestReleaseAsync(url) ?? url, entry.Name, entry.DisplayName);
+    }
+
+    private async Task<bool> InstallServerPackageAsync(BasisInstall install, string source, string? expectedId, string label)
+    {
+        IsBusy = true;
+        _shell.SetStatus(L.Tr("server.packages.installing", label));
+        try
+        {
+            var result = await _packages.InstallAsync(install.RepoRoot, source, expectedId, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
+            ReportPackageResult(result);
+            return result.Ok;
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write("Installing a Basis server package", ex);
+            _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error);
+            return false;
+        }
+        finally { IsBusy = false; await RefreshServerPackagesAsync(); }
+    }
+
+    private async Task UpdateServerPackageAsync(ServerPackageRow? row)
+    {
+        if (row is null || _install is null) return;
+        var install = _install;
+        var discard = false;
+        if (await _packages.HasLocalWorkAsync(install.RepoRoot, row.Id))
+        {
+            if (!await Dialogs.ConfirmAsync(L.Tr("server.packages.discardTitle"), L.Tr("server.packages.discardUpdateBody", row.DisplayName))) return;
+            discard = true;
+        }
+        IsBusy = true;
+        _shell.SetStatus(L.Tr("server.packages.updating", row.DisplayName));
+        try { ReportPackageResult(await _packages.UpdateAsync(install.RepoRoot, row.Id, null, discard, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)))); }
+        catch (Exception ex) { DiagnosticLog.Write($"Updating Basis server package {row.Id}", ex); _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
+        finally { IsBusy = false; await RefreshServerPackagesAsync(); }
+    }
+
+    private async Task RemoveServerPackageAsync(ServerPackageRow? row)
+    {
+        if (row is null || _install is null) return;
+        var install = _install;
+        var discard = false;
+        if (await _packages.HasLocalWorkAsync(install.RepoRoot, row.Id))
+        {
+            if (!await Dialogs.ConfirmAsync(L.Tr("server.packages.discardTitle"), L.Tr("server.packages.discardRemoveBody", row.DisplayName))) return;
+            discard = true;
+        }
+        IsBusy = true;
+        try { ReportPackageResult(await _packages.RemoveAsync(install.RepoRoot, row.Id, discard)); }
+        catch (Exception ex) { DiagnosticLog.Write($"Removing Basis server package {row.Id}", ex); _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
+        finally { IsBusy = false; await RefreshServerPackagesAsync(); }
+    }
+
+    private async Task RestoreServerPackagesAsync()
+    {
+        if (_install is null) { MissingInstall(); return; }
+        var install = _install;
+        IsBusy = true;
+        _shell.SetStatus(L.Tr("server.packages.restoring"));
+        try { ReportPackageResult(await _packages.RestoreAsync(install.RepoRoot, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)))); }
+        catch (Exception ex) { DiagnosticLog.Write("Restoring the Basis server packages", ex); _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
+        finally { IsBusy = false; await RefreshServerPackagesAsync(); }
+    }
+
+    private void OpenServerPackageFolder(ServerPackageRow? row)
+    {
+        if (row?.Folder is { } folder && Directory.Exists(folder)) ExternalLink.OpenFolder(folder);
+        else _shell.SetStatus(L.Tr("server.packages.folderMissing"), StatusKind.Error);
+    }
+
+    private async Task<string?> LatestReleaseAsync(string gitUrl)
+    {
+        var location = UpmGitUrl.Parse(gitUrl);
+        if (location is null || location.Ref is not null) return null;
+        try
+        {
+            var versions = await _versions.GetVersionsAsync(gitUrl);
+            return versions.LatestStable?.Ref is { } tag ? location.ToManifestUrl(tag, location.Path) : null;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException or TaskCanceledException)
+        {
+            DiagnosticLog.Write($"Resolving the latest release of {gitUrl}", ex);
+            return null;
+        }
+    }
+
+    private void ReportPackageResult(ServerPackageResult result) =>
+        _shell.SetStatus(result.Ok ? L.Tr("server.packages.rebuildHint", result.Message) : result.Message, result.Ok ? StatusKind.Success : StatusKind.Error);
+
+    private void RaiseServerPackages()
+    {
+        OnPropertyChanged(nameof(HasServerPackages));
+        OnPropertyChanged(nameof(HasAvailableServerPackages));
     }
 
     private async Task BuildAsync()
@@ -349,3 +557,32 @@ public sealed class ServerConfigFieldRow : ObservableObject
 }
 
 public sealed record ContentModeOption(string Name, int Value);
+
+public sealed class ServerPackageRow
+{
+    public ServerPackageRow(ServerPackageInfo info) => Info = info;
+    public ServerPackageInfo Info { get; }
+    public string Id => Info.Id;
+    public string DisplayName => Info.DisplayName;
+    public string Version => Info.Version;
+    public bool HasVersion => !string.IsNullOrWhiteSpace(Info.Version);
+    public string? Folder => Info.Folder;
+    public bool IsReady => Info.Status == ServerPackageStatus.Ready;
+    public bool NeedsAttention => !IsReady;
+    public bool CanUpdate => !Info.IsLocal;
+    public string StatusText => Info.Status switch
+    {
+        ServerPackageStatus.Ready => L.Tr(Info.IsLinked ? "server.packages.status.linked" : "server.packages.status.ready"),
+        ServerPackageStatus.NotRestored => L.Tr("server.packages.status.notRestored"),
+        ServerPackageStatus.Changed => L.Tr("server.packages.status.changed"),
+        ServerPackageStatus.Missing => L.Tr("server.packages.status.missing"),
+        _ => L.Tr("server.packages.status.invalid"),
+    };
+    public string AssembliesText => L.Tr("server.packages.compiledInto", Info.Assemblies);
+    public bool HasAssemblies => Info.Assemblies.Length > 0;
+    public string SourceText => Info.IsLinked
+        ? L.Tr("server.packages.builtFrom", Info.LinkedFolder)
+        : Info.ShortCommit.Length > 0 ? $"{Info.Source} @ {Info.ShortCommit}" : Info.Source;
+    public string? Detail => Info.Detail;
+    public bool HasDetail => !string.IsNullOrWhiteSpace(Info.Detail);
+}

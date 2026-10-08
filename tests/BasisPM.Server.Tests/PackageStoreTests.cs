@@ -205,6 +205,23 @@ public sealed class PackageStoreTests
     }
 
     [Fact]
+    public void BuildCatalog_carries_the_server_flag_and_only_writes_it_when_set()
+    {
+        var server = Pkg("com.server", "Server side", gitUrl: "https://github.com/x/s.git");
+        server.Server = true;
+        var unityOnly = Pkg("com.unity", "Unity only", gitUrl: "https://github.com/x/u.git");
+
+        var catalog = PackageStore.BuildCatalog(new[] { server, unityOnly });
+        var json = System.Text.Json.JsonSerializer.Serialize(catalog);
+
+        Assert.True(catalog.Packages["com.server"].Versions.Values.Single().Server);
+        Assert.False(catalog.Packages["com.unity"].Versions.Values.Single().Server);
+        Assert.Single(System.Text.RegularExpressions.Regex.Matches(json, "\"server\":true"));
+        Assert.DoesNotContain("\"server\":false", json);
+        Assert.DoesNotContain("\"server\"", System.Text.Json.JsonSerializer.Serialize(unityOnly));
+    }
+
+    [Fact]
     public void ToCatalog_reflects_the_store_contents()
     {
         using var t = new TempDir();

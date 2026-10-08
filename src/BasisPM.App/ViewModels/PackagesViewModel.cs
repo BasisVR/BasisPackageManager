@@ -24,6 +24,7 @@ public sealed class PackagesViewModel : ObservableObject
     private readonly GitService _gitService;
     private readonly GitHubService _githubService;
     private readonly VersionService _versionService;
+    private readonly ServerPackageService _serverPackages;
     private readonly PackageListService _packageListService;
     private readonly MainWindowViewModel _shell;
     private bool _isGridView;
@@ -228,6 +229,7 @@ public sealed class PackagesViewModel : ObservableObject
         _gitService = gitService;
         _githubService = new GitHubService();
         _versionService = new VersionService();
+        _serverPackages = new ServerPackageService(gitService);
         _packageListService = new PackageListService();
         _shell = shell;
 
@@ -631,6 +633,64 @@ public sealed class PackagesViewModel : ObservableObject
     private MountRecord? WorkingCloneMount(BasisInstall target, string id) =>
         _mountRegistry.Find(target.UnityProjectPath, id) is { } rec && MountService.IsWorkingClone(rec.FolderPath) ? rec : null;
 
+    private string? MountedPackageRoot(BasisInstall target, string id)
+    {
+        if (WorkingCloneMount(target, id) is not { } mount) return null;
+        var root = !File.Exists(Path.Combine(mount.FolderPath, "package.json")) && UpmGitUrl.Parse(mount.OriginalManifestValue)?.Path is { Length: > 0 } sub
+            ? Path.Combine(mount.FolderPath, sub)
+            : mount.FolderPath;
+        return File.Exists(Path.Combine(root, "package.json")) ? root : null;
+    }
+
+    private async Task<string?> SyncServerSideAsync(BasisInstall target, CatalogPackageVersion entry, string url)
+    {
+        if (!entry.Server || !ServerPackageService.SupportsPackages(target.RepoRoot)) return null;
+        try
+        {
+            var mounted = MountedPackageRoot(target, entry.Name);
+            ServerPackageResult result;
+            if (_serverPackages.LoadManifest(target.RepoRoot).Dependencies.ContainsKey(entry.Name))
+            {
+                var linked = _serverPackages.LoadLinks(target.RepoRoot).ContainsKey(entry.Name);
+                result = await _serverPackages.UpdateAsync(target.RepoRoot, entry.Name, linked ? null : UpmGitUrl.Parse(url)?.Ref);
+            }
+            else if (mounted is not null) result = await _serverPackages.InstallLinkedAsync(target.RepoRoot, url, mounted, entry.Name);
+            else result = await _serverPackages.InstallAsync(target.RepoRoot, url, entry.Name,
+                line => Avalonia.Threading.Dispatcher.UIThread.Post(() => ReportCloneProgress(line)));
+            return result.Ok ? null : result.Message;
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write($"Installing the Basis Server side of {entry.Name}", ex);
+            return ex.Message;
+        }
+    }
+
+    private async Task<string?> RemoveServerSideAsync(BasisInstall target, string id, string? mountedRoot)
+    {
+        try
+        {
+            if (!ServerPackageService.HasServer(target.RepoRoot) || !_serverPackages.LoadManifest(target.RepoRoot).Dependencies.ContainsKey(id)) return null;
+            var linkedToUnity = mountedRoot is not null && _serverPackages.LoadLinks(target.RepoRoot).TryGetValue(id, out var link) && Platform.PathsEqual(link, mountedRoot);
+            var serverPackage = _catalogService.AllLatest(_catalog).Any(e => e.Server && string.Equals(e.Name, id, StringComparison.OrdinalIgnoreCase));
+            if (!linkedToUnity && !serverPackage) return null;
+            var result = await _serverPackages.RemoveAsync(target.RepoRoot, id);
+            return result.Ok ? null : result.Message;
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write($"Removing the Basis Server side of {id}", ex);
+            return ex.Message;
+        }
+    }
+
+    private void ReportWithServerSide(string message, CatalogPackageVersion entry, BasisInstall target, string? serverProblem)
+    {
+        if (serverProblem is not null) _shell.SetStatus(L.Tr("packages.status.serverInstallFailed", serverProblem), StatusKind.Error);
+        else if (entry.Server && ServerPackageService.SupportsPackages(target.RepoRoot)) _shell.SetStatus(L.Tr("packages.status.serverInstalled", message), StatusKind.Success);
+        else _shell.SetStatus(message, StatusKind.Success);
+    }
+
     private async Task ReloadManifestAsync(BasisInstall target) =>
         target.Manifest = (await _projectService.LoadAsync(target.UnityProjectPath)).Manifest;
 
@@ -859,8 +919,8 @@ public sealed class PackagesViewModel : ObservableObject
             else
             {
                 var mounted = await CloneInstallAsync(target, entry.Name, url);
-                _shell.SetStatus(L.Tr(mounted ? "packages.status.installedCloned" : "packages.status.installed",
-                    entry.DisplayName, target.DisplayName), StatusKind.Success);
+                ReportWithServerSide(L.Tr(mounted ? "packages.status.installedCloned" : "packages.status.installed",
+                    entry.DisplayName, target.DisplayName), entry, target, await SyncServerSideAsync(target, entry, url));
             }
             RefreshInstalled();
         }
@@ -922,7 +982,8 @@ public sealed class PackagesViewModel : ObservableObject
 
             // Clone the chosen release into Packages/ as an editable mount (falls back to a git-URL dep without git).
             await CloneInstallAsync(target, entry.Name, versionUrl);
-            _shell.SetStatus(L.Tr("packages.status.installedVersion", entry.DisplayName, chosen.Ref ?? L.Tr("packages.status.defaultBranch"), target.DisplayName), StatusKind.Success);
+            ReportWithServerSide(L.Tr("packages.status.installedVersion", entry.DisplayName, chosen.Ref ?? L.Tr("packages.status.defaultBranch"), target.DisplayName),
+                entry, target, await SyncServerSideAsync(target, entry, versionUrl));
             RefreshInstalled();
         }
         catch (Exception ex) { DiagnosticLog.Write("Installing the selected package version", ex); _shell.SetStatus(L.Tr("packages.status.versionInstallError", ex.Message), StatusKind.Error); }
@@ -943,6 +1004,7 @@ public sealed class PackagesViewModel : ObservableObject
         try
         {
             var wasMounted = WorkingCloneMount(target, name) is not null;
+            var mountedRoot = MountedPackageRoot(target, name);
             if (wasMounted && !await ConfirmDiscardEditsAsync(target, name, displayName)) return;
 
             // A mounted package lives as a working clone (no plain manifest line for a root mount), so delete
@@ -959,7 +1021,9 @@ public sealed class PackagesViewModel : ObservableObject
             if (wasMounted || hadDep)
             {
                 await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
-                _shell.SetStatus(L.Tr("packages.status.removed", displayName), StatusKind.Success);
+                var serverProblem = await RemoveServerSideAsync(target, name, mountedRoot);
+                _shell.SetStatus(serverProblem is null ? L.Tr("packages.status.removed", displayName) : L.Tr("packages.status.serverRemoveFailed", serverProblem),
+                    serverProblem is null ? StatusKind.Success : StatusKind.Error);
                 RefreshInstalled();
             }
         }
@@ -1652,6 +1716,7 @@ public sealed class PackageRow : ObservableObject
     // Registry metadata surfaced on the row: a category pill and (when known) a GitHub star count.
     public string? Category => Entry.Category;
     public bool HasCategory => !string.IsNullOrWhiteSpace(Entry.Category);
+    public bool IsServerPackage => Entry.Server;
     public int Stars => Entry.Stars;
     public string StarsText => Entry.Stars.ToString("N0");
     public bool HasStars => Entry.Stars > 0;

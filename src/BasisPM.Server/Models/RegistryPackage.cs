@@ -39,6 +39,7 @@ public sealed class RegistryPackage
     [JsonPropertyName("donate")] public string? Donate { get; set; }
     // Optional author-provided link (homepage / showcase / docs / video), shown on the package's page.
     [JsonPropertyName("link")] public string? Link { get; set; }
+    [JsonPropertyName("server"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool Server { get; set; }
 }
 
 public sealed class RegistrySubmission
@@ -61,4 +62,5 @@ public sealed class RegistrySubmission
     [JsonPropertyName("discord")] public string? Discord { get; set; }
     [JsonPropertyName("donate")] public string? Donate { get; set; }
     [JsonPropertyName("link")] public string? Link { get; set; }
+    [JsonPropertyName("server")] public bool? Server { get; set; }
 }

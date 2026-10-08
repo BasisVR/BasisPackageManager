@@ -297,6 +297,7 @@
                                                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasCategory}">
                                                             <TextBlock Text="{Binding Category}" FontSize="11" Classes="muted"/>
                                                         </Border>
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsServerPackage}" Background="#269333EA" BorderBrush="#809333EA" ToolTip.Tip="{loc:Tr packages.badge.serverTip}"><TextBlock Text="{loc:Tr packages.badge.server}" FontSize="11" Foreground="{StaticResource BasisPurpleBrush}"/></Border>
                                                         <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" IsVisible="{Binding HasStars}">
                                                             <TextBlock Text="★" FontSize="11" Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
                                                             <TextBlock Text="{Binding StarsText}" FontSize="11" Classes="muted" VerticalAlignment="Center"/>
@@ -384,6 +385,7 @@
                                                     <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasCategory}">
                                                         <TextBlock Text="{Binding Category}" FontSize="10" Classes="muted"/>
                                                     </Border>
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsServerPackage}" Background="#269333EA" BorderBrush="#809333EA" ToolTip.Tip="{loc:Tr packages.badge.serverTip}"><TextBlock Text="{loc:Tr packages.badge.server}" FontSize="10" Foreground="{StaticResource BasisPurpleBrush}"/></Border>
                                                     <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" IsVisible="{Binding HasStars}">
                                                         <TextBlock Text="★" FontSize="10" Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
                                                         <TextBlock Text="{Binding StarsText}" FontSize="10" Classes="muted" VerticalAlignment="Center"/>
@@ -499,6 +501,7 @@
                         </Border>
                         <Border Classes="versionPill" IsVisible="{Binding HasUnity}"><TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" FontSize="11" Classes="muted"/></Border>
                         <Border Classes="versionPill" IsVisible="{Binding HasCategory}"><TextBlock Text="{Binding Category}" FontSize="11" Classes="muted"/></Border>
+                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsServerPackage}" Background="#269333EA" BorderBrush="#809333EA" ToolTip.Tip="{loc:Tr packages.badge.serverTip}"><TextBlock Text="{loc:Tr packages.badge.server}" FontSize="11" Foreground="{StaticResource BasisPurpleBrush}"/></Border>
                     </StackPanel>
 
                     <StackPanel Spacing="6" IsVisible="{Binding HasDependencies}">

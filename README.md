@@ -61,6 +61,11 @@ Running from source (`dotnet run`) skips the in-app updater — update with `git
 - **Basis Server** — build and run the server included in the active checkout, edit every
   generated `config.xml` setting, manage default-library and startup content, and launch
   Basis Labs through Steam with an automatic server connection.
+- **Server packages**: add packages to the Basis Server the same way you add them to Unity. Their
+  server code is compiled straight into the server's own assemblies at build time (see
+  `Basis Server/Packages/README.md` in Basis). A registry package marked as having server code
+  installs on both sides at once, and the server builds it from the Unity project's copy when
+  that copy is a local clone, so the client and the server always run the same code.
 - **Settings** — default clone location, catalog URL, Unity Hub override, and detected
   tooling paths.
 
@@ -83,6 +88,8 @@ basispm --project C:\BasisVR\Basis check-updates
 basispm --project C:\BasisVR\Basis update-basis
 basispm --project C:\BasisVR\Basis list-packages
 basispm --project C:\BasisVR\Basis install-package com.example.package
+basispm --project C:\BasisVR\Basis server-install com.example.transport
+basispm --project C:\BasisVR\Basis server-build
 ```
 
 The console follows the same project model as the desktop app: it clones `BasisVR/Basis` first,
@@ -96,6 +103,14 @@ decision, run `conflicts`, settle each with `resolve <path> mine|basis|done`, th
 `update-basis --continue`; `update-basis --abort` puts the project back as it was. A project
 whose history isn't connected to Basis is linked with `update-basis --link`, and one without git
 is recorded first with `update-basis --init-git`.
+
+Server packages live in `Basis Server/Packages`: `server-install` takes a registry id, a git URL
+(with optional `?path=` and `#ref`) or a `file:` path, `server-update [id] [--ref <ref>]` moves git
+packages forward, `server-remove <id>` takes them out again, and `server-restore` downloads anything
+missing and records the exact commits in `packages-lock.props`. `server-link <id> <folder>` builds a
+package from a working copy on this machine without touching the committed files. `server-build`
+compiles the server; `dotnet build` and `dotnet publish` restore missing server packages by
+themselves, so CI and Docker builds need only git.
 
 ## Package registry server
 

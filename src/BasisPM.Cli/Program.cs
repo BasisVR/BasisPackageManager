@@ -28,6 +28,9 @@ internal sealed class ConsoleApplication
     private readonly BasisInstallService _installs;
     private readonly MountService _mounts;
     private readonly BasisUpdateService _updates;
+    private readonly ServerPackageService _serverPackages;
+    private readonly BasisServerService _server;
+    private readonly VersionService _versions;
     private CancellationTokenSource? _activeOperation;
     private string? _basisPath;
     private Catalog? _catalog;
@@ -46,6 +49,9 @@ internal sealed class ConsoleApplication
         _installs = new BasisInstallService(_projects, _git);
         _mounts = new MountService(_git, _projects, _mountRegistry);
         _updates = new BasisUpdateService(_git);
+        _serverPackages = new ServerPackageService(_git);
+        _server = new BasisServerService();
+        _versions = new VersionService(git: _git);
         Console.CancelKeyPress += (_, e) =>
         {
             if (_activeOperation is null) return;
@@ -113,6 +119,14 @@ internal sealed class ConsoleApplication
                 case "resolve": await ResolveConflictAsync(values); break;
                 case "basis-branch": await BasisBranchAsync(values); break;
                 case "open-unity": await OpenUnityAsync(); break;
+                case "server-packages": case "server-list": await ListServerPackagesAsync(values); break;
+                case "server-install": case "server-add": await InstallServerPackageAsync(values); break;
+                case "server-update": await UpdateServerPackagesAsync(values); break;
+                case "server-remove": case "server-uninstall": await RemoveServerPackageAsync(values); break;
+                case "server-restore": await RestoreServerPackagesAsync(values); break;
+                case "server-link": await LinkServerPackageAsync(values); break;
+                case "server-unlink": await UnlinkServerPackageAsync(values); break;
+                case "server-build": await BuildServerAsync(values); break;
                 case "exit": case "quit": break;
                 default: WriteError($"Unknown command '{args[0]}'. Type 'help' to see available commands."); return 2;
             }
@@ -234,6 +248,7 @@ internal sealed class ConsoleApplication
             await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
         }
         WriteSuccess($"Installed {entry.DisplayName} into {install.DisplayName}.");
+        if (entry.Server && !string.IsNullOrWhiteSpace(entry.Url)) await InstallServerSideAsync(install, entry, entry.Url);
     }
 
     private async Task ListPackageListsAsync()
@@ -578,6 +593,177 @@ internal sealed class ConsoleApplication
         WriteSuccess($"Opening {install.DisplayName} in Unity {install.UnityVersion}.");
     }
 
+    private async Task ListServerPackagesAsync(IReadOnlyList<string> values)
+    {
+        RequireCount(values, 0, "server-packages");
+        var install = await LoadServerInstallAsync();
+        var packages = await _serverPackages.ListAsync(install.RepoRoot);
+        if (packages.Count == 0)
+        {
+            Console.WriteLine("No server packages are installed. Add one with 'server-install <package-id|git-url|file:path>'.");
+            return;
+        }
+        foreach (var package in packages)
+        {
+            Console.WriteLine($"{package.Id,-44} {package.Version,-12} {DescribeServerStatus(package.Status),-14} {package.ShortCommit,-8} {package.Assemblies}");
+            Console.WriteLine($"    {(package.IsLinked ? "built from " + package.LinkedFolder : package.Source)}");
+            if (!string.IsNullOrWhiteSpace(package.Detail)) Console.WriteLine($"    {package.Detail}");
+        }
+    }
+
+    private async Task InstallServerPackageAsync(IReadOnlyList<string> values)
+    {
+        var options = values.ToList();
+        var link = TakeValue(options, "--link");
+        if (options.Count != 1) throw new ArgumentException("Usage: server-install <package-id|git-url|file:path> [--link <folder>]");
+        var install = await LoadServerInstallAsync();
+        var (source, expectedId) = await ResolveServerSourceAsync(install, options[0]);
+        ServerPackageResult result = null!;
+        if (link is not null) result = await _serverPackages.InstallLinkedAsync(install.RepoRoot, source, Path.GetFullPath(link), expectedId);
+        else await RunOperationAsync(async ct => result = await _serverPackages.InstallAsync(install.RepoRoot, source, expectedId, Console.WriteLine, ct));
+        Report(result);
+        Console.WriteLine("Run 'server-build' (or build the server) to compile it in.");
+    }
+
+    private async Task<(string Source, string? ExpectedId)> ResolveServerSourceAsync(BasisInstall install, string value)
+    {
+        var looksLikeId = ServerPackageService.IsValidId(value.Trim()) && !value.Contains('/') && !value.Contains(':');
+        var resolved = ServerPackageService.ResolveSource(install.RepoRoot, value, looksLikeId ? await LoadCatalogAsync() : null);
+        if (resolved.Error is not null) throw new InvalidOperationException(resolved.Error);
+        return resolved.Entry is null ? (resolved.Source, resolved.ExpectedId) : (await LatestReleaseUrlAsync(resolved.Source) ?? resolved.Source, resolved.ExpectedId);
+    }
+
+    private async Task<string?> LatestReleaseUrlAsync(string gitUrl)
+    {
+        var location = UpmGitUrl.Parse(gitUrl);
+        if (location is null || location.Ref is not null) return null;
+        try
+        {
+            var versions = await _versions.GetVersionsAsync(gitUrl);
+            return versions.LatestStable?.Ref is { } tag ? location.ToManifestUrl(tag, location.Path) : null;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException or TaskCanceledException)
+        {
+            DiagnosticLog.Write($"Resolving the latest release of {gitUrl}", ex);
+            return null;
+        }
+    }
+
+    private async Task UpdateServerPackagesAsync(IReadOnlyList<string> values)
+    {
+        var options = values.ToList();
+        var force = TakeFlag(options, "--force");
+        var gitRef = TakeValue(options, "--ref");
+        if (options.Count > 1 || (gitRef is not null && options.Count == 0))
+            throw new ArgumentException("Usage: server-update [package-id] [--ref <branch|tag|commit>] [--force]");
+        var install = await LoadServerInstallAsync();
+        var ids = options.Count == 1 ? options.ToArray() : _serverPackages.LoadManifest(install.RepoRoot).Dependencies.Keys.ToArray();
+        if (ids.Length == 0)
+        {
+            WriteSuccess("No server packages are installed.");
+            return;
+        }
+        var failures = 0;
+        foreach (var id in ids)
+        {
+            ServerPackageResult result = null!;
+            await RunOperationAsync(async ct => result = await _serverPackages.UpdateAsync(install.RepoRoot, id, gitRef, force, Console.WriteLine, ct));
+            if (result.Ok) WriteSuccess(result.Message);
+            else { WriteError(result.Message); failures++; }
+        }
+        if (failures > 0) throw new InvalidOperationException($"{failures} server package(s) could not be updated.");
+    }
+
+    private async Task RemoveServerPackageAsync(IReadOnlyList<string> values)
+    {
+        var options = values.ToList();
+        var force = TakeFlag(options, "--force");
+        if (options.Count != 1) throw new ArgumentException("Usage: server-remove <package-id> [--force]");
+        var install = await LoadServerInstallAsync();
+        Report(await _serverPackages.RemoveAsync(install.RepoRoot, options[0], force));
+    }
+
+    private async Task RestoreServerPackagesAsync(IReadOnlyList<string> values)
+    {
+        RequireCount(values, 0, "server-restore");
+        var install = await LoadServerInstallAsync();
+        ServerPackageResult result = null!;
+        await RunOperationAsync(async ct => result = await _serverPackages.RestoreAsync(install.RepoRoot, Console.WriteLine, ct));
+        Report(result);
+    }
+
+    private async Task LinkServerPackageAsync(IReadOnlyList<string> values)
+    {
+        RequireCount(values, 2, "server-link <package-id> <folder>");
+        var install = await LoadServerInstallAsync();
+        Report(await _serverPackages.LinkAsync(install.RepoRoot, values[0], Path.GetFullPath(values[1])));
+    }
+
+    private async Task UnlinkServerPackageAsync(IReadOnlyList<string> values)
+    {
+        RequireCount(values, 1, "server-unlink <package-id>");
+        var install = await LoadServerInstallAsync();
+        Report(await _serverPackages.UnlinkAsync(install.RepoRoot, values[0]));
+    }
+
+    private async Task BuildServerAsync(IReadOnlyList<string> values)
+    {
+        RequireCount(values, 0, "server-build");
+        var install = await LoadInstallAsync();
+        if (!_server.HasServerProject(install.RepoRoot)) throw new InvalidOperationException(BasisServerService.MissingProjectMessage);
+        if (!await _server.HasRequiredDotNetSdkAsync()) throw new InvalidOperationException("The .NET 10 SDK is required to build the Basis server.");
+        Console.WriteLine("Building the Basis server…");
+        var result = (Success: false, Output: "");
+        await RunOperationAsync(async ct => result = await _server.BuildAsync(install.RepoRoot, ct));
+        if (!result.Success)
+            throw new InvalidOperationException("The server build failed:\n" + string.Join('\n', result.Output.Split('\n').TakeLast(25)));
+        WriteSuccess($"Built the Basis server into {_server.GetPaths(install.RepoRoot).RuntimeDirectory}.");
+    }
+
+    private async Task InstallServerSideAsync(BasisInstall install, CatalogPackageVersion entry, string url)
+    {
+        if (!ServerPackageService.SupportsPackages(install.RepoRoot)) return;
+        if (_serverPackages.LoadManifest(install.RepoRoot).Dependencies.ContainsKey(entry.Name)) return;
+        var mounted = MountedPackageRoot(install, entry.Name);
+        ServerPackageResult result = null!;
+        if (mounted is not null) result = await _serverPackages.InstallLinkedAsync(install.RepoRoot, url, mounted, entry.Name);
+        else await RunOperationAsync(async ct => result = await _serverPackages.InstallAsync(install.RepoRoot, url, entry.Name, Console.WriteLine, ct));
+        if (result.Ok) WriteSuccess(result.Message);
+        else WriteWarning($"The Unity side is installed, but the Basis Server side was not: {result.Message}");
+    }
+
+    private string? MountedPackageRoot(BasisInstall install, string id)
+    {
+        if (_mountRegistry.Find(install.UnityProjectPath, id) is not { } mount || !Directory.Exists(mount.FolderPath)) return null;
+        var root = UpmGitUrl.Parse(mount.OriginalManifestValue)?.Path is { Length: > 0 } sub && !File.Exists(Path.Combine(mount.FolderPath, "package.json"))
+            ? Path.Combine(mount.FolderPath, sub)
+            : mount.FolderPath;
+        return File.Exists(Path.Combine(root, "package.json")) ? root : null;
+    }
+
+    private async Task<BasisInstall> LoadServerInstallAsync()
+    {
+        var install = await LoadInstallAsync();
+        if (!ServerPackageService.HasServer(install.RepoRoot))
+            throw new InvalidOperationException("This project has no Basis Server source (Basis Server/BasisNetworkCore).");
+        return install;
+    }
+
+    private static void Report(ServerPackageResult result)
+    {
+        if (!result.Ok) throw new InvalidOperationException(result.Message);
+        WriteSuccess(result.Message);
+    }
+
+    private static string DescribeServerStatus(ServerPackageStatus status) => status switch
+    {
+        ServerPackageStatus.Ready => "ready",
+        ServerPackageStatus.NotRestored => "not restored",
+        ServerPackageStatus.Changed => "changed",
+        ServerPackageStatus.Missing => "missing",
+        _ => "invalid",
+    };
+
     private async Task<BasisInstall> LoadInstallAsync()
     {
         if (_basisPath is null)
@@ -649,6 +835,18 @@ Packages
   install-package <package-id>         Install an additional package; skip bundled ones
   list-package-lists                   List curated package lists
   install-list <list-id>               Add a package list; skip bundled packages
+
+Basis Server
+  server-packages                      List the packages built into this project's Basis Server
+  server-install <id|git-url|file:path> Add a server package (registry id, git URL with
+               [--link <folder>]       optional ?path= and #ref, or a local folder)
+  server-update [id] [--ref <ref>]     Move git packages to the newest commit of their ref
+               [--force]
+  server-remove <id> [--force]         Remove a server package (--force discards local edits)
+  server-restore                       Download missing packages and record packages-lock.props
+  server-link <id> <folder>            Build a package from a local folder on this machine
+  server-unlink <id>                   Go back to the package's own copy
+  server-build                         Build the Basis server (needs the .NET 10 SDK)
 
 Unity
   open-unity                           Open the selected project in its required editor

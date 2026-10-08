@@ -40,10 +40,12 @@ public sealed class GitService
 
     public bool IsAvailable => FindGit() is not null;
 
+    public bool CanFetch(string? url) => !string.IsNullOrWhiteSpace(url) && IsFetchableUrl(url.Trim());
+
     public async Task<GitResult> CloneAsync(string url, string destPath, string? branch, Action<string>? onProgress = null, CancellationToken ct = default)
     {
         var git = FindGit() ?? throw new InvalidOperationException("Git was not found. Install Git and make sure it is on your PATH.");
-        if (!GitUrlPolicy.IsSafeUrl(url))
+        if (!IsFetchableUrl(url))
             return new GitResult(false, -1, "Refused to clone: the URL uses an unsupported or unsafe git transport.");
         if (!GitUrlPolicy.IsSafeRef(branch))
             return new GitResult(false, -1, "Refused to clone: the branch name is not valid.");
@@ -287,6 +289,14 @@ public sealed class GitService
         if (!GitUrlPolicy.IsSafeRef(branch))
             return new GitResult(false, -1, $"Refused to switch to '{branch}': the name is not valid.");
         var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "checkout", branch }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<GitResult> CheckoutDetachedAsync(string repoRoot, string rev, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(rev) || !GitUrlPolicy.IsSafeRef(rev))
+            return new GitResult(false, -1, $"Refused to check out '{rev}': the ref is not valid.");
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "-c", "advice.detachedHead=false", "checkout", "--detach", rev.Trim(), "--" }, null, ct).ConfigureAwait(false);
         return new GitResult(code == 0, code, Combine(outText, err));
     }
 

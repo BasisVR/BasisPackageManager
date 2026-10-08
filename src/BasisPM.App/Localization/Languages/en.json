@@ -3113,6 +3113,154 @@
     {
       "key": "unity.tooltip.streamFilter",
       "value": "Filter the version list by release stream"
+    },
+    {
+      "key": "server.packages.title",
+      "value": "Server packages"
+    },
+    {
+      "key": "server.packages.intro",
+      "value": "Packages built into this project's Basis Server. Their code is compiled straight into the server's own assemblies, so rebuild the server after adding, updating or removing one."
+    },
+    {
+      "key": "server.packages.restore",
+      "value": "Restore"
+    },
+    {
+      "key": "server.packages.restoreTip",
+      "value": "Download missing server packages and record their exact commits in packages-lock.props"
+    },
+    {
+      "key": "server.packages.sourceWatermark",
+      "value": "Package id, git URL (optional ?path= and #ref) or file: path"
+    },
+    {
+      "key": "server.packages.add",
+      "value": "Add package"
+    },
+    {
+      "key": "server.packages.empty",
+      "value": "No server packages are installed."
+    },
+    {
+      "key": "server.packages.available",
+      "value": "Available from the Basis registry"
+    },
+    {
+      "key": "server.packages.install",
+      "value": "Install"
+    },
+    {
+      "key": "server.packages.updateTip",
+      "value": "Update to the newest commit of its branch or tag"
+    },
+    {
+      "key": "server.packages.openFolderTip",
+      "value": "Open the package folder"
+    },
+    {
+      "key": "server.packages.removeTip",
+      "value": "Remove from the Basis Server"
+    },
+    {
+      "key": "server.packages.noServer",
+      "value": "This project has no Basis Server source, so server packages can't be added here."
+    },
+    {
+      "key": "server.packages.unsupported",
+      "value": "This project's Basis Server can't build packages yet. Update Basis to a version with Basis Server/Directory.Build.targets."
+    },
+    {
+      "key": "server.packages.listError",
+      "value": "Could not read the server packages: {0}"
+    },
+    {
+      "key": "server.packages.error",
+      "value": "Server package error: {0}"
+    },
+    {
+      "key": "server.packages.installing",
+      "value": "Installing {0} on the Basis Server…"
+    },
+    {
+      "key": "server.packages.updating",
+      "value": "Updating {0}…"
+    },
+    {
+      "key": "server.packages.restoring",
+      "value": "Restoring server packages…"
+    },
+    {
+      "key": "server.packages.folderMissing",
+      "value": "That package isn't on disk yet. Restore the server packages first."
+    },
+    {
+      "key": "server.packages.rebuildHint",
+      "value": "{0} Rebuild the server to apply it."
+    },
+    {
+      "key": "server.packages.discardTitle",
+      "value": "Discard local edits?"
+    },
+    {
+      "key": "server.packages.discardUpdateBody",
+      "value": "{0} has local edits in its server package folder. Updating replaces them. Continue?"
+    },
+    {
+      "key": "server.packages.discardRemoveBody",
+      "value": "{0} has local edits in its server package folder. Removing deletes them. Continue?"
+    },
+    {
+      "key": "server.packages.status.ready",
+      "value": "Ready"
+    },
+    {
+      "key": "server.packages.status.linked",
+      "value": "Linked"
+    },
+    {
+      "key": "server.packages.status.notRestored",
+      "value": "Not downloaded"
+    },
+    {
+      "key": "server.packages.status.changed",
+      "value": "Changed"
+    },
+    {
+      "key": "server.packages.status.missing",
+      "value": "Missing"
+    },
+    {
+      "key": "server.packages.status.invalid",
+      "value": "Invalid"
+    },
+    {
+      "key": "server.packages.compiledInto",
+      "value": "Compiled into {0}"
+    },
+    {
+      "key": "server.packages.builtFrom",
+      "value": "Built from {0}"
+    },
+    {
+      "key": "packages.badge.server",
+      "value": "Server"
+    },
+    {
+      "key": "packages.badge.serverTip",
+      "value": "Also installs into this project's Basis Server"
+    },
+    {
+      "key": "packages.status.serverInstalled",
+      "value": "{0} Its Basis Server side is installed too; rebuild the server to apply it."
+    },
+    {
+      "key": "packages.status.serverInstallFailed",
+      "value": "The Unity side is installed, but the Basis Server side was not: {0}"
+    },
+    {
+      "key": "packages.status.serverRemoveFailed",
+      "value": "The Unity side was removed, but the Basis Server side was not: {0}"
     }
   ]
 }
