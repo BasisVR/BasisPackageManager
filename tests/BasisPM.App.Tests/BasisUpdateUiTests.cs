@@ -88,6 +88,17 @@ public sealed class BasisUpdateUiTests
         Assert.False(blocked.HasPrimary);
         Assert.True(blocked.HasBlocking);
 
+        var metaInTheWay = Review(new BasisUpdatePlan
+        {
+            Kind = BasisUpdateKind.Merge, BasisBranch = "developer", HeadSha = "h", UpstreamSha = "u", MergeBase = "b",
+            ReplacedMetaPaths = new[] { "Assets/Tools.meta", "Assets/Art.meta" },
+        });
+        Assert.True(metaInTheWay.HasPrimary);
+        Assert.False(metaInTheWay.HasBlocking);
+        Assert.True(metaInTheWay.HasReplacedMeta);
+        Assert.StartsWith("2 Unity .meta files", metaInTheWay.ReplacedMetaNote);
+        Assert.False(fastForward.HasReplacedMeta);
+
         var copied = Review(new BasisUpdatePlan
         {
             Kind = BasisUpdateKind.Apply, BasisBranch = "developer", FromBranch = "developer", LocalBranch = "main", HeadSha = "h", UpstreamSha = "u",

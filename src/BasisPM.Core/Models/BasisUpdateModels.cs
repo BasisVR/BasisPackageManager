@@ -170,6 +170,9 @@ public sealed class BasisUpdateState
     // Staged edits the update doesn't touch. They leave the index while it runs and go back exactly as they were.
     [JsonPropertyName("stagedEntries")]
     public List<BasisStagedEntry> StagedEntries { get; set; } = new();
+
+    [JsonPropertyName("discardedMeta")]
+    public List<string> DiscardedMeta { get; set; } = new();
 }
 
 public sealed record BasisStagedEntry(
@@ -199,6 +202,7 @@ public sealed class BasisUpdatePlan
     public int UncommittedCount { get; init; }
     public IReadOnlyList<string> CollidingPaths { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string> BlockingPaths { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> ReplacedMetaPaths { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string>? PredictedConflicts { get; init; }
     public BasisBaseMatch? SuggestedBase { get; init; }
     public BasisUpdateState? State { get; init; }
@@ -220,6 +224,7 @@ public sealed class BranchSwitchPlan
     public int UncommittedCount { get; init; }
     public IReadOnlyList<string> CollidingPaths { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string> BlockingPaths { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> ReplacedMetaPaths { get; init; } = Array.Empty<string>();
     public bool InProgress { get; init; }
 
     public bool CanSwitch => Block == BasisUpdateBlock.None && !InProgress && TargetSha is not null && BlockingPaths.Count == 0;

@@ -282,6 +282,7 @@ public sealed class BasisUpdateService
         {
             var kind = gitBase == head && !switching ? BasisUpdateKind.FastForward : BasisUpdateKind.Merge;
             var incoming = await _git.GetChangedPathsAsync(root, gitBase, upstream, ct).ConfigureAwait(false);
+            var ignoredIncoming = FindIgnoredInTheWay(root, entries, incoming, tracked);
             IReadOnlyList<string>? predicted = kind == BasisUpdateKind.FastForward
                 ? Array.Empty<string>()
                 : version is not null && version >= PreviewGitVersion ? await _git.PredictConflictsAsync(root, head, upstream, ct).ConfigureAwait(false) : null;
@@ -301,7 +302,8 @@ public sealed class BasisUpdateService
                 LocalCommitCount = await _git.CountCommitsAsync(root, $"{upstream}..{head}", ct).ConfigureAwait(false),
                 UncommittedCount = entries.Count,
                 CollidingPaths = FindCollisions(entries, incoming),
-                BlockingPaths = FindBlockers(root, entries, incoming, tracked),
+                BlockingPaths = ignoredIncoming.Blocking,
+                ReplacedMetaPaths = ignoredIncoming.Meta,
                 PredictedConflicts = predicted,
             };
         }
@@ -309,6 +311,7 @@ public sealed class BasisUpdateService
         var change = await CreateBasisChangeAsync(root, basis.Sha, upstream, basis.Layout, ct).ConfigureAwait(false);
         if (change is null) return Blocked(BasisUpdateBlock.BasisFolderMissing, basis.Layout.BasisFolder, target);
         var changed = await _git.GetChangedPathsAsync(root, change.Value.Parent, change.Value.Commit, ct).ConfigureAwait(false);
+        var ignoredChanged = FindIgnoredInTheWay(root, entries, changed, tracked);
         var folder = FolderOrNull(basis.Layout);
         var since = basis.RecordCommit ?? basis.Sha;
         return new BasisUpdatePlan
@@ -331,7 +334,8 @@ public sealed class BasisUpdateService
             LocalCommitCount = basis.Source == BasisBaseSource.Similarity ? 0 : await _git.CountCommitsAsync(root, $"{since}..{head}", ct).ConfigureAwait(false),
             UncommittedCount = entries.Count,
             CollidingPaths = FindCollisions(entries, changed),
-            BlockingPaths = FindBlockers(root, entries, changed, tracked),
+            BlockingPaths = ignoredChanged.Blocking,
+            ReplacedMetaPaths = ignoredChanged.Meta,
             PredictedConflicts = version is not null && version >= MergeBasePreviewGitVersion
                 ? await _git.PredictConflictsAsync(root, head, change.Value.Commit, change.Value.Parent, ct).ConfigureAwait(false)
                 : null,
@@ -583,7 +587,7 @@ public sealed class BasisUpdateService
             : await _git.GetChangedPathsAsync(root, plan.MergeBase, plan.UpstreamSha, ct).ConfigureAwait(false);
         var entries = await _git.GetWorkingEntriesAsync(root, ct).ConfigureAwait(false);
         var tracked = await _git.ListTrackedFilesAsync(root, ct).ConfigureAwait(false);
-        var blockers = FindBlockers(root, entries, incoming, tracked);
+        var (blockers, discard) = FindIgnoredInTheWay(root, entries, incoming, tracked);
         if (blockers.Count > 0) return BasisUpdateResult.Fail(BasisUpdateFailure.IgnoredFilesInTheWay, string.Join('\n', blockers));
 
         var message = UpdateMessage(plan);
@@ -599,10 +603,12 @@ public sealed class BasisUpdateService
             BasisParent = applying && plan.Connected && !await _git.IsAncestorAsync(root, plan.UpstreamSha, plan.HeadSha, ct).ConfigureAwait(false) ? plan.UpstreamSha : null,
             CommitMessage = applying ? message : null,
             StartedUtc = DateTimeOffset.UtcNow,
+            DiscardedMeta = discard,
         };
         var setAside = await SetAsideAsync(root, state, entries, FindCollisions(entries, incoming), true, $"BasisPM set aside for Basis {Short(plan.UpstreamSha)}", progress, ct).ConfigureAwait(false);
         if (setAside is not null) return setAside;
         await SaveStateAsync(root, state, ct).ConfigureAwait(false);
+        await DiscardIgnoredMetaAsync(root, discard, ct).ConfigureAwait(false);
 
         if (applying)
         {
@@ -621,7 +627,7 @@ public sealed class BasisUpdateService
             }
             await RollBackApplyAsync(root, ct).ConfigureAwait(false);
             var restored = await PutBackSetAsideAsync(root, state, ct).ConfigureAwait(false);
-            if (restored.Ok) await ClearStateAsync(root, ct).ConfigureAwait(false);
+            if (restored.Ok) await RestoreAndClearAsync(root, state, ct).ConfigureAwait(false);
             return BasisUpdateResult.Fail(BasisUpdateFailure.MergeFailed, pick.Output);
         }
 
@@ -632,7 +638,7 @@ public sealed class BasisUpdateService
             return BasisUpdateResult.NeedsResolving(BasisUpdatePhase.Merging, await GetConflictsAsync(root, ct).ConfigureAwait(false));
 
         var putBack = await PutBackSetAsideAsync(root, state, ct).ConfigureAwait(false);
-        if (putBack.Ok) await ClearStateAsync(root, ct).ConfigureAwait(false);
+        if (putBack.Ok) await RestoreAndClearAsync(root, state, ct).ConfigureAwait(false);
         return BasisUpdateResult.Fail(BasisUpdateFailure.MergeFailed, merge.Output);
     }
 
@@ -673,6 +679,7 @@ public sealed class BasisUpdateService
         var entries = await _git.GetWorkingEntriesAsync(root, ct).ConfigureAwait(false);
         var tracked = await _git.ListTrackedFilesAsync(root, ct).ConfigureAwait(false);
         var colliding = FindCollisions(entries, incoming);
+        var ignored = FindIgnoredInTheWay(root, entries, incoming, tracked);
         return new BranchSwitchPlan
         {
             Target = localSha is null ? target : target with { Remote = null },
@@ -683,7 +690,8 @@ public sealed class BasisUpdateService
             CreatesBranch = localSha is null,
             UncommittedCount = entries.Count,
             CollidingPaths = colliding,
-            BlockingPaths = FindBlockers(root, entries, incoming, tracked),
+            BlockingPaths = ignored.Blocking,
+            ReplacedMetaPaths = ignored.Meta,
         };
     }
 
@@ -700,7 +708,7 @@ public sealed class BasisUpdateService
         var incoming = await _git.GetChangedPathsAsync(root, head, plan.TargetSha, ct).ConfigureAwait(false);
         var entries = await _git.GetWorkingEntriesAsync(root, ct).ConfigureAwait(false);
         var tracked = await _git.ListTrackedFilesAsync(root, ct).ConfigureAwait(false);
-        var blockers = FindBlockers(root, entries, incoming, tracked);
+        var (blockers, discard) = FindIgnoredInTheWay(root, entries, incoming, tracked);
         if (blockers.Count > 0) return BasisUpdateResult.Fail(BasisUpdateFailure.IgnoredFilesInTheWay, string.Join('\n', blockers));
         var colliding = FindCollisions(entries, incoming);
         if (current is null && colliding.Count > 0) return BasisUpdateResult.Fail(BasisUpdateFailure.NotApplicable);
@@ -714,16 +722,18 @@ public sealed class BasisUpdateService
             PreUpdateHead = head,
             TargetBranch = plan.Target.Name,
             StartedUtc = DateTimeOffset.UtcNow,
+            DiscardedMeta = discard,
         };
         var setAside = await SetAsideAsync(root, state, entries, colliding, false, $"BasisPM set aside to switch to {plan.Target.Name}", progress, ct).ConfigureAwait(false);
         if (setAside is not null) return setAside;
         await SaveStateAsync(root, state, ct).ConfigureAwait(false);
+        await DiscardIgnoredMetaAsync(root, discard, ct).ConfigureAwait(false);
 
         progress?.Invoke($"Switching to {plan.Target.Display}…");
         var switched = await _git.SwitchBranchAsync(root, plan.Target.Name, plan.CreatesBranch && plan.Target.Remote is not null ? plan.Target.Display : null, ct).ConfigureAwait(false);
         if (switched.Ok) return await FinishAsync(root, state, progress, ct).ConfigureAwait(false);
         var putBack = await PutBackSetAsideAsync(root, state, ct).ConfigureAwait(false);
-        if (putBack.Ok) await ClearStateAsync(root, ct).ConfigureAwait(false);
+        if (putBack.Ok) await RestoreAndClearAsync(root, state, ct).ConfigureAwait(false);
         return BasisUpdateResult.Fail(BasisUpdateFailure.SwitchFailed, switched.Output);
     }
 
@@ -800,7 +810,7 @@ public sealed class BasisUpdateService
         }
         var putBack = await PutBackSetAsideAsync(root, state, ct).ConfigureAwait(false);
         if (!putBack.Ok) return BasisUpdateResult.Fail(BasisUpdateFailure.RestoreFailed, putBack.Output);
-        await ClearStateAsync(root, ct).ConfigureAwait(false);
+        await RestoreAndClearAsync(root, state, ct).ConfigureAwait(false);
         return BasisUpdateResult.Aborted(state.PreUpdateHead);
     }
 
@@ -1202,6 +1212,7 @@ public sealed class BasisUpdateService
             await _git.UnsetConfigAsync(root, BranchKey(state.LocalBranch), ct).ConfigureAwait(false);
             if (await _git.GetGitDirAsync(root, ct).ConfigureAwait(false) is { } gitDir) TryDeleteFile(Path.Combine(gitDir, EstimateFileName));
         }
+        await DropDiscardedMetaAsync(root, state, ct).ConfigureAwait(false);
         await ClearStateAsync(root, ct).ConfigureAwait(false);
         return BasisUpdateResult.Updated(head);
     }
@@ -1273,10 +1284,64 @@ public sealed class BasisUpdateService
         return entries.SelectMany(PathsOf).Where(incomingSet.Contains).Distinct(StringComparer.Ordinal).ToList();
     }
 
-    private static List<string> FindBlockers(string root, IReadOnlyList<GitWorkingEntry> entries, IReadOnlyCollection<string> incoming, IReadOnlySet<string> tracked)
+    private static (List<string> Blocking, List<string> Meta) FindIgnoredInTheWay(string root, IReadOnlyList<GitWorkingEntry> entries, IReadOnlyCollection<string> incoming, IReadOnlySet<string> tracked)
     {
         var dirty = new HashSet<string>(entries.SelectMany(PathsOf), StringComparer.Ordinal);
-        return incoming.Where(p => !tracked.Contains(p) && !dirty.Contains(p) && File.Exists(Path.Combine(root, p))).ToList();
+        var inTheWay = incoming.Where(p => !tracked.Contains(p) && !dirty.Contains(p) && File.Exists(Path.Combine(root, p))).ToList();
+        return (inTheWay.Where(p => !IsUnityMeta(p)).ToList(), inTheWay.Where(IsUnityMeta).ToList());
+    }
+
+    private static bool IsUnityMeta(string path) => path.EndsWith(".meta", StringComparison.OrdinalIgnoreCase);
+
+    private const string DiscardedMetaFolder = "basispm-discarded";
+
+    private async Task DiscardIgnoredMetaAsync(string root, IReadOnlyList<string> paths, CancellationToken ct)
+    {
+        if (paths.Count == 0 || await _git.GetGitDirAsync(root, ct).ConfigureAwait(false) is not { } gitDir) return;
+        foreach (var path in paths.Where(GitUrlPolicy.IsSafeSubPath))
+        {
+            try
+            {
+                var copy = Path.Combine(gitDir, DiscardedMetaFolder, path);
+                Directory.CreateDirectory(Path.GetDirectoryName(copy)!);
+                File.Copy(Path.Combine(root, path), copy, overwrite: true);
+                File.Delete(Path.Combine(root, path));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write($"Setting aside the ignored {path} for Basis's copy", ex); }
+        }
+    }
+
+    private async Task RestoreAndClearAsync(string root, BasisUpdateState state, CancellationToken ct)
+    {
+        if (state.DiscardedMeta.Count > 0 && await _git.GetGitDirAsync(root, ct).ConfigureAwait(false) is { } gitDir)
+        {
+            foreach (var path in state.DiscardedMeta.Where(GitUrlPolicy.IsSafeSubPath))
+            {
+                var copy = Path.Combine(gitDir, DiscardedMetaFolder, path);
+                var file = Path.Combine(root, path);
+                if (!File.Exists(copy) || File.Exists(file)) continue;
+                try
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+                    File.Copy(copy, file);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write($"Putting back the ignored {path}", ex); }
+            }
+            DeleteDiscardedCopies(gitDir);
+        }
+        await ClearStateAsync(root, ct).ConfigureAwait(false);
+    }
+
+    private async Task DropDiscardedMetaAsync(string root, BasisUpdateState state, CancellationToken ct)
+    {
+        if (state.DiscardedMeta.Count > 0 && await _git.GetGitDirAsync(root, ct).ConfigureAwait(false) is { } gitDir) DeleteDiscardedCopies(gitDir);
+    }
+
+    private static void DeleteDiscardedCopies(string gitDir)
+    {
+        var folder = Path.Combine(gitDir, DiscardedMetaFolder);
+        try { if (Directory.Exists(folder)) Directory.Delete(folder, recursive: true); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write($"Deleting {folder}", ex); }
     }
 
     private async Task<string?> StatePathAsync(string repoRoot, CancellationToken ct)

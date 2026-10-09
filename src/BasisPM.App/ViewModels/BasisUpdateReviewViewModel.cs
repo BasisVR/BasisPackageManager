@@ -77,6 +77,8 @@ public sealed class BasisUpdateReviewViewModel : ObservableObject
     public string SeparateHistoryNote => L.Tr("dialog.basisUpdate.note.separateHistory", _plan.LocalBranch ?? "");
     public bool HasColliding => _plan.CollidingPaths.Count > 0;
     public string CollidingNote => L.Tr("dialog.basisUpdate.note.colliding", _plan.CollidingPaths.Count);
+    public bool HasReplacedMeta => _plan.ReplacedMetaPaths.Count > 0;
+    public string ReplacedMetaNote => L.Tr("dialog.basisUpdate.note.replacedMeta", _plan.ReplacedMetaPaths.Count);
     public bool HasPredictedConflicts => _plan.PredictedConflicts is { Count: > 0 };
     public string PredictedNote => L.Tr("dialog.basisUpdate.note.conflicts", _plan.PredictedConflicts?.Count ?? 0);
     public IReadOnlyList<string> PredictedConflicts => _plan.PredictedConflicts ?? Array.Empty<string>();
@@ -151,6 +153,7 @@ public sealed class BasisUpdateReviewViewModel : ObservableObject
         nameof(IsUpdate), nameof(IsUpToDate), nameof(IsUnrelated), nameof(IsNotGit), nameof(IsBlocked), nameof(IsSwitch), nameof(SwitchSummary),
         nameof(IsSeparateHistory), nameof(HasIncoming), nameof(IncomingLabel), nameof(HasOutgoing), nameof(OutgoingLabel), nameof(HasLocalCommits), nameof(LocalCommitsLabel),
         nameof(HasUncommitted), nameof(UncommittedLabel), nameof(ModeNote), nameof(SeparateHistoryNote), nameof(HasColliding), nameof(CollidingNote),
+        nameof(HasReplacedMeta), nameof(ReplacedMetaNote),
         nameof(HasPredictedConflicts), nameof(PredictedNote), nameof(PredictedConflicts), nameof(PredictionUnknown), nameof(HasBlocking), nameof(BlockingPaths),
         nameof(Commits), nameof(HasCommits), nameof(HasMoreCommits), nameof(MoreCommitsLabel), nameof(UpToDateBody), nameof(HasMatch), nameof(MatchText),
         nameof(HasLayout), nameof(LayoutNote), nameof(BlockText), nameof(HasPrimary), nameof(PrimaryDecision), nameof(PrimaryLabel), nameof(CancelLabel),

@@ -863,6 +863,10 @@
       "value": "{0} files you're editing are also changed by Basis. They're set aside, Basis is updated, then your edits are merged back in. You choose if any of them overlap."
     },
     {
+      "key": "dialog.basisUpdate.note.replacedMeta",
+      "value": "{0} Unity .meta files that git ignores sit where Basis adds its own. They're swapped for Basis's copies, and Undo update puts yours back."
+    },
+    {
       "key": "dialog.basisUpdate.note.conflicts",
       "value": "{0} files were changed by both you and Basis. You'll choose which version to keep for each:"
     },
@@ -4309,6 +4313,74 @@
     {
       "key": "dialog.findProjects.tooltip.cancel",
       "value": "Close without adding anything"
+    },
+    {
+      "key": "shell.activity.more",
+      "value": "+{0} more running"
+    },
+    {
+      "key": "shell.activity.moreTooltip",
+      "value": "See everything that's running, and anything waiting on you, in Settings"
+    },
+    {
+      "key": "shell.status.projectTooltip",
+      "value": "The project this message is about"
+    },
+    {
+      "key": "settings.activity.title",
+      "value": "Activity"
+    },
+    {
+      "key": "settings.activity.description",
+      "value": "Everything the package manager is working on right now, which project each task is for, and anything that is waiting on you."
+    },
+    {
+      "key": "settings.activity.running",
+      "value": "Running now"
+    },
+    {
+      "key": "settings.activity.nothingRunning",
+      "value": "Nothing is running."
+    },
+    {
+      "key": "settings.activity.started",
+      "value": "Started {0}"
+    },
+    {
+      "key": "settings.activity.blockers",
+      "value": "Needs attention"
+    },
+    {
+      "key": "settings.activity.noBlockers",
+      "value": "Nothing is blocked."
+    },
+    {
+      "key": "settings.activity.blocker.updatePaused",
+      "value": "A Basis update is paused until you resolve its conflicts or undo it."
+    },
+    {
+      "key": "settings.activity.blocker.switchPaused",
+      "value": "A branch switch is paused until you resolve its conflicts or undo it."
+    },
+    {
+      "key": "settings.activity.blocker.continue",
+      "value": "Continue"
+    },
+    {
+      "key": "settings.activity.blocker.git",
+      "value": "Git isn't installed, so cloning, Basis updates and package installs can't run."
+    },
+    {
+      "key": "settings.activity.blocker.getGit",
+      "value": "Get Git"
+    },
+    {
+      "key": "settings.activity.blocker.dotnet",
+      "value": "The .NET 10 SDK isn't installed, so this project's server can't be built."
+    },
+    {
+      "key": "settings.activity.blocker.getDotNet",
+      "value": "Get .NET 10"
     }
   ]
 }

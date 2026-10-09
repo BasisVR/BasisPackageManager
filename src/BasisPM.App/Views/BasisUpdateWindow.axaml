@@ -93,6 +93,11 @@
                                           Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Top"/>
                                 <TextBlock Grid.Column="1" Text="{Binding CollidingNote}" FontSize="13" TextWrapping="Wrap"/>
                             </Grid>
+                            <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding HasReplacedMeta}">
+                                <PathIcon Width="14" Height="14" Data="{StaticResource IconInfo}" Margin="0,2,10,0"
+                                          Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Top"/>
+                                <TextBlock Grid.Column="1" Text="{Binding ReplacedMetaNote}" FontSize="13" TextWrapping="Wrap"/>
+                            </Grid>
                             <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding PredictionUnknown}">
                                 <PathIcon Width="14" Height="14" Data="{StaticResource IconInfo}" Margin="0,2,10,0"
                                           Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Top"/>

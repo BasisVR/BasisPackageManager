@@ -116,10 +116,10 @@ public sealed partial class PackagesViewModel
         var install = _install;
         var id = choice.Item.Id;
         IsBusy = true;
-        _shell.SetStatus(L.Tr("basisdev.status.working", id));
+        SetStatus(L.Tr("basisdev.status.working", id));
         try
         {
-            void Progress(string line) => Avalonia.Threading.Dispatcher.UIThread.Post(() => _shell.SetStatus(line));
+            void Progress(string line) => Avalonia.Threading.Dispatcher.UIThread.Post(() => SetStatus(line));
             var result = await BasisDev.ApplyAsync(install, id, choice.Action, force: false, Progress);
             if (!result.Ok && result.NeedsForce)
             {
@@ -128,7 +128,7 @@ public sealed partial class PackagesViewModel
                     : await Dialogs.ConfirmAsync(L.Tr("basisdev.confirm.localWorkTitle"), L.Tr("basisdev.confirm.localWorkBody", id, choice.Item.Clone ?? ""));
                 if (!confirmed)
                 {
-                    _shell.SetStatus(L.Tr("basisdev.status.cancelled", id), StatusKind.Info);
+                    SetStatus(L.Tr("basisdev.status.cancelled", id), StatusKind.Info);
                     return;
                 }
                 result = await BasisDev.ApplyAsync(install, id, choice.Action, force: true, Progress);
@@ -138,13 +138,13 @@ public sealed partial class PackagesViewModel
                 _mountEditedIds.Remove(id);
                 _mountEditSummaries.Remove(id);
             }
-            _shell.SetStatus(result.Ok ? SucceededText(choice.Action, id) : L.Tr("basisdev.status.failed", id, result.Message), result.Ok ? StatusKind.Success : StatusKind.Error);
+            SetStatus(result.Ok ? SucceededText(choice.Action, id) : L.Tr("basisdev.status.failed", id, result.Message), result.Ok ? StatusKind.Success : StatusKind.Error);
             await ReloadInstalledAsync();
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Reconciling {id}", ex);
-            _shell.SetStatus(L.Tr("basisdev.status.failed", id, ex.Message), StatusKind.Error);
+            SetStatus(L.Tr("basisdev.status.failed", id, ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }
@@ -159,14 +159,14 @@ public sealed partial class PackagesViewModel
         try
         {
             var result = await BasisDev.ReconcileAsync(install);
-            _shell.SetStatus(result.Ok ? L.Tr("basisdev.status.reconciled", recorded, forgotten) : L.Tr("basisdev.status.reconcileFailed", result.Message),
+            SetStatus(result.Ok ? L.Tr("basisdev.status.reconciled", recorded, forgotten) : L.Tr("basisdev.status.reconcileFailed", result.Message),
                 result.Ok ? StatusKind.Success : StatusKind.Error);
             RefreshInstalled();
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write("Reconciling .basisdev records", ex);
-            _shell.SetStatus(L.Tr("basisdev.status.reconcileFailed", ex.Message), StatusKind.Error);
+            SetStatus(L.Tr("basisdev.status.reconcileFailed", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }
@@ -175,7 +175,7 @@ public sealed partial class PackagesViewModel
     {
         var folder = Directory.Exists(item?.Package.CloneFolder) ? item!.Package.CloneFolder : item?.Package.EmbeddedFolder;
         if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder)) ExternalLink.OpenFolder(folder);
-        else if (item is not null) _shell.SetStatus(L.Tr("packages.status.mountFolderMissing", item.Id), StatusKind.Error);
+        else if (item is not null) SetStatus(L.Tr("packages.status.mountFolderMissing", item.Id), StatusKind.Error);
     }
 
     private static string SucceededText(BasisDevAction action, string id) => action switch

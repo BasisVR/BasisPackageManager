@@ -32,6 +32,7 @@ public sealed class ServerViewModel : ObservableObject
     private ContentModeOption? _selectedMode;
     private bool _addToDefaultLibrary = true;
     private bool _hasDotNet10Sdk;
+    private bool _dotNetChecked;
     private string _dotNetStatus = "Checking for the .NET 10 SDK…";
 
     public ObservableCollection<ServerConfigFieldRow> ConfigFields { get; } = new();
@@ -45,7 +46,8 @@ public sealed class ServerViewModel : ObservableObject
     public bool HasInstall => _install is not null;
     public bool HasConfig => ConfigFields.Count > 0;
     public bool HasContent => ContentFiles.Count > 0;
-    public bool HasDotNet10Sdk { get => _hasDotNet10Sdk; private set => SetField(ref _hasDotNet10Sdk, value); }
+    public bool HasDotNet10Sdk { get => _hasDotNet10Sdk; private set { if (SetField(ref _hasDotNet10Sdk, value)) OnPropertyChanged(nameof(NeedsDotNet10Sdk)); } }
+    public bool NeedsDotNet10Sdk => _dotNetChecked && !_hasDotNet10Sdk && _install is not null && _service.HasServerProject(_install.RepoRoot);
     public string DotNetStatus { get => _dotNetStatus; private set => SetField(ref _dotNetStatus, value); }
     public string ProjectName => _install?.DisplayName ?? "No Basis project selected";
     public string RuntimeDirectory => _install is null ? "" : _service.GetPaths(_install.RepoRoot).RuntimeDirectory;
@@ -123,6 +125,7 @@ public sealed class ServerViewModel : ObservableObject
         OnPropertyChanged(nameof(HasInstall));
         OnPropertyChanged(nameof(ProjectName));
         OnPropertyChanged(nameof(RuntimeDirectory));
+        OnPropertyChanged(nameof(NeedsDotNet10Sdk));
         _ = RefreshAsync();
         _ = RefreshBuildRequirementsAsync();
     }
@@ -133,6 +136,7 @@ public sealed class ServerViewModel : ObservableObject
         OnPropertyChanged(nameof(HasInstall));
         OnPropertyChanged(nameof(ProjectName));
         OnPropertyChanged(nameof(RuntimeDirectory));
+        OnPropertyChanged(nameof(NeedsDotNet10Sdk));
         _ = RefreshAsync();
     }
 
@@ -157,7 +161,7 @@ public sealed class ServerViewModel : ObservableObject
             var port = ConfigFields.FirstOrDefault(x => x.Name == "SetPort")?.Value;
             if (ushort.TryParse(port, out _)) Port = port!;
         }
-        catch (Exception ex) { DiagnosticLog.Write("Loading the Basis server configuration", ex); _shell.SetStatus($"Could not load server configuration: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Loading the Basis server configuration", ex); SetStatus($"Could not load server configuration: {ex.Message}", StatusKind.Error); }
         RaiseCollections();
         await RefreshServerPackagesAsync();
     }
@@ -224,8 +228,8 @@ public sealed class ServerViewModel : ObservableObject
         var looksLikeId = ServerPackageService.IsValidId(input) && !input.Contains('/') && !input.Contains(':');
         BasisPM.Core.Models.ServerPackageSource resolved;
         try { resolved = ServerPackageService.ResolveSource(install.RepoRoot, input, looksLikeId ? await LoadCatalogAsync() : null); }
-        catch (Exception ex) { DiagnosticLog.Write("Resolving a Basis server package source", ex); _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); return; }
-        if (resolved.Error is not null) { _shell.SetStatus(resolved.Error, StatusKind.Error); return; }
+        catch (Exception ex) { DiagnosticLog.Write("Resolving a Basis server package source", ex); SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); return; }
+        if (resolved.Error is not null) { SetStatus(resolved.Error, StatusKind.Error); return; }
         var source = resolved.Entry is null ? resolved.Source : await LatestReleaseAsync(resolved.Source) ?? resolved.Source;
         if (await InstallServerPackageAsync(install, source, resolved.ExpectedId, resolved.Entry?.DisplayName ?? input)) ServerPackageSource = "";
     }
@@ -240,17 +244,17 @@ public sealed class ServerViewModel : ObservableObject
     private async Task<bool> InstallServerPackageAsync(BasisInstall install, string source, string? expectedId, string label)
     {
         IsBusy = true;
-        _shell.SetStatus(L.Tr("server.packages.installing", label));
+        SetStatus(L.Tr("server.packages.installing", label), StatusKind.Info, install);
         try
         {
-            var result = await _packages.InstallAsync(install.RepoRoot, source, expectedId, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
+            var result = await _packages.InstallAsync(install.RepoRoot, source, expectedId, line => Dispatcher.UIThread.Post(() => SetStatus(line, StatusKind.Info, install)));
             ReportPackageResult(result);
             return result.Ok;
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write("Installing a Basis server package", ex);
-            _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error);
+            SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error);
             return false;
         }
         finally { IsBusy = false; await RefreshServerPackagesAsync(); }
@@ -267,9 +271,9 @@ public sealed class ServerViewModel : ObservableObject
             discard = true;
         }
         IsBusy = true;
-        _shell.SetStatus(L.Tr("server.packages.updating", row.DisplayName));
-        try { ReportPackageResult(await _packages.UpdateAsync(install.RepoRoot, row.Id, null, discard, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)))); }
-        catch (Exception ex) { DiagnosticLog.Write($"Updating Basis server package {row.Id}", ex); _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
+        SetStatus(L.Tr("server.packages.updating", row.DisplayName));
+        try { ReportPackageResult(await _packages.UpdateAsync(install.RepoRoot, row.Id, null, discard, line => Dispatcher.UIThread.Post(() => SetStatus(line, StatusKind.Info, install)))); }
+        catch (Exception ex) { DiagnosticLog.Write($"Updating Basis server package {row.Id}", ex); SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; await RefreshServerPackagesAsync(); }
     }
 
@@ -285,7 +289,7 @@ public sealed class ServerViewModel : ObservableObject
         }
         IsBusy = true;
         try { ReportPackageResult(await _packages.RemoveAsync(install.RepoRoot, row.Id, discard)); }
-        catch (Exception ex) { DiagnosticLog.Write($"Removing Basis server package {row.Id}", ex); _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write($"Removing Basis server package {row.Id}", ex); SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; await RefreshServerPackagesAsync(); }
     }
 
@@ -294,16 +298,16 @@ public sealed class ServerViewModel : ObservableObject
         if (_install is null) { MissingInstall(); return; }
         var install = _install;
         IsBusy = true;
-        _shell.SetStatus(L.Tr("server.packages.restoring"));
-        try { ReportPackageResult(await _packages.RestoreAsync(install.RepoRoot, line => Dispatcher.UIThread.Post(() => _shell.SetStatus(line)))); }
-        catch (Exception ex) { DiagnosticLog.Write("Restoring the Basis server packages", ex); _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
+        SetStatus(L.Tr("server.packages.restoring"));
+        try { ReportPackageResult(await _packages.RestoreAsync(install.RepoRoot, line => Dispatcher.UIThread.Post(() => SetStatus(line, StatusKind.Info, install)))); }
+        catch (Exception ex) { DiagnosticLog.Write("Restoring the Basis server packages", ex); SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; await RefreshServerPackagesAsync(); }
     }
 
     private void OpenServerPackageFolder(ServerPackageRow? row)
     {
         if (row?.Folder is { } folder && Directory.Exists(folder)) ExternalLink.OpenFolder(folder);
-        else _shell.SetStatus(L.Tr("server.packages.folderMissing"), StatusKind.Error);
+        else SetStatus(L.Tr("server.packages.folderMissing"), StatusKind.Error);
     }
 
     private async Task<string?> LatestReleaseAsync(string gitUrl)
@@ -323,7 +327,7 @@ public sealed class ServerViewModel : ObservableObject
     }
 
     private void ReportPackageResult(ServerPackageResult result) =>
-        _shell.SetStatus(result.Ok ? L.Tr("server.packages.rebuildHint", result.Message) : result.Message, result.Ok ? StatusKind.Success : StatusKind.Error);
+        SetStatus(result.Ok ? L.Tr("server.packages.rebuildHint", result.Message) : result.Message, result.Ok ? StatusKind.Success : StatusKind.Error);
 
     private void RaiseServerPackages()
     {
@@ -346,19 +350,19 @@ public sealed class ServerViewModel : ObservableObject
         {
             HasDotNet10Sdk = false;
             DotNetStatus = ".NET 10 SDK not detected — install it before building the server.";
-            _shell.SetStatus("The .NET 10 SDK is required to compile the Basis server.", StatusKind.Error);
+            SetStatus("The .NET 10 SDK is required to compile the Basis server.", StatusKind.Error, install);
             return false;
         }
         IsBusy = true;
-        _shell.SetStatus("Building the Basis server…");
+        SetStatus("Building the Basis server…", StatusKind.Info, install);
         try
         {
             var result = await _service.BuildAsync(install.RepoRoot);
-            _shell.SetStatus(result.Success ? "Basis server build completed." : $"Server build failed: {LastUsefulLine(result.Output)}",
-                result.Success ? StatusKind.Success : StatusKind.Error);
+            SetStatus(result.Success ? "Basis server build completed." : $"Server build failed: {LastUsefulLine(result.Output)}",
+                result.Success ? StatusKind.Success : StatusKind.Error, install);
             return result.Success;
         }
-        catch (Exception ex) { DiagnosticLog.Write("Building the Basis server", ex); _shell.SetStatus($"Server build failed: {ex.Message}", StatusKind.Error); return false; }
+        catch (Exception ex) { DiagnosticLog.Write("Building the Basis server", ex); SetStatus($"Server build failed: {ex.Message}", StatusKind.Error, install); return false; }
         finally { IsBusy = false; await RefreshAsync(); }
     }
 
@@ -367,11 +371,11 @@ public sealed class ServerViewModel : ObservableObject
         if (_install is null) { MissingInstall(); return; }
         try
         {
-            if (_serverProcess is { HasExited: false }) { _shell.SetStatus("The Basis server is already running."); return; }
+            if (_serverProcess is { HasExited: false }) { SetStatus("The Basis server is already running."); return; }
             StartServer(_install);
-            _shell.SetStatus("Basis server started in its console. Complete the setup wizard there on first run.", StatusKind.Success);
+            SetStatus("Basis server started in its console. Complete the setup wizard there on first run.", StatusKind.Success);
         }
-        catch (Exception ex) { DiagnosticLog.Write("Starting the Basis server", ex); _shell.SetStatus($"Could not start server: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Starting the Basis server", ex); SetStatus($"Could not start server: {ex.Message}", StatusKind.Error); }
         await Task.CompletedTask;
     }
 
@@ -379,18 +383,18 @@ public sealed class ServerViewModel : ObservableObject
     {
         try
         {
-            if (_serverProcess is null || _serverProcess.HasExited) { _shell.SetStatus("No server started by this app is running."); return; }
+            if (_serverProcess is null || _serverProcess.HasExited) { SetStatus("No server started by this app is running."); return; }
             _serverProcess.Kill(true);
             await _serverProcess.WaitForExitAsync();
-            _shell.SetStatus("Basis server stopped.", StatusKind.Success);
+            SetStatus("Basis server stopped.", StatusKind.Success);
         }
-        catch (Exception ex) { DiagnosticLog.Write("Stopping the Basis server", ex); _shell.SetStatus($"Could not stop server: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Stopping the Basis server", ex); SetStatus($"Could not stop server: {ex.Message}", StatusKind.Error); }
     }
 
     private async Task LaunchClientAsync()
     {
         if (_install is null) { MissingInstall(); return; }
-        if (!ushort.TryParse(Port, out var port) || port == 0) { _shell.SetStatus("Enter a valid server port.", StatusKind.Error); return; }
+        if (!ushort.TryParse(Port, out var port) || port == 0) { SetStatus("Enter a valid server port.", StatusKind.Error); return; }
         var local = BasisServerService.IsLocalHost(Host);
         // SetPort is a UDP listener, so a TCP probe always says "not listening" even when the
         // server is ready. Local launches use the server's configured HTTP health endpoint.
@@ -411,9 +415,9 @@ public sealed class ServerViewModel : ObservableObject
                 {
                     StartServer(_install);
                     trackedRunning = true;
-                    _shell.SetStatus("Server started. Waiting for it to accept connections…");
+                    SetStatus("Server started. Waiting for it to accept connections…");
                 }
-                catch (Exception ex) { DiagnosticLog.Write("Starting the Basis server before connecting", ex); _shell.SetStatus($"Could not start server: {ex.Message}", StatusKind.Error); return; }
+                catch (Exception ex) { DiagnosticLog.Write("Starting the Basis server before connecting", ex); SetStatus($"Could not start server: {ex.Message}", StatusKind.Error); return; }
             }
         }
 
@@ -423,7 +427,7 @@ public sealed class ServerViewModel : ObservableObject
             reachable = await WaitForServerAsync(_install.RepoRoot, serverProcess, TimeSpan.FromMinutes(10));
             if (!reachable)
             {
-                _shell.SetStatus(serverProcess.HasExited
+                SetStatus(serverProcess.HasExited
                     ? $"The server exited before becoming ready (exit code {serverProcess.ExitCode})."
                     : "The server did not become ready. Check its console and health-endpoint configuration.", StatusKind.Error);
                 return;
@@ -434,10 +438,10 @@ public sealed class ServerViewModel : ObservableObject
         try
         {
             if (_service.LaunchSteamClient(connection))
-                _shell.SetStatus($"Launching Basis Labs through Steam and connecting to {Host}:{port}.", StatusKind.Success);
-            else _shell.SetStatus("Steam could not be found. Install Steam or add it to PATH.", StatusKind.Error);
+                SetStatus($"Launching Basis Labs through Steam and connecting to {Host}:{port}.", StatusKind.Success);
+            else SetStatus("Steam could not be found. Install Steam or add it to PATH.", StatusKind.Error);
         }
-        catch (Exception ex) { DiagnosticLog.Write("Launching the Basis client through Steam", ex); _shell.SetStatus($"Could not launch Steam: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Launching the Basis client through Steam", ex); SetStatus($"Could not launch Steam: {ex.Message}", StatusKind.Error); }
     }
 
     private async Task SaveConfigAsync()
@@ -447,9 +451,9 @@ public sealed class ServerViewModel : ObservableObject
         {
             _service.SaveConfig(_install.RepoRoot, ConfigFields.Select(x => x.ToModel()));
             foreach (var row in ConfigFields) row.MarkSaved();
-            _shell.SetStatus("Server configuration saved. Restart the server to apply it.", StatusKind.Success);
+            SetStatus("Server configuration saved. Restart the server to apply it.", StatusKind.Success);
         }
-        catch (Exception ex) { DiagnosticLog.Write("Saving the Basis server configuration", ex); _shell.SetStatus($"Could not save server configuration: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Saving the Basis server configuration", ex); SetStatus($"Could not save server configuration: {ex.Message}", StatusKind.Error); }
         await Task.CompletedTask;
     }
 
@@ -464,24 +468,24 @@ public sealed class ServerViewModel : ObservableObject
             ContentUrl = "";
             ContentPassword = "";
             await RefreshAsync();
-            _shell.SetStatus("Default server content added. Restart the server to load it.", StatusKind.Success);
+            SetStatus("Default server content added. Restart the server to load it.", StatusKind.Success);
         }
-        catch (Exception ex) { DiagnosticLog.Write("Adding content to the Basis server", ex); _shell.SetStatus($"Could not add server content: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Adding content to the Basis server", ex); SetStatus($"Could not add server content: {ex.Message}", StatusKind.Error); }
     }
 
     private async Task RemoveContentAsync(ServerContentFile? item)
     {
         if (item is null || _install is null) return;
-        try { _service.RemoveContent(_install.RepoRoot, item); await RefreshAsync(); _shell.SetStatus($"Removed {item.Name}.", StatusKind.Success); }
-        catch (Exception ex) { DiagnosticLog.Write("Removing content from the Basis server", ex); _shell.SetStatus($"Could not remove content: {ex.Message}", StatusKind.Error); }
+        try { _service.RemoveContent(_install.RepoRoot, item); await RefreshAsync(); SetStatus($"Removed {item.Name}.", StatusKind.Success); }
+        catch (Exception ex) { DiagnosticLog.Write("Removing content from the Basis server", ex); SetStatus($"Could not remove content: {ex.Message}", StatusKind.Error); }
     }
 
     private void OpenRuntime()
     {
         if (_install is null) return;
-        if (!_service.HasServerProject(_install.RepoRoot)) { _shell.SetStatus(BasisServerService.MissingProjectMessage, StatusKind.Error); return; }
+        if (!_service.HasServerProject(_install.RepoRoot)) { SetStatus(BasisServerService.MissingProjectMessage, StatusKind.Error); return; }
         try { Directory.CreateDirectory(RuntimeDirectory); }
-        catch (Exception ex) { DiagnosticLog.Write("Creating the Basis server runtime folder", ex); _shell.SetStatus($"Could not open the runtime folder: {ex.Message}", StatusKind.Error); return; }
+        catch (Exception ex) { DiagnosticLog.Write("Creating the Basis server runtime folder", ex); SetStatus($"Could not open the runtime folder: {ex.Message}", StatusKind.Error); return; }
         ExternalLink.OpenFolder(RuntimeDirectory);
     }
 
@@ -532,9 +536,12 @@ public sealed class ServerViewModel : ObservableObject
             HasDotNet10Sdk = false;
             DotNetStatus = "Could not detect the .NET 10 SDK. It is required to compile the Basis server.";
         }
+        _dotNetChecked = true;
+        OnPropertyChanged(nameof(NeedsDotNet10Sdk));
     }
 
-    private void MissingInstall() => _shell.SetStatus("Select a Basis project first.", StatusKind.Error);
+    private void MissingInstall() => SetStatus("Select a Basis project first.", StatusKind.Error);
+    private void SetStatus(string message, StatusKind kind = StatusKind.Info, BasisInstall? install = null) => _shell.SetStatus(message, kind, (install ?? _install)?.DisplayName);
     private void RaiseCollections() { OnPropertyChanged(nameof(HasConfig)); OnPropertyChanged(nameof(HasContent)); }
     private static string LastUsefulLine(string text) => text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).LastOrDefault() ?? "unknown error";
 }

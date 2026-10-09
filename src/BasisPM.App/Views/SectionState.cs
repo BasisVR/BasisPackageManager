@@ -39,13 +39,23 @@ public sealed class SectionState
     /// <summary>Forgets every remembered state, so sections built from now on start at their defaults.</summary>
     public static void Clear() => Remembered.Clear();
 
+    private static event Action<string>? OpenRequested;
+
+    public static void Open(string key)
+    {
+        Remember(key, true);
+        OpenRequested?.Invoke(key);
+    }
+
     private static void OnKeyChanged(Expander expander, AvaloniaPropertyChangedEventArgs e)
     {
         if (e.NewValue is not string key) return;
+        void OnOpenRequested(string requested) { if (requested == key) expander.IsExpanded = true; }
         // Restore on attach: XAML has set every attribute by then (its IsExpanded default included) and nothing has drawn
         // yet. Changes only count while attached, so the XAML default is never mistaken for the user's choice.
-        expander.AttachedToLogicalTree += (_, _) => Restore(expander, key);
-        if (((ILogical)expander).IsAttachedToLogicalTree) Restore(expander, key);
+        expander.AttachedToLogicalTree += (_, _) => { Restore(expander, key); OpenRequested += OnOpenRequested; };
+        expander.DetachedFromLogicalTree += (_, _) => OpenRequested -= OnOpenRequested;
+        if (((ILogical)expander).IsAttachedToLogicalTree) { Restore(expander, key); OpenRequested += OnOpenRequested; }
         expander.PropertyChanged += (_, args) =>
         {
             if (args.Property == Expander.IsExpandedProperty && ((ILogical)expander).IsAttachedToLogicalTree) Remember(key, expander.IsExpanded);

@@ -45,6 +45,7 @@ public sealed class SettingsViewModel : ObservableObject
     }
 
     public string AppVersion => _shell.AppVersion;
+    public MainWindowViewModel Shell => _shell;
 
     /// <summary>The activity log, shown as a section on this page (merged in from the old Logs tab).</summary>
     public LogsViewModel Logs { get; }

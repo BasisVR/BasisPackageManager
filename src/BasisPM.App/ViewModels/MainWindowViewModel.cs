@@ -45,12 +45,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private bool _isUpdating;
     private int _updateProgress;
 
-    private Guid _activityId;
-    private bool _isActivityVisible;
-    private string _activityTitle = "";
-    private string _activityDetail = "";
-    private double _activityProgress;
-    private bool _activityIsIndeterminate = true;
+    private string? _statusProject;
 
     private static readonly TimeSpan BasisUpdateCheckInterval = TimeSpan.FromHours(2);
     private readonly HashSet<string> _dismissedBasisUpdates = new(StringComparer.OrdinalIgnoreCase);
@@ -79,6 +74,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public RelayCommand OpenIssueCommand { get; }
     public RelayCommand ReviewBasisUpdateCommand { get; }
     public RelayCommand DismissBasisUpdateCommand { get; }
+    public RelayCommand ShowActivitiesCommand { get; }
 
     public MainWindowViewModel()
     {
@@ -123,6 +119,9 @@ public sealed class MainWindowViewModel : ObservableObject
         OpenIssueCommand = new RelayCommand(OpenIssue);
         ReviewBasisUpdateCommand = new RelayCommand(ReviewBasisUpdate);
         DismissBasisUpdateCommand = new RelayCommand(DismissBasisUpdateAsync);
+        ShowActivitiesCommand = new RelayCommand(ShowActivities);
+        ServerVM.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(ServerViewModel.NeedsDotNet10Sdk)) RefreshBlockers(); };
+        PackagesVM.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(PackagesViewModel.IsInstalling)) OnPropertyChanged(nameof(IsAnythingRunning)); };
         CrashReporter.BreadcrumbProvider = () => string.Join("\n", _breadcrumbs);
         CrashReporter.VersionProvider = () => AppVersion;
 
@@ -160,6 +159,7 @@ public sealed class MainWindowViewModel : ObservableObject
                 OnPropertyChanged(nameof(IsCommunity));
 
                 if (value == NavPage.Community) _ = MarkAnnouncementsSeenAsync();
+                if (value == NavPage.Settings) RefreshBlockers();
             }
         }
     }
@@ -213,55 +213,80 @@ public sealed class MainWindowViewModel : ObservableObject
     public bool IsUpdating { get => _isUpdating; private set => SetField(ref _isUpdating, value); }
     public int UpdateProgress { get => _updateProgress; private set => SetField(ref _updateProgress, value); }
 
-    public bool IsActivityVisible { get => _isActivityVisible; private set => SetField(ref _isActivityVisible, value); }
-    public string ActivityTitle { get => _activityTitle; private set => SetField(ref _activityTitle, value); }
-    public string ActivityDetail
-    {
-        get => _activityDetail;
-        private set
-        {
-            if (SetField(ref _activityDetail, value))
-                OnPropertyChanged(nameof(HasActivityDetail));
-        }
-    }
-    public bool HasActivityDetail => !string.IsNullOrWhiteSpace(ActivityDetail);
-    public double ActivityProgress { get => _activityProgress; private set => SetField(ref _activityProgress, value); }
-    public bool ActivityIsIndeterminate { get => _activityIsIndeterminate; private set => SetField(ref _activityIsIndeterminate, value); }
-
     /// <summary>
-    /// Shows a cross-page activity card for a long-running operation. The returned id prevents an
-    /// older operation from hiding a newer one if two tasks briefly overlap.
+    /// Every long-running operation that is still going, oldest first. The cross-page card shows the newest one and
+    /// Settings lists them all, each with the project it belongs to.
     /// </summary>
-    public Guid BeginActivity(string title)
+    public System.Collections.ObjectModel.ObservableCollection<ActivityItem> Activities { get; } = new();
+    public ActivityItem? CurrentActivity => Activities.Count == 0 ? null : Activities[^1];
+    public bool IsActivityVisible => Activities.Count > 0;
+    public string ActivityTitle => CurrentActivity?.Title ?? "";
+    public string ActivityDetail => CurrentActivity?.Detail ?? "";
+    public bool HasActivityDetail => CurrentActivity?.HasDetail == true;
+    public double ActivityProgress => CurrentActivity?.Progress ?? 0;
+    public bool ActivityIsIndeterminate => CurrentActivity?.IsIndeterminate ?? true;
+    public bool HasMoreActivities => Activities.Count > 1;
+    public bool IsAnythingRunning => Activities.Count > 0 || PackagesVM.IsInstalling;
+    public string MoreActivitiesLabel => L.Tr("shell.activity.more", Activities.Count - 1);
+
+    public Guid BeginActivity(string title, string? project = null)
     {
-        _activityId = Guid.NewGuid();
-        ActivityTitle = title;
-        ActivityDetail = "";
-        ActivityProgress = 0;
-        ActivityIsIndeterminate = true;
-        IsActivityVisible = true;
-        return _activityId;
+        var activity = new ActivityItem(title, project);
+        Activities.Add(activity);
+        RaiseActivities();
+        return activity.Id;
     }
 
-    public void ReportActivity(Guid id, string detail)
-    {
-        if (id != _activityId || !IsActivityVisible) return;
-        ActivityDetail = detail;
-
-        var match = System.Text.RegularExpressions.Regex.Match(detail, @"(\d{1,3})%");
-        if (match.Success && int.TryParse(match.Groups[1].Value, out var percentage)
-                          && percentage is >= 0 and <= 100)
-        {
-            ActivityProgress = percentage;
-            ActivityIsIndeterminate = false;
-        }
-    }
+    public void ReportActivity(Guid id, string detail) => FindActivity(id)?.Report(detail);
 
     public void EndActivity(Guid id)
     {
-        if (id != _activityId) return;
-        IsActivityVisible = false;
-        ActivityDetail = "";
+        if (FindActivity(id) is not { } activity) return;
+        Activities.Remove(activity);
+        RaiseActivities();
+    }
+
+    public string? ProjectOf(Guid id) => FindActivity(id)?.Project;
+
+    private ActivityItem? FindActivity(Guid id) => id == Guid.Empty ? null : Activities.FirstOrDefault(a => a.Id == id);
+
+    private void RaiseActivities()
+    {
+        OnPropertyChanged(nameof(CurrentActivity));
+        OnPropertyChanged(nameof(IsActivityVisible));
+        OnPropertyChanged(nameof(HasMoreActivities));
+        OnPropertyChanged(nameof(MoreActivitiesLabel));
+        OnPropertyChanged(nameof(IsAnythingRunning));
+    }
+
+    public System.Collections.ObjectModel.ObservableCollection<BlockerItem> Blockers { get; } = new();
+    public bool HasBlockers => Blockers.Count > 0;
+
+    public void RefreshBlockers()
+    {
+        Blockers.Clear();
+        foreach (var row in InstallsVM.Installs.Where(r => r.BasisUpdateInProgress))
+            Blockers.Add(new BlockerItem(row.Name,
+                L.Tr(row.BranchSwitchInProgress ? "settings.activity.blocker.switchPaused" : "settings.activity.blocker.updatePaused"),
+                L.Tr("settings.activity.blocker.continue"), new RelayCommand(() =>
+                {
+                    NavigateTo("installs");
+                    InstallsVM.UpdateBasisCommand.Execute(row);
+                })));
+        if (!_gitService.IsAvailable)
+            Blockers.Add(new BlockerItem(null, L.Tr("settings.activity.blocker.git"), L.Tr("settings.activity.blocker.getGit"),
+                new RelayCommand(() => ExternalLink.Open("https://git-scm.com/downloads"))));
+        if (ServerVM.NeedsDotNet10Sdk)
+            Blockers.Add(new BlockerItem(ActiveInstall?.DisplayName, L.Tr("settings.activity.blocker.dotnet"), L.Tr("settings.activity.blocker.getDotNet"),
+                ServerVM.OpenDotNetDownloadCommand));
+        OnPropertyChanged(nameof(HasBlockers));
+    }
+
+    public void ShowActivities()
+    {
+        BasisPM.App.Views.SectionState.Open("settings.activity");
+        RefreshBlockers();
+        CurrentPage = NavPage.Settings;
     }
 
     public void SetActiveInstall(BasisInstall install)
@@ -311,13 +336,23 @@ public sealed class MainWindowViewModel : ObservableObject
     public bool IsStatusError => StatusKind == StatusKind.Error;
     public bool IsStatusSuccess => StatusKind == StatusKind.Success;
 
-    public void SetStatus(string message, StatusKind kind = StatusKind.Info)
+    public string? StatusProject
+    {
+        get => _statusProject;
+        private set { if (SetField(ref _statusProject, value)) OnPropertyChanged(nameof(HasStatusProject)); }
+    }
+
+    public bool HasStatusProject => !string.IsNullOrWhiteSpace(_statusProject);
+
+    public void SetStatus(string message, StatusKind kind = StatusKind.Info, string? project = null)
     {
         StatusMessage = message;
         StatusKind = kind;
-        RecordBreadcrumb(message, kind);
-        if (!IsProgressNoise(message))
-            _log.Add(kind switch { StatusKind.Error => LogLevel.Error, StatusKind.Success => LogLevel.Success, _ => LogLevel.Info }, message);
+        StatusProject = string.IsNullOrWhiteSpace(project) ? null : project.Trim();
+        if (IsProgressNoise(message)) return;
+        var line = StatusProject is null ? message : $"[{StatusProject}] {message}";
+        RecordBreadcrumb(line, kind);
+        _log.Add(kind switch { StatusKind.Error => LogLevel.Error, StatusKind.Success => LogLevel.Success, _ => LogLevel.Info }, line);
     }
 
     public void DismissStatus() => SetStatus("Ready", StatusKind.Info);
@@ -617,6 +652,7 @@ public sealed class MainWindowViewModel : ObservableObject
             BasisBannerText = L.Tr("shell.basisUpdate.bannerMany", _basisBannerRows.Count);
             BasisBannerAction = L.Tr("shell.basisUpdate.viewProjects");
         }
+        RefreshBlockers();
     }
 
     private static string BasisNoticeKey(InstallRow row) => $"{row.RepoRoot}|{row.BasisRemoteSha}";

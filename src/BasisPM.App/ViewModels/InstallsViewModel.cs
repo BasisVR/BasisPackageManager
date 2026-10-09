@@ -179,7 +179,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Saving the name of {row.RepoRoot}", ex);
-            _shell.SetStatus(L.Tr("installs.status.renameFailed", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.renameFailed", ex.Message), StatusKind.Error, row.Name);
         }
     }
 
@@ -197,7 +197,7 @@ public sealed class InstallsViewModel : ObservableObject
         if (row is null) return;
         if (!row.Install.IsGitRepo) { row.GitSummary = L.Tr("installs.git.notGitRepo"); return; }
         row.IsBusy = true;
-        var activity = fetch ? _shell.BeginActivity(L.Tr("installs.git.checkingRemote")) : Guid.Empty;
+        var activity = fetch ? _shell.BeginActivity(L.Tr("installs.git.checkingRemote"), row.Name) : Guid.Empty;
         try
         {
             if (fetch)
@@ -250,7 +250,7 @@ public sealed class InstallsViewModel : ObservableObject
 
         row.IsBusy = true;
         _shell.SetStatus(L.Tr("installs.status.loadingBranches", row.Name));
-        var fetchActivity = _shell.BeginActivity(L.Tr("installs.status.loadingBranches", row.Name));
+        var fetchActivity = _shell.BeginActivity(L.Tr("installs.status.loadingBranches", row.Name), row.Name);
         IReadOnlyList<ProjectBranch> projectBranches;
         IReadOnlyList<string> basisBranches;
         string basisBranch;
@@ -265,7 +265,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Loading branches for {row.RepoRoot}", ex);
-            _shell.SetStatus(L.Tr("installs.status.branchListFailed", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.branchListFailed", ex.Message), StatusKind.Error, row.Name);
             return;
         }
         finally
@@ -304,7 +304,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Checking a switch to {target.Display} for {row.RepoRoot}", ex);
-            _shell.SetStatus(L.Tr("installs.status.switchBranchError", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.switchBranchError", ex.Message), StatusKind.Error, row.Name);
             return;
         }
         finally { row.IsBusy = false; }
@@ -336,7 +336,7 @@ public sealed class InstallsViewModel : ObservableObject
         var unityBefore = row.UnityVersion;
         row.IsBusy = true;
         _shell.SetStatus(L.Tr("installs.status.switchingBranch", row.Name, target.Name));
-        var activity = _shell.BeginActivity(L.Tr("installs.status.switchingBranch", row.Name, target.Name));
+        var activity = _shell.BeginActivity(L.Tr("installs.status.switchingBranch", row.Name, target.Name), row.Name);
         BasisUpdateResult result;
         try
         {
@@ -345,7 +345,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Switching branches for {row.RepoRoot}", ex);
-            _shell.SetStatus(L.Tr("installs.status.switchBranchError", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.switchBranchError", ex.Message), StatusKind.Error, row.Name);
             return;
         }
         finally
@@ -493,7 +493,7 @@ public sealed class InstallsViewModel : ObservableObject
                 row.IsBusy = true;
                 try
                 {
-                    var plan = await _updates.PlanAsync(row.RepoRoot, null, line => ReportActivity(checking, line));
+                    var plan = await _updates.PlanAsync(row.RepoRoot, null, line => ReportActivity(checking, line, row.Name));
                     if (plan.Kind == BasisUpdateKind.UpToDate) continue;
                     if (WhyNotAutomatic(row, plan) is { } reason) waiting.Add((row, reason));
                     else ready.Add((row, plan));
@@ -538,9 +538,9 @@ public sealed class InstallsViewModel : ObservableObject
                 }
                 var unityBefore = row.UnityVersion;
                 row.IsBusy = true;
-                _shell.SetStatus(L.Tr("installs.updateAll.updating", row.Name, i + 1, ready.Count));
+                _shell.SetStatus(L.Tr("installs.updateAll.updating", row.Name, i + 1, ready.Count), StatusKind.Info, row.Name);
                 BasisUpdateResult result;
-                try { result = await _updates.ApplyAsync(row.RepoRoot, plan, line => ReportActivity(applying, line)); }
+                try { result = await _updates.ApplyAsync(row.RepoRoot, plan, line => ReportActivity(applying, line, row.Name)); }
                 catch (Exception ex)
                 {
                     DiagnosticLog.Write($"Updating {row.RepoRoot} to the latest Basis", ex);
@@ -613,7 +613,7 @@ public sealed class InstallsViewModel : ObservableObject
     private async Task<BasisUpdatePlan?> PlanBasisUpdateAsync(InstallRow row, string? basisBranch)
     {
         row.IsBusy = true;
-        var activity = _shell.BeginActivity(L.Tr("installs.status.planningUpdate", row.Name));
+        var activity = _shell.BeginActivity(L.Tr("installs.status.planningUpdate", row.Name), row.Name);
         try
         {
             return await _updates.PlanAsync(row.RepoRoot, basisBranch, line => ReportActivity(activity, line));
@@ -644,7 +644,7 @@ public sealed class InstallsViewModel : ObservableObject
         var unityBefore = row.UnityVersion;
         row.IsBusy = true;
         _shell.SetStatus(L.Tr("installs.status.updatingBasis", row.Name));
-        var activity = _shell.BeginActivity(L.Tr("installs.status.updatingBasis", row.Name));
+        var activity = _shell.BeginActivity(L.Tr("installs.status.updatingBasis", row.Name), row.Name);
         BasisUpdateResult result;
         try
         {
@@ -725,7 +725,7 @@ public sealed class InstallsViewModel : ObservableObject
     {
         row.IsBusy = true;
         _shell.SetStatus(L.Tr("installs.status.gitSetup", row.Name));
-        var activity = _shell.BeginActivity(L.Tr("installs.status.gitSetup", row.Name));
+        var activity = _shell.BeginActivity(L.Tr("installs.status.gitSetup", row.Name), row.Name);
         BasisStepResult init;
         try { init = await _updates.InitializeRepositoryAsync(row.RepoRoot, row.UnityProjectPath, line => ReportActivity(activity, line)); }
         catch (Exception ex)
@@ -778,14 +778,14 @@ public sealed class InstallsViewModel : ObservableObject
         }
         row.IsBusy = true;
         _shell.SetStatus(L.Tr("installs.status.backingUp", row.Name));
-        var activity = _shell.BeginActivity(L.Tr("installs.status.backingUp", row.Name));
+        var activity = _shell.BeginActivity(L.Tr("installs.status.backingUp", row.Name), row.Name);
         try
         {
             var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
             var zip = await BackupService.CreateBackupAsync(row.UnityProjectPath, DefaultBackupDir(row), stamp,
                 msg => Dispatcher.UIThread.Post(() =>
                 {
-                    _shell.SetStatus(msg);
+                    _shell.SetStatus(msg, StatusKind.Info, row.Name);
                     _shell.ReportActivity(activity, msg);
                 }));
             _shell.SetStatus(L.Tr("installs.status.backedUp", row.Name, zip), StatusKind.Success);
@@ -794,7 +794,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Backing up Basis installation {row.RepoRoot}", ex);
-            _shell.SetStatus(L.Tr("installs.status.backupFailed", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.backupFailed", ex.Message), StatusKind.Error, row.Name);
             return false;
         }
         finally
@@ -923,8 +923,8 @@ public sealed class InstallsViewModel : ObservableObject
         try
         {
             var cloningText = L.Tr("installs.status.cloningBasis");
-            _shell.SetStatus(cloningText);
-            var activity = _shell.BeginActivity(cloningText);
+            _shell.SetStatus(cloningText, StatusKind.Info, Path.GetFileName(picked));
+            var activity = _shell.BeginActivity(cloningText, Path.GetFileName(picked));
             GitResult result;
             try
             {
@@ -940,14 +940,14 @@ public sealed class InstallsViewModel : ObservableObject
             }
             if (!result.Ok)
             {
-                _shell.SetStatus(L.Tr("installs.status.cloneFailed", Tail(result.Output)), StatusKind.Error);
+                _shell.SetStatus(L.Tr("installs.status.cloneFailed", Tail(result.Output)), StatusKind.Error, Path.GetFileName(picked));
                 return;
             }
 
             var install = await _installService.LoadAsync(picked);
             if (!install.IsBasisCheckout)
             {
-                _shell.SetStatus(L.Tr("installs.status.cloneMissingProject"), StatusKind.Error);
+                _shell.SetStatus(L.Tr("installs.status.cloneMissingProject"), StatusKind.Error, Path.GetFileName(picked));
                 return;
             }
 
@@ -961,7 +961,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write("Cloning a Basis installation", ex);
-            _shell.SetStatus(L.Tr("installs.status.cloneError", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.cloneError", ex.Message), StatusKind.Error, Path.GetFileName(picked));
         }
     }
 
@@ -1042,10 +1042,10 @@ public sealed class InstallsViewModel : ObservableObject
         return lines.Length == 0 ? "" : lines[^1].Trim();
     }
 
-    private void ReportActivity(Guid activity, string message) =>
+    private void ReportActivity(Guid activity, string message, string? project = null) =>
         Dispatcher.UIThread.Post(() =>
         {
-            _shell.SetStatus(message);
+            _shell.SetStatus(message, StatusKind.Info, project ?? _shell.ProjectOf(activity));
             _shell.ReportActivity(activity, message);
         });
 

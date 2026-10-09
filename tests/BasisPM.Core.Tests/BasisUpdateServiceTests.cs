@@ -252,6 +252,61 @@ public sealed class BasisUpdateServiceTests
     }
 
     [GitFact]
+    public async Task Ignored_meta_files_in_the_way_are_swapped_for_basis_copies()
+    {
+        var (box, project) = StartWithClone();
+        using var _ = box;
+        File.AppendAllText(Path.Combine(project, ".git", "info", "exclude"), "\nAssets/Tools.meta\n");
+        GitSandbox.Write(project, "Assets/Tools.meta", "guid: mine\n");
+        box.CommitUpstream("add tools", ("Assets/Tools.meta", "guid: basis\n"), ("Assets/Tools/readme.txt", "tools\n"));
+
+        var plan = await box.Updates.PlanAsync(project);
+        Assert.True(plan.CanApply);
+        Assert.Equal(new[] { "Assets/Tools.meta" }, plan.ReplacedMetaPaths);
+
+        var result = await box.Updates.ApplyAsync(project, plan);
+
+        Assert.Equal(BasisUpdateResultKind.Updated, result.Kind);
+        Assert.Equal("guid: basis\n", GitSandbox.Read(project, "Assets/Tools.meta"));
+        Assert.False(Directory.Exists(Path.Combine(project, ".git", "basispm-discarded")));
+    }
+
+    [GitFact]
+    public async Task Undoing_the_update_puts_discarded_meta_files_back()
+    {
+        var (box, project) = StartWithClone();
+        using var _ = box;
+        GitSandbox.Commit(project, "my change", ("c.txt", "mine\n"));
+        File.AppendAllText(Path.Combine(project, ".git", "info", "exclude"), "\nAssets/Tools.meta\n");
+        GitSandbox.Write(project, "Assets/Tools.meta", "guid: mine\n");
+        box.CommitUpstream("upstream", ("c.txt", "basis\n"), ("Assets/Tools.meta", "guid: basis\n"));
+
+        var result = await box.Updates.ApplyAsync(project, await box.Updates.PlanAsync(project));
+        Assert.Equal(BasisUpdateResultKind.Conflicts, result.Kind);
+
+        Assert.Equal(BasisUpdateResultKind.Aborted, (await box.Updates.AbortAsync(project)).Kind);
+        Assert.Equal("guid: mine\n", GitSandbox.Read(project, "Assets/Tools.meta"));
+        Assert.False(Directory.Exists(Path.Combine(project, ".git", "basispm-discarded")));
+    }
+
+    [GitFact]
+    public async Task Other_ignored_files_still_block_and_leave_meta_files_alone()
+    {
+        var (box, project) = StartWithClone();
+        using var _ = box;
+        File.AppendAllText(Path.Combine(project, ".git", "info", "exclude"), "\nPackages/com.example/\nPackages/com.example.meta\n");
+        GitSandbox.Write(project, "Packages/com.example/package.json", "{ \"mounted\": true }\n");
+        GitSandbox.Write(project, "Packages/com.example.meta", "guid: mine\n");
+        box.CommitUpstream("embed package", ("Packages/com.example/package.json", "{ \"basis\": true }\n"), ("Packages/com.example.meta", "guid: basis\n"));
+
+        var plan = await box.Updates.PlanAsync(project);
+        Assert.Equal(new[] { "Packages/com.example/package.json" }, plan.BlockingPaths);
+
+        Assert.Equal(BasisUpdateFailure.IgnoredFilesInTheWay, (await box.Updates.ApplyAsync(project, plan)).Failure);
+        Assert.Equal("guid: mine\n", GitSandbox.Read(project, "Packages/com.example.meta"));
+    }
+
+    [GitFact]
     public async Task Staged_changes_are_set_aside_so_a_real_merge_can_run()
     {
         var (box, project) = StartWithClone();

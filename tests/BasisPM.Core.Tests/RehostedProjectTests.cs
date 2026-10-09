@@ -393,6 +393,47 @@ public sealed class RehostedProjectTests
     }
 
     [GitFact]
+    public async Task Branch_switch_swaps_ignored_meta_files_for_the_branch_copies()
+    {
+        using var box = new GitSandbox();
+        box.CommitUpstream("base", ("a.txt", "a\n"));
+        var project = box.CloneProject();
+        GitSandbox.Run(project, "checkout", "-q", "-b", "feature");
+        GitSandbox.Commit(project, "add tools", ("Tools.meta", "guid: feature\n"), ("Tools/readme.txt", "tools\n"));
+        GitSandbox.Run(project, "checkout", "-q", "developer");
+        File.AppendAllText(Path.Combine(project, ".git", "info", "exclude"), "\nTools.meta\n");
+        GitSandbox.Write(project, "Tools.meta", "guid: mine\n");
+
+        var plan = await box.Updates.PlanBranchSwitchAsync(project, new ProjectBranch("feature", null, false));
+        Assert.True(plan.CanSwitch);
+        Assert.Equal(new[] { "Tools.meta" }, plan.ReplacedMetaPaths);
+
+        Assert.Equal(BasisUpdateResultKind.Updated, (await box.Updates.SwitchBranchAsync(project, plan)).Kind);
+        Assert.Equal("feature", GitSandbox.Run(project, "rev-parse", "--abbrev-ref", "HEAD"));
+        Assert.Equal("guid: feature\n", GitSandbox.Read(project, "Tools.meta"));
+    }
+
+    [GitFact]
+    public async Task Copied_project_swaps_ignored_meta_files_for_basis_copies()
+    {
+        using var box = new GitSandbox();
+        box.CommitUpstream("one", ("a.txt", "a1\n"), ("b.txt", "b1\n"), ("c.txt", "c1\n"), ("d.txt", "d1\n"));
+        var two = box.CommitUpstream("two", ("a.txt", "a2\n"), ("e.txt", "e2\n"));
+        var project = box.CopyProject(two, "copy");
+        File.AppendAllText(Path.Combine(project, ".git", "info", "exclude"), "\nTools.meta\n");
+        GitSandbox.Write(project, "Tools.meta", "guid: mine\n");
+        box.CommitUpstream("three", ("Tools.meta", "guid: basis\n"), ("Tools/readme.txt", "tools\n"));
+
+        var plan = await box.Updates.PlanAsync(project);
+        Assert.Equal(BasisUpdateKind.Apply, plan.Kind);
+        Assert.Equal(new[] { "Tools.meta" }, plan.ReplacedMetaPaths);
+
+        Assert.Equal(BasisUpdateResultKind.Updated, (await box.Updates.ApplyAsync(project, plan)).Kind);
+        Assert.Equal("guid: basis\n", GitSandbox.Read(project, "Tools.meta"));
+        Assert.False(Directory.Exists(Path.Combine(project, ".git", "basispm-discarded")));
+    }
+
+    [GitFact]
     public async Task Branch_only_on_your_remote_is_checked_out_and_tracked()
     {
         using var box = new GitSandbox();

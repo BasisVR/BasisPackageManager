@@ -302,19 +302,26 @@
                             Background="{StaticResource BasisSurfaceBrush}"
                             BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
                         <StackPanel Spacing="9">
+                            <Border Classes="versionPill" HorizontalAlignment="Left" IsVisible="{Binding CurrentActivity.HasProject}">
+                                <TextBlock Text="{Binding CurrentActivity.Project}" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                            </Border>
                             <StackPanel Orientation="Horizontal" Spacing="9">
                                 <PathIcon Width="16" Height="16" Data="{StaticResource IconDownload}"
                                           Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding ActivityTitle}" FontWeight="SemiBold" FontSize="13"
+                                <TextBlock Text="{Binding CurrentActivity.Title}" FontWeight="SemiBold" FontSize="13"
                                            VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
                             <ProgressBar Minimum="0" Maximum="100"
-                                         Value="{Binding ActivityProgress}"
-                                         IsIndeterminate="{Binding ActivityIsIndeterminate}"
+                                         Value="{Binding CurrentActivity.Progress}"
+                                         IsIndeterminate="{Binding CurrentActivity.IsIndeterminate}"
                                          Height="7" CornerRadius="4"/>
-                            <TextBlock Text="{Binding ActivityDetail}" Classes="dim" FontSize="11"
+                            <TextBlock Text="{Binding CurrentActivity.Detail}" Classes="dim" FontSize="11"
                                        TextTrimming="CharacterEllipsis"
-                                       IsVisible="{Binding HasActivityDetail}"/>
+                                       IsVisible="{Binding CurrentActivity.HasDetail}"/>
+                            <Button Classes="link" HorizontalAlignment="Left" Padding="0" Command="{Binding ShowActivitiesCommand}"
+                                    IsVisible="{Binding HasMoreActivities}" ToolTip.Tip="{loc:Tr shell.activity.moreTooltip}">
+                                <TextBlock Text="{Binding MoreActivitiesLabel}" FontSize="11"/>
+                            </Button>
                         </StackPanel>
                     </Border>
 
@@ -324,6 +331,9 @@
                             Background="{StaticResource BasisSurfaceBrush}"
                             BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
                         <StackPanel Spacing="9">
+                            <Border Classes="versionPill" HorizontalAlignment="Left" IsVisible="{Binding PackagesVM.HasInstallProject}">
+                                <TextBlock Text="{Binding PackagesVM.InstallProject}" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                            </Border>
                             <StackPanel Orientation="Horizontal" Spacing="9">
                                 <PathIcon Width="16" Height="16" Data="{StaticResource IconDownload}"
                                           Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
@@ -349,8 +359,12 @@
                     BorderBrush="{StaticResource BasisBorderBrush}"
                     BorderThickness="0,1,0,0"
                     Padding="18,9">
-                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                    <TextBlock Grid.Column="0"
+                <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+                    <Border Grid.Column="0" Classes="versionPill" Margin="0,0,10,0" VerticalAlignment="Center"
+                            IsVisible="{Binding HasStatusProject}" ToolTip.Tip="{loc:Tr shell.status.projectTooltip}">
+                        <TextBlock Text="{Binding StatusProject}" FontSize="11" FontWeight="SemiBold" MaxWidth="220" TextTrimming="CharacterEllipsis"/>
+                    </Border>
+                    <TextBlock Grid.Column="1"
                                Text="{Binding StatusMessage}"
                                Classes="muted"
                                Classes.statusError="{Binding IsStatusError}"
@@ -358,7 +372,7 @@
                                FontSize="12" FontWeight="SemiBold"
                                TextWrapping="Wrap"
                                VerticalAlignment="Center"/>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="12,0,0,0"
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" Margin="12,0,0,0"
                                 IsVisible="{Binding CanCopyStatus}">
                         <Button Classes="iconBtn sm"
                                 Click="OnCopyStatusClick"

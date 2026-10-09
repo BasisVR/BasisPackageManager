@@ -122,6 +122,9 @@ public sealed partial class PackagesViewModel : ObservableObject
     public bool IsInstalling { get => _isInstalling; private set => SetField(ref _isInstalling, value); }
     private string _installProgressText = "";
     public string InstallProgressText { get => _installProgressText; private set => SetField(ref _installProgressText, value); }
+    private string _installProject = "";
+    public string InstallProject { get => _installProject; private set { if (SetField(ref _installProject, value)) OnPropertyChanged(nameof(HasInstallProject)); } }
+    public bool HasInstallProject => !string.IsNullOrWhiteSpace(_installProject);
     private string _installProgressDetail = "";
     public string InstallProgressDetail { get => _installProgressDetail; private set { if (SetField(ref _installProgressDetail, value)) OnPropertyChanged(nameof(HasInstallProgressDetail)); } }
     public bool HasInstallProgressDetail => !string.IsNullOrWhiteSpace(_installProgressDetail);
@@ -397,7 +400,7 @@ public sealed partial class PackagesViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write("Loading the package catalog", ex);
-            _shell.SetStatus(L.Tr("packages.status.catalogLoadFailed", ex.Message), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.catalogLoadFailed", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }
@@ -747,9 +750,9 @@ public sealed partial class PackagesViewModel : ObservableObject
 
     private void ReportWithServerSide(string message, CatalogPackageVersion entry, BasisInstall target, string? serverProblem)
     {
-        if (serverProblem is not null) _shell.SetStatus(L.Tr("packages.status.serverInstallFailed", serverProblem), StatusKind.Error);
-        else if (entry.Server && ServerPackageService.SupportsPackages(target.RepoRoot)) _shell.SetStatus(L.Tr("packages.status.serverInstalled", message), StatusKind.Success);
-        else _shell.SetStatus(message, StatusKind.Success);
+        if (serverProblem is not null) SetStatus(L.Tr("packages.status.serverInstallFailed", serverProblem), StatusKind.Error);
+        else if (entry.Server && ServerPackageService.SupportsPackages(target.RepoRoot)) SetStatus(L.Tr("packages.status.serverInstalled", message), StatusKind.Success);
+        else SetStatus(message, StatusKind.Success);
     }
 
     private async Task ReloadManifestAsync(BasisInstall target) =>
@@ -822,14 +825,14 @@ public sealed partial class PackagesViewModel : ObservableObject
         if (entry is null) return;
         if (_install is null || !_install.HasUnityProject)
         {
-            _shell.SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
             return;
         }
         if (!_queuedInstallIds.Add(QueueKey(_install, entry.Name))) return;   // already queued or installing
         _installQueue.Enqueue((entry, _install));
         InstallQueueRemaining = _installQueue.Count;
         ApplyInstallQueueState();
-        _shell.SetStatus(L.Tr(_installWorkerRunning ? "packages.status.queuedForInstall" : "packages.status.installingNow", entry.DisplayName));
+        SetStatus(L.Tr(_installWorkerRunning ? "packages.status.queuedForInstall" : "packages.status.installingNow", entry.DisplayName));
         if (!_installWorkerRunning) _ = ProcessInstallQueueAsync();
     }
 
@@ -857,7 +860,7 @@ public sealed partial class PackagesViewModel : ObservableObject
         if (entries.Count == 0) return;
         var skipped = _mountEditedIds.Count(id => _catalog.Packages.ContainsKey(id));
         foreach (var entry in entries) EnqueueInstall(entry);
-        _shell.SetStatus(skipped > 0
+        SetStatus(skipped > 0
             ? L.Tr("packages.status.updateAllQueuedSkipped", entries.Count, skipped)
             : L.Tr("packages.status.updateAllQueued", entries.Count), StatusKind.Info);
     }
@@ -880,10 +883,11 @@ public sealed partial class PackagesViewModel : ObservableObject
                 InstallProgress = 0;
                 InstallProgressIndeterminate = true;
                 InstallProgressText = L.Tr("packages.status.installingNow", entry.DisplayName);
+                InstallProject = target.DisplayName;
                 InstallProgressDetail = "";
                 ApplyInstallQueueState();
                 try { await InstallCuratedAsync(target, entry); }
-                catch (Exception ex) { DiagnosticLog.Write($"Installing queued package {entry.Name}", ex); _shell.SetStatus(L.Tr("packages.status.installError", ex.Message), StatusKind.Error); }
+                catch (Exception ex) { DiagnosticLog.Write($"Installing queued package {entry.Name}", ex); SetStatus(L.Tr("packages.status.installError", ex.Message), StatusKind.Error, target.DisplayName); }
                 finally
                 {
                     _queuedInstallIds.Remove(QueueKey(target, entry.Name));
@@ -899,6 +903,7 @@ public sealed partial class PackagesViewModel : ObservableObject
             _installingId = null;
             InstallProgressText = "";
             InstallProgressDetail = "";
+            InstallProject = "";
             InstallQueueRemaining = 0;
             ApplyInstallQueueState();
         }
@@ -918,11 +923,13 @@ public sealed partial class PackagesViewModel : ObservableObject
 
     private static string QueueKey(BasisInstall target, string id) => target.UnityProjectPath + "|" + id;
 
+    private void SetStatus(string message, StatusKind kind = StatusKind.Info, string? project = null) => _shell.SetStatus(message, kind, project ?? _install?.DisplayName);
+
     // Surfaces a git clone progress line on both the status bar and the install card, turning the bar
     // determinate when git reports a percentage (e.g. "Receiving objects: 45%").
     private void ReportCloneProgress(string line)
     {
-        _shell.SetStatus(line);
+        SetStatus(line, StatusKind.Info, InstallProject);
         InstallProgressDetail = line;
         var m = System.Text.RegularExpressions.Regex.Match(line, @"(\d{1,3})%");
         if (m.Success && int.TryParse(m.Groups[1].Value, out var pct) && pct is >= 0 and <= 100)
@@ -951,12 +958,12 @@ public sealed partial class PackagesViewModel : ObservableObject
             var result = resolver.Resolve(_catalog, requested);
             if (result.Conflicts.Count > 0)
             {
-                _shell.SetStatus(L.Tr("packages.status.dependencyConflict", string.Join("; ", result.Conflicts)), StatusKind.Error);
+                SetStatus(L.Tr("packages.status.dependencyConflict", string.Join("; ", result.Conflicts)), StatusKind.Error, target.DisplayName);
                 return;
             }
             if (!result.Resolved.TryGetValue(entry.Name, out var mainVer) && string.IsNullOrWhiteSpace(entry.Url) && !SemVer.TryParse(entry.Version, out _))
             {
-                _shell.SetStatus(L.Tr("packages.status.cannotUpdate", entry.DisplayName), StatusKind.Error);
+                SetStatus(L.Tr("packages.status.cannotUpdate", entry.DisplayName), StatusKind.Error, target.DisplayName);
                 return;
             }
 
@@ -975,7 +982,7 @@ public sealed partial class PackagesViewModel : ObservableObject
                 // No repository to clone — record the version dependency so Unity can still resolve it.
                 target.Manifest.Dependencies[entry.Name] = mainVer?.Version ?? entry.Version;
                 await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
-                _shell.SetStatus(L.Tr("packages.status.installed", entry.DisplayName, target.DisplayName), StatusKind.Success);
+                SetStatus(L.Tr("packages.status.installed", entry.DisplayName, target.DisplayName), StatusKind.Success, target.DisplayName);
             }
             else
             {
@@ -988,7 +995,7 @@ public sealed partial class PackagesViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write("Installing a curated package", ex);
-            _shell.SetStatus(L.Tr("packages.status.installError", ex.Message), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.installError", ex.Message), StatusKind.Error, target.DisplayName);
         }
         finally { IsBusy = false; }
     }
@@ -1007,24 +1014,24 @@ public sealed partial class PackagesViewModel : ObservableObject
     {
         if (entry is null || _install is null || !_install.HasUnityProject)
         {
-            _shell.SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
             return;
         }
         if (string.IsNullOrWhiteSpace(entry.Url))
         {
-            _shell.SetStatus(L.Tr("packages.status.notGitPackage", entry.DisplayName), StatusKind.Info);
+            SetStatus(L.Tr("packages.status.notGitPackage", entry.DisplayName), StatusKind.Info);
             return;
         }
         var target = _install;
 
         IsBusy = true;
-        _shell.SetStatus(L.Tr("packages.status.loadingVersions", entry.DisplayName));
+        SetStatus(L.Tr("packages.status.loadingVersions", entry.DisplayName));
         try
         {
             var versions = await _versionService.GetVersionsAsync(entry.Url, null);
             if (versions.Options.Count == 0)
             {
-                _shell.SetStatus(L.Tr("packages.status.noVersionsFound", entry.DisplayName), StatusKind.Error);
+                SetStatus(L.Tr("packages.status.noVersionsFound", entry.DisplayName), StatusKind.Error);
                 return;
             }
 
@@ -1033,7 +1040,7 @@ public sealed partial class PackagesViewModel : ObservableObject
             if (!await ConfirmDiscardEditsAsync(target, entry.Name, entry.DisplayName)) return;
 
             var loc = UpmGitUrl.Parse(entry.Url);
-            if (loc is null) { _shell.SetStatus(L.Tr("packages.status.gitUrlParseFailed"), StatusKind.Error); return; }
+            if (loc is null) { SetStatus(L.Tr("packages.status.gitUrlParseFailed"), StatusKind.Error); return; }
 
             var versionUrl = loc.ToManifestUrl(chosen.Ref, loc.Path);
             await ReloadManifestAsync(target);
@@ -1047,7 +1054,7 @@ public sealed partial class PackagesViewModel : ObservableObject
                 entry, target, await SyncServerSideAsync(target, entry, versionUrl));
             RefreshInstalled();
         }
-        catch (Exception ex) { DiagnosticLog.Write("Installing the selected package version", ex); _shell.SetStatus(L.Tr("packages.status.versionInstallError", ex.Message), StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Installing the selected package version", ex); SetStatus(L.Tr("packages.status.versionInstallError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
     }
 
@@ -1074,7 +1081,7 @@ public sealed partial class PackagesViewModel : ObservableObject
             if (wasMounted)
             {
                 var swap = await _mountService.SwapBackAsync(target, name);
-                if (!swap.Ok) { _shell.SetStatus(swap.Error ?? L.Tr("develop.status.swapBackFailed"), StatusKind.Error); return; }
+                if (!swap.Ok) { SetStatus(swap.Error ?? L.Tr("develop.status.swapBackFailed"), StatusKind.Error); return; }
             }
             await ReloadManifestAsync(target);
             var hadDep = target.Manifest.Dependencies.Remove(name);
@@ -1083,7 +1090,7 @@ public sealed partial class PackagesViewModel : ObservableObject
             {
                 await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
                 var serverProblem = await RemoveServerSideAsync(target, name, mountedRoot);
-                _shell.SetStatus(serverProblem is null ? L.Tr("packages.status.removed", displayName) : L.Tr("packages.status.serverRemoveFailed", serverProblem),
+                SetStatus(serverProblem is null ? L.Tr("packages.status.removed", displayName) : L.Tr("packages.status.serverRemoveFailed", serverProblem),
                     serverProblem is null ? StatusKind.Success : StatusKind.Error);
                 RefreshInstalled();
             }
@@ -1091,7 +1098,7 @@ public sealed partial class PackagesViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Removing package {name}", ex);
-            _shell.SetStatus(L.Tr("packages.status.removeError", displayName, ex.Message), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.removeError", displayName, ex.Message), StatusKind.Error);
         }
     }
 
@@ -1099,12 +1106,12 @@ public sealed partial class PackagesViewModel : ObservableObject
     {
         if (_install is null || !_install.HasUnityProject)
         {
-            _shell.SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
             return;
         }
         if (string.IsNullOrWhiteSpace(GitHubInput))
         {
-            _shell.SetStatus(L.Tr("packages.status.pasteGitHub"), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.pasteGitHub"), StatusKind.Error);
             return;
         }
         var target = _install;
@@ -1117,14 +1124,14 @@ public sealed partial class PackagesViewModel : ObservableObject
             catch (Exception ex)
             {
                 DiagnosticLog.Write($"Parsing GitHub package reference {GitHubInput}", ex);
-                _shell.SetStatus(L.Tr("packages.status.invalidGitHub", ex.Message), StatusKind.Error);
+                SetStatus(L.Tr("packages.status.invalidGitHub", ex.Message), StatusKind.Error);
                 return;
             }
 
             var pkg = await _githubService.FetchPackageJsonAsync(loc);
             if (pkg is null || string.IsNullOrEmpty(pkg.Name))
             {
-                _shell.SetStatus(
+                SetStatus(
                     L.Tr("packages.status.packageJsonLoadFailed", loc.Owner, loc.Repo, loc.Path is null ? "" : "/" + loc.Path),
                     StatusKind.Error);
                 return;
@@ -1141,14 +1148,14 @@ public sealed partial class PackagesViewModel : ObservableObject
             await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
             var depNote = deps > 0 ? L.Tr("packages.status.depNote", deps, deps == 1 ? "" : "s") : "";
-            _shell.SetStatus(L.Tr("packages.status.addedFromGitHub", existed ? L.Tr("packages.status.updated") : L.Tr("packages.status.added"), pkg.Name, depNote), StatusKind.Success);
+            SetStatus(L.Tr("packages.status.addedFromGitHub", existed ? L.Tr("packages.status.updated") : L.Tr("packages.status.added"), pkg.Name, depNote), StatusKind.Success);
             GitHubInput = "";
             RefreshInstalled();
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write("Adding a package from GitHub", ex);
-            _shell.SetStatus(L.Tr("packages.status.gitHubAddFailed", ex.Message), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.gitHubAddFailed", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }
@@ -1158,17 +1165,17 @@ public sealed partial class PackagesViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(gitUrl))
         {
-            _shell.SetStatus(L.Tr("packages.status.installLinkMissing"), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.installLinkMissing"), StatusKind.Error);
             return;
         }
         if (!GitUrlPolicy.IsSafeDependencyUrl(gitUrl))
         {
-            _shell.SetStatus(L.Tr("packages.status.refusedUnsafeUrl", name ?? id), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.refusedUnsafeUrl", name ?? id), StatusKind.Error);
             return;
         }
         if (_install is null || !_install.HasUnityProject)
         {
-            _shell.SetStatus(L.Tr("packages.status.openInstallFirst", name ?? id), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.openInstallFirst", name ?? id), StatusKind.Error);
             return;
         }
         var target = _install;
@@ -1181,13 +1188,13 @@ public sealed partial class PackagesViewModel : ObservableObject
             var deps = AddCatalogDependencies(target, new[] { (id!, "*") });
             await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
             var depNote = deps > 0 ? L.Tr("packages.status.depNote", deps, deps == 1 ? "" : "s") : "";
-            _shell.SetStatus(L.Tr("packages.status.addedDeepLink", existed ? L.Tr("packages.status.updated") : L.Tr("packages.status.added"), name ?? id, depNote, target.Name), StatusKind.Success);
+            SetStatus(L.Tr("packages.status.addedDeepLink", existed ? L.Tr("packages.status.updated") : L.Tr("packages.status.added"), name ?? id, depNote, target.Name), StatusKind.Success);
             RefreshInstalled();
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write("Installing a package from a deep link", ex);
-            _shell.SetStatus(L.Tr("packages.status.deepLinkFailed", ex.Message), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.deepLinkFailed", ex.Message), StatusKind.Error);
         }
     }
 
@@ -1205,10 +1212,10 @@ public sealed partial class PackagesViewModel : ObservableObject
     private async Task MountAsync(PackageRow? row)
     {
         if (row is null || _install is null || !_install.HasUnityProject) return;
-        if (!_gitService.IsAvailable) { _shell.SetStatus(L.Tr("develop.status.gitRequiredMount"), StatusKind.Error); return; }
+        if (!_gitService.IsAvailable) { SetStatus(L.Tr("develop.status.gitRequiredMount"), StatusKind.Error); return; }
         if (!_install.Manifest.Dependencies.TryGetValue(row.Name, out var gitValue) || !LooksMountable(gitValue))
         {
-            _shell.SetStatus(L.Tr("packages.status.notGitPackage", row.DisplayName), StatusKind.Info);
+            SetStatus(L.Tr("packages.status.notGitPackage", row.DisplayName), StatusKind.Info);
             return;
         }
 
@@ -1218,29 +1225,29 @@ public sealed partial class PackagesViewModel : ObservableObject
         {
             if (!await Dialogs.ConfirmAsync(L.Tr("develop.confirm.packageThereTitle"), L.Tr("develop.confirm.packageExists", row.Name)))
             {
-                _shell.SetStatus(L.Tr("develop.status.mountCancelled", row.Name), StatusKind.Info);
+                SetStatus(L.Tr("develop.status.mountCancelled", row.Name), StatusKind.Info);
                 return;
             }
             try { TryForceDelete(dest); }
-            catch (Exception ex) { DiagnosticLog.Write($"Clearing the existing mount for {row.Name}", ex); _shell.SetStatus(L.Tr("develop.status.clearFailed", row.Name, ex.Message), StatusKind.Error); return; }
+            catch (Exception ex) { DiagnosticLog.Write($"Clearing the existing mount for {row.Name}", ex); SetStatus(L.Tr("develop.status.clearFailed", row.Name, ex.Message), StatusKind.Error); return; }
         }
 
         IsBusy = true;
-        _shell.SetStatus(L.Tr("develop.status.mounting", row.Name));
+        SetStatus(L.Tr("develop.status.mounting", row.Name));
         try
         {
             var result = await _mountService.MountAsync(_install, row.Name, gitValue,
-                line => Avalonia.Threading.Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
+                line => Avalonia.Threading.Dispatcher.UIThread.Post(() => SetStatus(line)));
             if (result.Ok)
             {
                 _mountEditedIds.Remove(row.Name);
                 _mountEditSummaries.Remove(row.Name);
-                _shell.SetStatus(L.Tr("develop.status.mounted", row.Name), StatusKind.Success);
+                SetStatus(L.Tr("develop.status.mounted", row.Name), StatusKind.Success);
                 await ReloadInstalledAsync();
             }
-            else _shell.SetStatus(result.Error ?? L.Tr("develop.status.mountFailed"), StatusKind.Error);
+            else SetStatus(result.Error ?? L.Tr("develop.status.mountFailed"), StatusKind.Error);
         }
-        catch (Exception ex) { DiagnosticLog.Write($"Mounting package {row.Name}", ex); _shell.SetStatus(L.Tr("develop.status.mountError", ex.Message), StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write($"Mounting package {row.Name}", ex); SetStatus(L.Tr("develop.status.mountError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
     }
 
@@ -1249,14 +1256,14 @@ public sealed partial class PackagesViewModel : ObservableObject
     {
         var folder = row?.MountFolder;
         if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder)) ExternalLink.OpenFolder(folder);
-        else if (row is not null) _shell.SetStatus(L.Tr("packages.status.mountFolderMissing", row.DisplayName), StatusKind.Error);
+        else if (row is not null) SetStatus(L.Tr("packages.status.mountFolderMissing", row.DisplayName), StatusKind.Error);
     }
 
     /// <summary>Opens a pull request from a mounted package's working clone.</summary>
     private async Task SubmitPrAsync(PackageRow? row)
     {
         if (row is null) return;
-        if (string.IsNullOrEmpty(row.MountFolder)) { _shell.SetStatus(L.Tr("packages.status.mountFolderMissing", row.DisplayName), StatusKind.Error); return; }
+        if (string.IsNullOrEmpty(row.MountFolder)) { SetStatus(L.Tr("packages.status.mountFolderMissing", row.DisplayName), StatusKind.Error); return; }
         await SubmitPrFromFolderAsync(row.Name, row.MountFolder);
     }
 
@@ -1287,35 +1294,35 @@ public sealed partial class PackagesViewModel : ObservableObject
 
     private async Task SubmitPrFromFolderAsync(string packageId, string folderPath)
     {
-        if (!_gitService.IsAvailable) { _shell.SetStatus(L.Tr("develop.status.gitRequired"), StatusKind.Error); return; }
-        if (!MountService.IsWorkingClone(folderPath)) { _shell.SetStatus(L.Tr("packages.status.mountFolderMissing", packageId), StatusKind.Error); return; }
+        if (!_gitService.IsAvailable) { SetStatus(L.Tr("develop.status.gitRequired"), StatusKind.Error); return; }
+        if (!MountService.IsWorkingClone(folderPath)) { SetStatus(L.Tr("packages.status.mountFolderMissing", packageId), StatusKind.Error); return; }
 
         try
         {
             // Nothing to PR if the working clone is clean — bail before sign-in and a fork.
             var status = await _gitService.GetStatusAsync(folderPath);
-            if (status.ChangeCount == 0) { _shell.SetStatus(L.Tr("develop.status.noChangesToSubmit", packageId), StatusKind.Info); return; }
+            if (status.ChangeCount == 0) { SetStatus(L.Tr("develop.status.noChangesToSubmit", packageId), StatusKind.Info); return; }
 
             var token = await GetOrPromptTokenAsync();
-            if (string.IsNullOrEmpty(token)) { _shell.SetStatus(L.Tr("develop.status.signInFirst"), StatusKind.Error); return; }
+            if (string.IsNullOrEmpty(token)) { SetStatus(L.Tr("develop.status.signInFirst"), StatusKind.Error); return; }
             var user = await _ghApi.GetUserAsync(token);
-            if (user is null) { _shell.SetStatus(L.Tr("develop.status.loginUnverified"), StatusKind.Error); return; }
+            if (user is null) { SetStatus(L.Tr("develop.status.loginUnverified"), StatusKind.Error); return; }
 
             var draft = await Dialogs.SubmitPrAsync(packageId);
             if (draft is null) return;
 
             IsBusy = true;
-            _shell.SetStatus(L.Tr("develop.status.submittingPr", packageId));
+            SetStatus(L.Tr("develop.status.submittingPr", packageId));
             var result = await _contributeService.SubmitPrAsync(folderPath, token, user, draft,
-                line => Avalonia.Threading.Dispatcher.UIThread.Post(() => _shell.SetStatus(line)));
+                line => Avalonia.Threading.Dispatcher.UIThread.Post(() => SetStatus(line)));
             if (result.Ok)
             {
-                _shell.SetStatus(L.Tr("develop.status.prOpened", result.Forked ? L.Tr("develop.status.viaFork") : "", result.PrUrl), StatusKind.Success);
+                SetStatus(L.Tr("develop.status.prOpened", result.Forked ? L.Tr("develop.status.viaFork") : "", result.PrUrl), StatusKind.Success);
                 if (!string.IsNullOrEmpty(result.PrUrl)) ExternalLink.Open(result.PrUrl!);
             }
-            else _shell.SetStatus(result.Error ?? L.Tr("develop.status.prFailed"), StatusKind.Error);
+            else SetStatus(result.Error ?? L.Tr("develop.status.prFailed"), StatusKind.Error);
         }
-        catch (Exception ex) { DiagnosticLog.Write("Creating a package contribution pull request", ex); _shell.SetStatus(L.Tr("develop.status.prError", ex.Message), StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Creating a package contribution pull request", ex); SetStatus(L.Tr("develop.status.prError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
     }
 
@@ -1504,7 +1511,7 @@ public sealed partial class PackagesViewModel : ObservableObject
     {
         if (_install is null || !_install.HasUnityProject)
         {
-            _shell.SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.chooseProject"), StatusKind.Error);
             return;
         }
         var target = _install;
@@ -1530,7 +1537,7 @@ public sealed partial class PackagesViewModel : ObservableObject
         }
         if (candidates.Count == 0)
         {
-            _shell.SetStatus(L.Tr("packages.status.noAddonPackages"), StatusKind.Info);
+            SetStatus(L.Tr("packages.status.noAddonPackages"), StatusKind.Info);
             return;
         }
 
@@ -1565,9 +1572,9 @@ public sealed partial class PackagesViewModel : ObservableObject
             {
                 var savedPath = await Dialogs.SavePackageListFileAsync(packageList.Id, json);
                 if (savedPath is not null)
-                    _shell.SetStatus(L.Tr("packages.status.packageListSaved", draft.Name, draft.Packages.Count, savedPath), StatusKind.Success);
+                    SetStatus(L.Tr("packages.status.packageListSaved", draft.Name, draft.Packages.Count, savedPath), StatusKind.Success);
             }
-            catch (Exception ex) { DiagnosticLog.Write("Saving a package list file", ex); _shell.SetStatus(L.Tr("packages.status.packageListSaveFailed", ex.Message), StatusKind.Error); }
+            catch (Exception ex) { DiagnosticLog.Write("Saving a package list file", ex); SetStatus(L.Tr("packages.status.packageListSaveFailed", ex.Message), StatusKind.Error); }
             return;
         }
 
@@ -1576,17 +1583,17 @@ public sealed partial class PackagesViewModel : ObservableObject
                 + "&title=" + Uri.EscapeDataString("Add package list: " + draft.Name)
                 + "&body=" + Uri.EscapeDataString(body);
         OpenUrl(url);
-        _shell.SetStatus(L.Tr("packages.status.openingIssue", draft.Name, draft.Packages.Count), StatusKind.Success);
+        SetStatus(L.Tr("packages.status.openingIssue", draft.Name, draft.Packages.Count), StatusKind.Success);
     }
 
     /// <summary>Browses the registry's package lists and installs the chosen one into a project.</summary>
     private async Task InstallPackageListFromRegistryAsync()
     {
-        _shell.SetStatus(L.Tr("packages.status.loadingPackageLists"));
+        SetStatus(L.Tr("packages.status.loadingPackageLists"));
         var lists = await _packageListService.LoadAsync(_officialCatalogUrl);
         if (lists.Count == 0)
         {
-            _shell.SetStatus(L.Tr("packages.status.noPackageLists"), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.noPackageLists"), StatusKind.Error);
             return;
         }
 
@@ -1615,13 +1622,13 @@ public sealed partial class PackagesViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write("Reading a package-list file", ex);
-            _shell.SetStatus(L.Tr("packages.status.packageListFileInvalid", ex.Message), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.packageListFileInvalid", ex.Message), StatusKind.Error);
             return;
         }
 
         if (packageList?.Packages is not { Count: > 0 })
         {
-            _shell.SetStatus(L.Tr("packages.status.packageListFileEmpty"), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.packageListFileEmpty"), StatusKind.Error);
             return;
         }
 
@@ -1657,14 +1664,14 @@ public sealed partial class PackagesViewModel : ObservableObject
             }
             await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
             var skipNote = skipped > 0 ? L.Tr("packages.status.skipNote", skipped) : "";
-            _shell.SetStatus(L.Tr("packages.status.addedPackageList", packageList.Name, packageList.Packages.Count, skipNote, target.DisplayName),
+            SetStatus(L.Tr("packages.status.addedPackageList", packageList.Name, packageList.Packages.Count, skipNote, target.DisplayName),
                 skipped > 0 ? StatusKind.Info : StatusKind.Success);
             RefreshInstalled();
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write("Installing a package list", ex);
-            _shell.SetStatus(L.Tr("packages.status.packageListInstallFailed", ex.Message), StatusKind.Error);
+            SetStatus(L.Tr("packages.status.packageListInstallFailed", ex.Message), StatusKind.Error);
         }
         finally { IsBusy = false; }
     }
