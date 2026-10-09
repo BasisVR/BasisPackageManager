@@ -18,6 +18,10 @@ public interface IBasisChangesHost
     Task<GitHubUser?> GetUserAsync(string token);
     Task<BasisContributeResult> SubmitAsync(BasisContributeScan scan, IReadOnlyList<string> paths, BasisPullRequestDraft draft, string token, GitHubUser user, Action<string> progress, CancellationToken ct);
     void OpenUrl(string url);
+    Guid BeginActivity(string title, string project);
+    void ReportActivity(Guid id, string detail);
+    void EndActivity(Guid id);
+    void SetStatus(string message, StatusKind kind, string project);
 }
 
 public sealed record DiffLineItem(string Text, BasisDiffLineKind Kind)
@@ -164,6 +168,7 @@ public sealed class BasisChangesViewModel : ObservableObject
     private string? _targetBranch;
     private int _selectedCount;
     private bool _suppress;
+    private Guid _activity;
 
     public BasisChangesViewModel(IBasisChangesHost host, string projectName, string? focusPackage = null)
     {
@@ -268,9 +273,10 @@ public sealed class BasisChangesViewModel : ObservableObject
         NoticeText = "";
         StatusText = L.Tr("basisChanges.loading", ProjectName);
         var focused = _selectedFile?.Change.Path;
+        var activity = _activity = _host.BeginActivity(StatusText, ProjectName);
         try
         {
-            var scan = await _host.ScanAsync(Progress, CancellationToken.None);
+            var scan = await _host.ScanAsync(line => Progress(activity, line), CancellationToken.None);
             _scan = scan;
             BuildGroups(scan);
             if (scan.IsBlocked)
@@ -304,6 +310,7 @@ public sealed class BasisChangesViewModel : ObservableObject
         }
         finally
         {
+            EndActivity(activity);
             IsLoading = false;
             StatusText = "";
             RaiseSelection();
@@ -440,6 +447,7 @@ public sealed class BasisChangesViewModel : ObservableObject
         ResultText = "";
         SetCompareUrl("");
         StatusText = L.Tr("basisChanges.status.signingIn");
+        var activity = _activity = _host.BeginActivity(L.Tr("basisChanges.activity.submit", Repository), ProjectName);
         try
         {
             var token = await _host.GetTokenAsync();
@@ -460,30 +468,40 @@ public sealed class BasisChangesViewModel : ObservableObject
                 return;
             }
             var draft = new BasisPullRequestDraft(_title.Trim(), string.IsNullOrWhiteSpace(_body) ? null : _body.Trim(), _branch.Trim(), _targetBranch!.Trim());
-            var result = await _host.SubmitAsync(_scan, SelectedPaths(), draft, token, user, Progress, CancellationToken.None);
+            var result = await _host.SubmitAsync(_scan, SelectedPaths(), draft, token, user, line => Progress(activity, line), CancellationToken.None);
             if (result.Ok && result.Url is { Length: > 0 } url)
             {
                 _resultUrl = url;
                 OnPropertyChanged(nameof(ResultUrl));
                 ResultText = L.Tr(result.Updated ? "basisChanges.status.updated" : "basisChanges.status.opened", url);
+                _host.SetStatus(ResultText, StatusKind.Success, ProjectName);
                 _host.OpenUrl(url);
             }
             else
             {
                 ErrorText = result.Error ?? L.Tr("basisChanges.status.failed");
                 SetCompareUrl(result.CompareUrl ?? "");
+                _host.SetStatus(ErrorText, StatusKind.Error, ProjectName);
             }
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write("Opening a pull request on Basis", ex);
             ErrorText = L.Tr("basisChanges.status.error", ex.Message);
+            _host.SetStatus(ErrorText, StatusKind.Error, ProjectName);
         }
         finally
         {
+            EndActivity(activity);
             IsSubmitting = false;
             StatusText = "";
         }
+    }
+
+    private void EndActivity(Guid activity)
+    {
+        _host.EndActivity(activity);
+        if (_activity == activity) _activity = Guid.Empty;
     }
 
     private void SetCompareUrl(string url)
@@ -493,11 +511,19 @@ public sealed class BasisChangesViewModel : ObservableObject
         OnPropertyChanged(nameof(HasCompareUrl));
     }
 
-    private void Progress(string line)
+    private void Progress(Guid activity, string line)
     {
         if (string.IsNullOrWhiteSpace(line)) return;
-        if (Dispatcher.UIThread.CheckAccess()) StatusText = line.Trim();
-        else Dispatcher.UIThread.Post(() => StatusText = line.Trim());
+        var text = line.Trim();
+        if (Dispatcher.UIThread.CheckAccess()) Show();
+        else Dispatcher.UIThread.Post(Show);
+
+        void Show()
+        {
+            if (_activity != activity) return;
+            StatusText = text;
+            _host.ReportActivity(activity, text);
+        }
     }
 
     private void RaiseState()

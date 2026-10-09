@@ -629,7 +629,7 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public Task OpenBasisChangesAsync(BasisInstall install, string? packageId = null) =>
         Dialogs.ShowBasisChangesAsync(new BasisChangesViewModel(
-            new BasisChangesHost(_basisContribute, _basisUpdates, _ghAuth, _ghApi, _gitService, install), install.DisplayName, packageId));
+            new BasisChangesHost(_basisContribute, _basisUpdates, _ghAuth, _ghApi, _gitService, install, this), install.DisplayName, packageId));
 
     public void RefreshBasisUpdateNotice()
     {

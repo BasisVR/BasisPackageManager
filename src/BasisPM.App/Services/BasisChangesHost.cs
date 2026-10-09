@@ -12,8 +12,9 @@ public sealed class BasisChangesHost : IBasisChangesHost
     private readonly GitHubApiService _api;
     private readonly GitService _git;
     private readonly BasisInstall _install;
+    private readonly MainWindowViewModel _shell;
 
-    public BasisChangesHost(BasisContributeService contribute, BasisUpdateService updates, GitHubAuthService auth, GitHubApiService api, GitService git, BasisInstall install)
+    public BasisChangesHost(BasisContributeService contribute, BasisUpdateService updates, GitHubAuthService auth, GitHubApiService api, GitService git, BasisInstall install, MainWindowViewModel shell)
     {
         _contribute = contribute;
         _updates = updates;
@@ -21,6 +22,7 @@ public sealed class BasisChangesHost : IBasisChangesHost
         _api = api;
         _git = git;
         _install = install;
+        _shell = shell;
     }
 
     public string Repository => $"{_contribute.Owner}/{_contribute.Repo}";
@@ -53,4 +55,12 @@ public sealed class BasisChangesHost : IBasisChangesHost
         Task.Run(() => _contribute.SubmitAsync(scan, paths, draft, token, user, progress, ct), ct);
 
     public void OpenUrl(string url) => ExternalLink.Open(url);
+
+    public Guid BeginActivity(string title, string project) => _shell.BeginActivity(title, project);
+
+    public void ReportActivity(Guid id, string detail) => _shell.ReportActivity(id, detail);
+
+    public void EndActivity(Guid id) => _shell.EndActivity(id);
+
+    public void SetStatus(string message, StatusKind kind, string project) => _shell.SetStatus(message, kind, project);
 }

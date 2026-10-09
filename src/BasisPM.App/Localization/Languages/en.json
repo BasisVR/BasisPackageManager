@@ -3899,6 +3899,10 @@
       "value": "Comparing {0} with Basis…"
     },
     {
+      "key": "basisChanges.activity.submit",
+      "value": "Sending changes to {0}…"
+    },
+    {
       "key": "basisChanges.basedOnCommit",
       "value": "Compared with Basis {0} on {1} ({2}: {3}), {4}."
     },

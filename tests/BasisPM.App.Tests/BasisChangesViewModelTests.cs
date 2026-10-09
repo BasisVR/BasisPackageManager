@@ -183,6 +183,7 @@ public sealed class BasisChangesViewModelTests
         await vm.SubmitAsync();
 
         Assert.Equal("Pushed it, but no PR", vm.ErrorText);
+        Assert.Equal(("Pushed it, but no PR", StatusKind.Error, "Game"), Assert.Single(host.Statuses));
         Assert.True(vm.HasCompareUrl);
         Assert.Empty(host.Opened);
         vm.OpenCompareCommand.Execute(null);
@@ -217,6 +218,25 @@ public sealed class BasisChangesViewModelTests
     }
 
     [AvaloniaFact]
+    public async Task Scan_and_submit_run_as_activities_of_the_project()
+    {
+        var host = new FakeHost { ScanProgress = new[] { "Fetching developer" }, SubmitProgress = new[] { " Writing objects: 45% (9/20) " } };
+        var vm = new BasisChangesViewModel(host, "Game");
+
+        await vm.LoadAsync();
+        var scanProgress = host.LastProgress!;
+        await vm.SubmitAsync();
+        scanProgress("late line");
+
+        Assert.Equal(new[] { (L.Tr("basisChanges.loading", "Game"), "Game"), (L.Tr("basisChanges.activity.submit", "BasisVR/Basis"), "Game") },
+            host.Begun.Select(b => (b.Title, b.Project)));
+        Assert.Equal(host.Begun.Select(b => b.Id), host.Ended);
+        Assert.Equal(new[] { (host.Begun[0].Id, "Fetching developer"), (host.Begun[1].Id, "Writing objects: 45% (9/20)") }, host.Reported);
+        Assert.Equal((L.Tr("basisChanges.status.opened", PrUrl), StatusKind.Success, "Game"), Assert.Single(host.Statuses));
+        Assert.Equal("", vm.StatusText);
+    }
+
+    [AvaloniaFact]
     public async Task Refresh_keeps_the_draft_and_the_selected_file()
     {
         var vm = new BasisChangesViewModel(new FakeHost(), "Game");
@@ -237,9 +257,21 @@ public sealed class BasisChangesViewModelTests
         public BasisContributeResult Result { get; init; } = BasisContributeResult.Success(PrUrl, new string('c', 40), true, false);
         public List<(IReadOnlyList<string> Paths, BasisPullRequestDraft Draft)> Submitted { get; } = new();
         public List<string> Opened { get; } = new();
+        public string[] ScanProgress { get; init; } = Array.Empty<string>();
+        public string[] SubmitProgress { get; init; } = Array.Empty<string>();
+        public Action<string>? LastProgress { get; private set; }
+        public List<(Guid Id, string Title, string Project)> Begun { get; } = new();
+        public List<(Guid Id, string Detail)> Reported { get; } = new();
+        public List<Guid> Ended { get; } = new();
+        public List<(string Message, StatusKind Kind, string Project)> Statuses { get; } = new();
 
         public string Repository => "BasisVR/Basis";
-        public Task<BasisContributeScan> ScanAsync(Action<string> progress, CancellationToken ct) => Task.FromResult(ScanResult);
+        public Task<BasisContributeScan> ScanAsync(Action<string> progress, CancellationToken ct)
+        {
+            LastProgress = progress;
+            foreach (var line in ScanProgress) progress(line);
+            return Task.FromResult(ScanResult);
+        }
         public string? Remote { get; init; } = "https://gitlab.com/studio/game.git";
         public Task<string?> GetProjectRemoteAsync(string repoRoot) => Task.FromResult(Remote);
         public Task<IReadOnlyList<BasisDiffLine>> GetDiffAsync(BasisContributeScan scan, BasisChange change, CancellationToken ct) =>
@@ -251,8 +283,18 @@ public sealed class BasisChangesViewModelTests
         public Task<BasisContributeResult> SubmitAsync(BasisContributeScan scan, IReadOnlyList<string> paths, BasisPullRequestDraft draft, string token, GitHubUser user, Action<string> progress, CancellationToken ct)
         {
             Submitted.Add((paths, draft));
+            foreach (var line in SubmitProgress) progress(line);
             return Task.FromResult(Result);
         }
         public void OpenUrl(string url) => Opened.Add(url);
+        public Guid BeginActivity(string title, string project)
+        {
+            var id = Guid.NewGuid();
+            Begun.Add((id, title, project));
+            return id;
+        }
+        public void ReportActivity(Guid id, string detail) => Reported.Add((id, detail));
+        public void EndActivity(Guid id) => Ended.Add(id);
+        public void SetStatus(string message, StatusKind kind, string project) => Statuses.Add((message, kind, project));
     }
 }
