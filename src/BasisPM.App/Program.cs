@@ -10,6 +10,7 @@ internal static class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        InvariantGlobalization.EnableIfIcuMissing();
         // Must run first: services Velopack's install/update/uninstall hooks. No-op from source.
         VelopackApp.Build().Run();
 

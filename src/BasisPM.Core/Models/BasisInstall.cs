@@ -15,3 +15,5 @@ public sealed class BasisInstall
     /// <summary>The user-given alias when set, otherwise the folder name.</summary>
     public string DisplayName => string.IsNullOrWhiteSpace(Alias) ? Name : Alias!;
 }
+
+public sealed record FoundProject(string RepoRoot, string UnityProjectPath, string UnityVersion, string Name);

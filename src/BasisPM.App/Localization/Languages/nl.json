@@ -571,6 +571,10 @@
       "value": "Beschikbaar om te installeren"
     },
     {
+      "key": "packages.header.packagesFor",
+      "value": "Pakketten voor {0}"
+    },
+    {
       "key": "packages.header.community",
       "value": "Community-pakket toevoegen vanaf GitHub"
     },

@@ -28,6 +28,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly MountRegistry _mountRegistry;
     private readonly LogService _log;
     private readonly BasisUpdateService _basisUpdates;
+    private readonly BasisContributeService _basisContribute;
 
     private NavPage _currentPage = NavPage.Installs;
     private object? _currentView;
@@ -98,13 +99,14 @@ public sealed class MainWindowViewModel : ObservableObject
         _log = new LogService();
         _installService = new BasisInstallService(_projectService, _gitService);
         _basisUpdates = new BasisUpdateService(_gitService);
+        _basisContribute = new BasisContributeService(_gitService, _basisUpdates, _ghApi);
         InstallsVM = new InstallsViewModel(_settingsService, _installService, _gitService, _basisUpdates, this);
         var mountService = new MountService(_gitService, _projectService, _mountRegistry);
         var contributeService = new ContributeService(_gitService, _ghApi);
         var cacheDriftService = new CacheDriftService(_gitService);
         // The mount / contribute / cache-drift workflow (formerly the Develop tab) now lives on the Packages page.
         PackagesVM = new PackagesViewModel(_settingsService, _catalogService, _projectService, _mountRegistry,
-            mountService, contributeService, cacheDriftService, _ghAuth, _ghApi, _gitService, this);
+            mountService, contributeService, cacheDriftService, _ghAuth, _ghApi, _gitService, _basisUpdates, this);
         ServerVM = new ServerViewModel(new BasisServerService(), new ServerPackageService(_gitService), _catalogService, _settingsService, new VersionService(_ghApi, _gitService), this);
         UnityVM = new UnityViewModel(_hubService, _releaseService, _settingsService, this);
         LogsVM = new LogsViewModel(_log);
@@ -492,6 +494,7 @@ public sealed class MainWindowViewModel : ObservableObject
         LogsVM.ClearCommand.Execute(null);
         _breadcrumbs.Clear();
         Localizer.Instance.SetLanguage("en");
+        BasisPM.App.Views.SectionState.Clear();
         CurrentPage = NavPage.Installs;
 
         var settings = await _settingsService.LoadAsync();   // the file is gone → default settings
@@ -589,6 +592,10 @@ public sealed class MainWindowViewModel : ObservableObject
         _basisUpdateTimer.Start();
     }
 
+    public Task OpenBasisChangesAsync(BasisInstall install, string? packageId = null) =>
+        Dialogs.ShowBasisChangesAsync(new BasisChangesViewModel(
+            new BasisChangesHost(_basisContribute, _basisUpdates, _ghAuth, _ghApi, _gitService, install), install.DisplayName, packageId));
+
     public void RefreshBasisUpdateNotice()
     {
         var pending = InstallsVM.Installs.Where(r => r.BasisUpdateAvailable || r.BasisUpdateInProgress).ToList();
@@ -598,10 +605,12 @@ public sealed class MainWindowViewModel : ObservableObject
         if (_basisBannerRows.Count == 1)
         {
             var row = _basisBannerRows[0];
-            BasisBannerText = row.BasisUpdateInProgress ? L.Tr("shell.basisUpdate.bannerInProgress", row.Name)
+            BasisBannerText = row.BranchSwitchInProgress ? L.Tr("shell.basisUpdate.bannerSwitchInProgress", row.Name)
+                : row.BasisUpdateInProgress ? L.Tr("shell.basisUpdate.bannerInProgress", row.Name)
                 : row.BasisBehind is > 1 and var behind ? L.Tr("shell.basisUpdate.bannerOneCount", row.Name, behind)
                 : L.Tr("shell.basisUpdate.bannerOne", row.Name);
-            BasisBannerAction = row.BasisUpdateInProgress ? L.Tr("shell.basisUpdate.finish") : L.Tr("shell.basisUpdate.review");
+            BasisBannerAction = row.BranchSwitchInProgress ? L.Tr("shell.basisUpdate.finishSwitch")
+                : row.BasisUpdateInProgress ? L.Tr("shell.basisUpdate.finish") : L.Tr("shell.basisUpdate.review");
         }
         else if (_basisBannerRows.Count > 1)
         {

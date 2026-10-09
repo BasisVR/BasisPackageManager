@@ -98,6 +98,45 @@ public sealed class BasisServerServiceTests
         Assert.Equal(expected, BasisServerService.BuildConnection(host, port, password));
     }
 
+    [Theory]
+    [InlineData("127.0.0.1", "", "127.0.0.1:4296#server-secret")]
+    [InlineData("localhost", null, "localhost:4296#server-secret")]
+    [InlineData("", "", "127.0.0.1:4296#server-secret")]
+    [InlineData("127.0.0.1", "typed", "127.0.0.1:4296#typed")]
+    [InlineData("example.org", "", "example.org:4296")]
+    public void Client_connection_to_the_local_server_defaults_to_its_configured_password(string host, string? password, string expected)
+    {
+        using var t = new TempDir();
+        var service = new BasisServerService();
+        var root = t.CreateDir("Basis");
+        var paths = service.GetPaths(root);
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(paths.ConfigFile)!);
+            File.WriteAllText(paths.ConfigFile, "<Configuration><SetPort>4296</SetPort><Password>server-secret</Password></Configuration>");
+
+            Assert.Equal(expected, service.BuildClientConnection(root, host, 4296, password));
+        }
+        finally { if (Directory.Exists(paths.RuntimeDirectory)) Directory.Delete(paths.RuntimeDirectory, true); }
+    }
+
+    [Fact]
+    public void Client_connection_sends_no_password_when_the_server_has_none()
+    {
+        using var t = new TempDir();
+        var service = new BasisServerService();
+        var root = t.CreateDir("Basis");
+        var paths = service.GetPaths(root);
+        try
+        {
+            Assert.Equal("127.0.0.1:4296", service.BuildClientConnection(root, "127.0.0.1", 4296, ""));
+            Directory.CreateDirectory(Path.GetDirectoryName(paths.ConfigFile)!);
+            File.WriteAllText(paths.ConfigFile, "<Configuration><Password></Password></Configuration>");
+            Assert.Equal("127.0.0.1:4296", service.BuildClientConnection(root, "127.0.0.1", 4296, ""));
+        }
+        finally { if (Directory.Exists(paths.RuntimeDirectory)) Directory.Delete(paths.RuntimeDirectory, true); }
+    }
+
     [Fact]
     public void Config_round_trip_updates_values_and_preserves_unknown_fields_and_comments()
     {

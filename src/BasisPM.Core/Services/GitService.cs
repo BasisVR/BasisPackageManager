@@ -107,8 +107,15 @@ public sealed class GitService
         if (code != 0) return AheadBehind.None;
         var parts = outText.Trim().Split(new[] { '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 2 && int.TryParse(parts[0], out var ahead) && int.TryParse(parts[1], out var behind))
-            return new AheadBehind(true, ahead, behind);
+            return new AheadBehind(true, ahead, behind, await GetUpstreamNameAsync(repoRoot, ct).ConfigureAwait(false));
         return AheadBehind.None;
+    }
+
+    public async Task<string?> GetUpstreamNameAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}" }, null, ct).ConfigureAwait(false);
+        var name = outText.Trim();
+        return code == 0 && name.Length > 0 ? name : null;
     }
 
     public async Task<GitStatus> GetStatusAsync(string repoRoot, CancellationToken ct = default)
@@ -439,22 +446,48 @@ public sealed class GitService
         return code == 0;
     }
 
-    public async Task<string?> GetMergeBaseAsync(string repoRoot, string a, string b, CancellationToken ct = default)
+    public Task<string?> GetMergeBaseAsync(string repoRoot, string a, string b, CancellationToken ct = default) =>
+        GetMergeBaseAsync(repoRoot, a, new[] { b }, ct);
+
+    public async Task<string?> GetMergeBaseAsync(string repoRoot, string a, IReadOnlyCollection<string> others, CancellationToken ct = default)
     {
-        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "merge-base", a, b }, null, ct).ConfigureAwait(false);
+        if (others.Count == 0) return null;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "merge-base", a }.Concat(others), null, ct).ConfigureAwait(false);
         var sha = outText.Trim();
         return code == 0 && sha.Length > 0 ? sha : null;
     }
 
-    public async Task<int> CountCommitsAsync(string repoRoot, string range, CancellationToken ct = default)
+    public async Task<IReadOnlyList<string>> ListRefsAsync(string repoRoot, IEnumerable<string> patterns, int max, CancellationToken ct = default)
     {
-        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "rev-list", "--count", range }, null, ct).ConfigureAwait(false);
+        var args = new List<string> { "for-each-ref", "--sort=-committerdate", $"--count={max}", "--format=%(refname)" };
+        args.AddRange(patterns);
+        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        return code == 0 ? outText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) : Array.Empty<string>();
+    }
+
+    public async Task<string?> ShowFileAsync(string repoRoot, string rev, string path, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(rev) || !GitUrlPolicy.IsSafeRef(rev)) return null;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "show", $"{rev.Trim()}:{path}" }, null, ct).ConfigureAwait(false);
+        return code == 0 ? outText : null;
+    }
+
+    public Task<int> CountCommitsAsync(string repoRoot, string range, CancellationToken ct = default) => CountCommitsAsync(repoRoot, range, null, ct);
+
+    public async Task<int> CountCommitsAsync(string repoRoot, string range, string? path, CancellationToken ct = default)
+    {
+        var args = new List<string> { "rev-list", "--count", range, "--" };
+        if (!string.IsNullOrEmpty(path)) args.Add(Literal(path));
+        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
         return code == 0 && int.TryParse(outText.Trim(), out var count) ? count : 0;
     }
 
-    public async Task<IReadOnlyList<GitCommitInfo>> GetLogAsync(string repoRoot, string range, int max, CancellationToken ct = default)
+    public Task<IReadOnlyList<GitCommitInfo>> GetLogAsync(string repoRoot, string range, int max, CancellationToken ct = default) => GetLogAsync(repoRoot, range, max, null, ct);
+
+    public async Task<IReadOnlyList<GitCommitInfo>> GetLogAsync(string repoRoot, string range, int max, string? path, CancellationToken ct = default)
     {
-        var args = new[] { "log", "--no-color", $"--max-count={max}", "--format=%H%x1f%h%x1f%an%x1f%at%x1f%s%x1e", range, "--" };
+        var args = new List<string> { "log", "--no-color", $"--max-count={max}", "--format=%H%x1f%h%x1f%an%x1f%at%x1f%s%x1e", range, "--" };
+        if (!string.IsNullOrEmpty(path)) args.Add(Literal(path));
         var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
         var commits = new List<GitCommitInfo>();
         if (code != 0) return commits;
@@ -468,9 +501,13 @@ public sealed class GitService
         return commits;
     }
 
-    public async Task<IReadOnlyList<string>> GetFirstParentHistoryAsync(string repoRoot, string rev, CancellationToken ct = default)
+    public Task<IReadOnlyList<string>> GetFirstParentHistoryAsync(string repoRoot, string rev, CancellationToken ct = default) => GetFirstParentHistoryAsync(repoRoot, rev, null, ct);
+
+    public async Task<IReadOnlyList<string>> GetFirstParentHistoryAsync(string repoRoot, string rev, string? exclude, CancellationToken ct = default)
     {
-        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "rev-list", "--first-parent", rev }, null, ct).ConfigureAwait(false);
+        var args = new List<string> { "rev-list", "--first-parent", rev };
+        if (!string.IsNullOrEmpty(exclude)) args.Add("^" + exclude);
+        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
         if (code != 0) return Array.Empty<string>();
         return outText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
     }
@@ -505,10 +542,94 @@ public sealed class GitService
         return code == 0 ? SplitNul(outText).Count : 0;
     }
 
+    public async Task<string?> ResolveObjectAsync(string repoRoot, string spec, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(spec) || spec.StartsWith('-') || spec.Any(char.IsControl)) return null;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "rev-parse", "--verify", "--quiet", spec }, null, ct).ConfigureAwait(false);
+        var sha = outText.Trim();
+        return code == 0 && sha.Length > 0 ? sha : null;
+    }
+
+    public async Task<IReadOnlyList<string>?> ListTreeNamesAsync(string repoRoot, string treeish, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(treeish) || treeish.StartsWith('-') || treeish.Any(char.IsControl)) return null;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "ls-tree", "-z", "--name-only", treeish }, null, ct).ConfigureAwait(false);
+        return code == 0 ? SplitNul(outText) : null;
+    }
+
+    public async Task<IReadOnlyDictionary<string, string>?> ListTreeBlobsAsync(string repoRoot, string tree, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(tree) || tree.StartsWith('-') || tree.Any(char.IsControl)) return null;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "ls-tree", "-r", "-z", tree }, null, ct).ConfigureAwait(false);
+        if (code != 0) return null;
+        var blobs = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var entry in SplitNul(outText))
+        {
+            var tab = entry.IndexOf('\t');
+            if (tab < 0) continue;
+            var meta = entry[..tab].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (meta.Length == 3) blobs[entry[(tab + 1)..]] = meta[0] + " " + meta[2];
+        }
+        return blobs;
+    }
+
+    public async Task<string?> FindCommitWithTreeAsync(string repoRoot, string path, string tree, int maxCommits, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(tree) || path.StartsWith('-') || path.Any(char.IsControl)) return null;
+        var args = new List<string> { "rev-list", "--all", $"--max-count={maxCommits}" };
+        if (path.Length > 0) { args.Add("--"); args.Add(path); }
+        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        if (code != 0) return null;
+        var commits = outText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (commits.Length == 0) return null;
+        var stdin = string.Join('\n', commits.Select(c => path.Length == 0 ? c + "^{tree}" : c + ":" + path)) + "\n";
+        var (catCode, catOut, _) = await RunGitAsync(repoRoot, new[] { "cat-file", "--batch-check=%(objectname)" }, null, ct, stdin).ConfigureAwait(false);
+        if (catCode != 0) return null;
+        var lines = catOut.Split('\n', StringSplitOptions.TrimEntries);
+        for (var i = 0; i < commits.Length && i < lines.Length; i++)
+            if (string.Equals(lines[i], tree, StringComparison.OrdinalIgnoreCase)) return commits[i];
+        return null;
+    }
+
+    public async Task<bool> IsPartialCloneAsync(string repoRoot, CancellationToken ct = default)
+    {
+        if (await GetConfigValueAsync(repoRoot, "extensions.partialclone", ct).ConfigureAwait(false) is not null) return true;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "config", "--get-regexp", @"^remote\..*\.promisor$" }, null, ct).ConfigureAwait(false);
+        return code == 0 && outText.Split('\n').Any(line => line.TrimEnd().EndsWith(" true", StringComparison.OrdinalIgnoreCase));
+    }
+
+    public async Task<DateTimeOffset?> GetLastCommitTimeAsync(string repoRoot, string path, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(path) || path.StartsWith('-') || path.Any(char.IsControl)) return null;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "log", "-1", "--format=%ct", "HEAD", "--", path }, null, ct).ConfigureAwait(false);
+        return code == 0 && long.TryParse(outText.Trim(), out var unix) ? DateTimeOffset.FromUnixTimeSeconds(unix) : null;
+    }
+
     public async Task<IReadOnlySet<string>> ListTrackedFilesAsync(string repoRoot, CancellationToken ct = default)
     {
         var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "ls-files", "-z" }, null, ct).ConfigureAwait(false);
         return code == 0 ? new HashSet<string>(SplitNul(outText), StringComparer.Ordinal) : new HashSet<string>(StringComparer.Ordinal);
+    }
+
+    /// <summary>The ignore rule hiding each of the given paths, as (path, ignore file, pattern); paths nothing hides are left out.</summary>
+    public async Task<IReadOnlyList<(string Path, string Source, string Pattern)>> ListIgnoreRulesAsync(string repoRoot, IReadOnlyCollection<string> paths, CancellationToken ct = default)
+    {
+        if (paths.Count == 0) return Array.Empty<(string, string, string)>();
+        var stdin = string.Concat(paths.Select(p => p + "\0"));
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "check-ignore", "-v", "-z", "--no-index", "--stdin" }, null, ct, stdin).ConfigureAwait(false);
+        if (code > 1) return Array.Empty<(string, string, string)>();
+        var fields = SplitNul(outText);
+        var rules = new List<(string, string, string)>();
+        for (var i = 0; i + 3 < fields.Count; i += 4)
+            if (!fields[i + 2].StartsWith('!')) rules.Add((fields[i + 3], fields[i], fields[i + 2]));
+        return rules;
+    }
+
+    /// <summary>Untracked, unignored files; a folder that's a git repository of its own is listed once, with a trailing '/'.</summary>
+    public async Task<IReadOnlyList<string>?> ListUntrackedAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "ls-files", "--others", "--exclude-standard", "-z" }, null, ct).ConfigureAwait(false);
+        return code == 0 ? SplitNul(outText) : null;
     }
 
     public async Task<IReadOnlyList<GitWorkingEntry>> GetWorkingEntriesAsync(string repoRoot, CancellationToken ct = default)
@@ -529,9 +650,16 @@ public sealed class GitService
         return entries;
     }
 
-    public async Task<IReadOnlyList<string>?> PredictConflictsAsync(string repoRoot, string ours, string theirs, CancellationToken ct = default)
+    public Task<IReadOnlyList<string>?> PredictConflictsAsync(string repoRoot, string ours, string theirs, CancellationToken ct = default) =>
+        PredictConflictsAsync(repoRoot, ours, theirs, null, ct);
+
+    public async Task<IReadOnlyList<string>?> PredictConflictsAsync(string repoRoot, string ours, string theirs, string? mergeBase, CancellationToken ct = default)
     {
-        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "merge-tree", "--write-tree", "--name-only", "--no-messages", ours, theirs }, null, ct).ConfigureAwait(false);
+        var args = new List<string> { "merge-tree", "--write-tree", "--name-only", "--no-messages" };
+        if (mergeBase is not null) args.Add("--merge-base=" + mergeBase);
+        args.Add(ours);
+        args.Add(theirs);
+        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
         if (code is not (0 or 1)) return null;
         return outText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Skip(1).Distinct(StringComparer.Ordinal).ToList();
@@ -542,7 +670,7 @@ public sealed class GitService
         var args = await IdentityArgsAsync(repoRoot, ct).ConfigureAwait(false);
         args.AddRange(new[] { "merge", "--no-edit", "--no-overwrite-ignore", "--progress" });
         if (fastForwardOnly) args.Add("--ff-only");
-        else { args.Add("-m"); args.Add(message); }
+        else { args.Add("--no-ff"); args.Add("-m"); args.Add(message); }
         args.Add(rev);
         var (code, outText, err) = await RunGitAsync(repoRoot, args, onProgress, ct).ConfigureAwait(false);
         return new GitResult(code == 0, code, Combine(outText, err));
@@ -606,13 +734,106 @@ public sealed class GitService
     public Task<GitResult> RestorePathsFromHeadAsync(string repoRoot, IReadOnlyCollection<string> paths, CancellationToken ct = default) =>
         RunWithPathsAsync(repoRoot, new[] { "checkout", "HEAD" }, paths, ct);
 
-    public async Task<(GitResult Result, string? StashSha)> StashPathsAsync(string repoRoot, IReadOnlyCollection<string> paths, string message, CancellationToken ct = default)
+    /// <summary>
+    /// Stashes the working-tree state of the given paths and takes those edits out of the checkout: tracked paths go back to
+    /// HEAD in the index and the working tree, untracked files are deleted. Built from plumbing that reads paths on stdin,
+    /// because <c>git stash push -- paths</c> hands every path to the git processes it starts as arguments, which fails with
+    /// "Filename too long" on Windows once a few hundred paths are involved. A failed attempt leaves no stash behind.
+    /// </summary>
+    public async Task<(GitResult Result, string? StashSha)> SetAsidePathsAsync(string repoRoot, IReadOnlyCollection<string> tracked,
+        IReadOnlyCollection<string> untracked, string message, CancellationToken ct = default)
     {
-        var result = await RunWithPathsAsync(repoRoot, new[] { "stash", "push", "-q", "-m", message }, paths, ct).ConfigureAwait(false);
-        if (!result.Ok) return (result, null);
-        foreach (var (sha, subject) in await ListStashesAsync(repoRoot, ct).ConfigureAwait(false))
-            if (subject.EndsWith(message, StringComparison.Ordinal)) return (result, sha);
-        return (new GitResult(false, -1, "Nothing was set aside."), null);
+        var head = await ResolveCommitAsync(repoRoot, "HEAD", ct).ConfigureAwait(false);
+        var headTree = head is null ? null : await ResolveTreeAsync(repoRoot, head, "", ct).ConfigureAwait(false);
+        var gitDir = await GetGitDirAsync(repoRoot, ct).ConfigureAwait(false);
+        if (head is null || headTree is null || gitDir is null) return (new GitResult(false, -1, "There's no commit to set edits aside from."), null);
+        if (tracked.Concat(untracked).Any(p => p.Length == 0 || !GitUrlPolicy.IsSafeSubPath(p))) return (new GitResult(false, -1, "A path to set aside points outside the project."), null);
+
+        var index = Path.Combine(gitDir, $"basispm-setaside-{Guid.NewGuid():N}.index");
+        var environment = new Dictionary<string, string> { ["GIT_INDEX_FILE"] = index };
+        string tree;
+        try
+        {
+            var (readCode, readOut, readErr) = await RunGitAsync(repoRoot, new[] { "read-tree", head }, null, ct, null, environment).ConfigureAwait(false);
+            if (readCode != 0) return (new GitResult(false, readCode, Combine(readOut, readErr)), null);
+            var stdin = string.Concat(tracked.Concat(untracked).Select(p => p + "\0"));
+            var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "update-index", "--add", "--remove", "-z", "--stdin" }, null, ct, stdin, environment).ConfigureAwait(false);
+            if (code != 0) return (new GitResult(false, code, Combine(outText, err)), null);
+            var (treeCode, treeOut, treeErr) = await RunGitAsync(repoRoot, new[] { "write-tree" }, null, ct, null, environment).ConfigureAwait(false);
+            tree = treeOut.Trim();
+            if (treeCode != 0 || !IsObjectName(tree)) return (new GitResult(false, treeCode, Combine(treeOut, treeErr)), null);
+        }
+        finally { DeleteIndexFile(index); }
+
+        // Shaped like an entry git stash makes (the working tree on top of HEAD, plus an index commit), so stash apply and
+        // drop, and the user's own git tools, all treat it as one.
+        var branch = await GetCurrentBranchAsync(repoRoot, ct).ConfigureAwait(false) ?? "(no branch)";
+        var title = $"On {branch}: {message}";
+        var indexCommit = await CommitTreeAsync(repoRoot, headTree, new[] { head }, $"index on {branch}: {head[..9]}", ct, unsigned: true).ConfigureAwait(false);
+        var stash = indexCommit is null ? null : await CommitTreeAsync(repoRoot, tree, new[] { head, indexCommit }, title, ct, unsigned: true).ConfigureAwait(false);
+        if (stash is null) return (new GitResult(false, -1, "Couldn't record the edits in a stash."), null);
+        var (storeCode, storeOut, storeErr) = await RunGitAsync(repoRoot, new[] { "stash", "store", "-q", "-m", title, stash }, null, ct).ConfigureAwait(false);
+        if (storeCode != 0) return (new GitResult(false, storeCode, Combine(storeOut, storeErr)), null);
+
+        var removed = await RunWithPathsAsync(repoRoot, new[] { "restore", "--source=HEAD", "--staged", "--worktree" }, tracked, ct).ConfigureAwait(false);
+        var stuck = removed.Ok ? untracked.Where(p => !TryDeleteWorkingFile(repoRoot, p)).ToList() : new List<string>();
+        if (removed.Ok && stuck.Count == 0) return (removed, stash);
+
+        // Bring back whatever already left the checkout, then drop the stash; it stays only if putting back fails too.
+        var putBack = await RunWithPathsAsync(repoRoot, new[] { "restore", $"--source={stash}", "--worktree" }, tracked.Concat(untracked).ToList(), ct).ConfigureAwait(false);
+        if (putBack.Ok) await DropStashAsync(repoRoot, stash, ct).ConfigureAwait(false);
+        return (removed.Ok ? new GitResult(false, -1, $"Couldn't remove {string.Join(", ", stuck.Take(3))} to set it aside.") : removed, null);
+    }
+
+    public async Task<GitResult> UnstageAllAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "reset", "-q" }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    /// <summary>Index entries that differ from HEAD (a staged deletion has mode 000000), for <see cref="RestageAsync"/> to put back.</summary>
+    public async Task<IReadOnlyList<(string Mode, string Sha, string Path)>?> ListStagedEntriesAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "diff-index", "--cached", "--no-renames", "-z", "HEAD" }, null, ct).ConfigureAwait(false);
+        if (code != 0) return null;
+        var entries = new List<(string, string, string)>();
+        var fields = SplitNul(outText);
+        for (var i = 0; i + 1 < fields.Count; i += 2)
+        {
+            var meta = fields[i].Split(' ');
+            if (meta.Length != 5 || !meta[0].StartsWith(':')) return null;
+            entries.Add((meta[1], meta[3], fields[i + 1]));
+        }
+        return entries;
+    }
+
+    public async Task<GitResult> RestageAsync(string repoRoot, IReadOnlyCollection<(string Mode, string Sha, string Path)> entries, CancellationToken ct = default)
+    {
+        if (entries.Count == 0) return new GitResult(true, 0, "");
+        if (entries.Any(e => !IsObjectName(e.Sha) || !(IsFileMode(e.Mode) || e.Mode is "000000" or "160000") || !IsTreePath(e.Path)))
+            return new GitResult(false, -1, "A staged edit to put back isn't valid.");
+        var stdin = string.Concat(entries.Select(e => $"{e.Mode} {e.Sha}\t{e.Path}\0"));
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "update-index", "-z", "--index-info" }, null, ct, stdin).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    private static bool TryDeleteWorkingFile(string repoRoot, string path)
+    {
+        try
+        {
+            var full = Path.Combine(repoRoot, path.Replace('/', Path.DirectorySeparatorChar));
+            if (File.Exists(full))
+            {
+                File.SetAttributes(full, FileAttributes.Normal);
+                File.Delete(full);
+            }
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            DiagnosticLog.Write($"Deleting {path} to set it aside", ex);
+            return false;
+        }
     }
 
     public async Task<GitResult> ApplyStashAsync(string repoRoot, string stashSha, CancellationToken ct = default)
@@ -644,10 +865,11 @@ public sealed class GitService
         return new GitResult(code == 0, code, Combine(outText, err));
     }
 
-    public async Task<string?> CommitTreeAsync(string repoRoot, string tree, IReadOnlyList<string> parents, string message, CancellationToken ct = default)
+    public async Task<string?> CommitTreeAsync(string repoRoot, string tree, IReadOnlyList<string> parents, string message, CancellationToken ct = default, bool unsigned = false)
     {
         var args = await IdentityArgsAsync(repoRoot, ct).ConfigureAwait(false);
         args.Add("commit-tree");
+        if (unsigned) args.Add("--no-gpg-sign");
         args.Add(tree);
         foreach (var parent in parents) { args.Add("-p"); args.Add(parent); }
         args.Add("-m");
@@ -725,14 +947,17 @@ public sealed class GitService
         return code == 0 && value.Length > 0 ? value : null;
     }
 
-    public async Task<IReadOnlyList<string>> ListRemoteUrlsAsync(string repoRoot, CancellationToken ct = default)
+    public async Task<IReadOnlyList<string>> ListRemoteUrlsAsync(string repoRoot, CancellationToken ct = default) =>
+        (await ListRemotesAsync(repoRoot, ct).ConfigureAwait(false)).Select(remote => remote.Url).ToList();
+
+    public async Task<IReadOnlyList<(string Name, string Url)>> ListRemotesAsync(string repoRoot, CancellationToken ct = default)
     {
         var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "config", "--get-regexp", @"^remote\..*\.url$" }, null, ct).ConfigureAwait(false);
-        if (code != 0) return Array.Empty<string>();
+        if (code != 0) return Array.Empty<(string, string)>();
         return outText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(line => line.Split(' ', 2))
-            .Where(parts => parts.Length == 2)
-            .Select(parts => parts[1].Trim())
+            .Where(parts => parts.Length == 2 && parts[0].Length > "remote..url".Length)
+            .Select(parts => (parts[0]["remote.".Length..^".url".Length], parts[1].Trim()))
             .ToList();
     }
 
@@ -741,6 +966,303 @@ public sealed class GitService
         var (code, _, _) = await RunGitAsync(repoRoot, new[] { "check-ignore", "-q", "--no-index", "--", relativePath }, null, ct).ConfigureAwait(false);
         return code == 0;
     }
+
+    public async Task<GitResult> UnsetConfigAsync(string repoRoot, string key, CancellationToken ct = default)
+    {
+        var (code, _, err) = await RunGitAsync(repoRoot, new[] { "config", "--unset", key }, null, ct).ConfigureAwait(false);
+        return new GitResult(code is 0 or 5, code, err.Trim());
+    }
+
+    public async Task<GitResult> FetchBranchesAsync(string repoRoot, string url, IReadOnlyCollection<string> branches, string refPrefix, Action<string>? onProgress = null, CancellationToken ct = default)
+    {
+        if (!IsFetchableUrl(url)) return new GitResult(false, -1, "Refused to fetch: the URL uses an unsupported or unsafe git transport.");
+        if (branches.Count == 0 || !refPrefix.StartsWith("refs/", StringComparison.Ordinal) || branches.Any(b => string.IsNullOrWhiteSpace(b) || !GitUrlPolicy.IsSafeRef(b)))
+            return new GitResult(false, -1, "Refused to fetch: a branch name is not valid.");
+        var args = new List<string> { "fetch", "--no-tags", "--progress", "--", url };
+        args.AddRange(branches.Select(b => $"+refs/heads/{b.Trim()}:{refPrefix}{b.Trim()}"));
+        var (code, outText, err) = await RunGitAsync(repoRoot, args, onProgress, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<IReadOnlyList<(string Name, string Sha)>> ListRefTargetsAsync(string repoRoot, IEnumerable<string> patterns, CancellationToken ct = default)
+    {
+        var args = new List<string> { "for-each-ref", "--format=%(refname)%09%(objectname)" };
+        args.AddRange(patterns);
+        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        if (code != 0) return Array.Empty<(string, string)>();
+        return outText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(line => line.Split('\t', 2))
+            .Where(parts => parts.Length == 2)
+            .Select(parts => (parts[0], parts[1]))
+            .ToList();
+    }
+
+    public async Task<IReadOnlyList<string>> IndependentCommitsAsync(string repoRoot, IReadOnlyCollection<string> commits, CancellationToken ct = default)
+    {
+        if (commits.Count <= 1) return commits.ToList();
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "merge-base", "--independent" }.Concat(commits), null, ct).ConfigureAwait(false);
+        return code == 0 ? outText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) : Array.Empty<string>();
+    }
+
+    public async Task<(string Sha, string Message)?> FindLatestCommitMessageAsync(string repoRoot, string rev, string pattern, CancellationToken ct = default)
+    {
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "log", "-1", "--no-color", "--format=%H%x1f%B", "--grep=" + pattern, rev, "--" }, null, ct).ConfigureAwait(false);
+        var parts = outText.Split('\x1f', 2);
+        return code == 0 && parts.Length == 2 && IsObjectName(parts[0].Trim()) ? (parts[0].Trim(), parts[1]) : null;
+    }
+
+    public async Task<GitResult> CherryPickNoCommitAsync(string repoRoot, string commit, Action<string>? onProgress = null, CancellationToken ct = default)
+    {
+        if (!IsObjectName(commit)) return new GitResult(false, -1, "Refused to apply: not a commit id.");
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "cherry-pick", "--no-commit", commit }, onProgress, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<string?> WriteTreeAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "write-tree" }, null, ct).ConfigureAwait(false);
+        var sha = outText.Trim();
+        return code == 0 && IsObjectName(sha) ? sha : null;
+    }
+
+    public async Task<string?> ResolveTreeAsync(string repoRoot, string commit, string folder, CancellationToken ct = default)
+    {
+        if (!IsObjectName(commit) || folder.StartsWith('-') || folder.Any(char.IsControl)) return null;
+        var args = folder.Length == 0 ? new[] { "rev-parse", "--verify", "--quiet", commit + "^{tree}" } : new[] { "ls-tree", "-d", "-z", commit, "--", folder };
+        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        if (code != 0) return null;
+        if (folder.Length == 0) return IsObjectName(outText.Trim()) ? outText.Trim() : null;
+        foreach (var entry in SplitNul(outText))
+        {
+            var tab = entry.IndexOf('\t');
+            var meta = tab < 0 ? Array.Empty<string>() : entry[..tab].Split(' ');
+            if (meta.Length == 3 && meta[1] == "tree" && entry[(tab + 1)..] == folder) return meta[2];
+        }
+        return null;
+    }
+
+    public async Task<string?> MakeTreeAsync(string repoRoot, IReadOnlyList<(string Mode, string Type, string Sha, string Name)> entries, CancellationToken ct = default)
+    {
+        if (entries.Any(e => !IsObjectName(e.Sha) || e.Name.Length == 0 || e.Name.Contains('/') || e.Name.Any(char.IsControl))) return null;
+        var stdin = string.Concat(entries.Select(e => $"{e.Mode} {e.Type} {e.Sha}\t{e.Name}\0"));
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "mktree", "-z" }, null, ct, stdin).ConfigureAwait(false);
+        var sha = outText.Trim();
+        return code == 0 && IsObjectName(sha) ? sha : null;
+    }
+
+    public async Task<GitResult> ResetMergeAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "reset", "-q", "--merge" }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<GitResult> ResetIndexToHeadAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "read-tree", "--reset", "-u", "HEAD" }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task SetMergeMessageAsync(string repoRoot, string message, CancellationToken ct = default)
+    {
+        var gitDir = await GetGitDirAsync(repoRoot, ct).ConfigureAwait(false);
+        if (gitDir is null) return;
+        try { await File.WriteAllTextAsync(Path.Combine(gitDir, "MERGE_MSG"), message.TrimEnd() + "\n", new UTF8Encoding(false), ct).ConfigureAwait(false); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write($"Writing the merge message in {repoRoot}", ex); }
+    }
+
+    public async Task ClearMergeMessageAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var gitDir = await GetGitDirAsync(repoRoot, ct).ConfigureAwait(false);
+        if (gitDir is not null)
+        {
+            try { File.Delete(Path.Combine(gitDir, "MERGE_MSG")); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write($"Removing the merge message in {repoRoot}", ex); }
+        }
+        await RunGitAsync(repoRoot, new[] { "update-ref", "-d", "AUTO_MERGE" }, null, ct).ConfigureAwait(false);
+    }
+
+    public async Task<GitResult> SwitchBranchAsync(string repoRoot, string branch, string? trackRef = null, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(branch) || !GitUrlPolicy.IsSafeRef(branch) || !GitUrlPolicy.IsSafeRef(trackRef))
+            return new GitResult(false, -1, $"Refused to switch to '{branch}': the name is not valid.");
+        var args = new List<string> { "checkout", "-q", "--no-overwrite-ignore" };
+        if (string.IsNullOrWhiteSpace(trackRef)) args.Add(branch.Trim());
+        else args.AddRange(new[] { "-b", branch.Trim(), "--track", trackRef.Trim() });
+        args.Add("--");
+        var (code, outText, err) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<(string? Tree, string Error)> SnapshotWorkingTreeAsync(string repoRoot, string? folder = null, CancellationToken ct = default)
+    {
+        if (!string.IsNullOrEmpty(folder) && !IsTreePath(folder)) return (null, $"'{folder}' isn't a folder of this repository.");
+        var gitDir = await GetGitDirAsync(repoRoot, ct).ConfigureAwait(false);
+        if (gitDir is null) return (null, $"{repoRoot} isn't a git repository.");
+        var index = Path.Combine(gitDir, $"basispm-snapshot-{Guid.NewGuid():N}.index");
+        var environment = new Dictionary<string, string> { ["GIT_INDEX_FILE"] = index };
+        try
+        {
+            var current = Path.Combine(gitDir, "index");
+            if (File.Exists(current)) File.Copy(current, index);
+            else if (await ResolveCommitAsync(repoRoot, "HEAD", ct).ConfigureAwait(false) is not null)
+            {
+                var (readCode, readOut, readErr) = await RunGitAsync(repoRoot, new[] { "read-tree", "HEAD" }, null, ct, null, environment).ConfigureAwait(false);
+                if (readCode != 0) return (null, Combine(readOut, readErr));
+            }
+            var args = new List<string> { "add", "-A" };
+            if (!string.IsNullOrEmpty(folder)) args.AddRange(new[] { "--", Literal(folder) });
+            var (code, outText, err) = await RunGitAsync(repoRoot, args, null, ct, null, environment).ConfigureAwait(false);
+            if (code != 0) return (null, Combine(outText, err));
+            var (treeCode, tree, treeErr) = await RunGitAsync(repoRoot, new[] { "write-tree" }, null, ct, null, environment).ConfigureAwait(false);
+            var sha = tree.Trim();
+            return treeCode == 0 && IsObjectName(sha) ? (sha, "") : (null, treeErr.Trim());
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            DiagnosticLog.Write($"Reading the working tree of {repoRoot}", ex);
+            return (null, ex.Message);
+        }
+        finally { DeleteIndexFile(index); }
+    }
+
+    public async Task<IReadOnlyList<GitTreeChange>?> DiffTreesAsync(string repoRoot, string from, string to, CancellationToken ct = default)
+    {
+        if (!IsObjectName(from) || !IsObjectName(to)) return null;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "diff-tree", "-r", "-z", "--raw", "--no-renames", from, to }, null, ct).ConfigureAwait(false);
+        if (code != 0) return null;
+        var changes = new List<GitTreeChange>();
+        var fields = SplitNul(outText);
+        for (var i = 0; i + 1 < fields.Count; i += 2)
+        {
+            var meta = fields[i].Split(' ');
+            if (meta.Length != 5 || !meta[0].StartsWith(':') || meta[4].Length == 0) return null;
+            changes.Add(new GitTreeChange(meta[0][1..], meta[1], meta[2], meta[3], meta[4][0], fields[i + 1]));
+        }
+        return changes;
+    }
+
+    public async Task<string?> BuildTreeAsync(string repoRoot, string baseCommit, IReadOnlyCollection<(string Mode, string Sha, string Path)> files, IReadOnlyCollection<string> deletions, CancellationToken ct = default)
+    {
+        if (!IsObjectName(baseCommit) || files.Any(f => !IsObjectName(f.Sha) || !IsFileMode(f.Mode) || !IsTreePath(f.Path)) || deletions.Any(p => !IsTreePath(p))) return null;
+        var gitDir = await GetGitDirAsync(repoRoot, ct).ConfigureAwait(false);
+        if (gitDir is null) return null;
+        var index = Path.Combine(gitDir, $"basispm-tree-{Guid.NewGuid():N}.index");
+        var environment = new Dictionary<string, string> { ["GIT_INDEX_FILE"] = index };
+        try
+        {
+            var (readCode, _, _) = await RunGitAsync(repoRoot, new[] { "read-tree", baseCommit }, null, ct, null, environment).ConfigureAwait(false);
+            if (readCode != 0) return null;
+            var zero = new string('0', baseCommit.Length);
+            var stdin = string.Concat(deletions.Select(path => $"0 {zero}\t{path}\0").Concat(files.Select(f => $"{f.Mode} {f.Sha}\t{f.Path}\0")));
+            var (code, _, _) = await RunGitAsync(repoRoot, new[] { "update-index", "-z", "--index-info" }, null, ct, stdin, environment).ConfigureAwait(false);
+            if (code != 0) return null;
+            var (treeCode, tree, _) = await RunGitAsync(repoRoot, new[] { "write-tree" }, null, ct, null, environment).ConfigureAwait(false);
+            var sha = tree.Trim();
+            return treeCode == 0 && IsObjectName(sha) ? sha : null;
+        }
+        finally { DeleteIndexFile(index); }
+    }
+
+    public async Task<string?> CommitTreeAsAsync(string repoRoot, string tree, string parent, string message, string name, string email, CancellationToken ct = default)
+    {
+        if (!IsObjectName(tree) || !IsObjectName(parent) || string.IsNullOrWhiteSpace(message)
+            || string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || (name + email).Any(char.IsControl)) return null;
+        var environment = new Dictionary<string, string>
+        {
+            ["GIT_AUTHOR_NAME"] = name.Trim(),
+            ["GIT_AUTHOR_EMAIL"] = email.Trim(),
+            ["GIT_COMMITTER_NAME"] = name.Trim(),
+            ["GIT_COMMITTER_EMAIL"] = email.Trim(),
+        };
+        var args = new[] { "commit-tree", "--no-gpg-sign", tree, "-p", parent, "-F", "-" };
+        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct, message.Trim() + "\n", environment).ConfigureAwait(false);
+        var sha = outText.Trim();
+        return code == 0 && IsObjectName(sha) ? sha : null;
+    }
+
+    public async Task<bool> IsValidBranchNameAsync(string repoRoot, string branch, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(branch) || !GitUrlPolicy.IsSafeRef(branch)) return false;
+        var (code, _, _) = await RunGitAsync(repoRoot, new[] { "check-ref-format", "--branch", branch.Trim() }, null, ct).ConfigureAwait(false);
+        return code == 0;
+    }
+
+    public async Task<IReadOnlyDictionary<string, string>?> ListRemoteRefsAsync(string repoRoot, string url, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(url) || url.TrimStart().StartsWith('-')) return null;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "ls-remote", "--heads", "--", url.Trim() }, null, ct).ConfigureAwait(false);
+        if (code != 0) return null;
+        var refs = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var line in outText.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var parts = line.Trim().Split('\t');
+            if (parts.Length == 2 && IsObjectName(parts[0])) refs[parts[1]] = parts[0];
+        }
+        return refs;
+    }
+
+    public async Task<GitPushEstimate?> EstimatePushAsync(string repoRoot, string commit, IEnumerable<string> remoteCommits, CancellationToken ct = default)
+    {
+        if (!IsObjectName(commit)) return null;
+        var stdin = commit + "\n" + string.Concat(remoteCommits.Where(IsObjectName).Distinct(StringComparer.OrdinalIgnoreCase).Select(sha => "^" + sha + "\n"));
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "rev-list", "--count", "--ignore-missing", "--stdin" }, null, ct, stdin).ConfigureAwait(false);
+        if (code != 0 || !int.TryParse(outText.Trim(), out var commits)) return null;
+        long? bytes = null;
+        if (await GetVersionAsync(ct).ConfigureAwait(false) is { } version && version >= DiskUsageGitVersion)
+        {
+            var (sizeCode, sizeText, _) = await RunGitAsync(repoRoot, new[] { "rev-list", "--objects", "--disk-usage", "--ignore-missing", "--stdin" }, null, ct, stdin).ConfigureAwait(false);
+            if (sizeCode == 0 && long.TryParse(sizeText.Trim(), out var size)) bytes = size;
+        }
+        return new GitPushEstimate(commits, bytes);
+    }
+
+    public async Task<GitResult> PushCommitAsync(string repoRoot, string url, string commit, string branch, string? expectedRemoteSha, Action<string>? onProgress = null, CancellationToken ct = default)
+    {
+        if (!IsObjectName(commit) || string.IsNullOrWhiteSpace(branch) || !GitUrlPolicy.IsSafeRef(branch) || string.IsNullOrWhiteSpace(url) || url.TrimStart().StartsWith('-')
+            || (expectedRemoteSha is not null && !IsObjectName(expectedRemoteSha)))
+            return new GitResult(false, -1, "Refused to push: the branch or commit is not valid.");
+        var target = "refs/heads/" + branch.Trim();
+        var args = new List<string> { "push", "--progress" };
+        if (expectedRemoteSha is not null) args.Add($"--force-with-lease={target}:{expectedRemoteSha}");
+        args.Add(url.Trim());
+        args.Add($"{commit}:{target}");
+        var (code, outText, err) = await RunGitAsync(repoRoot, args, onProgress, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<string?> DiffPathAsync(string repoRoot, string fromTree, string toTree, string path, CancellationToken ct = default)
+    {
+        if (!IsObjectName(fromTree) || !IsObjectName(toTree) || !IsTreePath(path)) return null;
+        var args = new[] { "diff", "--no-color", "--no-ext-diff", "--no-textconv", "--no-renames", "-U3", fromTree, toTree, "--", Literal(path) };
+        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        return code == 0 ? outText : null;
+    }
+
+    public async Task<bool> HasUnpublishedWorkAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (stash, _, _) = await RunGitAsync(repoRoot, new[] { "rev-parse", "--verify", "--quiet", "refs/stash" }, null, ct).ConfigureAwait(false);
+        if (stash == 0) return true;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "rev-list", "--count", "HEAD", "--branches", "--not", "--remotes", "--tags" }, null, ct).ConfigureAwait(false);
+        return code != 0 || !int.TryParse(outText.Trim(), out var count) || count > 0;
+    }
+
+    private static readonly Version DiskUsageGitVersion = new(2, 31, 0);
+
+    private static bool IsFileMode(string mode) => mode is "100644" or "100755" or "120000";
+
+    private static bool IsTreePath(string path) =>
+        path.Length > 0 && !path.Any(char.IsControl) && path.Split('/').All(part => part.Length > 0 && part is not ("." or "..") && !part.Equals(".git", StringComparison.OrdinalIgnoreCase));
+
+    private static void DeleteIndexFile(string index)
+    {
+        foreach (var file in new[] { index, index + ".lock" })
+        {
+            try { if (File.Exists(file)) File.Delete(file); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write($"Removing the temporary index {file}", ex); }
+        }
+    }
+
+    private static bool IsObjectName(string? value) => value is { Length: 40 or 64 } && value.All(Uri.IsHexDigit);
 
     private static readonly (string Marker, string Operation)[] OperationMarkers =
     {
@@ -809,13 +1331,13 @@ public sealed class GitService
         return GitChangeKind.Other;
     }
 
-    private Task<(int Code, string Stdout, string Stderr)> RunGitAsync(string repoRoot, IEnumerable<string> args, Action<string>? onProgress, CancellationToken ct, string? stdin = null)
+    private Task<(int Code, string Stdout, string Stderr)> RunGitAsync(string repoRoot, IEnumerable<string> args, Action<string>? onProgress, CancellationToken ct, string? stdin = null, IReadOnlyDictionary<string, string>? environment = null)
     {
         var git = FindGit() ?? throw new InvalidOperationException("Git was not found. Install Git and make sure it is on your PATH.");
-        return RunAsync(git, args, repoRoot, onProgress, ct, stdin);
+        return RunAsync(git, args, repoRoot, onProgress, ct, stdin, environment);
     }
 
-    private async Task<(int Code, string Stdout, string Stderr)> RunAsync(string exe, IEnumerable<string> args, string? workingDir, Action<string>? onProgress, CancellationToken ct, string? stdin = null)
+    private async Task<(int Code, string Stdout, string Stderr)> RunAsync(string exe, IEnumerable<string> args, string? workingDir, Action<string>? onProgress, CancellationToken ct, string? stdin = null, IReadOnlyDictionary<string, string>? environment = null)
     {
         var psi = new ProcessStartInfo
         {
@@ -841,6 +1363,8 @@ public sealed class GitService
         // Defence in depth: even if a hostile URL reaches git, only real fetch protocols are permitted.
         // This disables ext:: (arbitrary command execution) and file: at the git layer for every call.
         psi.Environment["GIT_ALLOW_PROTOCOL"] = AllowedProtocols;
+        if (environment is not null)
+            foreach (var (name, value) in environment) psi.Environment[name] = value;
 
         using var p = new Process { StartInfo = psi, EnableRaisingEvents = true };
         var stdout = new StringBuilder();
@@ -854,6 +1378,7 @@ public sealed class GitService
         };
 
         if (!p.Start()) throw new InvalidOperationException($"Failed to start {exe}");
+        using var stop = IsNetworkCommand(args) ? ct.Register(() => Kill(p)) : default;
         p.BeginOutputReadLine();
         p.BeginErrorReadLine();
         if (stdin is not null)
@@ -863,5 +1388,23 @@ public sealed class GitService
         }
         await p.WaitForExitAsync(ct).ConfigureAwait(false);
         return (p.ExitCode, stdout.ToString(), stderr.ToString());
+    }
+
+    private static bool IsNetworkCommand(IEnumerable<string> args)
+    {
+        using var arg = args.GetEnumerator();
+        while (arg.MoveNext())
+        {
+            if (arg.Current == "-c") { arg.MoveNext(); continue; }
+            if (arg.Current.StartsWith('-')) continue;
+            return arg.Current is "clone" or "fetch" or "ls-remote" or "push";
+        }
+        return false;
+    }
+
+    private static void Kill(Process process)
+    {
+        try { if (!process.HasExited) process.Kill(entireProcessTree: true); }
+        catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception) { DiagnosticLog.Write("Stopping a cancelled git command", ex); }
     }
 }

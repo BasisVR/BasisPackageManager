@@ -571,6 +571,10 @@
       "value": "インストール可能"
     },
     {
+      "key": "packages.header.packagesFor",
+      "value": "{0} のパッケージ"
+    },
+    {
       "key": "packages.header.community",
       "value": "GitHub からコミュニティパッケージを追加"
     },

@@ -259,12 +259,20 @@
       "value": "{0} has a Basis update waiting for your decisions."
     },
     {
+      "key": "shell.basisUpdate.bannerSwitchInProgress",
+      "value": "{0} has a branch switch waiting for your decisions."
+    },
+    {
       "key": "shell.basisUpdate.review",
       "value": "Review update"
     },
     {
       "key": "shell.basisUpdate.finish",
       "value": "Finish update"
+    },
+    {
+      "key": "shell.basisUpdate.finishSwitch",
+      "value": "Finish switch"
     },
     {
       "key": "shell.basisUpdate.viewProjects",
@@ -316,7 +324,7 @@
     },
     {
       "key": "installs.tooltip.changeBranch",
-      "value": "Switch this project to a different git branch"
+      "value": "Switch to another branch of your project, or move it onto another Basis branch. Your changes come along."
     },
     {
       "key": "installs.action.changeBranch",
@@ -355,6 +363,26 @@
       "value": "Branch switch error: {0}"
     },
     {
+      "key": "installs.status.unityOpenSwitch",
+      "value": "Close Unity before switching {0} to another branch, so it doesn't lock or regenerate files midway."
+    },
+    {
+      "key": "installs.status.switchPaused",
+      "value": "{0} has a switch to {1} waiting for your decisions. Use Finish switch to continue."
+    },
+    {
+      "key": "installs.status.switchAborted",
+      "value": "Switch undone. {0} is back on {1} with your edits."
+    },
+    {
+      "key": "installs.dialog.carryEditsTitle",
+      "value": "Bring your edits along?"
+    },
+    {
+      "key": "installs.dialog.carryEditsBody",
+      "value": "{0} files you are editing are also different on {1}. BasisPM sets them aside, switches, then merges your edits back in. If any overlap, you choose which version to keep, and you can undo the switch."
+    },
+    {
       "key": "installs.button.updateBasis",
       "value": "Update Basis"
     },
@@ -363,12 +391,20 @@
       "value": "Finish update"
     },
     {
+      "key": "installs.button.finishSwitch",
+      "value": "Finish switch"
+    },
+    {
       "key": "installs.tooltip.updateBasis",
-      "value": "Merge the latest Basis from BasisVR/Basis into this project. Your own git remotes are not touched."
+      "value": "Bring the latest Basis from BasisVR/Basis into this project, whatever git remote it uses. Your own remotes are not touched."
     },
     {
       "key": "installs.tooltip.finishUpdate",
       "value": "A Basis update is waiting for your decisions"
+    },
+    {
+      "key": "installs.tooltip.finishSwitch",
+      "value": "A branch switch is waiting for your decisions"
     },
     {
       "key": "installs.basis.checking",
@@ -395,6 +431,10 @@
       "value": "Basis update paused"
     },
     {
+      "key": "installs.basis.switchInProgress",
+      "value": "Branch switch paused"
+    },
+    {
       "key": "installs.basis.checkFailed",
       "value": "Couldn't check for Basis updates"
     },
@@ -415,6 +455,90 @@
       "value": "{0} of {1} projects can be updated to the latest Basis."
     },
     {
+      "key": "installs.updateAll.checking",
+      "value": "Checking every project for Basis updates…"
+    },
+    {
+      "key": "installs.updateAll.confirmTitle",
+      "value": "Update all projects"
+    },
+    {
+      "key": "installs.updateAll.confirmIntro",
+      "value": "Bring these projects up to date with the Basis branch each one follows? Your own changes are kept."
+    },
+    {
+      "key": "installs.updateAll.confirmItem",
+      "value": "• {0}: {1} new commits on {2}"
+    },
+    {
+      "key": "installs.updateAll.confirmWaiting",
+      "value": "Left for their own Update Basis button:"
+    },
+    {
+      "key": "installs.updateAll.waitingItem",
+      "value": "• {0}: {1}"
+    },
+    {
+      "key": "installs.updateAll.waitingShort",
+      "value": "{0} ({1})"
+    },
+    {
+      "key": "installs.updateAll.updating",
+      "value": "Updating {0} ({1} of {2})…"
+    },
+    {
+      "key": "installs.updateAll.done",
+      "value": "Updated to the latest Basis: {0}."
+    },
+    {
+      "key": "installs.updateAll.doneWaiting",
+      "value": "Updated to the latest Basis: {0}. Needs you: {1}"
+    },
+    {
+      "key": "installs.updateAll.nothing",
+      "value": "Nothing was updated. Needs you: {0}"
+    },
+    {
+      "key": "installs.updateAll.unityChanged",
+      "value": "{0} now uses Unity {1}; install it from the Unity Editors tab."
+    },
+    {
+      "key": "installs.updateAll.reason.busy",
+      "value": "busy with another task"
+    },
+    {
+      "key": "installs.updateAll.reason.paused",
+      "value": "has a paused update or branch switch"
+    },
+    {
+      "key": "installs.updateAll.reason.notGit",
+      "value": "not in git yet"
+    },
+    {
+      "key": "installs.updateAll.reason.review",
+      "value": "needs a review first"
+    },
+    {
+      "key": "installs.updateAll.reason.firstUpdate",
+      "value": "its first Basis update needs a review"
+    },
+    {
+      "key": "installs.updateAll.reason.switch",
+      "value": "would move from Basis {0} to {1}"
+    },
+    {
+      "key": "installs.updateAll.reason.conflicts",
+      "value": "would conflict with your changes"
+    },
+    {
+      "key": "installs.updateAll.reason.unityOpen",
+      "value": "open in Unity"
+    },
+    {
+      "key": "installs.updateAll.reason.stopped",
+      "value": "stopped at conflicts; use Finish update"
+    },
+    {
       "key": "installs.status.basisCheckFailed",
       "value": "Couldn't check for Basis updates: {0}"
     },
@@ -429,6 +553,18 @@
     {
       "key": "installs.status.basisUpdated",
       "value": "Updated {0} to Basis {1} ({2})."
+    },
+    {
+      "key": "installs.status.basisSwitched",
+      "value": "Moved {0} from Basis {1} to Basis {2}."
+    },
+    {
+      "key": "installs.status.basisFollowed",
+      "value": "{0} now follows Basis {1}."
+    },
+    {
+      "key": "installs.status.basisFollowFailed",
+      "value": "Couldn't make {0} follow Basis {1}. Make sure the project is on a git branch."
     },
     {
       "key": "installs.status.basisUpdatedUnity",
@@ -452,15 +588,7 @@
     },
     {
       "key": "installs.status.updateInProgressNoBranch",
-      "value": "Finish or undo the Basis update for {0} before changing branches."
-    },
-    {
-      "key": "installs.status.linking",
-      "value": "Linking {0} to Basis {1}…"
-    },
-    {
-      "key": "installs.status.linkFailed",
-      "value": "Couldn't link {0} to Basis: {1}"
+      "value": "Finish or undo the paused update or branch switch for {0} first."
     },
     {
       "key": "installs.status.gitSetup",
@@ -469,6 +597,26 @@
     {
       "key": "installs.status.gitSetupFailed",
       "value": "Couldn't set up git for {0}: {1}"
+    },
+    {
+      "key": "installs.status.gitSetupDone",
+      "value": "Recorded {0} in git."
+    },
+    {
+      "key": "installs.status.gitSetupAdded",
+      "value": "Added Basis's {0}, so Unity's caches and generated files stay out."
+    },
+    {
+      "key": "installs.status.gitSetupUnhidden",
+      "value": "A .gitignore was hiding {0} packages from git; they're recorded now, so Basis updates can reach them."
+    },
+    {
+      "key": "installs.status.gitSetupLeftOut",
+      "value": "Left out {0}: each is a git clone of its own."
+    },
+    {
+      "key": "installs.status.gitSetupLargeFiles",
+      "value": "{0} files are over 100 MB, which GitHub won't accept without Git LFS."
     },
     {
       "key": "update.block.gitMissing",
@@ -497,6 +645,18 @@
     {
       "key": "update.block.fetch",
       "value": "Couldn't download Basis: {0}"
+    },
+    {
+      "key": "update.block.folderMissing",
+      "value": "Basis {1} has no {0} folder, so it can't be applied to this project's layout."
+    },
+    {
+      "key": "update.block.detachedEdits",
+      "value": "This project isn't on a branch, so your edited files can't be brought along. Commit or stash them first."
+    },
+    {
+      "key": "update.block.projectBranchMissing",
+      "value": "The branch {0} wasn't found. Refresh and try again."
     },
     {
       "key": "update.failure.headMoved",
@@ -555,6 +715,10 @@
       "value": "Couldn't link the project to Basis: {0}"
     },
     {
+      "key": "update.failure.switch",
+      "value": "Git couldn't switch branches, so nothing was changed: {0}"
+    },
+    {
       "key": "update.failure.generic",
       "value": "This project can't be updated automatically."
     },
@@ -567,6 +731,30 @@
       "value": "Currently on {0}. Pick a branch to switch to."
     },
     {
+      "key": "dialog.branchPicker.subProject",
+      "value": "On {0}, built on Basis {1}."
+    },
+    {
+      "key": "dialog.branchPicker.current",
+      "value": "current"
+    },
+    {
+      "key": "dialog.branchPicker.basisGroup",
+      "value": "Basis branches"
+    },
+    {
+      "key": "dialog.branchPicker.basisHint",
+      "value": "Moves this project onto that Basis branch. Your commits and uncommitted edits come along, and you see what changes before anything happens."
+    },
+    {
+      "key": "dialog.branchPicker.projectGroup",
+      "value": "Your project's branches"
+    },
+    {
+      "key": "dialog.branchPicker.projectHint",
+      "value": "Switches to another branch of your own repository. Uncommitted edits come along."
+    },
+    {
       "key": "dialog.branchPicker.cancel",
       "value": "Cancel"
     },
@@ -577,6 +765,22 @@
     {
       "key": "dialog.basisUpdate.title",
       "value": "Update Basis"
+    },
+    {
+      "key": "dialog.basisUpdate.switchTitle",
+      "value": "Change Basis branch"
+    },
+    {
+      "key": "dialog.basisUpdate.switchSummary",
+      "value": "Moves {0} from Basis {1} to Basis {2}."
+    },
+    {
+      "key": "dialog.basisUpdate.switchTo",
+      "value": "Switch to {0}"
+    },
+    {
+      "key": "dialog.basisUpdate.follow",
+      "value": "Follow {0}"
     },
     {
       "key": "dialog.basisUpdate.sub",
@@ -619,12 +823,36 @@
       "value": "{0} uncommitted changes"
     },
     {
+      "key": "dialog.basisUpdate.leavingCommits",
+      "value": "{0} commits on {1} leave the project"
+    },
+    {
       "key": "dialog.basisUpdate.note.fastForward",
       "value": "Your branch has no commits of its own, so it moves straight to the new Basis."
     },
     {
       "key": "dialog.basisUpdate.note.merge",
       "value": "Your commits are kept and merged with Basis in a new merge commit."
+    },
+    {
+      "key": "dialog.basisUpdate.note.switchMerge",
+      "value": "Your commits are kept, and the move to {0} is recorded in a new merge commit."
+    },
+    {
+      "key": "dialog.basisUpdate.note.apply",
+      "value": "Everything you changed since Basis {0} is kept and applied on top of Basis {1}, in one new commit."
+    },
+    {
+      "key": "dialog.basisUpdate.note.separateHistory",
+      "value": "Your project keeps its own git history. The Basis changes become one new commit on {0} that notes which Basis version it came from, so nothing from Basis's history is added and your repository stays small."
+    },
+    {
+      "key": "dialog.basisUpdate.note.layoutRoot",
+      "value": "This project is the {0} folder of BasisVR/Basis on its own, so only that folder is updated."
+    },
+    {
+      "key": "dialog.basisUpdate.note.layout",
+      "value": "The {0} folder of BasisVR/Basis is this project's {1} folder, so only that folder is updated."
     },
     {
       "key": "dialog.basisUpdate.note.uncommitted",
@@ -667,20 +895,20 @@
       "value": "{0} already has everything in Basis {1} ({2})."
     },
     {
+      "key": "dialog.basisUpdate.upToDate.switchBody",
+      "value": "{0} already matches Basis {1} ({2}). Follow {1} from now on, so later updates come from it."
+    },
+    {
       "key": "dialog.basisUpdate.unrelated.title",
-      "value": "Connect this project to Basis"
+      "value": "Couldn't find where this project started"
     },
     {
       "key": "dialog.basisUpdate.unrelated.body",
-      "value": "This project's git history isn't connected to Basis, so BasisPM compared your files with Basis's history to find the version you started from."
+      "value": "This project's git history isn't connected to Basis, so BasisPM compared your files with Basis's history to find the version it was copied from."
     },
     {
       "key": "dialog.basisUpdate.unrelated.match",
-      "value": "Closest match: {0} from {1}, \"{2}\". {3} of its {4} files are identical in your project."
-    },
-    {
-      "key": "dialog.basisUpdate.unrelated.explain",
-      "value": "BasisPM records that version as your starting point (one extra commit, no files change), then shows you everything Basis has added since."
+      "value": "BasisPM compared your files with Basis to find where this project started: {0} from {1}, \"{2}\" ({3} of its {4} files match)."
     },
     {
       "key": "dialog.basisUpdate.unrelated.noMatch",
@@ -723,10 +951,6 @@
       "value": "Update Basis"
     },
     {
-      "key": "dialog.basisUpdate.link",
-      "value": "Link and continue"
-    },
-    {
       "key": "dialog.basisUpdate.setUpGit",
       "value": "Set up git and continue"
     },
@@ -743,12 +967,20 @@
       "value": "Finish updating Basis"
     },
     {
+      "key": "dialog.conflicts.switchTitle",
+      "value": "Finish switching branch"
+    },
+    {
       "key": "dialog.conflicts.merging",
       "value": "You and Basis both changed these files. For each one, keep your version, take Basis's, or edit the file to combine them and mark it done."
     },
     {
       "key": "dialog.conflicts.restoring",
       "value": "Basis is updated. Some of your uncommitted edits overlap the new Basis changes. For each file, keep your edit or take Basis's version."
+    },
+    {
+      "key": "dialog.conflicts.switchRestoring",
+      "value": "You're on {0} now. Some of your uncommitted edits overlap changes on {0}. For each file, keep your edit or take the version from {0}."
     },
     {
       "key": "dialog.conflicts.keepMine",
@@ -767,8 +999,20 @@
       "value": "Use Basis for all"
     },
     {
+      "key": "dialog.conflicts.useBranch",
+      "value": "Use branch version"
+    },
+    {
+      "key": "dialog.conflicts.useAllBranch",
+      "value": "Use branch version for all"
+    },
+    {
       "key": "dialog.conflicts.abort",
       "value": "Undo update"
+    },
+    {
+      "key": "dialog.conflicts.abortSwitch",
+      "value": "Undo switch"
     },
     {
       "key": "dialog.conflicts.later",
@@ -777,6 +1021,10 @@
     {
       "key": "dialog.conflicts.finish",
       "value": "Finish update"
+    },
+    {
+      "key": "dialog.conflicts.finishSwitch",
+      "value": "Finish switch"
     },
     {
       "key": "dialog.conflicts.kind.bothChanged",
@@ -799,12 +1047,32 @@
       "value": "Deleted on both sides"
     },
     {
+      "key": "dialog.conflicts.branchKind.bothChanged",
+      "value": "Changed by you and on {0}"
+    },
+    {
+      "key": "dialog.conflicts.branchKind.bothAdded",
+      "value": "Added by you and on {0}"
+    },
+    {
+      "key": "dialog.conflicts.branchKind.deletedByYou",
+      "value": "You deleted it; {0} changed it"
+    },
+    {
+      "key": "dialog.conflicts.branchKind.deletedOnBranch",
+      "value": "{0} deleted it; you changed it"
+    },
+    {
       "key": "dialog.conflicts.unityHint",
       "value": "Unity asset: pick a version. Editing it by hand can break the file."
     },
     {
       "key": "dialog.conflicts.allDone",
       "value": "Everything is decided. Finish the update to wrap up."
+    },
+    {
+      "key": "dialog.conflicts.allDoneSwitch",
+      "value": "Everything is decided. Finish the switch to wrap up."
     },
     {
       "key": "dialog.conflicts.remaining",
@@ -823,6 +1091,14 @@
       "value": "Your project goes back to exactly how it was before the update, including your uncommitted edits."
     },
     {
+      "key": "dialog.conflicts.confirmAbortSwitchTitle",
+      "value": "Undo this switch?"
+    },
+    {
+      "key": "dialog.conflicts.confirmAbortSwitchBody",
+      "value": "Your project goes back to the branch you were on, with your uncommitted edits exactly as they were."
+    },
+    {
       "key": "dialog.conflicts.tooltip.keepMine",
       "value": "Keep your version of this file"
     },
@@ -837,6 +1113,14 @@
     {
       "key": "dialog.conflicts.tooltip.useAllBasis",
       "value": "Take the Basis version of every file in the list"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.useBranch",
+      "value": "Take the version of this file from {0}"
+    },
+    {
+      "key": "dialog.conflicts.tooltip.useAllBranch",
+      "value": "Take the version from {0} for every file in the list"
     },
     {
       "key": "dialog.conflicts.tooltip.open",
@@ -859,6 +1143,10 @@
       "value": "Put the project back exactly as it was before the update"
     },
     {
+      "key": "dialog.conflicts.tooltip.abortSwitch",
+      "value": "Go back to the branch you were on, with your edits exactly as they were"
+    },
+    {
       "key": "dialog.conflicts.tooltip.later",
       "value": "Close and come back to this later"
     },
@@ -867,8 +1155,16 @@
       "value": "Record the update once every file is decided"
     },
     {
+      "key": "dialog.conflicts.tooltip.finishSwitch",
+      "value": "Finish once every file is decided"
+    },
+    {
       "key": "installs.button.addExisting",
       "value": "Add existing"
+    },
+    {
+      "key": "installs.button.updateAll",
+      "value": "Update all"
     },
     {
       "key": "installs.button.backup",
@@ -937,6 +1233,14 @@
     {
       "key": "installs.git.behindUpstream",
       "value": "{0} behind upstream"
+    },
+    {
+      "key": "installs.git.behindRemote",
+      "value": "{0} behind {1}"
+    },
+    {
+      "key": "installs.git.upToDateWith",
+      "value": "up to date with {0}"
     },
     {
       "key": "installs.git.checking",
@@ -1065,6 +1369,14 @@
     {
       "key": "installs.status.removed",
       "value": "Removed {0} from the list (files left on disk)."
+    },
+    {
+      "key": "installs.status.renamed",
+      "value": "Renamed the project to {0}."
+    },
+    {
+      "key": "installs.status.renameFailed",
+      "value": "Couldn't save the project name: {0}"
     },
     {
       "key": "installs.status.deleting",
@@ -1335,20 +1647,16 @@
       "value": "Available to install"
     },
     {
+      "key": "packages.header.packagesFor",
+      "value": "Packages for {0}"
+    },
+    {
       "key": "packages.header.community",
       "value": "Add community package from GitHub"
     },
     {
       "key": "packages.header.installed",
       "value": "Installed"
-    },
-    {
-      "key": "packages.hero.subtitle",
-      "value": "Pick a project, then install packages from the Basis registry or add any community UPM package by git URL."
-    },
-    {
-      "key": "packages.hero.tagline",
-      "value": "PACKAGES"
     },
     {
       "key": "packages.hero.title",
@@ -1681,6 +1989,10 @@
     {
       "key": "unity.status.requiredVersionNote",
       "value": "Your Basis install targets Unity {0}. Install that exact version below for a clean open."
+    },
+    {
+      "key": "unity.status.requiredVersionInstalled",
+      "value": "Your Basis install targets Unity {0}, and it's installed."
     },
     {
       "key": "unity.tag.installed",
@@ -2836,7 +3148,7 @@
     },
     {
       "key": "dialog.branchPicker.tooltip.switch",
-      "value": "Check out the selected branch"
+      "value": "Switch to the selected branch"
     },
     {
       "key": "dialog.confirm.tooltip.no",
@@ -2961,6 +3273,14 @@
     {
       "key": "installs.tooltip.addExisting",
       "value": "Register an existing BasisVR/Basis clone from disk"
+    },
+    {
+      "key": "installs.tooltip.rename",
+      "value": "Click to rename. Only the label here changes, not the folder; clear it to show the folder name again."
+    },
+    {
+      "key": "installs.tooltip.updateAll",
+      "value": "Bring every project up to date with the Basis branch it follows. Your own changes are kept."
     },
     {
       "key": "installs.tooltip.newProject",
@@ -3261,6 +3581,734 @@
     {
       "key": "packages.status.serverRemoveFailed",
       "value": "The Unity side was removed, but the Basis Server side was not: {0}"
+    },
+    {
+      "key": "basisdev.banner.title",
+      "value": "Package sources need reconciling"
+    },
+    {
+      "key": "basisdev.banner.summary",
+      "value": "{0} package(s) don't line up between manifest.json, the project and its .basisdev clones."
+    },
+    {
+      "key": "basisdev.button.fixRecords",
+      "value": "Fix records"
+    },
+    {
+      "key": "basisdev.tooltip.fixRecords",
+      "value": "Write the missing .basisdev sidecars and forget stale mount records. Package files and manifest.json don't change."
+    },
+    {
+      "key": "basisdev.stale.summary",
+      "value": "{0} mount record(s) point at folders that are no longer clones: {1}"
+    },
+    {
+      "key": "basisdev.detail.source",
+      "value": "Loads from"
+    },
+    {
+      "key": "basisdev.detail.clone",
+      "value": "Development clone"
+    },
+    {
+      "key": "basisdev.detail.upstream",
+      "value": "Upstream"
+    },
+    {
+      "key": "basisdev.detail.compare",
+      "value": "Compared with the clone"
+    },
+    {
+      "key": "basisdev.source.basisRepo",
+      "value": "Basis repo: {0}"
+    },
+    {
+      "key": "basisdev.source.projectRepo",
+      "value": "Project repo: {0}"
+    },
+    {
+      "key": "basisdev.source.localFolder",
+      "value": "Local folder, not tracked by git: {0}"
+    },
+    {
+      "key": "basisdev.source.devClone",
+      "value": "Development clone: {0}"
+    },
+    {
+      "key": "basisdev.source.localPath",
+      "value": "Local path: {0}"
+    },
+    {
+      "key": "basisdev.source.tarball",
+      "value": "Tarball: {0}"
+    },
+    {
+      "key": "basisdev.source.git",
+      "value": "Git: {0}"
+    },
+    {
+      "key": "basisdev.source.registry",
+      "value": "Registry: {0}"
+    },
+    {
+      "key": "basisdev.source.none",
+      "value": "Not installed"
+    },
+    {
+      "key": "basisdev.clone.inUse",
+      "value": "{0} (in use)"
+    },
+    {
+      "key": "basisdev.clone.notInUse",
+      "value": "{0} (not in use)"
+    },
+    {
+      "key": "basisdev.clone.handledByBasis",
+      "value": "{0} (not used, handled by the Basis repo)"
+    },
+    {
+      "key": "basisdev.clone.handledByProject",
+      "value": "{0} (not used, handled by the project)"
+    },
+    {
+      "key": "basisdev.clone.notAClone",
+      "value": "{0} (no longer a clone)"
+    },
+    {
+      "key": "basisdev.clone.missing",
+      "value": "{0} (missing)"
+    },
+    {
+      "key": "basisdev.upstream.noOrigin",
+      "value": "no origin remote"
+    },
+    {
+      "key": "basisdev.upstream.unrecorded",
+      "value": "{0} (not recorded yet)"
+    },
+    {
+      "key": "basisdev.compare.identical",
+      "value": "Same files as the clone (upstream {0})."
+    },
+    {
+      "key": "basisdev.compare.differs",
+      "value": "{0} file(s) differ from the clone: {1} only here, {2} only upstream, {3} changed."
+    },
+    {
+      "key": "basisdev.compare.matches",
+      "value": "This copy matches upstream commit {0}."
+    },
+    {
+      "key": "basisdev.compare.noMatch",
+      "value": "This copy matches no upstream commit, so it has changes of its own."
+    },
+    {
+      "key": "basisdev.issue.missingClone",
+      "value": "Clone missing"
+    },
+    {
+      "key": "basisdev.issue.notInUse",
+      "value": "Clone not in use"
+    },
+    {
+      "key": "basisdev.issue.staleRecord",
+      "value": "Stale record"
+    },
+    {
+      "key": "basisdev.issue.unrecorded",
+      "value": "Upstream not recorded"
+    },
+    {
+      "key": "basisdev.issue.missingClone.description",
+      "value": "{0} is gone, so Unity can't load this package. Put its original source back or clone it again."
+    },
+    {
+      "key": "basisdev.issue.detached.description",
+      "value": "manifest.json points at {0}, so Unity ignores the clone in {1}."
+    },
+    {
+      "key": "basisdev.issue.shadowed.description",
+      "value": "Unity loads {0} from the project, so the clone in {1} isn't used."
+    },
+    {
+      "key": "basisdev.issue.staleRecord.description",
+      "value": "A mount record points at {0}, which is no longer a clone. The folder isn't touched."
+    },
+    {
+      "key": "basisdev.issue.unrecorded.description",
+      "value": "{0} has no .basisdev sidecar yet, so its upstream isn't recorded."
+    },
+    {
+      "key": "basisdev.action.record",
+      "value": "Record upstream"
+    },
+    {
+      "key": "basisdev.action.forget",
+      "value": "Forget record"
+    },
+    {
+      "key": "basisdev.action.ignoreBasis",
+      "value": "Handled by Basis repo"
+    },
+    {
+      "key": "basisdev.action.ignore",
+      "value": "Handled by the project"
+    },
+    {
+      "key": "basisdev.action.unignore",
+      "value": "Flag again"
+    },
+    {
+      "key": "basisdev.action.useClone",
+      "value": "Use clone"
+    },
+    {
+      "key": "basisdev.action.release",
+      "value": "Release clone"
+    },
+    {
+      "key": "basisdev.action.restore",
+      "value": "Restore source"
+    },
+    {
+      "key": "basisdev.action.reclone",
+      "value": "Clone again"
+    },
+    {
+      "key": "basisdev.tooltip.record",
+      "value": "Write .basisdev/{0}.json with the clone's origin, branch and commit"
+    },
+    {
+      "key": "basisdev.tooltip.forget",
+      "value": "Drop the stale mount record; {0} is left as it is"
+    },
+    {
+      "key": "basisdev.tooltip.ignoreBasis",
+      "value": "The Basis repo decides how {1} loads. Keep {0} without flagging it."
+    },
+    {
+      "key": "basisdev.tooltip.ignore",
+      "value": "The project decides how {1} loads. Keep {0} without flagging it."
+    },
+    {
+      "key": "basisdev.tooltip.unignore",
+      "value": "Flag {0} again while {1} doesn't load from it."
+    },
+    {
+      "key": "basisdev.tooltip.useClone",
+      "value": "Point manifest.json at {0} so Unity loads the clone"
+    },
+    {
+      "key": "basisdev.tooltip.release",
+      "value": "Delete {0} and its sidecar; Unity keeps loading what it loads now"
+    },
+    {
+      "key": "basisdev.tooltip.restore",
+      "value": "Put this manifest line back: {0}"
+    },
+    {
+      "key": "basisdev.tooltip.reclone",
+      "value": "Clone {0} into {1} again"
+    },
+    {
+      "key": "basisdev.confirm.localWorkTitle",
+      "value": "Delete local work?"
+    },
+    {
+      "key": "basisdev.confirm.localWorkBody",
+      "value": "{1} has uncommitted or unpushed work for {0}. Releasing the clone deletes that work."
+    },
+    {
+      "key": "basisdev.status.working",
+      "value": "Reconciling {0}…"
+    },
+    {
+      "key": "basisdev.status.cancelled",
+      "value": "Left {0} as it was."
+    },
+    {
+      "key": "basisdev.status.failed",
+      "value": "Couldn't reconcile {0}: {1}"
+    },
+    {
+      "key": "basisdev.status.reconciled",
+      "value": "Recorded {0} clone(s) and forgot {1} stale mount record(s)."
+    },
+    {
+      "key": "basisdev.status.reconcileFailed",
+      "value": "Couldn't reconcile the .basisdev records: {0}"
+    },
+    {
+      "key": "basisdev.status.recorded",
+      "value": "Recorded the upstream of {0} in .basisdev."
+    },
+    {
+      "key": "basisdev.status.forgotten",
+      "value": "Forgot the stale mount record for {0}."
+    },
+    {
+      "key": "basisdev.status.usingClone",
+      "value": "{0} now loads from its .basisdev clone."
+    },
+    {
+      "key": "basisdev.status.released",
+      "value": "Released the clone of {0}."
+    },
+    {
+      "key": "basisdev.status.restored",
+      "value": "{0} is back on its original source."
+    },
+    {
+      "key": "basisdev.status.recloned",
+      "value": "Cloned {0} again from its recorded upstream."
+    },
+    {
+      "key": "basisdev.status.ignored",
+      "value": "{0} won't be flagged any more; its clone is kept."
+    },
+    {
+      "key": "basisdev.status.unignored",
+      "value": "{0}'s clone is flagged again while it isn't used."
+    },
+    {
+      "key": "basisdev.issue.unused.description",
+      "value": "manifest.json has no entry for {0}, so Unity doesn't load the clone in {1}."
+    },
+    {
+      "key": "basisdev.tooltip.restoreRemove",
+      "value": "Remove the broken manifest line for {0}; where it came from wasn't recorded"
+    },
+    {
+      "key": "basisdev.confirm.committedTitle",
+      "value": "Change a committed manifest line?"
+    },
+    {
+      "key": "basisdev.confirm.committedBody",
+      "value": "The project has committed {0} as {1}. Using the clone changes that line in manifest.json until you release the clone, so don't commit manifest.json in the meantime."
+    },
+    {
+      "key": "basisChanges.title",
+      "value": "Changes compared with Basis"
+    },
+    {
+      "key": "basisChanges.loading",
+      "value": "Comparing {0} with Basis…"
+    },
+    {
+      "key": "basisChanges.basedOnCommit",
+      "value": "Compared with Basis {0} on {1} ({2}: {3}), {4}."
+    },
+    {
+      "key": "basisChanges.basedOn",
+      "value": "Compared with Basis {0} on {1}, {2}."
+    },
+    {
+      "key": "basisChanges.base.history",
+      "value": "found from this project's git history"
+    },
+    {
+      "key": "basisChanges.base.recorded",
+      "value": "recorded the last time Basis was updated here"
+    },
+    {
+      "key": "basisChanges.base.similarity",
+      "value": "estimated by matching this project's files against Basis"
+    },
+    {
+      "key": "basisChanges.remote",
+      "value": "This project keeps its own git remote ({0}) and nothing is pushed there. Pull requests go to {1}, from your fork when you can't push to it."
+    },
+    {
+      "key": "basisChanges.remoteNone",
+      "value": "Nothing is pushed to this project's own git. Pull requests go to {0}, from your fork when you can't push to it."
+    },
+    {
+      "key": "basisChanges.empty",
+      "value": "Nothing differs from Basis {0}."
+    },
+    {
+      "key": "basisChanges.focusUnchanged",
+      "value": "{0} has no changes compared with Basis. The rest of the project is listed below."
+    },
+    {
+      "key": "basisChanges.listTitle",
+      "value": "Changed files"
+    },
+    {
+      "key": "basisChanges.selectAll",
+      "value": "All"
+    },
+    {
+      "key": "basisChanges.selectNone",
+      "value": "None"
+    },
+    {
+      "key": "basisChanges.tooltip.selectAll",
+      "value": "Select every change"
+    },
+    {
+      "key": "basisChanges.tooltip.selectNone",
+      "value": "Clear the selection"
+    },
+    {
+      "key": "basisChanges.tooltip.group",
+      "value": "Include or leave out this whole group"
+    },
+    {
+      "key": "basisChanges.tooltip.file",
+      "value": "Include this file in the pull request"
+    },
+    {
+      "key": "basisChanges.withMeta",
+      "value": "+ .meta"
+    },
+    {
+      "key": "basisChanges.tooltip.withMeta",
+      "value": "Its .meta file changed too and is sent with it."
+    },
+    {
+      "key": "basisChanges.group.project",
+      "value": "Project files"
+    },
+    {
+      "key": "basisChanges.group.repository",
+      "value": "Repository files"
+    },
+    {
+      "key": "basisChanges.group.oneFile",
+      "value": "1 file"
+    },
+    {
+      "key": "basisChanges.group.files",
+      "value": "{0} files"
+    },
+    {
+      "key": "basisChanges.group.notInBasis",
+      "value": "{0}, not in Basis"
+    },
+    {
+      "key": "basisChanges.kind.added",
+      "value": "Added: Basis doesn't have this file"
+    },
+    {
+      "key": "basisChanges.kind.deleted",
+      "value": "Deleted: Basis has this file"
+    },
+    {
+      "key": "basisChanges.kind.modified",
+      "value": "Changed from Basis"
+    },
+    {
+      "key": "basisChanges.diff.pick",
+      "value": "Pick a file on the left to see what changed compared with Basis."
+    },
+    {
+      "key": "basisChanges.diff.loading",
+      "value": "Loading the changes…"
+    },
+    {
+      "key": "basisChanges.diff.failed",
+      "value": "Couldn't show the changes: {0}"
+    },
+    {
+      "key": "basisChanges.field.title",
+      "value": "Title"
+    },
+    {
+      "key": "basisChanges.watermark.title",
+      "value": "What does this change do?"
+    },
+    {
+      "key": "basisChanges.tooltip.title",
+      "value": "The pull request's title, also used as the commit message."
+    },
+    {
+      "key": "basisChanges.field.description",
+      "value": "Description"
+    },
+    {
+      "key": "basisChanges.watermark.description",
+      "value": "Why it's needed and how to test it (optional)"
+    },
+    {
+      "key": "basisChanges.tooltip.description",
+      "value": "Shown on the pull request. The Basis version these changes are based on is added at the end."
+    },
+    {
+      "key": "basisChanges.field.branch",
+      "value": "Branch"
+    },
+    {
+      "key": "basisChanges.tooltip.branch",
+      "value": "The branch the changes are pushed to. Use the branch of an earlier pull request from this project to update that pull request."
+    },
+    {
+      "key": "basisChanges.field.target",
+      "value": "Into Basis branch"
+    },
+    {
+      "key": "basisChanges.tooltip.target",
+      "value": "The BasisVR/Basis branch the pull request asks to merge into."
+    },
+    {
+      "key": "basisChanges.selectedNone",
+      "value": "No files selected"
+    },
+    {
+      "key": "basisChanges.selectedOne",
+      "value": "1 file selected"
+    },
+    {
+      "key": "basisChanges.selected",
+      "value": "{0} files selected"
+    },
+    {
+      "key": "basisChanges.close",
+      "value": "Close"
+    },
+    {
+      "key": "basisChanges.tooltip.close",
+      "value": "Close this window. Nothing is sent."
+    },
+    {
+      "key": "basisChanges.openPr",
+      "value": "Open pull request"
+    },
+    {
+      "key": "basisChanges.tooltip.openPr",
+      "value": "Build a commit with the selected files on top of the Basis version this project uses, push it, and open a pull request. Your project's branch, history and files stay as they are."
+    },
+    {
+      "key": "basisChanges.tooltip.refresh",
+      "value": "Compare again"
+    },
+    {
+      "key": "basisChanges.viewPr",
+      "value": "View pull request"
+    },
+    {
+      "key": "basisChanges.openByHand",
+      "value": "Open the pull request on GitHub by hand"
+    },
+    {
+      "key": "basisChanges.tooltip.openByHand",
+      "value": "The branch was pushed. This opens GitHub's compare page so you can finish the pull request there."
+    },
+    {
+      "key": "basisChanges.defaultTitle",
+      "value": "Changes from {0}"
+    },
+    {
+      "key": "basisChanges.defaultTitlePackage",
+      "value": "Update {0}"
+    },
+    {
+      "key": "basisChanges.status.signingIn",
+      "value": "Signing in to GitHub…"
+    },
+    {
+      "key": "basisChanges.status.signIn",
+      "value": "Sign in to GitHub to open a pull request: run gh auth login, or paste a personal access token when asked."
+    },
+    {
+      "key": "basisChanges.status.loginFailed",
+      "value": "GitHub didn't accept the sign-in. Sign in again and retry."
+    },
+    {
+      "key": "basisChanges.status.opened",
+      "value": "Pull request opened: {0}"
+    },
+    {
+      "key": "basisChanges.status.updated",
+      "value": "Pull request updated: {0}"
+    },
+    {
+      "key": "basisChanges.status.failed",
+      "value": "The pull request couldn't be opened."
+    },
+    {
+      "key": "basisChanges.status.error",
+      "value": "The pull request couldn't be opened: {0}"
+    },
+    {
+      "key": "basisChanges.block.gitMissing",
+      "value": "Git was not found. Install Git and make sure it is on your PATH."
+    },
+    {
+      "key": "basisChanges.block.gitTooOld",
+      "value": "Git {0} is too old. Install Git {1} or newer."
+    },
+    {
+      "key": "basisChanges.block.notGitRepo",
+      "value": "This project isn't tracked by git, so its changes can't be compared with Basis. Use Update Basis to set up git for it first."
+    },
+    {
+      "key": "basisChanges.block.noCommits",
+      "value": "This project's git repository has no commits yet."
+    },
+    {
+      "key": "basisChanges.block.updateInProgress",
+      "value": "A Basis update or branch switch is waiting for decisions. Finish it first."
+    },
+    {
+      "key": "basisChanges.block.operationInProgress",
+      "value": "A git {0} is in progress in this project. Finish or abort it first."
+    },
+    {
+      "key": "basisChanges.block.baseUnknown",
+      "value": "Couldn't tell which Basis version this project is based on. Its files don't match any Basis version closely enough."
+    },
+    {
+      "key": "basisChanges.block.baseUnknownBecause",
+      "value": "Couldn't tell which Basis version this project is based on: {0}"
+    },
+    {
+      "key": "basisChanges.block.baseMissing",
+      "value": "Basis commit {0} couldn't be downloaded from BasisVR/Basis."
+    },
+    {
+      "key": "basisChanges.block.basisFolderMissing",
+      "value": "The Basis version this project is based on has no '{0}' folder."
+    },
+    {
+      "key": "basisChanges.block.readFailed",
+      "value": "Couldn't read this project's files."
+    },
+    {
+      "key": "basisChanges.block.readFailedBecause",
+      "value": "Couldn't read this project's files: {0}"
+    },
+    {
+      "key": "basisChanges.block.failed",
+      "value": "Couldn't compare this project with Basis: {0}"
+    },
+    {
+      "key": "installs.button.basisChanges",
+      "value": "Changes vs Basis"
+    },
+    {
+      "key": "installs.tooltip.basisChanges",
+      "value": "See what this project changed compared with the Basis version it's based on, and send changes back to BasisVR/Basis as a pull request. The project's own git remote isn't used."
+    },
+    {
+      "key": "packages.button.sendToBasis",
+      "value": "Send to Basis"
+    },
+    {
+      "key": "packages.tooltip.sendToBasis",
+      "value": "See this package's changes compared with Basis and send them to BasisVR/Basis as a pull request."
+    },
+    {
+      "key": "basisChanges.churn",
+      "value": "editor churn"
+    },
+    {
+      "key": "basisChanges.tooltip.churn",
+      "value": "Unity usually rewrites this file by itself, so it starts unticked. Tick it if you changed it on purpose."
+    },
+    {
+      "key": "basisChanges.remoteIsBasis",
+      "value": "This project is a clone of {0}. The pull request goes on a branch of its own, so your checked-out branch isn't pushed or changed."
+    },
+    {
+      "key": "installs.button.gridView",
+      "value": "Grid view"
+    },
+    {
+      "key": "installs.button.listView",
+      "value": "List view"
+    },
+    {
+      "key": "installs.tooltip.toggleLayout",
+      "value": "Switch between list and grid layout"
+    },
+    {
+      "key": "installs.button.findProjects",
+      "value": "Find projects"
+    },
+    {
+      "key": "installs.tooltip.findProjects",
+      "value": "Search a folder and the folders inside it for Basis projects, then choose which ones to add."
+    },
+    {
+      "key": "installs.picker.findProjectsFolder",
+      "value": "Choose a folder to search for Basis projects"
+    },
+    {
+      "key": "installs.status.foundAddedOne",
+      "value": "Added {0} to your projects."
+    },
+    {
+      "key": "installs.status.foundAdded",
+      "value": "Added {0} projects to your list."
+    },
+    {
+      "key": "dialog.findProjects.title",
+      "value": "Find projects"
+    },
+    {
+      "key": "dialog.findProjects.heading",
+      "value": "Find Basis projects"
+    },
+    {
+      "key": "dialog.findProjects.intro",
+      "value": "Searches this folder and the folders inside it, up to {0} levels deep. Hidden folders and build folders are skipped."
+    },
+    {
+      "key": "dialog.findProjects.changeFolder",
+      "value": "Choose another folder"
+    },
+    {
+      "key": "dialog.findProjects.searching",
+      "value": "Searching… Folders checked: {0}"
+    },
+    {
+      "key": "dialog.findProjects.done",
+      "value": "Search finished. Found: {0}. Folders checked: {1}."
+    },
+    {
+      "key": "dialog.findProjects.stopped",
+      "value": "Search stopped. Found: {0}. Folders checked: {1}."
+    },
+    {
+      "key": "dialog.findProjects.none",
+      "value": "No Basis projects were found in this folder."
+    },
+    {
+      "key": "dialog.findProjects.stop",
+      "value": "Stop"
+    },
+    {
+      "key": "dialog.findProjects.alreadyAdded",
+      "value": "Already in your list"
+    },
+    {
+      "key": "dialog.findProjects.unity",
+      "value": "Unity {0}"
+    },
+    {
+      "key": "dialog.findProjects.add",
+      "value": "Add selected"
+    },
+    {
+      "key": "dialog.findProjects.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key": "dialog.findProjects.tooltip.changeFolder",
+      "value": "Search a different folder"
+    },
+    {
+      "key": "dialog.findProjects.tooltip.stop",
+      "value": "Stop searching and keep the projects found so far"
+    },
+    {
+      "key": "dialog.findProjects.tooltip.add",
+      "value": "Add the ticked projects to your list"
+    },
+    {
+      "key": "dialog.findProjects.tooltip.cancel",
+      "value": "Close without adding anything"
     }
   ]
 }

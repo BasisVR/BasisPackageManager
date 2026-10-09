@@ -1,3 +1,4 @@
+using System.Text.Json;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
 using BasisPM.Core.Tests.TestSupport;
@@ -144,5 +145,49 @@ public sealed class UserSettingsServiceTests
         using var t = new TempDir();
         var path = t.Combine("settings.json");
         Assert.Equal(path, new UserSettingsService(path).SettingsPath);
+    }
+
+    [Fact]
+    public async Task Update_changes_one_setting_and_keeps_the_rest()
+    {
+        using var t = new TempDir();
+        var svc = new UserSettingsService(t.Combine("settings.json"));
+        await svc.SaveAsync(new UserSettings { CatalogUrl = "https://example.com/catalog.json", Installs = { @"C:\Basis" } });
+
+        svc.Update(s => s.WindowWidth = 1500);
+        await svc.UpdateAsync(s => s.WindowMaximized = true);
+
+        var loaded = await svc.LoadAsync();
+        Assert.Equal("https://example.com/catalog.json", loaded.CatalogUrl);
+        Assert.Equal(new[] { @"C:\Basis" }, loaded.Installs);
+        Assert.Equal(1500, loaded.WindowWidth);
+        Assert.Null(loaded.WindowHeight);
+        Assert.True(loaded.WindowMaximized);
+    }
+
+    [Fact]
+    public async Task Concurrent_updates_keep_every_change()
+    {
+        using var t = new TempDir();
+        var svc = new UserSettingsService(t.Combine("settings.json"));
+
+        await Task.WhenAll(Enumerable.Range(0, 20).Select(i => i % 2 == 0
+            ? svc.UpdateAsync(s => s.ExpandedSections[$"section{i}"] = true)
+            : Task.Run(() => svc.Update(s => s.ExpandedSections[$"section{i}"] = true))));
+
+        Assert.Equal(20, (await svc.LoadAsync()).ExpandedSections.Count);
+    }
+
+    [Fact]
+    public async Task Update_leaves_an_unreadable_settings_file_alone()
+    {
+        using var t = new TempDir();
+        var path = t.WriteFile("settings.json", "{ this is not valid json ");
+        var svc = new UserSettingsService(path);
+
+        Assert.ThrowsAny<JsonException>(() => svc.Update(s => s.WindowWidth = 1500));
+        await Assert.ThrowsAnyAsync<JsonException>(() => svc.UpdateAsync(s => s.WindowWidth = 1500));
+
+        Assert.Equal("{ this is not valid json ", File.ReadAllText(path));
     }
 }

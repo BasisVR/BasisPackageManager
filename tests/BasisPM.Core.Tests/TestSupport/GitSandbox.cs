@@ -38,6 +38,28 @@ public sealed class GitSandbox : IDisposable
         return path;
     }
 
+    public string CopyProject(string commit, string name, string basisFolder = "")
+    {
+        var path = _temp.Combine(name);
+        Directory.CreateDirectory(path);
+        foreach (var file in Run(Upstream, "ls-tree", "-r", "--name-only", commit).Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (basisFolder.Length > 0 && !file.StartsWith(basisFolder + "/", StringComparison.Ordinal)) continue;
+            Write(path, basisFolder.Length == 0 ? file : file[(basisFolder.Length + 1)..], Run(Upstream, "show", $"{commit}:{file}") + "\n");
+        }
+        Run(path, "init", "-q", "-b", "main");
+        Run(path, "config", "core.autocrlf", "false");
+        Commit(path, "import");
+        return path;
+    }
+
+    public string CreateBareRepository(string name)
+    {
+        var path = _temp.Combine(name);
+        Run(_temp.Path, "init", "-q", "--bare", path);
+        return path;
+    }
+
     public static string Commit(string repo, string message, params (string Path, string? Content)[] files)
     {
         foreach (var (path, content) in files) Write(repo, path, content);

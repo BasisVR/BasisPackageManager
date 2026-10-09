@@ -15,12 +15,7 @@ public sealed class UserSettingsService(string? overridePath = null)
     public UserSettings Load()
     {
         Gate.Wait();
-        try
-        {
-            if (!File.Exists(SettingsPath)) return new UserSettings();
-            using var fs = File.OpenRead(SettingsPath);
-            return JsonSerializer.Deserialize<UserSettings>(fs, JsonOpts) ?? new UserSettings();
-        }
+        try { return Read(); }
         catch (Exception ex) { return Unreadable($"Loading settings synchronously from {SettingsPath}", ex); }
         finally { Gate.Release(); }
     }
@@ -28,12 +23,7 @@ public sealed class UserSettingsService(string? overridePath = null)
     public async Task<UserSettings> LoadAsync(CancellationToken ct = default)
     {
         await Gate.WaitAsync(ct).ConfigureAwait(false);
-        try
-        {
-            if (!File.Exists(SettingsPath)) return new UserSettings();
-            await using var fs = File.OpenRead(SettingsPath);
-            return await JsonSerializer.DeserializeAsync<UserSettings>(fs, JsonOpts, ct).ConfigureAwait(false) ?? new UserSettings();
-        }
+        try { return await ReadAsync(ct).ConfigureAwait(false); }
         catch (Exception ex) when (ex is not OperationCanceledException) { return Unreadable($"Loading settings asynchronously from {SettingsPath}", ex); }
         finally { Gate.Release(); }
     }
@@ -43,6 +33,44 @@ public sealed class UserSettingsService(string? overridePath = null)
         await Gate.WaitAsync(ct).ConfigureAwait(false);
         try { await AtomicFile.WriteAsync(SettingsPath, stream => JsonSerializer.SerializeAsync(stream, settings, JsonOpts, ct), ct).ConfigureAwait(false); }
         finally { Gate.Release(); }
+    }
+
+    public void Update(Action<UserSettings> change)
+    {
+        Gate.Wait();
+        try
+        {
+            var settings = Read();
+            change(settings);
+            AtomicFile.WriteAllText(SettingsPath, JsonSerializer.Serialize(settings, JsonOpts));
+        }
+        finally { Gate.Release(); }
+    }
+
+    public async Task UpdateAsync(Action<UserSettings> change, CancellationToken ct = default)
+    {
+        await Gate.WaitAsync(ct).ConfigureAwait(false);
+        try
+        {
+            var settings = await ReadAsync(ct).ConfigureAwait(false);
+            change(settings);
+            await AtomicFile.WriteAsync(SettingsPath, stream => JsonSerializer.SerializeAsync(stream, settings, JsonOpts, ct), ct).ConfigureAwait(false);
+        }
+        finally { Gate.Release(); }
+    }
+
+    private UserSettings Read()
+    {
+        if (!File.Exists(SettingsPath)) return new UserSettings();
+        using var fs = File.OpenRead(SettingsPath);
+        return JsonSerializer.Deserialize<UserSettings>(fs, JsonOpts) ?? new UserSettings();
+    }
+
+    private async Task<UserSettings> ReadAsync(CancellationToken ct)
+    {
+        if (!File.Exists(SettingsPath)) return new UserSettings();
+        await using var fs = File.OpenRead(SettingsPath);
+        return await JsonSerializer.DeserializeAsync<UserSettings>(fs, JsonOpts, ct).ConfigureAwait(false) ?? new UserSettings();
     }
 
     private UserSettings Unreadable(string context, Exception ex)

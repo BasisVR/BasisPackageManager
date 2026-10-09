@@ -19,7 +19,7 @@ Grab the latest installer for your platform from the
 
 | Platform | File | First run |
 |----------|------|-----------|
-| Windows  | `*-win-Setup.exe` (x64) or `*-win-arm64-Setup.exe` (Windows on ARM) | Unsigned for now, so SmartScreen may warn — choose **More info → Run anyway**. |
+| Windows  | `*-win-Setup.exe` (x64) or `*-win-arm64-Setup.exe` (Windows on ARM) | Signed by SignPath Foundation (see the [code signing policy](#code-signing-policy)). If SmartScreen still warns, choose **More info → Run anyway**. |
 | Linux    | `BasisPackageManager.AppImage` (x64) or `*-linux-arm64.AppImage` (arm64) | `chmod +x` it, then run. (Needs FUSE, which most distros ship.) |
 | macOS    | `*-osx-Setup.pkg` (Apple Silicon) or `*-osx-x64-Setup.pkg` (Intel) | Unsigned — **right-click → Open**, then **Open** the first time. |
 
@@ -40,20 +40,51 @@ Running from source (`dotnet run`) skips the in-app updater — update with `git
 
 ## Features
 
-- **Installs** — clone the complete `BasisVR/Basis` repository (the `developer` branch), or
-  register an existing clone and switch branches afterward. Each install shows its branch,
-  commit, required Unity version, and whether it is
-  behind upstream or has local changes. **Update Basis** brings in the latest Basis (below).
-- **Basis updates**: whatever git setup a project has (a clone of `BasisVR/Basis`, a fork,
-  your own repository, or no git at all), **Update Basis** fetches the latest Basis straight
-  from GitHub and merges it into your current branch. You see the incoming commits first.
-  Uncommitted edits to files Basis also changes are set aside and merged back afterwards;
-  any file changed on both sides is listed so you can keep yours, take Basis's, or combine
-  them, and **Undo update** puts everything back. Projects are checked for Basis updates at
-  startup and every two hours, with a banner and a badge on **Projects** when one is ready.
+- **Installs**: clone the complete `BasisVR/Basis` repository (the `developer` branch), or
+  register an existing project, including a copy of Basis kept in your own git repository. Each
+  install shows its branch, commit, required Unity version, the Basis branch it follows, and
+  whether it is behind its own remote or has local changes. **Change branch** either switches to
+  another branch of your project (uncommitted edits come along) or moves the project onto another
+  Basis branch, such as a long-term-support one, keeping your commits and edits.
+- **Basis updates**: whatever git setup a project has (a clone of `BasisVR/Basis`, a fork, a copy
+  pushed to your own repository, or no git at all), **Update Basis** fetches the latest Basis
+  straight from GitHub; your own remotes are never used or changed. A project that shares history
+  with Basis gets a normal merge. A project copied without Basis's history keeps it that way:
+  BasisPM compares your files with Basis's history (a project made from Basis's `Basis` Unity folder
+  alone works too) to find the version you started from, then brings the Basis changes in as one
+  commit that records the Basis version and branch as `Basis-Commit:` / `Basis-Branch:` trailers,
+  so your repository and your pushes stay small and teammates who pull see the same Basis version.
+  A project that never recorded its Basis branch has it worked out from its history, so a project
+  built on a long-term-support branch keeps following it. You see the incoming commits first.
+  Uncommitted edits to files Basis also changes are set aside and merged back afterwards; any
+  file changed on both sides is listed so you can keep yours, take Basis's, or combine them, and
+  **Undo update** puts everything back. Moving to an older Basis branch takes the newer Basis
+  changes out again while keeping yours. Projects are checked for Basis updates at startup and
+  every two hours, with a banner and a badge on **Projects** when one is ready.
 - **Packages** — packages bundled in the Basis checkout are detected automatically; install
   additional official packages, or add any community UPM package from a
   **GitHub or GitLab** git URL. Discovery is powered by the registry (below).
+- **Development clones (`.basisdev`)**: every package the manager clones for editing gets a
+  sidecar file, `<Unity project>/.basisdev/<package-id>.json`, that records its upstream (git URL,
+  branch or tag, sub-folder and the commit it was cloned at) and the `manifest.json` line it
+  replaced. It lives next to the clones and is kept out of your repository's `git status`. The
+  Packages tab uses it to show where each package really loads from (a folder tracked in the Basis
+  repo, a `.basisdev` clone, git or the registry) and flags anything that doesn't line up: a clone
+  hidden by the Basis repo's own copy, a clone `manifest.json` no longer points at, a missing clone,
+  or a stale mount record, each with a fix. A clone you keep around on purpose while the Basis repo
+  handles the package itself can be marked **Handled by Basis repo**, which stops it being flagged
+  (**Flag again** undoes it).
+- **Send changes to Basis**: **Changes vs Basis** on a project (or **Send to Basis** on a package
+  that ships with Basis) opens a window listing everything the project changed compared with the
+  Basis version it's based on, grouped into Basis packages, project files and repository files,
+  with a diff for each file. Tick the changes to send, give them a title, and the manager opens a
+  pull request on `BasisVR/Basis` (from your fork when you can't push there). The pull request is
+  built from that Basis version plus only the files you picked, so it works whatever git the
+  project itself uses: a clone, a fork, a copy in your own repository on GitHub, GitLab or
+  anywhere else, or a Unity-folder-only copy. Your branch, history, working copy and remotes are
+  never touched. `.meta` files go along with their assets, and files Unity rewrites by itself
+  (TMP font assets, `packages-lock.json`, `ProjectVersion.txt`, addressables settings) start
+  unticked. Sign-in uses the GitHub CLI (`gh auth login`) or a personal access token.
 - **Local Changes** — a `git status` of your install with a per-file unified diff, so you
   can see what you have modified in the Basis source.
 - **Unity Editors** — detect installed editors and install the exact version Basis targets
@@ -79,30 +110,66 @@ Running from source (`dotnet run`) skips the in-app updater — update with `git
 ## Console mode
 
 Releases also include the `basispm` (`basispm.exe` on Windows) console application. Run it
-without arguments for an interactive prompt, or use `--project` for scripts and one-shot commands:
+without arguments for an interactive console with Tab completion and command history, or pass a
+command for scripts and one-shot use:
 
 ```text
 basispm clone-basis C:\BasisVR\Basis
-basispm --project C:\BasisVR\Basis status
-basispm --project C:\BasisVR\Basis check-updates
-basispm --project C:\BasisVR\Basis update-basis
-basispm --project C:\BasisVR\Basis list-packages
-basispm --project C:\BasisVR\Basis install-package com.example.package
-basispm --project C:\BasisVR\Basis server-install com.example.transport
-basispm --project C:\BasisVR\Basis server-build
+basispm status
+basispm doctor
+basispm check-updates
+basispm update-basis
+basispm list-packages
+basispm install-package com.example.package
+basispm server-run --build
+basispm --project "Basis Avatar" basisdev
+basispm contribute --package com.basis.framework --title "Fix crouch"
 ```
+
+Projects are the ones the desktop app shows on its Projects tab: `projects` lists them and
+`projects add <path>` saves another. A command works on the project you name with
+`--project <name|number|path>`, otherwise on the project the current folder is in, then your
+default project (`projects default <name>`), then your only project. `BASISPM_PROJECT` sets one
+for a whole shell session.
 
 The console follows the same project model as the desktop app: it clones `BasisVR/Basis` first,
 detects packages already bundled under `Basis/Packages`, and only installs additional packages.
 Converting an arbitrary Unity project into Basis is not supported; use a complete Basis checkout.
-Run `basispm help` for branch, package-list, update, and Unity commands.
 
-`update-basis` shows what is coming and asks before merging (`--yes` skips the prompt,
-`--branch <name>` follows another Basis branch such as a long-term-support one). If files need a
-decision, run `conflicts`, settle each with `resolve <path> mine|basis|done`, then
-`update-basis --continue`; `update-basis --abort` puts the project back as it was. A project
-whose history isn't connected to Basis is linked with `update-basis --link`, and one without git
-is recorded first with `update-basis --init-git`.
+`basispm help` lists every command, and `basispm help <command>` (or `<command> --help`) shows its
+options and examples. A mistyped command or option gets a suggestion. Commands that list or show
+things take `--json` for scripts, and tables print as tab-separated text when the output is piped.
+Colors follow `NO_COLOR`, `FORCE_COLOR` and `--no-color`. Exit codes are 0 for done, 1 for failed,
+2 for wrong usage and 130 for cancelled. `basispm completion powershell|bash|zsh|fish` prints a
+Tab-completion script for your shell; `basispm help completion` shows where to add it.
+
+`update-basis` shows what is coming and asks before changing anything (`--yes` skips the prompt).
+`--branch <name>` moves the project onto another Basis branch, such as a long-term-support one,
+keeping your commits and edits; `basis-branch` shows which Basis branch the project follows and how
+that was worked out. If files need a decision, run `conflicts`, settle each with
+`resolve <path> mine|basis|done`, then `update-basis --continue`; `update-basis --abort` puts the
+project back as it was. A copy kept in its own repository without Basis's history gets each update
+as a single commit; `update-basis --link` merges Basis's history into it instead, after which every
+push also uploads that history (over 2 GB). A project without git is recorded first with
+`update-basis --init-git`. `change-branch <name>` switches to another of your own branches and
+brings uncommitted edits along; if any overlap, settle them the same way and finish with
+`change-branch --continue` (or `--abort`).
+
+`basisdev` lists the development clones with their recorded upstream and anything that needs
+reconciling. When the Basis repo has its own copy of a cloned package, it compares the two: how
+many files differ and which upstream commit the Basis copy matches, if any. `basisdev reconcile`
+writes missing sidecars and forgets stale mount records without touching package files or
+`manifest.json`. `basisdev use <id>` points `manifest.json` back at a clone, `basisdev release <id>`
+deletes a clone (it refuses while the clone holds uncommitted or unpushed work unless you add
+`--force`), and `basisdev restore <id>` or `basisdev reclone <id>` repairs a clone that has gone
+missing. `basisdev ignore <id>` stops flagging a clone that isn't used because the Basis repo
+handles the package itself, and `basisdev unignore <id>` flags it again.
+
+`contribute` lists what the project changed compared with the Basis version it's based on.
+Pick changes with `--package <id>`, `--project-files`, `--repository-files`, `--path <path>`
+(both repeatable) or `--all`, then add `--title "..."` (and optionally `--body`, `--branch`,
+`--target <basis-branch>`) to open a pull request on `BasisVR/Basis`, or `--dry-run` to only
+build the commit locally. It signs in with `GH_TOKEN`, `GITHUB_TOKEN` or the GitHub CLI.
 
 Server packages live in `Basis Server/Packages`: `server-install` takes a registry id, a git URL
 (with optional `?path=` and `#ref`) or a `file:` path, `server-update [id] [--ref <ref>]` moves git
@@ -111,6 +178,20 @@ missing and records the exact commits in `packages-lock.props`. `server-link <id
 package from a working copy on this machine without touching the committed files. `server-build`
 compiles the server; `dotnet build` and `dotnet publish` restore missing server packages by
 themselves, so CI and Docker builds need only git.
+
+For packages, `info <id>` and `versions <id>` show details and releases,
+`install-package <id> --version <ref>` installs a specific release, `remove-package <id>` and
+`update-packages [--dry-run]` handle the rest, `add-git <owner/repo>` adds a package straight from
+GitHub, and `export-package-list` saves the packages you added as a list others can install with
+`install-package-list <file>`. Packages that ship with Basis are never removed or replaced.
+
+`unity` lists your editors and marks the one the project needs; `unity install` installs it
+through Unity Hub (add modules with `--module android`), and `unity add <folder>` registers an
+editor Unity Hub doesn't manage. `server-run` runs the Basis server in the terminal, where its
+first-run setup wizard works too; `server-config` and `server-content` edit its settings and
+startup content, and `connect` launches Basis Labs through Steam and joins it. `update-all` updates every saved
+project that doesn't need a decision, `doctor` checks git, Unity, the .NET SDK and the project,
+and `config` reads and changes the settings shared with the desktop app.
 
 ## Package registry server
 
@@ -173,6 +254,28 @@ code-signing certificates (Windows + macOS). Every push/PR to `main` is compile-
 - `src/BasisPM.Core` — services and models (`GitService`, `UnityHubService`,
   `BasisInstallService`, catalog + manifest handling)
 - `src/BasisPM.Server` — package registry: browse UI + JSON API + static-site generator
+
+## Code signing policy
+
+Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by
+[SignPath Foundation](https://signpath.org/).
+
+- Committers and reviewers: [dooly123](https://github.com/dooly123), [TheButlah](https://github.com/TheButlah)
+- Approvers: [dooly123](https://github.com/dooly123)
+
+Windows releases are built from this repository by GitHub Actions
+([`release.yml`](.github/workflows/release.yml)), and a team member approves every signing
+request. Only the binaries built from this repository and the Windows installers are signed; see
+[RELEASING.md](RELEASING.md#windows-signpath) for the details.
+
+### Privacy policy
+
+Basis Package Manager collects no telemetry. It connects to GitHub to check for app and Basis
+updates and to download Basis and packages, to basisvr.org for the package catalog and
+announcements, to Unity's release service for Unity editor versions, and to the git servers of any
+packages you add. Error and crash reports stay on your computer unless you choose to file them as a
+GitHub issue. GitHub sign-in, needed only to open pull requests, uses the GitHub CLI or a token you
+provide, and that token is only sent to GitHub.
 
 ## License
 

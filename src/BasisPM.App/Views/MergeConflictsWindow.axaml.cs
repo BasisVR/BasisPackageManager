@@ -29,8 +29,7 @@ public partial class MergeConflictsWindow : Window
         if (Model is not { } model) return;
         try
         {
-            var confirmed = await new ConfirmWindow(L.Tr("dialog.conflicts.confirmAbortTitle"), L.Tr("dialog.conflicts.confirmAbortBody"))
-                .ShowDialog<bool>(this);
+            var confirmed = await new ConfirmWindow(model.ConfirmAbortTitle, model.ConfirmAbortBody).ShowDialog<bool>(this);
             if (confirmed) await model.AbortAsync();
         }
         catch (Exception ex) { DiagnosticLog.Write("Undoing a Basis update from the conflicts dialog", ex); }

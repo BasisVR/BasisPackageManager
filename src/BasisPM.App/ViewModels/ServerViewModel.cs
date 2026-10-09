@@ -49,7 +49,8 @@ public sealed class ServerViewModel : ObservableObject
     public string DotNetStatus { get => _dotNetStatus; private set => SetField(ref _dotNetStatus, value); }
     public string ProjectName => _install?.DisplayName ?? "No Basis project selected";
     public string RuntimeDirectory => _install is null ? "" : _service.GetPaths(_install.RepoRoot).RuntimeDirectory;
-    public string Host { get => _host; set => SetField(ref _host, value); }
+    public string Host { get => _host; set { if (SetField(ref _host, value)) OnPropertyChanged(nameof(ConnectionPasswordHint)); } }
+    public string ConnectionPasswordHint => string.IsNullOrWhiteSpace(Host) || BasisServerService.IsLocalHost(Host) ? "Uses this server's password" : "";
     public string Port { get => _port; set => SetField(ref _port, value); }
     public string ConnectionPassword { get => _connectionPassword; set => SetField(ref _connectionPassword, value); }
     public string ContentUrl { get => _contentUrl; set => SetField(ref _contentUrl, value); }
@@ -429,7 +430,7 @@ public sealed class ServerViewModel : ObservableObject
             }
         }
 
-        var connection = BasisServerService.BuildConnection(Host, port, ConnectionPassword);
+        var connection = _service.BuildClientConnection(_install.RepoRoot, Host, port, ConnectionPassword);
         try
         {
             if (_service.LaunchSteamClient(connection))

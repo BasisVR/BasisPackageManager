@@ -1,10 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:sys="using:System"
+        xmlns:vm="using:BasisPM.App.ViewModels"
         xmlns:loc="using:BasisPM.App.Localization"
         x:Class="BasisPM.App.Views.BranchPickerWindow"
         Title="{loc:Tr dialog.branchPicker.title}"
-        Width="480" Height="480"
+        Width="520" Height="560" MinWidth="420" MinHeight="360"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BasisBackgroundBrush}">
     <Grid RowDefinitions="Auto,*,Auto" Margin="26">
@@ -12,15 +12,34 @@
             <TextBlock x:Name="TitleText" Text="{loc:Tr dialog.branchPicker.title}" Classes="h3"/>
             <TextBlock x:Name="SubText" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
         </StackPanel>
-        <Border Grid.Row="1" Classes="card" Padding="4">
-            <ListBox x:Name="List" Background="Transparent">
-                <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="sys:String">
-                        <TextBlock Text="{Binding}" Margin="10,9" TextTrimming="CharacterEllipsis"/>
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl x:Name="Groups" Margin="0,0,6,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:BranchGroup">
+                        <StackPanel Spacing="6" Margin="0,0,0,14">
+                            <TextBlock Text="{Binding Title}" IsVisible="{Binding HasTitle}" FontWeight="SemiBold" FontSize="13"/>
+                            <TextBlock Text="{Binding Hint}" IsVisible="{Binding HasHint}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
+                            <Border Classes="card" Padding="4">
+                                <ListBox ItemsSource="{Binding Items}" Background="Transparent"
+                                         ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:BranchChoice">
+                                            <Grid ColumnDefinitions="*,Auto" Margin="10,8">
+                                                <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                                           ToolTip.Tip="{Binding Label}"/>
+                                                <Border Grid.Column="1" Classes="versionPill" IsVisible="{Binding IsCurrent}" Margin="8,0,0,0">
+                                                    <TextBlock Text="{loc:Tr dialog.branchPicker.current}" FontSize="11" Classes="muted"/>
+                                                </Border>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Border>
+                        </StackPanel>
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </Border>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,14,0,0">
             <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.branchPicker.tooltip.cancel}">
                 <StackPanel Orientation="Horizontal" Spacing="8">

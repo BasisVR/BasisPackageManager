@@ -171,6 +171,17 @@ public sealed class UnityProjectService
         }
     }
 
+    public static string ReadUnityVersion(string unityProjectPath)
+    {
+        try
+        {
+            foreach (var line in File.ReadLines(Path.Combine(unityProjectPath, "ProjectSettings", "ProjectVersion.txt")))
+                if (line.StartsWith("m_EditorVersion:", StringComparison.Ordinal)) return line["m_EditorVersion:".Length..].Trim();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write($"Reading the Unity version of {unityProjectPath}", ex); }
+        return "unknown";
+    }
+
     private static async Task<string> ReadProjectVersionAsync(string path, CancellationToken ct)
     {
         var versionPath = Path.Combine(path, "ProjectSettings", "ProjectVersion.txt");

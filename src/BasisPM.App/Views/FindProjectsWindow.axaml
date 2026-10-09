@@ -1,0 +1,87 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BasisPM.App.ViewModels"
+        xmlns:loc="using:BasisPM.App.Localization"
+        x:Class="BasisPM.App.Views.FindProjectsWindow"
+        x:DataType="vm:FindProjectsViewModel"
+        Title="{loc:Tr dialog.findProjects.title}"
+        Width="640" Height="560" MinWidth="480" MinHeight="380"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <DockPanel Margin="26,24">
+        <StackPanel DockPanel.Dock="Top" Spacing="12">
+            <TextBlock Text="{loc:Tr dialog.findProjects.heading}" Classes="h3"/>
+            <TextBlock Text="{Binding IntroText}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="{Binding Folder}" Classes="dim" FontSize="12" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Folder}"/>
+                <Button Grid.Column="1" Margin="12,0,0,0" Click="OnChooseFolder" ToolTip.Tip="{loc:Tr dialog.findProjects.tooltip.changeFolder}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr dialog.findProjects.changeFolder}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" MinHeight="32">
+                <StackPanel Spacing="6" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding StatusText}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                    <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsSearching}" Height="4" CornerRadius="2"/>
+                </StackPanel>
+                <Button Grid.Column="1" Margin="12,0,0,0" Command="{Binding StopCommand}" IsVisible="{Binding IsSearching}"
+                        ToolTip.Tip="{loc:Tr dialog.findProjects.tooltip.stop}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr dialog.findProjects.stop}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,14,0,0">
+            <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.findProjects.tooltip.cancel}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.findProjects.cancel}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Classes="primary" Click="OnAdd" IsEnabled="{Binding CanAdd}" ToolTip.Tip="{loc:Tr dialog.findProjects.tooltip.add}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.findProjects.add}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <Border Classes="card" Padding="0" Margin="0,8,0,0">
+            <Panel>
+                <ScrollViewer IsVisible="{Binding HasResults}">
+                    <ItemsControl ItemsSource="{Binding Results}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:FoundProjectRow">
+                                <Border Padding="14,10" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <CheckBox IsChecked="{Binding IsSelected}" IsEnabled="{Binding CanSelect}">
+                                            <StackPanel Spacing="1">
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding Location}" Classes="dim" FontSize="11"
+                                                           TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Location}"/>
+                                                <TextBlock Text="{Binding UnityLabel}" Classes="muted" FontSize="11"/>
+                                            </StackPanel>
+                                        </CheckBox>
+                                        <Border Grid.Column="1" Classes="versionPill" Margin="12,0,0,0" VerticalAlignment="Center"
+                                                IsVisible="{Binding AlreadyAdded}">
+                                            <TextBlock Text="{loc:Tr dialog.findProjects.alreadyAdded}" FontSize="11" Classes="muted"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <TextBlock IsVisible="{Binding ShowNothingFound}" Text="{loc:Tr dialog.findProjects.none}"
+                           Classes="muted" FontSize="12" TextWrapping="Wrap" TextAlignment="Center"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="420" Margin="24"/>
+            </Panel>
+        </Border>
+    </DockPanel>
+</Window>

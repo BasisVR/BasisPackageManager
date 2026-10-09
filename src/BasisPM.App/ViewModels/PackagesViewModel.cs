@@ -10,8 +10,9 @@ using BasisPM.Core.Services;
 
 namespace BasisPM.App.ViewModels;
 
-public sealed class PackagesViewModel : ObservableObject
+public sealed partial class PackagesViewModel : ObservableObject
 {
+    private const string BuiltInSource = "built-in";
     private readonly UserSettingsService _settingsService;
     private readonly CatalogService _catalogService;
     private readonly UnityProjectService _projectService;
@@ -26,6 +27,7 @@ public sealed class PackagesViewModel : ObservableObject
     private readonly VersionService _versionService;
     private readonly ServerPackageService _serverPackages;
     private readonly PackageListService _packageListService;
+    private readonly BasisUpdateService _basisUpdates;
     private readonly MainWindowViewModel _shell;
     private bool _isGridView;
 
@@ -52,6 +54,9 @@ public sealed class PackagesViewModel : ObservableObject
     // Packages that are part of the Basis checkout itself (Basis/Packages/<id>). They are already
     // available to Unity and must not be cloned or added to manifest.json a second time.
     private readonly Dictionary<string, LocalPackage> _embeddedPackages = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _basisDependencies = new(StringComparer.OrdinalIgnoreCase);
+    private HashSet<string>? _basisEmbeddedFolders;
+    private readonly Dictionary<string, LocalPackage> _shadowedMounts = new(StringComparer.OrdinalIgnoreCase);
     // Mount records for the active project (id → folder + original manifest value) so a package row
     // can Open folder / Swap back / Submit PR without re-reading the registry each time.
     private readonly Dictionary<string, MountRecord> _mounts = new(StringComparer.OrdinalIgnoreCase);
@@ -67,6 +72,8 @@ public sealed class PackagesViewModel : ObservableObject
     private bool _scanningDrift;
     private bool _rescanEdits;
     private bool _rescanDrift;
+    private bool _scanningBasisDependencies;
+    private bool _rescanBasisDependencies;
 
     // Install queue: pressing Install enqueues a package and returns at once (so the button never greys
     // out and you can queue several), while one worker installs them in order — installs mutate the
@@ -143,7 +150,7 @@ public sealed class PackagesViewModel : ObservableObject
         }
     }
     public string InstalledToggleLabel => _showInstalledOnly ? L.Tr("packages.button.showAll") : L.Tr("packages.button.showInstalled");
-    public string ListHeaderLabel => _showInstalledOnly ? L.Tr("packages.header.installed") : L.Tr("packages.header.available");
+    public string ListHeaderLabel => _showInstalledOnly ? L.Tr("packages.header.installed") : _install is null ? L.Tr("packages.header.available") : L.Tr("packages.header.packagesFor", _install.DisplayName);
     public bool ShowInstalledEmptyHint => _showInstalledOnly && Available.Count == 0;
 
     public BasisInstall? SelectedInstall
@@ -215,7 +222,7 @@ public sealed class PackagesViewModel : ObservableObject
 
     public PackagesViewModel(UserSettingsService settingsService, CatalogService catalogService, UnityProjectService projectService,
         MountRegistry mountRegistry, MountService mountService, ContributeService contributeService, CacheDriftService driftService,
-        GitHubAuthService ghAuth, GitHubApiService ghApi, GitService gitService, MainWindowViewModel shell)
+        GitHubAuthService ghAuth, GitHubApiService ghApi, GitService gitService, BasisUpdateService basisUpdates, MainWindowViewModel shell)
     {
         _settingsService = settingsService;
         _catalogService = catalogService;
@@ -231,6 +238,7 @@ public sealed class PackagesViewModel : ObservableObject
         _versionService = new VersionService();
         _serverPackages = new ServerPackageService(gitService);
         _packageListService = new PackageListService();
+        _basisUpdates = basisUpdates;
         _shell = shell;
 
         InstallCommand = new RelayCommand<CatalogPackageVersion>(EnqueueInstall);
@@ -311,6 +319,7 @@ public sealed class PackagesViewModel : ObservableObject
         OnPropertyChanged(nameof(SelectedInstall));
         _syncingSelection = false;
         OnPropertyChanged(nameof(InstallName));
+        OnPropertyChanged(nameof(ListHeaderLabel));
         OnPropertyChanged(nameof(HasInstall));
         RefreshInstalled();
     }
@@ -324,6 +333,7 @@ public sealed class PackagesViewModel : ObservableObject
         OnPropertyChanged(nameof(SelectedInstall));
         _syncingSelection = false;
         OnPropertyChanged(nameof(InstallName));
+        OnPropertyChanged(nameof(ListHeaderLabel));
         OnPropertyChanged(nameof(HasInstall));
         RefreshInstalled();
     }
@@ -333,6 +343,9 @@ public sealed class PackagesViewModel : ObservableObject
         _mountEditedIds.Clear();
         _mountEditSummaries.Clear();
         _drift.Clear();
+        _basisDependencies.Clear();
+        _basisEmbeddedFolders = null;
+        ClearBasisDevState();
     }
 
     /// <summary>Projects listed in the Packages project selector; keeps the current pick if still present.</summary>
@@ -414,7 +427,7 @@ public sealed class PackagesViewModel : ObservableObject
         // author/tags, the Source and Category facets, then the chosen sort (mirrors PackageStore.Query).
         var catalog = _catalogService.AllLatest(_catalog).Where(v =>
             SearchMatches(v, f)
-            && (_selectedSource == "all" || string.Equals(v.Source, _selectedSource, StringComparison.OrdinalIgnoreCase))
+            && SourceMatches(v.Name, v.Source)
             && (_selectedCategory == "all" || string.Equals(v.Category, _selectedCategory, StringComparison.OrdinalIgnoreCase)));
 
         var shown = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -426,27 +439,38 @@ public sealed class PackagesViewModel : ObservableObject
             _mounts.TryGetValue(v.Name, out var rec);
             Available.Add(new PackageRow(v, installedVersion, _unofficialIds.Contains(v.Name),
                 _mountedIds.Contains(v.Name), rec?.FolderPath, _mountEditedIds.Contains(v.Name), rec?.OriginalManifestValue,
-                isEmbedded: embedded is not null, embeddedVersion: embedded?.Version));
+                isEmbedded: embedded is not null, embeddedVersion: embedded?.Version, isIncluded: IsIncluded(v.Name)));
             shown.Add(v.Name);
         }
 
-        // Packages the catalog doesn't list but the project mounts or pulls straight from git still get
+        // Packages the catalog doesn't list but the project mounts, embeds or pulls straight from git still get
         // a row — so mounting, Open folder / Submit PR and the amber "edited" state work for
         // community git deps too, not just registry packages. (These ids are kept out of the Installed
         // expander in RefreshInstalled, so a package never shows in both places.)
+        var local = new List<PackageRow>();
         foreach (var id in SyntheticRowIds())
         {
-            if (shown.Contains(id) || !TextMatches(id, f) || _selectedSource != "all" || _selectedCategory != "all") continue;
+            if (shown.Contains(id) || _selectedCategory != "all" || !SourceMatches(id, null)) continue;
             var installedVersion = _install?.Manifest.Dependencies.GetValueOrDefault(id);
             _mounts.TryGetValue(id, out var rec2);
+            _embeddedPackages.TryGetValue(id, out var embedded);
             var gitUrl = installedVersion is not null && UpmGitUrl.Parse(installedVersion) is not null
                 ? installedVersion
                 : rec2?.OriginalManifestValue;
-            var entry = new CatalogPackageVersion { Name = id, DisplayName = id, Version = "local", Description = "", Url = gitUrl };
-            Available.Add(new PackageRow(entry, installedVersion, isUnofficial: false, isMounted: _mountedIds.Contains(id),
-                mountFolder: rec2?.FolderPath, mountedHasEdits: _mountEditedIds.Contains(id), mountOriginalValue: rec2?.OriginalManifestValue));
-            shown.Add(id);
+            var entry = new CatalogPackageVersion
+            {
+                Name = id,
+                DisplayName = embedded?.DisplayName ?? id,
+                Version = embedded?.Version is { Length: > 0 } version ? version : "local",
+                Description = embedded?.Description ?? "",
+                Url = gitUrl,
+            };
+            if (!SearchMatches(entry, f)) continue;
+            local.Add(new PackageRow(entry, installedVersion, isUnofficial: false, isMounted: _mountedIds.Contains(id),
+                mountFolder: rec2?.FolderPath, mountedHasEdits: _mountEditedIds.Contains(id), mountOriginalValue: rec2?.OriginalManifestValue,
+                isEmbedded: embedded is not null, embeddedVersion: embedded?.Version, isIncluded: IsIncluded(id)));
         }
+        foreach (var row in local.OrderBy(r => r.DisplayName, StringComparer.OrdinalIgnoreCase)) Available.Add(row);
 
         // Re-apply the drift flag (a separate, async signal) after the rows are rebuilt.
         foreach (var row in Available)
@@ -456,6 +480,7 @@ public sealed class PackagesViewModel : ObservableObject
         }
         // Re-apply queued/installing state so a rebuild mid-install keeps the row indicators.
         ApplyInstallQueueState();
+        ApplyBasisDevState();
 
         // Keep an open detail panel pointed at the refreshed row so its state stays current.
         if (_selectedPackage is not null)
@@ -466,57 +491,73 @@ public sealed class PackagesViewModel : ObservableObject
         OnPropertyChanged(nameof(ShowInstalledEmptyHint));
     }
 
-    // Ids that deserve an Available row despite not being in the catalog: every mounted package, plus
-    // any manifest dependency pulled straight from git (or a local file:) — the community packages the
-    // former Develop tab let you mount.
+    // Ids that deserve an Available row despite not being in the catalog: every mounted package, every
+    // package embedded in the project, plus any manifest dependency pulled straight from git (or a local
+    // file:) — the community packages the former Develop tab let you mount.
     private IEnumerable<string> SyntheticRowIds()
     {
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var id in _mounts.Keys)
+            if (!_catalog.Packages.ContainsKey(id) && seen.Add(id)) yield return id;
+        foreach (var id in _embeddedPackages.Keys)
             if (!_catalog.Packages.ContainsKey(id) && seen.Add(id)) yield return id;
         if (_install is null || !_install.HasUnityProject) yield break;
         foreach (var (id, val) in _install.Manifest.Dependencies)
             if (!_catalog.Packages.ContainsKey(id) && LooksMountable(val) && seen.Add(id)) yield return id;
     }
 
-    // Rebuilds the Source + Category filter dropdowns from the whole catalog. Counts are over every package,
-    // independent of the active search/sort (matching the website). Keeps the current selection when that
-    // value still exists after a reload, otherwise falls back to "all".
+    // Rebuilds the Source + Category filter dropdowns from the whole catalog plus the project's own packages.
+    // Counts are independent of the active search/sort (matching the website). Keeps the current selection
+    // when that value still exists after a reload, otherwise falls back to "all".
     private void BuildFacets()
     {
-        var all = _catalogService.AllLatest(_catalog).ToList();
+        var entries = FacetEntries();
+        BuildSourceFacets(entries);
+        BuildCategoryFacets(entries);
+        OnPropertyChanged(nameof(CanUpdateAll));
+    }
 
+    private List<(string Id, string? Source, string? Category)> FacetEntries() =>
+        _catalogService.AllLatest(_catalog).Select(v => (v.Name, v.Source, v.Category))
+            .Concat(SyntheticRowIds().Select(id => (id, (string?)null, (string?)null)))
+            .ToList();
+
+    private void BuildSourceFacets(List<(string Id, string? Source, string? Category)> entries)
+    {
         SourceFacets.Clear();
-        SourceFacets.Add(new FacetChip("source", "all", L.Tr("packages.source.all"), all.Count));
-        foreach (var g in all.Where(v => !string.IsNullOrWhiteSpace(v.Source))
-                             .GroupBy(v => v.Source!.Trim(), StringComparer.OrdinalIgnoreCase)
+        SourceFacets.Add(new FacetChip("source", "all", L.Tr("packages.source.all"), entries.Count(e => !IsBuiltIn(e.Id, e.Source))));
+        foreach (var g in entries.Select(e => EffectiveSource(e.Id, e.Source)).OfType<string>().Where(s => s.Length > 0)
+                             .GroupBy(s => s, StringComparer.OrdinalIgnoreCase)
                              .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
             SourceFacets.Add(new FacetChip("source", g.Key, SourceLabel(g.Key), g.Count()));
-
-        CategoryFacets.Clear();
-        CategoryFacets.Add(new FacetChip("category", "all", L.Tr("packages.category.all"), all.Count));
-        foreach (var g in all.Where(v => !string.IsNullOrWhiteSpace(v.Category))
-                             .GroupBy(v => v.Category!.Trim(), StringComparer.OrdinalIgnoreCase)
-                             .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
-            CategoryFacets.Add(new FacetChip("category", g.Key, g.Key, g.Count()));
 
         // A previously-selected facet may have vanished after a catalog reload — fall back to "all".
         if (!SourceFacets.Any(c => string.Equals(c.Key, _selectedSource, StringComparison.OrdinalIgnoreCase)))
             _selectedSource = "all";
-        if (!CategoryFacets.Any(c => string.Equals(c.Key, _selectedCategory, StringComparison.OrdinalIgnoreCase)))
-            _selectedCategory = "all";
         foreach (var c in SourceFacets) c.IsSelected = string.Equals(c.Key, _selectedSource, StringComparison.OrdinalIgnoreCase);
-        foreach (var c in CategoryFacets) c.IsSelected = string.Equals(c.Key, _selectedCategory, StringComparison.OrdinalIgnoreCase);
 
         // Point the dropdowns at the freshly-built option instances (set the fields directly:
         // going through the setters would re-run the filter for what is the same selection).
         _selectedSourceFacet = SourceFacets.First(c => c.IsSelected);
-        _selectedCategoryFacet = CategoryFacets.First(c => c.IsSelected);
         OnPropertyChanged(nameof(SelectedSourceFacet));
-        OnPropertyChanged(nameof(SelectedCategoryFacet));
+    }
 
+    private void BuildCategoryFacets(List<(string Id, string? Source, string? Category)> entries)
+    {
+        var scoped = entries.Where(e => SourceMatches(e.Id, e.Source)).ToList();
+        CategoryFacets.Clear();
+        CategoryFacets.Add(new FacetChip("category", "all", L.Tr("packages.category.all"), scoped.Count));
+        foreach (var g in scoped.Where(e => !string.IsNullOrWhiteSpace(e.Category))
+                             .GroupBy(e => e.Category!.Trim(), StringComparer.OrdinalIgnoreCase)
+                             .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
+            CategoryFacets.Add(new FacetChip("category", g.Key, g.Key, g.Count()));
+
+        if (!CategoryFacets.Any(c => string.Equals(c.Key, _selectedCategory, StringComparison.OrdinalIgnoreCase)))
+            _selectedCategory = "all";
+        foreach (var c in CategoryFacets) c.IsSelected = string.Equals(c.Key, _selectedCategory, StringComparison.OrdinalIgnoreCase);
+        _selectedCategoryFacet = CategoryFacets.First(c => c.IsSelected);
+        OnPropertyChanged(nameof(SelectedCategoryFacet));
         OnPropertyChanged(nameof(HasCategoryFacets));
-        OnPropertyChanged(nameof(CanUpdateAll));
     }
 
     private void SetSource(string key)
@@ -524,6 +565,7 @@ public sealed class PackagesViewModel : ObservableObject
         if (string.Equals(_selectedSource, key, StringComparison.OrdinalIgnoreCase)) return;
         _selectedSource = key;
         foreach (var c in SourceFacets) c.IsSelected = string.Equals(c.Key, key, StringComparison.OrdinalIgnoreCase);
+        BuildCategoryFacets(FacetEntries());
         Refilter();
     }
 
@@ -555,8 +597,23 @@ public sealed class PackagesViewModel : ObservableObject
             || (v.Tags?.Any(t => t.Contains(f, StringComparison.OrdinalIgnoreCase)) ?? false);
     }
 
-    private static bool TextMatches(string text, string f) =>
-        f.Length == 0 || text.Contains(f, StringComparison.OrdinalIgnoreCase);
+    private static bool IsBuiltInSource(string? source) => source?.Trim().ToLowerInvariant() is BuiltInSource or "builtin";
+
+    private bool IsBasisEmbedded(string id) =>
+        (_embeddedPackages.TryGetValue(id, out var package) || _shadowedMounts.TryGetValue(id, out package))
+        && (_basisEmbeddedFolders?.Contains(package.FolderName) ?? true);
+
+    private bool IsBuiltIn(string id, string? source) =>
+        IsBasisEmbedded(id) || _basisDependencies.Contains(id) || IsBuiltInSource(source);
+
+    private bool IsIncluded(string id) =>
+        IsBasisEmbedded(id) || (_basisDependencies.Contains(id) && (_mounts.ContainsKey(id) || _install?.Manifest.Dependencies.ContainsKey(id) == true));
+
+    private string? EffectiveSource(string id, string? source) => IsBuiltIn(id, source) ? BuiltInSource : source?.Trim();
+
+    private bool SourceMatches(string id, string? source) => _selectedSource == "all"
+        ? !IsBuiltIn(id, source)
+        : string.Equals(EffectiveSource(id, source), _selectedSource, StringComparison.OrdinalIgnoreCase);
 
     // Sort keys mirror PackageStore.Query: popular (stars, then forks), stars, forks, updated, name.
     private static IEnumerable<CatalogPackageVersion> SortEntries(IEnumerable<CatalogPackageVersion> q, string sort) => sort switch
@@ -573,30 +630,34 @@ public sealed class PackagesViewModel : ObservableObject
         _mountedIds.Clear();
         _mounts.Clear();
         _embeddedPackages.Clear();
-        if (_install is null || !_install.HasUnityProject) { Refilter(); OnPropertyChanged(nameof(GitMissing)); OnPropertyChanged(nameof(CanUpdateAll)); return; }
+        _shadowedMounts.Clear();
+        if (_install is null || !_install.HasUnityProject) { BuildFacets(); Refilter(); OnPropertyChanged(nameof(GitMissing)); OnPropertyChanged(nameof(CanUpdateAll)); return; }
 
         // Packages mounted for editing are present as a local folder, not the registry git URL: a
         // root-level mount drops the manifest line entirely (cloned into Packages/<id>/), and a
         // subfolder mount rewrites it to a "file:" dep. Track both from the mount registry so they
         // surface as mounted rows in the Available list.
-        foreach (var rec in _mountRegistry.ForInstall(_install.UnityProjectPath))
+        foreach (var rec in ActiveMounts(_install))
         {
-            if (!MountService.IsWorkingClone(rec.FolderPath)) continue;
             _mounts[rec.PackageId] = rec;
             _mountedIds.Add(rec.PackageId);
         }
 
         foreach (var package in _projectService.ListEmbeddedPackages(_install.UnityProjectPath))
             if (!_mounts.ContainsKey(package.Id)) _embeddedPackages[package.Id] = package;
+            else if (!package.IsGitRepo) _shadowedMounts[package.Id] = package;
 
         _mountEditedIds.RemoveWhere(id => !_mountedIds.Contains(id));
         foreach (var id in _mountEditSummaries.Keys.Where(id => !_mountedIds.Contains(id)).ToList())
             _mountEditSummaries.Remove(id);
 
+        BuildFacets();
         Refilter();
         OnPropertyChanged(nameof(GitMissing));
         OnPropertyChanged(nameof(CanUpdateAll));
         StartEditScan();
+        _ = ScanBasisDependenciesAsync();
+        _ = ScanBasisDevAsync();
     }
 
     /// <summary>Vendor/owner from a reverse-DNS package id: com.unity.2d.sprite → "Unity".</summary>
@@ -628,10 +689,10 @@ public sealed class PackagesViewModel : ObservableObject
 
     // Writing a git URL over a mounted package's manifest line would contradict its working clone.
     private bool IsMountedIn(BasisInstall target, string id) =>
-        _mountRegistry.Find(target.UnityProjectPath, id) is { } rec && Directory.Exists(rec.FolderPath);
+        _mountService.FindMount(target.UnityProjectPath, id) is { } rec && Directory.Exists(rec.FolderPath);
 
     private MountRecord? WorkingCloneMount(BasisInstall target, string id) =>
-        _mountRegistry.Find(target.UnityProjectPath, id) is { } rec && MountService.IsWorkingClone(rec.FolderPath) ? rec : null;
+        _mountService.FindMount(target.UnityProjectPath, id) is { } rec && MountService.IsWorkingClone(rec.FolderPath) ? rec : null;
 
     private string? MountedPackageRoot(BasisInstall target, string id)
     {
@@ -779,10 +840,10 @@ public sealed class PackagesViewModel : ObservableObject
         if (_install is null || !_install.HasUnityProject) return new List<CatalogPackageVersion>();
         var latest = _catalogService.AllLatest(_catalog).ToDictionary(v => v.Name, StringComparer.OrdinalIgnoreCase);
         return _install.Manifest.Dependencies
-            .Where(kv => kv.Value?.StartsWith("file:", StringComparison.OrdinalIgnoreCase) != true && !_embeddedPackages.ContainsKey(kv.Key))
+            .Where(kv => kv.Value?.StartsWith("file:", StringComparison.OrdinalIgnoreCase) != true)
             .Select(kv => kv.Key)
             .Union(_mountedIds, StringComparer.OrdinalIgnoreCase)
-            .Where(id => !_mountEditedIds.Contains(id) && latest.ContainsKey(id))
+            .Where(id => !_mountEditedIds.Contains(id) && latest.TryGetValue(id, out var entry) && !IsBuiltIn(id, entry.Source))
             .Select(id => latest[id])
             .ToList();
     }
@@ -1407,6 +1468,35 @@ public sealed class PackagesViewModel : ObservableObject
         }
     }
 
+    private async Task ScanBasisDependenciesAsync()
+    {
+        if (_scanningBasisDependencies) { _rescanBasisDependencies = true; return; }
+        if (_install is null || !_install.HasUnityProject || !_gitService.IsAvailable) return;
+        _scanningBasisDependencies = true;
+        try
+        {
+            var install = _install;
+            var shipped = await _basisUpdates.GetBasisPackagesAsync(install.UnityProjectPath);
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (!ReferenceEquals(install, _install)) return;
+                var sameFolders = shipped.EmbeddedFolders is null ? _basisEmbeddedFolders is null : _basisEmbeddedFolders?.SetEquals(shipped.EmbeddedFolders) == true;
+                if (sameFolders && _basisDependencies.SetEquals(shipped.Dependencies)) return;
+                _basisDependencies.Clear();
+                _basisDependencies.UnionWith(shipped.Dependencies);
+                _basisEmbeddedFolders = shipped.EmbeddedFolders is null ? null : new HashSet<string>(shipped.EmbeddedFolders, StringComparer.OrdinalIgnoreCase);
+                BuildFacets();
+                Refilter();
+            });
+        }
+        catch (Exception ex) { DiagnosticLog.Write("Reading the packages that ship with Basis", ex); }
+        finally
+        {
+            _scanningBasisDependencies = false;
+            if (_rescanBasisDependencies) { _rescanBasisDependencies = false; _ = ScanBasisDependenciesAsync(); }
+        }
+    }
+
     // ===== Package lists =====
 
     /// <summary>Builds a package list from the current project's Basis + added packages and opens a GitHub issue to submit it.</summary>
@@ -1426,10 +1516,11 @@ public sealed class PackagesViewModel : ObservableObject
 
         // Candidates = packages added on top of vanilla Basis: git deps + anything not com.unity.*.
         var candidates = new List<PackageListEntry>();
+        var sources = _catalogService.AllLatest(_catalog).ToDictionary(v => v.Name, v => v.Source, StringComparer.OrdinalIgnoreCase);
         foreach (var (id, val) in target.Manifest.Dependencies)
         {
             var isVersion = IsSemverRange(val);
-            if (isVersion && id.StartsWith("com.unity", StringComparison.OrdinalIgnoreCase)) continue;
+            if ((isVersion && id.StartsWith("com.unity", StringComparison.OrdinalIgnoreCase)) || IsBuiltIn(id, sources.GetValueOrDefault(id))) continue;
             candidates.Add(new PackageListEntry
             {
                 Id = id,
@@ -1552,7 +1643,7 @@ public sealed class PackagesViewModel : ObservableObject
             foreach (var p in packageList.Packages)
             {
                 if (string.IsNullOrWhiteSpace(p.Id)) continue;
-                if (IsPackagePresentInSource(target, p.Id)) continue; // already bundled or mounted in the project
+                if (IsPackagePresentInSource(target, p.Id) || (ReferenceEquals(target, _install) && IsIncluded(p.Id))) continue; // already bundled or mounted in the project
                 if (!string.IsNullOrWhiteSpace(p.GitUrl))
                 {
                     if (!GitUrlPolicy.IsSafeDependencyUrl(p.GitUrl)) { skipped++; continue; }  // never write an unsafe transport to the manifest
@@ -1589,11 +1680,11 @@ public sealed class PackagesViewModel : ObservableObject
     private static void OpenUrl(string url) => ExternalLink.Open(url);
 }
 
-public sealed class PackageRow : ObservableObject
+public sealed partial class PackageRow : ObservableObject
 {
     public PackageRow(CatalogPackageVersion entry, string? installedVersion, bool isUnofficial = false,
         bool isMounted = false, string? mountFolder = null, bool mountedHasEdits = false, string? mountOriginalValue = null,
-        bool isEmbedded = false, string? embeddedVersion = null)
+        bool isEmbedded = false, string? embeddedVersion = null, bool isIncluded = false)
     {
         Entry = entry;
         InstalledVersion = installedVersion;
@@ -1603,6 +1694,7 @@ public sealed class PackageRow : ObservableObject
         _mountedHasEdits = mountedHasEdits;
         MountOriginalValue = mountOriginalValue;
         IsEmbedded = isEmbedded;
+        IsIncluded = isIncluded;
         EmbeddedVersion = embeddedVersion;
     }
 
@@ -1611,6 +1703,7 @@ public sealed class PackageRow : ObservableObject
     public bool IsUnofficial { get; }
     public bool IsMounted { get; }
     public bool IsEmbedded { get; }
+    public bool IsIncluded { get; }
     public string? EmbeddedVersion { get; }
     // The mounted working-clone folder (Packages/<id> or .basisdev/<id>); null when not mounted.
     public string? MountFolder { get; }
@@ -1674,7 +1767,8 @@ public sealed class PackageRow : ObservableObject
     // package that's neither shows the Install button. A mounted clone also offers Open folder / Submit PR
     // and goes amber once it has local edits.
     public bool IsAvailableToInstall => !IsInstalled && !IsMounted;
-    public bool IsManageable => IsInstalled && !IsMounted && !IsEmbedded;
+    public bool IsManageable => IsInstalled && !IsMounted && !IsReadOnly;
+    private bool IsReadOnly => IsEmbedded || IsIncluded;
 
     // Install-queue state (set by the VM): a queued/installing row keeps its Install button visible but
     // disabled, relabels it "Queued…" / "Installing…", and shows a progress bar — so pressing Install on
@@ -1697,11 +1791,11 @@ public sealed class PackageRow : ObservableObject
         : InstallPending ? L.Tr("packages.button.queued")
         : L.Tr("packages.button.install");
 
-    public bool CanUpdate => !IsEmbedded && (IsInstalled || IsMounted);
-    public bool CanRemove => !IsEmbedded && (IsInstalled || IsMounted);
+    public bool CanUpdate => !IsReadOnly && (IsInstalled || IsMounted);
+    public bool CanRemove => !IsReadOnly && (IsInstalled || IsMounted);
     // Installed straight from git (there's a URL to clone) and not already mounted → can be mounted for editing.
-    public bool CanMountToEdit => !IsEmbedded && IsInstalled && !IsMounted && InstalledVersion is not null && UpmGitUrl.Parse(InstalledVersion) is not null;
-    public bool CanChooseVersion => !IsEmbedded && HasGit;
+    public bool CanMountToEdit => !IsReadOnly && IsInstalled && !IsMounted && InstalledVersion is not null && UpmGitUrl.Parse(InstalledVersion) is not null;
+    public bool CanChooseVersion => !IsReadOnly && HasGit;
     public string MountedLabel => L.Tr("packages.state.mounted");
     // The inline mounted pill: "Locally mounted", or "Local edits" once the working clone is dirty.
     public string MountedStateLabel => MountedHasEdits ? L.Tr("packages.state.mountedEdited") : L.Tr("packages.state.mounted");
@@ -1724,7 +1818,7 @@ public sealed class PackageRow : ObservableObject
     public string Initial => string.IsNullOrWhiteSpace(DisplayName) ? "?" : DisplayName.TrimStart()[..1].ToUpperInvariant();
     // Icon-tile glyph: the package's registry emoji when set, else its initial letter.
     public string TileGlyph => string.IsNullOrWhiteSpace(Entry.Icon) ? Initial : Entry.Icon!.Trim();
-    public bool HasGit => !IsEmbedded && !string.IsNullOrWhiteSpace(Entry.Url);
+    public bool HasGit => !IsReadOnly && !string.IsNullOrWhiteSpace(Entry.Url);
     public string? GitUrl => Entry.Url;
     public bool HasGitUrl => !IsEmbedded && !string.IsNullOrWhiteSpace(Entry.Url);
     public bool HasDependencies => Entry.Dependencies is { Count: > 0 };

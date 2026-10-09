@@ -106,6 +106,39 @@ public sealed class GitHubApiService
                ?? throw new InvalidOperationException("Create-PR returned no body.");
     }
 
+    public async Task<GitHubPullRequest?> FindOpenPullRequestAsync(string token, string owner, string repo, string head, CancellationToken ct = default)
+    {
+        using var req = Request(HttpMethod.Get, $"repos/{owner}/{repo}/pulls?state=open&head={Uri.EscapeDataString(head)}", token);
+        try
+        {
+            using var res = await _http.SendAsync(req, ct).ConfigureAwait(false);
+            if (!res.IsSuccessStatusCode) return null;
+            var pulls = await res.Content.ReadFromJsonAsync<List<GitHubPullRequest>>(cancellationToken: ct).ConfigureAwait(false);
+            return pulls?.FirstOrDefault(p => p.HtmlUrl.Length > 0);
+        }
+        catch (Exception ex) when (!ct.IsCancellationRequested)
+        {
+            DiagnosticLog.Write($"Looking for an open pull request from {head} on {owner}/{repo}", ex);
+            return null;
+        }
+    }
+
+    public async Task<bool> SyncForkAsync(string token, string owner, string repo, string branch, CancellationToken ct = default)
+    {
+        using var req = Request(HttpMethod.Post, $"repos/{owner}/{repo}/merge-upstream", token);
+        req.Content = JsonContent.Create(new { branch });
+        try
+        {
+            using var res = await _http.SendAsync(req, ct).ConfigureAwait(false);
+            return res.IsSuccessStatusCode;
+        }
+        catch (Exception ex) when (!ct.IsCancellationRequested)
+        {
+            DiagnosticLog.Write($"Syncing {branch} of {owner}/{repo} with its upstream", ex);
+            return false;
+        }
+    }
+
     /// <summary>A repo's releases (newest first per GitHub). Token optional — public repos work unauthenticated
     /// (just a lower rate limit). Returns empty on any error or if there are no releases.</summary>
     public async Task<IReadOnlyList<GitHubRelease>> GetReleasesAsync(string owner, string repo, string? token = null, CancellationToken ct = default)

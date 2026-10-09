@@ -12,14 +12,17 @@ name: Release
 # channel name (win-arm64, linux-arm64, osx-x64). Never re-point a channel at a different
 # architecture — installs on it would update onto binaries they can't run.
 #
-# Code signing is optional and auto-detected: releases are unsigned until the signing
-# secrets are configured, then the next tag signs automatically. See RELEASING.md.
+# Code signing is optional: releases stay unsigned until it is configured. See RELEASING.md.
+# Running the workflow by hand is a dry run that signs Windows with the SignPath test
+# certificate and keeps the packages as workflow artifacts instead of publishing them.
 on:
   push:
     tags: [ 'v*' ]
+  workflow_dispatch:
 
 permissions:
   contents: write   # create the GitHub Release
+  actions: read     # SignPath downloads the unsigned artifacts from this run
 
 jobs:
   release:
@@ -42,6 +45,11 @@ jobs:
     env:
       TARGETS: ${{ matrix.targets }}
       LEGACY_RID: ${{ matrix.legacyRid }}
+      SIGNPATH_ORGANIZATION_ID: 12263251-c5d9-4535-9600-ee8bed1543dd
+      SIGNPATH_PROJECT_SLUG: Basis
+      SIGNPATH_ARTIFACT_CONFIGURATION_SLUG: basis-package-manager
+      SIGNPATH_SIGNING_POLICY_SLUG: ${{ github.event_name == 'workflow_dispatch' && 'test-signing' || 'release-signing' }}
+      WINDOWS_SIGNED_BINARIES: BasisPM.App.exe BasisPM.App.dll BasisPM.Core.dll basispm.exe basispm.dll
     steps:
       - uses: actions/checkout@v4
 
@@ -49,18 +57,24 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Resolve version from tag
+      - name: Resolve version
         shell: bash
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          else
+            echo "VERSION=0.0.1-dryrun.$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+          fi
 
       - name: Detect signing config
         shell: bash
         env:
-          WIN_SIGN: ${{ secrets.WINDOWS_SIGN_PARAMS }}
+          SIGNPATH_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+          SIGNPATH_RELEASE_SIGNING: ${{ vars.SIGNPATH_RELEASE_SIGNING }}
           MAC_CERT: ${{ secrets.MAC_CERTIFICATE_BASE64 }}
           APPLE_ID_SECRET: ${{ secrets.APPLE_ID }}
         run: |
-          if [ -n "$WIN_SIGN" ]; then
+          if [ -n "$SIGNPATH_TOKEN" ] && { [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] || [ "$SIGNPATH_RELEASE_SIGNING" = "true" ]; }; then
             echo "SIGN_WINDOWS=true" >> "$GITHUB_ENV"
           else
             echo "SIGN_WINDOWS=false" >> "$GITHUB_ENV"
@@ -83,13 +97,16 @@ jobs:
           for RID in $TARGETS; do
             dotnet publish src/BasisPM.App/BasisPM.App.csproj \
               -c Release -r "$RID" --self-contained true \
-              -o "publish/$RID" -p:Version=$VERSION
+              -o "publish/$RID" -p:Version=$VERSION \
+              -p:IncludeSourceRevisionInInformationalVersion=false
             dotnet publish src/BasisPM.Cli/BasisPM.Cli.csproj \
               -c Release -r "$RID" --self-contained true \
-              -o "publish/$RID" -p:Version=$VERSION
+              -o "publish/$RID" -p:Version=$VERSION \
+              -p:IncludeSourceRevisionInInformationalVersion=false
           done
 
       - name: Download previous releases (enables delta updates)
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         shell: bash
         run: |
           for RID in $TARGETS; do
@@ -133,24 +150,115 @@ jobs:
           xcrun notarytool store-credentials velopack-notary \
             --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD"
 
+      # --- Windows code signing (SignPath), only when SIGNPATH_API_TOKEN is set ---
+      - name: Stage app binaries for signing (Windows)
+        if: ${{ matrix.os == 'windows-latest' && env.SIGN_WINDOWS == 'true' }}
+        shell: bash
+        run: |
+          for RID in $TARGETS; do
+            mkdir -p "signing/binaries/$RID"
+            for FILE in $WINDOWS_SIGNED_BINARIES; do
+              cp "publish/$RID/$FILE" "signing/binaries/$RID/"
+            done
+          done
+
+      - name: Upload unsigned app binaries (Windows)
+        id: upload-unsigned-binaries
+        if: ${{ matrix.os == 'windows-latest' && env.SIGN_WINDOWS == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: unsigned-binaries
+          path: signing/binaries/
+          if-no-files-found: error
+          retention-days: 1
+          overwrite: true
+
+      - name: Sign app binaries (SignPath)
+        if: ${{ matrix.os == 'windows-latest' && env.SIGN_WINDOWS == 'true' }}
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ env.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ env.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ env.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ env.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+          github-artifact-id: ${{ steps.upload-unsigned-binaries.outputs.artifact-id }}
+          wait-for-completion-timeout-in-seconds: 3600
+          output-artifact-directory: signing/binaries-signed
+          parameters: |
+            version: ${{ toJSON(env.VERSION) }}
+
+      - name: Use signed app binaries (Windows)
+        if: ${{ matrix.os == 'windows-latest' && env.SIGN_WINDOWS == 'true' }}
+        shell: pwsh
+        run: |
+          foreach ($rid in $env:TARGETS -split ' ') {
+            foreach ($file in $env:WINDOWS_SIGNED_BINARIES -split ' ') {
+              $signed = "signing/binaries-signed/$rid/$file"
+              if (-not (Get-AuthenticodeSignature $signed).SignerCertificate) { throw "$rid/$file came back unsigned" }
+              Copy-Item $signed "publish/$rid/$file" -Force
+            }
+          }
+
       # --- Pack (per-OS; signs only when the matching signing config above is present) ---
-      # Windows signing: add your provider's cert-setup step (SSL.com eSigner action, or Certum
-      # SimplySign) before this step and set the WINDOWS_SIGN_PARAMS secret — see RELEASING.md.
       - name: Pack (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
         shell: bash
-        env:
-          WINDOWS_SIGN_PARAMS: ${{ secrets.WINDOWS_SIGN_PARAMS }}
         run: |
-          SIGN=()
-          if [ "$SIGN_WINDOWS" = "true" ]; then SIGN=(--signParams "$WINDOWS_SIGN_PARAMS"); fi
           for RID in $TARGETS; do
             if [ "$RID" = "$LEGACY_RID" ]; then CHANNEL="${RID%%-*}"; else CHANNEL="$RID"; fi
             vpk pack -u BasisPackageManager -v "$VERSION" -p "publish/$RID" -e BasisPM.App.exe \
               --runtime "$RID" --channel "$CHANNEL" -o "releases/$RID" \
               --packTitle "Basis Package Manager" --shortcuts StartMenuRoot \
-              --icon src/BasisPM.App/Assets/BasisLogo.ico "${SIGN[@]}"
+              --icon src/BasisPM.App/Assets/BasisLogo.ico
           done
+
+      - name: Stage installers for signing (Windows)
+        if: ${{ matrix.os == 'windows-latest' && env.SIGN_WINDOWS == 'true' }}
+        shell: bash
+        run: |
+          mkdir -p signing/installers
+          for RID in $TARGETS; do
+            cp "releases/$RID/"*-Setup.exe signing/installers/
+          done
+
+      - name: Upload unsigned installers (Windows)
+        id: upload-unsigned-installers
+        if: ${{ matrix.os == 'windows-latest' && env.SIGN_WINDOWS == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: unsigned-installers
+          path: signing/installers/
+          if-no-files-found: error
+          retention-days: 1
+          overwrite: true
+
+      - name: Sign installers (SignPath)
+        if: ${{ matrix.os == 'windows-latest' && env.SIGN_WINDOWS == 'true' }}
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ env.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ env.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ env.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ env.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+          github-artifact-id: ${{ steps.upload-unsigned-installers.outputs.artifact-id }}
+          wait-for-completion-timeout-in-seconds: 3600
+          output-artifact-directory: signing/installers-signed
+          parameters: |
+            version: ${{ toJSON(env.VERSION) }}
+
+      - name: Use signed installers (Windows)
+        if: ${{ matrix.os == 'windows-latest' && env.SIGN_WINDOWS == 'true' }}
+        shell: pwsh
+        run: |
+          foreach ($rid in $env:TARGETS -split ' ') {
+            foreach ($setup in Get-ChildItem "releases/$rid" -Filter '*-Setup.exe') {
+              $signed = "signing/installers-signed/$($setup.Name)"
+              if (-not (Get-AuthenticodeSignature $signed).SignerCertificate) { throw "$($setup.Name) came back unsigned" }
+              Copy-Item $signed $setup.FullName -Force
+            }
+          }
 
       - name: Pack (Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -185,6 +293,7 @@ jobs:
           done
 
       - name: Upload to GitHub Release
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         shell: bash
         run: |
           for RID in $TARGETS; do
@@ -202,8 +311,17 @@ jobs:
       # A tag with a prerelease suffix (e.g. v0.2.0-beta.1) is the prerelease channel: mark the
       # GitHub release as a pre-release so stable users don't receive it (opt-in via app Settings).
       - name: Flag prerelease (for -beta / -pre tags)
-        if: ${{ contains(github.ref_name, '-') }}
+        if: ${{ github.event_name != 'workflow_dispatch' && contains(github.ref_name, '-') }}
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release edit "${{ github.ref_name }}" --prerelease --repo "${{ github.repository }}"
+
+      - name: Keep dry-run packages
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: packages-${{ runner.os }}
+          path: releases/
+          retention-days: 7
+          overwrite: true

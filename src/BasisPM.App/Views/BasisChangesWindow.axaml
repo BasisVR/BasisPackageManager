@@ -1,0 +1,226 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BasisPM.App.ViewModels"
+        xmlns:loc="using:BasisPM.App.Localization"
+        x:Class="BasisPM.App.Views.BasisChangesWindow"
+        x:DataType="vm:BasisChangesViewModel"
+        Name="Root"
+        Title="{loc:Tr basisChanges.title}"
+        Width="1180" Height="800" MinWidth="860" MinHeight="580"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <Window.Styles>
+        <Style Selector="Button.fileRow">
+            <Setter Property="Background" Value="#00221F44"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="6,3"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+        <Style Selector="Button.fileRow.selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
+        </Style>
+        <Style Selector="TextBlock.kindA">
+            <Setter Property="Foreground" Value="{StaticResource BasisSuccessBrush}"/>
+        </Style>
+        <Style Selector="TextBlock.kindD">
+            <Setter Property="Foreground" Value="{StaticResource BasisDangerBrush}"/>
+        </Style>
+        <Style Selector="TextBlock.kindM">
+            <Setter Property="Foreground" Value="{StaticResource BasisWarningBrush}"/>
+        </Style>
+        <Style Selector="Border.diffAdded">
+            <Setter Property="Background" Value="#2622C55E"/>
+        </Style>
+        <Style Selector="Border.diffRemoved">
+            <Setter Property="Background" Value="#26EF1237"/>
+        </Style>
+        <Style Selector="TextBlock.diffHunk">
+            <Setter Property="Foreground" Value="{StaticResource BasisPurpleBrush}"/>
+        </Style>
+        <Style Selector="TextBlock.diffMeta">
+            <Setter Property="Foreground" Value="{StaticResource BasisTextDimBrush}"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="24">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,14">
+            <StackPanel Spacing="4">
+                <TextBlock Text="{loc:Tr basisChanges.title}" Classes="h2"/>
+                <TextBlock Text="{Binding ProjectName}" Classes="dim" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding BasedOnText}" IsVisible="{Binding HasBase}" Classes="muted" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                <TextBlock Text="{Binding RemoteText}" IsVisible="{Binding HasBase}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding NoticeText}" IsVisible="{Binding HasNotice}" Foreground="{StaticResource BasisWarningBrush}" FontSize="12" TextWrapping="Wrap"/>
+            </StackPanel>
+            <Button Grid.Column="1" Classes="iconBtn" VerticalAlignment="Top" Command="{Binding RefreshCommand}"
+                    ToolTip.Tip="{loc:Tr basisChanges.tooltip.refresh}">
+                <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+            </Button>
+        </Grid>
+
+        <Panel Grid.Row="1">
+            <StackPanel IsVisible="{Binding IsLoading}" Spacing="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="280" Height="4" CornerRadius="2"/>
+                <TextBlock Text="{Binding StatusText}" Classes="muted" FontSize="12" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="560"/>
+            </StackPanel>
+
+            <StackPanel IsVisible="{Binding ShowMessage}" Spacing="12" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="580">
+                <PathIcon Width="30" Height="30" Data="{StaticResource IconInfo}" Foreground="{StaticResource BasisTextMutedBrush}"/>
+                <TextBlock Text="{Binding MessageText}" Classes="muted" FontSize="13" TextAlignment="Center" TextWrapping="Wrap"/>
+            </StackPanel>
+
+            <Grid IsVisible="{Binding HasChanges}" ColumnDefinitions="380,14,*">
+                <Border Grid.Column="0" Classes="glass" Padding="0">
+                    <Grid RowDefinitions="Auto,*">
+                        <Grid ColumnDefinitions="*,Auto,Auto" Margin="14,10,10,6">
+                            <TextBlock Text="{loc:Tr basisChanges.listTitle}" Classes="muted" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <Button Grid.Column="1" Classes="link" Margin="0,0,12,0" Command="{Binding SelectAllCommand}"
+                                    Content="{loc:Tr basisChanges.selectAll}" ToolTip.Tip="{loc:Tr basisChanges.tooltip.selectAll}"/>
+                            <Button Grid.Column="2" Classes="link" Command="{Binding SelectNoneCommand}"
+                                    Content="{loc:Tr basisChanges.selectNone}" ToolTip.Tip="{loc:Tr basisChanges.tooltip.selectNone}"/>
+                        </Grid>
+                        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" IsEnabled="{Binding IsIdle}">
+                            <ItemsControl ItemsSource="{Binding Rows}" Margin="8,0,8,10">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.DataTemplates>
+                                    <DataTemplate DataType="vm:BasisChangeGroupItem">
+                                        <Grid ColumnDefinitions="Auto,*" Margin="0,8,0,2">
+                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked}" VerticalAlignment="Center" MinWidth="0"
+                                                      ToolTip.Tip="{loc:Tr basisChanges.tooltip.group}"/>
+                                            <Button Grid.Column="1" Classes="fileRow" Command="{Binding ToggleCommand}" Margin="2,0,0,0">
+                                                <Grid ColumnDefinitions="Auto,*">
+                                                    <Path Data="M 0 0 L 5 4 L 0 8 Z" IsVisible="{Binding !IsExpanded}" Fill="{StaticResource BasisTextDimBrush}"
+                                                          VerticalAlignment="Center" Margin="2,0,8,0"/>
+                                                    <Path Data="M 0 0 L 8 0 L 4 5 Z" IsVisible="{Binding IsExpanded}" Fill="{StaticResource BasisTextDimBrush}"
+                                                          VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                    <StackPanel Grid.Column="1" Spacing="1">
+                                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Name}"/>
+                                                        <TextBlock Text="{Binding Subtitle}" Classes="dim" FontSize="11"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                    <DataTemplate DataType="vm:BasisChangeFileItem">
+                                        <Grid ColumnDefinitions="Auto,*" Margin="20,0,0,0">
+                                            <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked}" VerticalAlignment="Center" MinWidth="0"
+                                                      ToolTip.Tip="{loc:Tr basisChanges.tooltip.file}"/>
+                                            <Button Grid.Column="1" Classes="fileRow" Classes.selected="{Binding IsSelected}" Margin="2,0,0,0"
+                                                    Command="{Binding #Root.((vm:BasisChangesViewModel)DataContext).SelectFileCommand}"
+                                                    CommandParameter="{Binding}" ToolTip.Tip="{Binding FullPath}">
+                                                <Grid ColumnDefinitions="18,*,Auto,Auto">
+                                                    <TextBlock Text="{Binding KindLetter}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12" FontWeight="Bold"
+                                                               Classes.kindA="{Binding IsAdded}" Classes.kindD="{Binding IsDeleted}" Classes.kindM="{Binding IsModified}"
+                                                               VerticalAlignment="Center" ToolTip.Tip="{Binding KindLabel}"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding DisplayPath}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12"
+                                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="2" Text="{loc:Tr basisChanges.withMeta}" IsVisible="{Binding HasMeta}" Classes="dim" FontSize="10"
+                                                               VerticalAlignment="Center" Margin="6,0,0,0" ToolTip.Tip="{loc:Tr basisChanges.tooltip.withMeta}"/>
+                                                    <TextBlock Grid.Column="3" Text="{loc:Tr basisChanges.churn}" IsVisible="{Binding IsChurn}" Classes="dim" FontSize="10"
+                                                               VerticalAlignment="Center" Margin="6,0,0,0" ToolTip.Tip="{loc:Tr basisChanges.tooltip.churn}"/>
+                                                </Grid>
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.DataTemplates>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Column="2" RowDefinitions="*,12,Auto">
+                    <Border Grid.Row="0" Classes="glass" Padding="0">
+                        <Grid RowDefinitions="Auto,*">
+                            <Border Padding="14,10" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="{Binding DiffTitle}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12"
+                                               TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding DiffTitle}" VerticalAlignment="Center"/>
+                                    <ProgressBar Grid.Column="1" IsIndeterminate="True" IsVisible="{Binding IsDiffLoading}" Width="80" Height="3" CornerRadius="2" Margin="10,0,0,0"/>
+                                </Grid>
+                            </Border>
+                            <Panel Grid.Row="1">
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto" IsVisible="{Binding HasDiff}">
+                                    <ItemsControl ItemsSource="{Binding DiffLines}" Margin="0,6,0,10">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <VirtualizingStackPanel/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:DiffLineItem">
+                                                <Border Classes.diffAdded="{Binding IsAdded}" Classes.diffRemoved="{Binding IsRemoved}" Padding="14,0">
+                                                    <TextBlock Text="{Binding Text}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12"
+                                                               Classes.diffHunk="{Binding IsHunk}" Classes.diffMeta="{Binding IsMeta}"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                                <TextBlock IsVisible="{Binding !HasDiff}" Text="{Binding DiffHint}" Classes="dim" FontSize="12"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" TextAlignment="Center"/>
+                            </Panel>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Row="2" Classes="glass" Padding="16,14" IsEnabled="{Binding IsIdle}">
+                        <Grid ColumnDefinitions="*,14,300" RowDefinitions="Auto,Auto,Auto">
+                            <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Spacing="5">
+                                <TextBlock Text="{loc:Tr basisChanges.field.title}" Classes="muted" FontSize="11"/>
+                                <TextBox Text="{Binding Title}" Watermark="{loc:Tr basisChanges.watermark.title}" ToolTip.Tip="{loc:Tr basisChanges.tooltip.title}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Spacing="5" Margin="0,10,0,0">
+                                <TextBlock Text="{loc:Tr basisChanges.field.description}" Classes="muted" FontSize="11"/>
+                                <TextBox Text="{Binding Body}" AcceptsReturn="True" TextWrapping="Wrap" Height="64"
+                                         Watermark="{loc:Tr basisChanges.watermark.description}" ToolTip.Tip="{loc:Tr basisChanges.tooltip.description}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="0" Spacing="5" Margin="0,10,0,0">
+                                <TextBlock Text="{loc:Tr basisChanges.field.branch}" Classes="muted" FontSize="11"/>
+                                <TextBox Text="{Binding Branch}" FontFamily="{StaticResource MonoFontFamily}" ToolTip.Tip="{loc:Tr basisChanges.tooltip.branch}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="2" Spacing="5" Margin="0,10,0,0">
+                                <TextBlock Text="{loc:Tr basisChanges.field.target}" Classes="muted" FontSize="11"/>
+                                <ComboBox ItemsSource="{Binding TargetBranches}" SelectedItem="{Binding TargetBranch}" HorizontalAlignment="Stretch"
+                                          ToolTip.Tip="{loc:Tr basisChanges.tooltip.target}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Panel>
+
+        <StackPanel Grid.Row="2" Spacing="6" Margin="0,12,0,0">
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsSubmitting}" Height="4" CornerRadius="2"/>
+            <TextBlock Text="{Binding StatusText}" IsVisible="{Binding IsSubmitting}" Classes="dim" FontSize="12" TextTrimming="CharacterEllipsis"/>
+            <TextBlock Text="{Binding ErrorText}" IsVisible="{Binding HasError}" Foreground="{StaticResource BasisDangerBrush}" FontSize="12" TextWrapping="Wrap"/>
+            <Button Classes="link" IsVisible="{Binding HasCompareUrl}" Command="{Binding OpenCompareCommand}" HorizontalAlignment="Left"
+                    Content="{loc:Tr basisChanges.openByHand}" ToolTip.Tip="{loc:Tr basisChanges.tooltip.openByHand}"/>
+            <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding HasResult}">
+                <PathIcon Width="14" Height="14" Data="{StaticResource IconCheck}" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding ResultText}" Classes="statusSuccess" FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                <Button Classes="link" Command="{Binding OpenResultCommand}" Content="{loc:Tr basisChanges.viewPr}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Margin="0,14,0,0">
+            <TextBlock Text="{Binding SelectionText}" IsVisible="{Binding HasChanges}" Classes="muted" FontSize="12" VerticalAlignment="Center"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                <Button Click="OnClose" ToolTip.Tip="{loc:Tr basisChanges.tooltip.close}">
+                    <TextBlock Text="{loc:Tr basisChanges.close}"/>
+                </Button>
+                <Button Classes="cta" Command="{Binding SubmitCommand}" IsVisible="{Binding HasChanges}"
+                        ToolTip.Tip="{loc:Tr basisChanges.tooltip.openPr}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr basisChanges.openPr}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

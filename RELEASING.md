@@ -86,54 +86,84 @@ stable `v0.2.0` later promotes prerelease testers up to it automatically.
 
 Releases are **unsigned by default**, which is why users see Windows SmartScreen and macOS
 Gatekeeper prompts on first run. Signing removes those. The release workflow **auto-detects**
-signing credentials: add the secrets below and the next tag signs automatically — no workflow
-edits needed. Leave them unset and releases keep working, just unsigned.
+signing credentials: add the secrets below (for Windows, also the `SIGNPATH_RELEASE_SIGNING`
+variable) and the next tag signs automatically, with no workflow edits needed. Leave them unset
+and releases keep working, just unsigned.
 
 Linux (AppImage) needs no signing for this purpose.
 
-### Windows
+### Windows: SignPath
 
-> **Heads up:** the cheapest cloud option, Microsoft's
-> [Azure Trusted Signing](https://azure.microsoft.com/products/artifact-signing) (~$10/mo),
-> is **only available to the US, Canada and EU/UK — not Australia**.
+Windows releases are signed through the free [SignPath Foundation](https://signpath.org/) program
+for open source projects. The certificate belongs to SignPath Foundation and its key never leaves
+their HSM: the release workflow uploads the files as GitHub Actions artifacts, SignPath checks that
+they came from this repository's workflow run, and signs them once a maintainer approves.
 
-> **No cert is "pay once, forever"** — from March 2026 all code-signing certs expire within ~15
-> months, so paid certs renew on roughly that cycle. The free option below avoids the cost entirely.
+Every release sends two signing requests, and the Windows job waits up to an hour for each approval:
 
-Since Basis is open source, the best route is free:
+1. **App binaries**, before `vpk pack`: the five files built from this repository, for each Windows
+   architecture (`BasisPM.App.exe`, `BasisPM.App.dll`, `BasisPM.Core.dll`, `basispm.exe`,
+   `basispm.dll`). Velopack copies them unchanged into the update package, the portable zip and the
+   installer.
+2. **Installers**, after `vpk pack`: `BasisPackageManager-win-Setup.exe` and
+   `BasisPackageManager-win-arm64-Setup.exe`, which carry the signed binaries inside.
 
-**[SignPath Foundation](https://signpath.org/) — free for open source (recommended for BasisVR).**
-As an MIT project Basis qualifies for SignPath's free OV code-signing program. The private key lives
-on their HSM (you never handle it) and signing runs in CI — no monthly or annual fee. The only
-requirement is that all maintainers enable MFA on GitHub and SignPath. Apply with your repo and
-download URLs at [signpath.org](https://signpath.org/). It signs via their platform rather than
-`signtool`, so it needs a couple of extra CI steps around `vpk pack` (I can wire those).
+Everything else ships as its publisher built it. The .NET runtime keeps Microsoft's signature, while
+Avalonia, Velopack's `Update.exe` and the portable zip's launcher stay unsigned: SignPath Foundation
+signs only code built from this repository, and allows unsigned upstream files inside a signed package.
 
-If you'd rather buy a cert directly, both of these are cloud-based and sign via `signtool` with no
-USB token:
+SignPath checks both requests against
+[`build/signpath/artifact-configuration.xml`](build/signpath/artifact-configuration.xml). It accepts
+only those files, and only when their product name is `Basis Package Manager` and their product
+version equals the release version, which the workflow passes as the `version` parameter. The
+release build sets `IncludeSourceRevisionInInformationalVersion=false` so the product version is
+exactly the tag, without a `+commit` suffix.
 
-**[Certum](https://www.certum.eu/en/code-signing-certificates/) — cheapest paid (~€69 first year, ~€29
-renewal).** A European CA trusted by Microsoft. Its **Open Source Developer** cert suits BasisVR, and
-its SimplySign cloud presents the cert to `signtool` as a virtual smart card. It's OV, so SmartScreen
-reputation builds over the first downloads rather than instantly. Best if you sign from your
-workstation or run Certum's SimplySign proxy on the runner.
+**SignPath setup.** The signing runs through the `Basis` project of the `basisvr [OSS]` organization
+(`12263251-c5d9-4535-9600-ee8bed1543dd`), which SignPath Foundation manages and shares with the
+Basis repository. Already in place:
 
-**[SSL.com eSigner](https://www.ssl.com/how-to/cloud-code-signing-integration-with-github-actions/)
-— cleanest for CI (~US$249/yr EV, cheaper OV).** Purpose-built for pipelines: an official GitHub
-Action plus **eSigner CKA** (a `signtool` provider), no hardware. **EV gives instant SmartScreen
-trust.**
+- the **GitHub.com** trusted build system, linked to the project;
+- the `basis-package-manager` artifact configuration, with the contents of
+  `build/signpath/artifact-configuration.xml` (the `Basis` project's default configuration stays
+  Basis's own);
+- the `CI builds` CI user as a submitter on `release-signing` and `test-signing`, with dooly123
+  approving.
 
-Either way Velopack signs through `signtool`:
+Only SignPath Foundation can add `https://github.com/BasisVR/BasisPackageManager.git` to the project's
+repository URLs; origin verification rejects builds from any other repository. They order the
+production certificate (`Release certificate 2026`, still CSR PENDING) after reviewing a successful
+signing with the test certificate.
 
-```
-vpk pack … --signParams "/fd sha256 /td sha256 /tr <provider-timestamp-url>"
-```
+**Turning it on**, once the repository URL is added:
 
-**To enable it:** add your provider's cert-setup step to the *Pack (Windows)* job in
-[`release.yml`](.github/workflows/release.yml) (SSL.com's action, or Certum's SimplySign), and set
-a repo secret **`WINDOWS_SIGN_PARAMS`** with the `signtool` arguments above. The workflow already
-appends `--signParams "$WINDOWS_SIGN_PARAMS"` when that secret is present. (Ping me with your pick
-and I'll wire the exact setup step.)
+1. Create an API token for the `CI builds` user in SignPath and store it as the `SIGNPATH_API_TOKEN`
+   repository secret:
+
+   ```bash
+   gh secret set SIGNPATH_API_TOKEN --repo BasisVR/BasisPackageManager
+   ```
+
+2. **Test signing.** Run the Release workflow by hand (*Actions → Release → Run workflow*). A manual
+   run is a dry run: it builds every package as version `0.0.1-dryrun.<run number>`, signs Windows
+   through the `test-signing` policy with SignPath's self-signed test certificate, and keeps the
+   packages as workflow artifacts for a week instead of publishing a release. Tag builds stay
+   unsigned at this stage. Once it works, tell SignPath Foundation so they can review the setup and
+   import the production certificate.
+3. **Release signing.** After the production certificate is in place, set the
+   `SIGNPATH_RELEASE_SIGNING` repository variable to `true`. From then on every tag signs through
+   `release-signing`:
+
+   ```bash
+   gh variable set SIGNPATH_RELEASE_SIGNING --repo BasisVR/BasisPackageManager --body true
+   ```
+
+Without `SIGNPATH_API_TOKEN`, or for tags without `SIGNPATH_RELEASE_SIGNING`, the release still
+builds, unsigned.
+
+SignPath Foundation's [conditions](https://signpath.org/terms) also apply: everyone on the team uses
+MFA on GitHub and SignPath, a team member approves every release, and the README keeps its
+[code signing policy](README.md#code-signing-policy) section.
 
 ### macOS — Apple Developer ID + notarization
 
@@ -173,10 +203,8 @@ app needs are in [`build/entitlements.plist`](build/entitlements.plist).
 | Platform | What | Cost |
 |----------|------|------|
 | Windows  | **SignPath Foundation (open source)** | **free** |
-|          | or Certum / SSL.com eSigner | ~€69/yr / ~US$249/yr |
 | macOS    | Apple Developer Program (annual — no one-time or lifetime option) | US$99/yr |
 | Linux    | — | free |
 
-For BasisVR the cheapest path by far is **SignPath (free) for Windows** and simply shipping macOS
-unsigned to start (Mac users right-click → Open the first time). Add Apple's $99/yr only once Mac
-matters enough to remove that prompt.
+Windows is signed through SignPath at no cost. macOS can keep shipping unsigned for now (Mac users
+right-click → Open the first time); add Apple's $99/yr once Mac matters enough to remove that prompt.

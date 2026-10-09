@@ -571,6 +571,10 @@
       "value": "Disponibles à l'installation"
     },
     {
+      "key": "packages.header.packagesFor",
+      "value": "Paquets pour {0}"
+    },
+    {
       "key": "packages.header.community",
       "value": "Ajouter un paquet communautaire depuis GitHub"
     },

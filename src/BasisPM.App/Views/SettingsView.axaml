@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:BasisPM.App.ViewModels"
              xmlns:loc="using:BasisPM.App.Localization"
+             xmlns:views="using:BasisPM.App.Views"
              x:Class="BasisPM.App.Views.SettingsView"
              x:DataType="vm:SettingsViewModel">
 
@@ -17,7 +18,7 @@
                 </StackPanel>
             </Border>
 
-            <Expander IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.language" IsExpanded="False" HorizontalAlignment="Stretch">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.language.title}" Classes="h3"/>
                 </Expander.Header>
@@ -35,7 +36,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander IsExpanded="True" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.general" IsExpanded="True" HorizontalAlignment="Stretch">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.section.general}" Classes="h3"/>
                 </Expander.Header>
@@ -101,7 +102,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.detected" IsExpanded="False" HorizontalAlignment="Stretch">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.detected.title}" Classes="h3"/>
                 </Expander.Header>
@@ -121,7 +122,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.about" IsExpanded="False" HorizontalAlignment="Stretch">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.about.title}" Classes="h3"/>
                 </Expander.Header>
@@ -143,7 +144,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.logs" IsExpanded="False" HorizontalAlignment="Stretch">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.logs.title}" Classes="h3"/>
                 </Expander.Header>
@@ -186,7 +187,7 @@
             <!-- Licenses & attributions: every third-party component bundled in the app, its
                  licence, copyright and source. The interface icons (Fluent System Icons) are
                  credited here too, per the project's attribution requirements. -->
-            <Expander IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.licenses" IsExpanded="False" HorizontalAlignment="Stretch">
                 <Expander.Header>
                     <StackPanel Orientation="Horizontal" Spacing="10">
                         <PathIcon Width="18" Height="18" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
@@ -275,7 +276,7 @@
 
             <!-- Danger zone: wipe every setting and cached record and return the app to a
                  first-time state. Clones and files on disk are left untouched. -->
-            <Expander IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.reset" IsExpanded="False" HorizontalAlignment="Stretch">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.reset.title}" Classes="h3"/>
                 </Expander.Header>

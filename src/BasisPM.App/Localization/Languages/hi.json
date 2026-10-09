@@ -571,6 +571,10 @@
       "value": "इंस्टॉल के लिए उपलब्ध"
     },
     {
+      "key": "packages.header.packagesFor",
+      "value": "{0} के पैकेज"
+    },
+    {
       "key": "packages.header.community",
       "value": "GitHub से समुदाय पैकेज जोड़ें"
     },

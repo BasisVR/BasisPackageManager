@@ -113,7 +113,7 @@
 
         <!-- Dither overlay: a faint static noise texture that breaks up the 8-bit colour banding
              in the low-opacity gradient and blurred blobs over the dark background. Not animated. -->
-        <Border IsHitTestVisible="False" Opacity="0.05">
+        <Border IsHitTestVisible="False" Opacity="0.025">
             <Border.Background>
                 <ImageBrush Source="/Assets/noise.png" TileMode="Tile" Stretch="Fill"
                             DestinationRect="0,0,256,256"/>
@@ -155,6 +155,12 @@
                                        HorizontalAlignment="Center"/>
                         </Border>
                     </Grid>
+                    <Button Classes="nav" Classes.active="{Binding IsPackages}" Tag="packages" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.packages}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <PathIcon Width="18" Height="18" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr nav.packages}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                     <Grid>
                         <Button Classes="nav" Classes.active="{Binding IsCommunity}" Tag="community" Click="OnNavClick" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr nav.tooltip.community}">
                             <StackPanel Orientation="Horizontal" Spacing="12">
@@ -171,10 +177,10 @@
                                        HorizontalAlignment="Center"/>
                         </Border>
                     </Grid>
-                    <Button Classes="nav" Classes.active="{Binding IsPackages}" Tag="packages" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.packages}">
+                    <Button Classes="nav" Classes.active="{Binding IsServer}" Tag="server" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.server}">
                         <StackPanel Orientation="Horizontal" Spacing="12">
-                            <PathIcon Width="18" Height="18" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
-                            <TextBlock Text="{loc:Tr nav.packages}" VerticalAlignment="Center"/>
+                            <PathIcon Width="18" Height="18" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr nav.server}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                     <Button Classes="nav" Classes.active="{Binding IsUnity}" Tag="unity" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.unity}">
@@ -187,12 +193,6 @@
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <PathIcon Width="18" Height="18" Data="{StaticResource IconSettings}" VerticalAlignment="Center"/>
                             <TextBlock Text="{loc:Tr nav.settings}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="nav" Classes.active="{Binding IsServer}" Tag="server" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.server}">
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <PathIcon Width="18" Height="18" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
-                            <TextBlock Text="{loc:Tr nav.server}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>

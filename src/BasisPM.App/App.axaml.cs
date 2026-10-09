@@ -21,11 +21,14 @@ public partial class App : Application
         {
             // Both operations have explicit fallback behavior: malformed/missing settings return
             // defaults, and an unknown language falls back to English. Do not mask startup defects.
-            var startupSettings = new UserSettingsService().Load();
+            var settingsService = new UserSettingsService();
+            var startupSettings = settingsService.Load();
             Localizer.Instance.SetLanguage(startupSettings.Language);
+            SectionState.Load(settingsService, startupSettings);
 
             var vm = new MainWindowViewModel();
             var window = new MainWindow { DataContext = vm };
+            WindowSizeState.Attach(window, settingsService, startupSettings);
             desktop.MainWindow = window;
 
             // Clear as soon as the main window really closes. Waiting only for desktop.Exit is too

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+  <zip-file>
+    <directory-set>
+      <include path="win-*" min-matches="0" max-matches="unbounded" />
+      <for-each>
+        <pe-file-set product-name="Basis Package Manager" product-version="${version}">
+          <include path="BasisPM.App.exe" />
+          <include path="BasisPM.App.dll" />
+          <include path="BasisPM.Core.dll" />
+          <include path="basispm.exe" />
+          <include path="basispm.dll" />
+          <for-each>
+            <authenticode-sign />
+          </for-each>
+        </pe-file-set>
+      </for-each>
+    </directory-set>
+    <pe-file-set product-name="Basis Package Manager" product-version="${version}">
+      <include path="BasisPackageManager-win*-Setup.exe" min-matches="0" max-matches="unbounded" />
+      <for-each>
+        <authenticode-sign />
+      </for-each>
+    </pe-file-set>
+  </zip-file>
+</artifact-configuration>

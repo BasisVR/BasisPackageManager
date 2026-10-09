@@ -654,7 +654,7 @@ public sealed class ServerPackageService
     {
         if (!MountService.IsWorkingClone(folder)) return false;
         var status = await _git.GetStatusAsync(folder, ct).ConfigureAwait(false);
-        return status.ChangeCount > 0 || (status.Upstream.HasUpstream ? status.Upstream.Ahead > 0 : status.Branch is not ("HEAD" or "unknown"));
+        return status.ChangeCount > 0 || await _git.HasUnpublishedWorkAsync(folder, ct).ConfigureAwait(false);
     }
 
     private ServerPackageResult? CheckProject(string repoRoot, bool requireStitching = true)

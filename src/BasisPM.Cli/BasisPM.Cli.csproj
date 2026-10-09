@@ -13,4 +13,8 @@
     <ProjectReference Include="..\BasisPM.Core\BasisPM.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="BasisPM.Cli.Tests" />
+  </ItemGroup>
+
 </Project>

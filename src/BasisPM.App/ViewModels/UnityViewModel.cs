@@ -27,6 +27,7 @@ public sealed class UnityViewModel : ObservableObject
     private UnityReleaseRow? _selectedRelease;
     private string _streamFilter = "All";
     private string _requiredVersion = "";
+    private bool _editorsListed;
     private InstalledEditor? _selectedEditor;
 
     public ObservableCollection<InstalledEditor> InstalledEditors { get; } = new();
@@ -62,6 +63,7 @@ public sealed class UnityViewModel : ObservableObject
             {
                 OnPropertyChanged(nameof(HasRequiredVersion));
                 OnPropertyChanged(nameof(RequiredVersionNote));
+                RaiseRequiredState();
             }
         }
     }
@@ -71,6 +73,17 @@ public sealed class UnityViewModel : ObservableObject
     public string RequiredVersionNote => HasRequiredVersion
         ? L.Tr("unity.status.requiredVersionNote", _requiredVersion)
         : "";
+
+    public bool RequiredVersionInstalled => HasRequiredVersion && InstalledEditors.Any(e => string.Equals(e.Version, _requiredVersion, StringComparison.OrdinalIgnoreCase));
+    public bool ShowRequiredVersionNote => HasRequiredVersion && _editorsListed && !RequiredVersionInstalled;
+    public string RequiredInstalledNote => RequiredVersionInstalled ? L.Tr("unity.status.requiredVersionInstalled", _requiredVersion) : "";
+
+    private void RaiseRequiredState()
+    {
+        OnPropertyChanged(nameof(RequiredVersionInstalled));
+        OnPropertyChanged(nameof(ShowRequiredVersionNote));
+        OnPropertyChanged(nameof(RequiredInstalledNote));
+    }
 
     // The editor picked in the installed-editors dropdown; Uninstall/Remove acts on this one.
     public InstalledEditor? SelectedEditor
@@ -100,7 +113,7 @@ public sealed class UnityViewModel : ObservableObject
 
     private void TrySelectRequired()
     {
-        if (!HasRequiredVersion || AvailableReleases.Count == 0) return;
+        if (!HasRequiredVersion || RequiredVersionInstalled || AvailableReleases.Count == 0) return;
         var match = AvailableReleases.FirstOrDefault(r => string.Equals(r.Release.Version, _requiredVersion, StringComparison.OrdinalIgnoreCase));
         if (match is not null) SelectedRelease = match;
     }
@@ -130,6 +143,11 @@ public sealed class UnityViewModel : ObservableObject
             ModuleOptions.Add(new ModuleOption(m, false));
             EditorModuleOptions.Add(new ModuleOption(m, false));
         }
+        InstalledEditors.CollectionChanged += (_, _) =>
+        {
+            _editorsListed = true;
+            RaiseRequiredState();
+        };
     }
 
     public async Task RefreshAsync()

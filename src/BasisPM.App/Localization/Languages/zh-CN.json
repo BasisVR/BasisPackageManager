@@ -571,6 +571,10 @@
       "value": "可安装"
     },
     {
+      "key": "packages.header.packagesFor",
+      "value": "{0} 的软件包"
+    },
+    {
       "key": "packages.header.community",
       "value": "从 GitHub 添加社区软件包"
     },

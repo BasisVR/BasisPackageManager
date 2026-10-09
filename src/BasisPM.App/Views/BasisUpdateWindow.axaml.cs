@@ -28,8 +28,8 @@ public partial class BasisUpdateWindow : Window
         {
             var branches = await model.ListBranchesAsync();
             if (branches.Count == 0) return;
-            var picked = await new BranchPickerWindow(L.Tr("dialog.basisUpdate.pickBranchTitle"), branches, model.BasisBranch).ShowDialog<string?>(this);
-            if (!string.IsNullOrWhiteSpace(picked)) await model.SwitchBranchAsync(picked);
+            var picked = await new BranchPickerWindow(L.Tr("dialog.basisUpdate.pickBranchTitle"), branches, model.BasisBranch).ShowDialog<BranchChoice?>(this);
+            if (picked is not null) await model.SwitchBranchAsync(picked.Name);
         }
         catch (Exception ex) { DiagnosticLog.Write("Changing the Basis branch in the update dialog", ex); }
     }

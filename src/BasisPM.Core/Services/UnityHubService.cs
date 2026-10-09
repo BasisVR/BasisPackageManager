@@ -176,11 +176,30 @@ public sealed partial class UnityHubService
         };
         foreach (var a in args) psi.ArgumentList.Add(a);
 
-        using var p = Process.Start(psi) ?? throw new InvalidOperationException($"Failed to start {exe}");
-        var stdoutTask = p.StandardOutput.ReadToEndAsync(ct);
-        var stderrTask = p.StandardError.ReadToEndAsync(ct);
-        await p.WaitForExitAsync(ct).ConfigureAwait(false);
-        return (p.ExitCode, await stdoutTask, await stderrTask);
+        using var p = new Process { StartInfo = psi, EnableRaisingEvents = true };
+        var stdout = new StringBuilder();
+        var stderr = new StringBuilder();
+        var exited = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        p.OutputDataReceived += (_, e) => { if (e.Data is not null) lock (stdout) stdout.AppendLine(e.Data); };
+        p.ErrorDataReceived += (_, e) => { if (e.Data is not null) lock (stderr) stderr.AppendLine(e.Data); };
+        p.Exited += (_, _) => exited.TrySetResult();
+        if (!p.Start()) throw new InvalidOperationException($"Failed to start {exe}");
+        using var stop = ct.Register(() =>
+        {
+            try { if (!p.HasExited) p.Kill(entireProcessTree: true); }
+            catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception) { DiagnosticLog.Write("Stopping a cancelled Unity Hub command", ex); }
+        });
+        p.BeginOutputReadLine();
+        p.BeginErrorReadLine();
+        if (p.HasExited) exited.TrySetResult();
+        await exited.Task.WaitAsync(ct).ConfigureAwait(false);
+        using (var grace = CancellationTokenSource.CreateLinkedTokenSource(ct))
+        {
+            grace.CancelAfter(TimeSpan.FromSeconds(2));
+            try { await p.WaitForExitAsync(grace.Token).ConfigureAwait(false); }
+            catch (OperationCanceledException) when (!ct.IsCancellationRequested) { }
+        }
+        lock (stdout) lock (stderr) return (p.ExitCode, stdout.ToString(), stderr.ToString());
     }
 
     [GeneratedRegex(@"^(?<ver>\S+)\s*(?:\((?<arch>[^)]+)\))?\s*,?\s*installed at\s+(?<path>.+)$")]

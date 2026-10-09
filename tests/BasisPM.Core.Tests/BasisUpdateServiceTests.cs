@@ -268,7 +268,8 @@ public sealed class BasisUpdateServiceTests
         Assert.Equal(BasisUpdateResultKind.Updated, result.Kind);
         Assert.Equal("b STAGED\n", GitSandbox.Read(project, "b.txt"));
         Assert.Equal("basis\n", GitSandbox.Read(project, "c.txt"));
-        Assert.Equal(" M b.txt", GitSandbox.Status(project));
+        Assert.Equal("M  b.txt", GitSandbox.Status(project));
+        Assert.NotEqual("b STAGED", GitSandbox.Run(project, "show", "HEAD:b.txt"));
     }
 
     [GitFact]
@@ -290,7 +291,7 @@ public sealed class BasisUpdateServiceTests
     }
 
     [GitFact]
-    public async Task Unrelated_history_is_linked_to_the_matching_basis_version_then_updated()
+    public async Task Unrelated_history_can_still_be_linked_to_the_matching_basis_version_then_merged()
     {
         using var box = new GitSandbox();
         box.CommitUpstream("one", ("a.txt", "a1\n"), ("b.txt", "b1\n"), ("c.txt", "c1\n"), ("d.txt", "d1\n"));
@@ -310,7 +311,9 @@ public sealed class BasisUpdateServiceTests
         GitSandbox.Commit(project, "import");
 
         var plan = await box.Updates.PlanAsync(project, "developer");
-        Assert.Equal(BasisUpdateKind.Unrelated, plan.Kind);
+        Assert.Equal(BasisUpdateKind.Apply, plan.Kind);
+        Assert.Equal(BasisBaseSource.Similarity, plan.BaseSource);
+        Assert.False(plan.Connected);
         Assert.Equal(three, plan.SuggestedBase?.Sha);
 
         Assert.True((await box.Updates.LinkAsync(project, plan.SuggestedBase!.Sha)).Ok);
@@ -350,23 +353,99 @@ public sealed class BasisUpdateServiceTests
         Assert.DoesNotContain("Library", GitSandbox.Run(project, "ls-files"));
 
         var plan = await box.Updates.PlanAsync(project);
-        Assert.Equal(BasisUpdateKind.Unrelated, plan.Kind);
+        Assert.Equal(BasisUpdateKind.Apply, plan.Kind);
         Assert.Equal(base1, plan.SuggestedBase?.Sha);
+        Assert.Equal(base1, plan.MergeBase);
     }
 
     [GitFact]
-    public async Task Project_without_git_refuses_to_record_an_unignored_library()
+    public async Task Project_without_git_gets_basis_git_rules_before_its_first_commit()
     {
         using var box = new GitSandbox();
         box.CommitUpstream("one", ("Assets/a.txt", "a1\n"));
         var project = box.Combine("zip");
         GitSandbox.Write(project, "Assets/a.txt", "a1\n");
+        foreach (var junk in new[] { "Library/huge.bin", "Temp/lock", "Logs/Editor.log", "UserSettings/Layouts.dwlt", ".vs/cache", "Assembly-CSharp.csproj", "Game.sln" })
+            GitSandbox.Write(project, junk, "generated");
+
+        var init = await box.Updates.InitializeRepositoryAsync(project, project);
+
+        Assert.True(init.Ok, init.Detail);
+        Assert.Equal(new[] { ".gitignore", ".gitattributes" }, init.AddedFiles);
+        Assert.Equal(".gitattributes\n.gitignore\nAssets/a.txt", GitSandbox.Run(project, "ls-files"));
+        Assert.Equal(BasisGitDefaults.UnityIgnore, File.ReadAllText(Path.Combine(project, ".gitignore")));
+        if (OperatingSystem.IsWindows()) Assert.Equal("true", GitSandbox.Run(project, "config", "core.longpaths"));
+    }
+
+    [GitFact]
+    public async Task Project_gitignore_that_lets_library_through_gets_basis_rules_appended()
+    {
+        using var box = new GitSandbox();
+        box.CommitUpstream("one", ("Assets/a.txt", "a1\n"));
+        var project = box.Combine("zip");
+        GitSandbox.Write(project, "Assets/a.txt", "a1\n");
+        GitSandbox.Write(project, ".gitignore", "*.tmp");
         GitSandbox.Write(project, "Library/huge.bin", "cache");
 
         var init = await box.Updates.InitializeRepositoryAsync(project, project);
 
-        Assert.Equal(BasisUpdateFailure.LibraryNotIgnored, init.Failure);
-        Assert.False(Directory.Exists(Path.Combine(project, ".git")));
+        Assert.True(init.Ok, init.Detail);
+        Assert.Contains(".gitignore", init.AddedFiles);
+        Assert.StartsWith("*.tmp\n\n# Unity's generated files", File.ReadAllText(Path.Combine(project, ".gitignore")));
+        Assert.DoesNotContain("Library", GitSandbox.Run(project, "ls-files"));
+    }
+
+    [GitFact]
+    public async Task Package_cloned_with_its_own_git_is_left_out_of_the_first_commit()
+    {
+        using var box = new GitSandbox();
+        box.CommitUpstream("one", ("Assets/a.txt", "a1\n"));
+        var project = box.Combine("zip");
+        GitSandbox.Write(project, "Assets/a.txt", "a1\n");
+        var package = Path.Combine(project, "Packages", "com.vendor.lights");
+        GitSandbox.Write(package, "package.json", "{}");
+        GitSandbox.Run(package, "init", "-q");
+        GitSandbox.Commit(package, "vendor");
+
+        var init = await box.Updates.InitializeRepositoryAsync(project, project);
+
+        Assert.True(init.Ok, init.Detail);
+        Assert.Equal(new[] { "Packages/com.vendor.lights" }, init.LeftOut);
+        Assert.DoesNotContain("com.vendor.lights", GitSandbox.Run(project, "ls-files"));
+        Assert.Equal("", GitSandbox.Status(project));
+    }
+
+    [GitFact]
+    public async Task VRChat_style_packages_gitignore_stops_hiding_the_projects_packages()
+    {
+        using var box = new GitSandbox();
+        box.CommitUpstream("one", ("Assets/a.txt", "a1\n"));
+        var project = box.Combine("zip");
+        GitSandbox.Write(project, "Assets/a.txt", "a1\n");
+        GitSandbox.Write(project, "Packages/.gitignore", "/*/\ncom.vrchat.*/\n!com.vrchat.core.*/\n!vpm-manifest.json\n!manifest.json\n");
+        GitSandbox.Write(project, "Packages/manifest.json", "{}");
+        GitSandbox.Write(project, "Packages/com.basis.sdk/package.json", "{}");
+        GitSandbox.Write(project, "Packages/com.basis.sdk/Runtime/Sdk.cs", "class Sdk {}");
+        GitSandbox.Write(project, "Packages/com.vrchat.base/package.json", "{}");
+        GitSandbox.Write(project, "Packages/Server Export/build.dll", "binary");
+        var clone = Path.Combine(project, "Packages", "com.vendor.lights");
+        GitSandbox.Write(clone, "package.json", "{}");
+        GitSandbox.Run(clone, "init", "-q");
+        GitSandbox.Commit(clone, "vendor");
+
+        var init = await box.Updates.InitializeRepositoryAsync(project, project);
+
+        Assert.True(init.Ok, init.Detail);
+        Assert.Equal(new[] { "Packages/com.basis.sdk", "Packages/com.vrchat.base" }, init.Unhidden.Order());
+        Assert.Equal(new[] { "Packages/com.vendor.lights" }, init.LeftOut);
+        var tracked = GitSandbox.Run(project, "ls-files");
+        Assert.Contains("Packages/com.basis.sdk/Runtime/Sdk.cs", tracked);
+        Assert.Contains("Packages/com.vrchat.base/package.json", tracked);
+        Assert.Contains("Packages/manifest.json", tracked);
+        Assert.DoesNotContain("Server Export", tracked);
+        Assert.DoesNotContain("com.vendor.lights", tracked);
+        Assert.EndsWith("!/com.basis.sdk/\n!/com.vrchat.base/\n", GitSandbox.Read(project, "Packages/.gitignore").Replace("\r", ""));
+        Assert.Equal("", GitSandbox.Status(project));
     }
 
     [GitFact]

@@ -3,6 +3,7 @@
              xmlns:vm="using:BasisPM.App.ViewModels"
              xmlns:models="using:BasisPM.Core.Models"
              xmlns:loc="using:BasisPM.App.Localization"
+             xmlns:views="using:BasisPM.App.Views"
              x:Class="BasisPM.App.Views.UnityView"
              x:DataType="vm:UnityViewModel"
              Name="Root">
@@ -31,11 +32,19 @@
 
             <Border CornerRadius="12" Padding="20,14" Background="{StaticResource BasisSurfaceHoverBrush}"
                     BorderBrush="{StaticResource BasisBrandBrush}" BorderThickness="1"
-                    IsVisible="{Binding HasRequiredVersion}">
+                    IsVisible="{Binding ShowRequiredVersionNote}">
                 <TextBlock Text="{Binding RequiredVersionNote}" Foreground="{StaticResource BasisTextPrimaryBrush}" TextWrapping="Wrap"/>
             </Border>
 
-            <Expander IsExpanded="True" HorizontalAlignment="Stretch">
+            <Border Classes="card" Padding="20,14" IsVisible="{Binding RequiredVersionInstalled}">
+                <Grid ColumnDefinitions="Auto,*">
+                    <PathIcon Width="14" Height="14" Data="{StaticResource IconCheck}" Foreground="{StaticResource BasisSuccessBrush}"
+                              VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock Grid.Column="1" Text="{Binding RequiredInstalledNote}" Classes="muted" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <Expander views:SectionState.Key="unity.installedEditors" IsExpanded="True" HorizontalAlignment="Stretch">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr unity.section.installedEditors}" Classes="h3"/>
                 </Expander.Header>
@@ -98,7 +107,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="unity.installNew" IsExpanded="False" HorizontalAlignment="Stretch">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr unity.section.installNew}" Classes="h3"/>
                 </Expander.Header>

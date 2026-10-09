@@ -128,10 +128,10 @@ public static class Dialogs
     }
 
     /// <summary>Shows the branch picker; returns the chosen branch, or null if cancelled.</summary>
-    public static async Task<string?> PickBranchAsync(string title, IReadOnlyList<string> branches, string current)
+    public static async Task<BranchChoice?> PickBranchAsync(string title, string subtitle, IReadOnlyList<BranchGroup> groups)
     {
         var owner = Owner;
-        return owner is null ? null : await new BranchPickerWindow(title, branches, current).ShowDialog<string?>(owner);
+        return owner is null ? null : await new BranchPickerWindow(title, subtitle, groups).ShowDialog<BranchChoice?>(owner);
     }
 
     public static async Task<BasisUpdateDecision> ReviewBasisUpdateAsync(BasisUpdateReviewViewModel model)
@@ -146,5 +146,11 @@ public static class Dialogs
     {
         var owner = Owner;
         return owner is null ? null : await new MergeConflictsWindow(model).ShowDialog<BasisUpdateResult?>(owner);
+    }
+
+    public static async Task ShowBasisChangesAsync(BasisChangesViewModel model)
+    {
+        var owner = Owner;
+        if (owner is not null) await new BasisChangesWindow(model).ShowDialog(owner);
     }
 }

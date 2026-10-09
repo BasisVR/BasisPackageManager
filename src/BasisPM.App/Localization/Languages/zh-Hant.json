@@ -571,6 +571,10 @@
       "value": "可安裝"
     },
     {
+      "key": "packages.header.packagesFor",
+      "value": "{0} 的套件"
+    },
+    {
       "key": "packages.header.community",
       "value": "從 GitHub 新增社群套件"
     },

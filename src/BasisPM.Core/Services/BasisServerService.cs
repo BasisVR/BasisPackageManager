@@ -137,24 +137,31 @@ public sealed class BasisServerService
 
     private Uri? TryGetHealthEndpoint(string repoRoot)
     {
+        var root = TryLoadConfigRoot(repoRoot);
+        var host = root?.Element("HealthCheckHost")?.Value.Trim();
+        var portText = root?.Element("HealthCheckPort")?.Value.Trim();
+        var path = root?.Element("HealthPath")?.Value.Trim();
+        if (string.IsNullOrWhiteSpace(host) || !ushort.TryParse(portText, out var port) || port == 0)
+            return null;
+
+        if (host is "0.0.0.0" or "::" or "[::]") host = "localhost";
+        if (host.Contains(':') && !host.StartsWith('[')) host = $"[{host}]";
+        if (string.IsNullOrWhiteSpace(path)) path = "/health";
+        if (!path.StartsWith('/')) path = "/" + path;
+        return Uri.TryCreate($"http://{host}:{port}{path}", UriKind.Absolute, out var endpoint)
+            ? endpoint
+            : null;
+    }
+
+    public string? GetServerPassword(string repoRoot) => TryLoadConfigRoot(repoRoot)?.Element("Password")?.Value;
+
+    private XElement? TryLoadConfigRoot(string repoRoot)
+    {
         var configFile = GetPaths(repoRoot).ConfigFile;
         if (!File.Exists(configFile)) return null;
         try
         {
-            var root = XDocument.Load(configFile).Root;
-            var host = root?.Element("HealthCheckHost")?.Value.Trim();
-            var portText = root?.Element("HealthCheckPort")?.Value.Trim();
-            var path = root?.Element("HealthPath")?.Value.Trim();
-            if (string.IsNullOrWhiteSpace(host) || !ushort.TryParse(portText, out var port) || port == 0)
-                return null;
-
-            if (host is "0.0.0.0" or "::" or "[::]") host = "localhost";
-            if (host.Contains(':') && !host.StartsWith('[')) host = $"[{host}]";
-            if (string.IsNullOrWhiteSpace(path)) path = "/health";
-            if (!path.StartsWith('/')) path = "/" + path;
-            return Uri.TryCreate($"http://{host}:{port}{path}", UriKind.Absolute, out var endpoint)
-                ? endpoint
-                : null;
+            return XDocument.Load(configFile).Root;
         }
         catch (IOException)
         {
@@ -283,6 +290,9 @@ public sealed class BasisServerService
         if (host.Contains(':') && !host.StartsWith('[')) host = $"[{host}]";
         return $"{host}:{port}" + (string.IsNullOrEmpty(password) ? "" : "#" + password);
     }
+
+    public string BuildClientConnection(string repoRoot, string host, ushort port, string? password) =>
+        BuildConnection(host, port, string.IsNullOrEmpty(password) && (string.IsNullOrWhiteSpace(host) || IsLocalHost(host)) ? GetServerPassword(repoRoot) : password);
 
     private static IEnumerable<ServerContentFile> Enumerate(string folder, bool library) =>
         Directory.Exists(folder)

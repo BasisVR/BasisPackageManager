@@ -9,5 +9,6 @@
     <Project Path="tests/BasisPM.Core.Tests/BasisPM.Core.Tests.csproj" />
     <Project Path="tests/BasisPM.Server.Tests/BasisPM.Server.Tests.csproj" />
     <Project Path="tests/BasisPM.App.Tests/BasisPM.App.Tests.csproj" />
+    <Project Path="tests/BasisPM.Cli.Tests/BasisPM.Cli.Tests.csproj" />
   </Folder>
 </Solution>

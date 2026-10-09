@@ -8,13 +8,13 @@ namespace BasisPM.App.ViewModels;
 
 public sealed class ConflictRow
 {
-    public ConflictRow(BasisConflict conflict, string repoRoot)
+    public ConflictRow(BasisConflict conflict, string repoRoot, string? branch = null)
     {
         Path = conflict.Path;
         Kind = conflict.Kind;
         IsUnityAsset = conflict.IsUnityAsset;
         FullPath = System.IO.Path.Combine(repoRoot, conflict.Path);
-        KindLabel = BasisUpdateText.DescribeConflict(conflict.Kind);
+        KindLabel = branch is null ? BasisUpdateText.DescribeConflict(conflict.Kind) : BasisUpdateText.DescribeBranchConflict(conflict.Kind, branch);
     }
 
     public string Path { get; }
@@ -35,6 +35,8 @@ public sealed class MergeConflictsViewModel : ObservableObject
     private readonly Func<Task<BasisUpdateResult>> _abort;
     private readonly Func<bool> _isUnityOpen;
     private BasisUpdatePhase _phase = BasisUpdatePhase.Merging;
+    private BasisOperation _operation = BasisOperation.Merge;
+    private string _branch = "";
     private bool _isWorking;
     private string _message = "";
 
@@ -86,9 +88,24 @@ public sealed class MergeConflictsViewModel : ObservableObject
         private set { if (SetField(ref _phase, value)) OnPropertyChanged(nameof(PhaseText)); }
     }
 
-    public string PhaseText => _phase == BasisUpdatePhase.Merging
-        ? L.Tr("dialog.conflicts.merging")
+    public BasisOperation Operation => _operation;
+    public bool IsBranchSwitch => _operation == BasisOperation.BranchSwitch;
+
+    public string PhaseText => IsBranchSwitch ? L.Tr("dialog.conflicts.switchRestoring", _branch)
+        : _phase == BasisUpdatePhase.Merging ? L.Tr("dialog.conflicts.merging")
         : L.Tr("dialog.conflicts.restoring");
+
+    public string TitleText => IsBranchSwitch ? L.Tr("dialog.conflicts.switchTitle") : L.Tr("dialog.conflicts.title");
+    public string UseTheirsLabel => IsBranchSwitch ? L.Tr("dialog.conflicts.useBranch") : L.Tr("dialog.conflicts.useBasis");
+    public string UseAllTheirsLabel => IsBranchSwitch ? L.Tr("dialog.conflicts.useAllBranch") : L.Tr("dialog.conflicts.useAllBasis");
+    public string UseTheirsTooltip => IsBranchSwitch ? L.Tr("dialog.conflicts.tooltip.useBranch", _branch) : L.Tr("dialog.conflicts.tooltip.useBasis");
+    public string UseAllTheirsTooltip => IsBranchSwitch ? L.Tr("dialog.conflicts.tooltip.useAllBranch", _branch) : L.Tr("dialog.conflicts.tooltip.useAllBasis");
+    public string AbortLabel => IsBranchSwitch ? L.Tr("dialog.conflicts.abortSwitch") : L.Tr("dialog.conflicts.abort");
+    public string AbortTooltip => IsBranchSwitch ? L.Tr("dialog.conflicts.tooltip.abortSwitch") : L.Tr("dialog.conflicts.tooltip.abort");
+    public string FinishLabel => IsBranchSwitch ? L.Tr("dialog.conflicts.finishSwitch") : L.Tr("dialog.conflicts.finish");
+    public string FinishTooltip => IsBranchSwitch ? L.Tr("dialog.conflicts.tooltip.finishSwitch") : L.Tr("dialog.conflicts.tooltip.finish");
+    public string ConfirmAbortTitle => IsBranchSwitch ? L.Tr("dialog.conflicts.confirmAbortSwitchTitle") : L.Tr("dialog.conflicts.confirmAbortTitle");
+    public string ConfirmAbortBody => IsBranchSwitch ? L.Tr("dialog.conflicts.confirmAbortSwitchBody") : L.Tr("dialog.conflicts.confirmAbortBody");
 
     public bool IsWorking
     {
@@ -99,9 +116,9 @@ public sealed class MergeConflictsViewModel : ObservableObject
     public bool IsIdle => !_isWorking;
     public bool HasConflicts => Conflicts.Count > 0;
     public bool CanFinish => !_isWorking && Conflicts.Count == 0;
-    public string RemainingText => Conflicts.Count == 0
-        ? L.Tr("dialog.conflicts.allDone")
-        : L.Tr("dialog.conflicts.remaining", Conflicts.Count);
+    public string RemainingText => Conflicts.Count > 0 ? L.Tr("dialog.conflicts.remaining", Conflicts.Count)
+        : IsBranchSwitch ? L.Tr("dialog.conflicts.allDoneSwitch")
+        : L.Tr("dialog.conflicts.allDone");
 
     public string Message
     {
@@ -214,12 +231,25 @@ public sealed class MergeConflictsViewModel : ObservableObject
     private async Task ReloadAsync()
     {
         var state = await _loadState();
-        if (state is not null) Phase = state.Phase;
+        if (state is not null)
+        {
+            Phase = state.Phase;
+            _operation = state.Operation;
+            _branch = state.TargetBranch ?? "";
+            foreach (var name in OperationProperties) OnPropertyChanged(name);
+        }
         var conflicts = await _loadConflicts();
         Conflicts.Clear();
-        foreach (var conflict in conflicts) Conflicts.Add(new ConflictRow(conflict, _repoRoot));
+        foreach (var conflict in conflicts) Conflicts.Add(new ConflictRow(conflict, _repoRoot, IsBranchSwitch ? _branch : null));
         RaiseCounts();
     }
+
+    private static readonly string[] OperationProperties =
+    {
+        nameof(Operation), nameof(IsBranchSwitch), nameof(PhaseText), nameof(TitleText), nameof(UseTheirsLabel), nameof(UseAllTheirsLabel),
+        nameof(UseTheirsTooltip), nameof(UseAllTheirsTooltip), nameof(AbortLabel), nameof(AbortTooltip), nameof(FinishLabel), nameof(FinishTooltip),
+        nameof(ConfirmAbortTitle), nameof(ConfirmAbortBody),
+    };
 
     private bool BlockedByUnity()
     {

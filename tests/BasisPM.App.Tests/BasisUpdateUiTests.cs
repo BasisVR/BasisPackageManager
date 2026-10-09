@@ -88,13 +88,19 @@ public sealed class BasisUpdateUiTests
         Assert.False(blocked.HasPrimary);
         Assert.True(blocked.HasBlocking);
 
-        var linkable = Review(new BasisUpdatePlan
+        var copied = Review(new BasisUpdatePlan
         {
-            Kind = BasisUpdateKind.Unrelated, BasisBranch = "developer",
+            Kind = BasisUpdateKind.Apply, BasisBranch = "developer", FromBranch = "developer", LocalBranch = "main", HeadSha = "h", UpstreamSha = "u",
+            MergeBase = "b", ApplyCommit = "c", BaseSource = BasisBaseSource.Similarity, IncomingCount = 3,
             SuggestedBase = new BasisBaseMatch("sha", "shortsha", DateTimeOffset.Now, "subject", 10016, 10017),
         });
-        Assert.Equal(BasisUpdateDecision.Link, linkable.PrimaryDecision);
-        Assert.Contains("10,016", linkable.MatchText);
+        Assert.Equal(BasisUpdateDecision.Update, copied.PrimaryDecision);
+        Assert.Equal("Update Basis", copied.PrimaryLabel);
+        Assert.True(copied.HasMatch);
+        Assert.Contains("10,016", copied.MatchText);
+        Assert.True(copied.IsSeparateHistory);
+        Assert.Contains("main", copied.SeparateHistoryNote);
+        Assert.False(copied.IsSwitch);
 
         Assert.False(Review(new BasisUpdatePlan { Kind = BasisUpdateKind.Unrelated, BasisBranch = "developer" }).HasPrimary);
 
@@ -134,6 +140,85 @@ public sealed class BasisUpdateUiTests
     }
 
     [AvaloniaFact]
+    public void Review_describes_moving_to_another_basis_branch()
+    {
+        Localizer.Instance.SetLanguage("en");
+        var lts = "long-term-support-20260916";
+        var review = Review(new BasisUpdatePlan
+        {
+            Kind = BasisUpdateKind.Apply, BasisBranch = lts, FromBranch = "developer", LocalBranch = "main", HeadSha = "h", UpstreamSha = "u",
+            MergeBase = "0123456789abcdef", ApplyCommit = "c", Connected = true, BaseSource = BasisBaseSource.History, OutgoingCount = 45,
+            Layout = new BasisLayout("Basis", ""),
+        });
+
+        Assert.True(review.IsSwitch);
+        Assert.Equal("Change Basis branch", review.HeaderText);
+        Assert.Equal($"Switch to {lts}", review.PrimaryLabel);
+        Assert.Contains("developer", review.SwitchSummary);
+        Assert.True(review.HasOutgoing);
+        Assert.Contains("45", review.OutgoingLabel);
+        Assert.Contains("012345678", review.ModeNote);
+        Assert.False(review.IsSeparateHistory);
+        Assert.True(review.HasLayout);
+        Assert.Contains("Basis", review.LayoutNote);
+        Assert.False(review.HasCommits);
+
+        var follow = Review(new BasisUpdatePlan { Kind = BasisUpdateKind.UpToDate, BasisBranch = lts, FromBranch = "developer", UpstreamSha = "u" });
+        Assert.True(follow.HasPrimary);
+        Assert.Equal(BasisUpdateDecision.Follow, follow.PrimaryDecision);
+        Assert.Equal($"Follow {lts}", follow.PrimaryLabel);
+        Assert.Contains(lts, follow.UpToDateBody);
+    }
+
+    [AvaloniaFact]
+    public void Branch_picker_offers_basis_and_project_branches_separately()
+    {
+        Localizer.Instance.SetLanguage("en");
+        var groups = InstallsViewModel.BranchGroups(new[] { "developer", "long-term-support-20260916" }, "long-term-support-20260916",
+            new[] { new ProjectBranch("main", null, true), new ProjectBranch("team-feature", "origin", false) });
+
+        Assert.Equal(2, groups.Count);
+        Assert.All(groups[0].Items, i => Assert.True(i.IsBasis));
+        Assert.True(groups[0].Items.Single(i => i.IsCurrent).Name == "long-term-support-20260916");
+        Assert.Equal(new[] { "main", "origin/team-feature" }, groups[1].Items.Select(i => i.Label));
+        Assert.Equal("team-feature", groups[1].Items[1].Name);
+        Assert.Equal("origin", groups[1].Items[1].Remote);
+
+        var window = new BranchPickerWindow("Switch branch", "On main", groups);
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal("long-term-support-20260916", window.Selected?.Name);
+    }
+
+    [AvaloniaFact]
+    public void Paused_branch_switch_is_labelled_as_a_switch()
+    {
+        Localizer.Instance.SetLanguage("en");
+        var row = Row("Game");
+        row.ApplyBasisCheck(new BasisUpdateCheck(BasisUpdateStatus.UpdateAvailable, "feature", "tip", null, true, null, BasisOperation.BranchSwitch));
+
+        Assert.True(row.BranchSwitchInProgress);
+        Assert.Equal("Finish switch", row.UpdateButtonLabel);
+        Assert.Equal("Branch switch paused", row.BasisPillText);
+
+        var model = new MergeConflictsViewModel("My Game", Path.GetTempPath(),
+            () => Task.FromResult<BasisUpdateState?>(new BasisUpdateState { Phase = BasisUpdatePhase.RestoringChanges, Operation = BasisOperation.BranchSwitch, TargetBranch = "feature" }),
+            () => Task.FromResult<IReadOnlyList<BasisConflict>>(new[] { new BasisConflict("a.txt", ConflictKind.DeletedByBasis, false) }),
+            (_, _) => Task.FromResult(BasisStepResult.Success),
+            () => Task.FromResult(BasisUpdateResult.Updated(null)),
+            () => Task.FromResult(BasisUpdateResult.Aborted(null)),
+            () => false);
+        model.LoadAsync().GetAwaiter().GetResult();
+
+        Assert.True(model.IsBranchSwitch);
+        Assert.Equal("Use branch version", model.UseTheirsLabel);
+        Assert.Equal("Undo switch", model.AbortLabel);
+        Assert.Equal("Finish switch", model.FinishLabel);
+        Assert.Contains("feature", model.PhaseText);
+        Assert.Contains("feature", model.Conflicts.Single().KindLabel);
+        Assert.Equal("Finish switching branch", model.TitleText);
+    }
+
+    [AvaloniaFact]
     public void Review_window_loads_for_every_kind_of_plan()
     {
         var plans = new[]
@@ -144,6 +229,8 @@ public sealed class BasisUpdateUiTests
             new BasisUpdatePlan { Kind = BasisUpdateKind.Unrelated, BasisBranch = "developer" },
             new BasisUpdatePlan { Kind = BasisUpdateKind.NotGitRepo, BasisBranch = "developer" },
             new BasisUpdatePlan { Kind = BasisUpdateKind.Blocked, Block = BasisUpdateBlock.FetchFailed, Detail = "offline" },
+            new BasisUpdatePlan { Kind = BasisUpdateKind.Apply, BasisBranch = "long-term-support-20260916", FromBranch = "developer", MergeBase = "b", OutgoingCount = 3 },
+            new BasisUpdatePlan { Kind = BasisUpdateKind.UpToDate, BasisBranch = "long-term-support-20260916", FromBranch = "developer" },
         };
         foreach (var plan in plans)
         {

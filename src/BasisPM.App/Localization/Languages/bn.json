@@ -571,6 +571,10 @@
       "value": "ইনস্টলের জন্য উপলব্ধ"
     },
     {
+      "key": "packages.header.packagesFor",
+      "value": "{0}-এর প্যাকেজ"
+    },
+    {
       "key": "packages.header.community",
       "value": "GitHub থেকে কমিউনিটি প্যাকেজ যোগ করুন"
     },

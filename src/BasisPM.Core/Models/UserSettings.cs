@@ -52,9 +52,26 @@ public sealed class UserSettings
     [JsonPropertyName("packagesGridView")]
     public bool PackagesGridView { get; set; }
 
+    [JsonPropertyName("projectsGridView")]
+    public bool ProjectsGridView { get; set; }
+
     [JsonPropertyName("autoCheckBasisUpdates")]
     public bool AutoCheckBasisUpdates { get; set; } = true;
 
     [JsonPropertyName("dismissedBasisUpdates")]
     public List<string> DismissedBasisUpdates { get; set; } = new();
+
+    // Collapsible sections the user opened or closed, keyed by section id (true = open). A section
+    // that isn't listed starts the way its view declares it.
+    [JsonPropertyName("expandedSections")]
+    public Dictionary<string, bool> ExpandedSections { get; set; } = new();
+
+    [JsonPropertyName("windowWidth")]
+    public double? WindowWidth { get; set; }
+
+    [JsonPropertyName("windowHeight")]
+    public double? WindowHeight { get; set; }
+
+    [JsonPropertyName("windowMaximized")]
+    public bool WindowMaximized { get; set; }
 }

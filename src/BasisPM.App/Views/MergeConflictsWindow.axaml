@@ -5,13 +5,13 @@
         x:Class="BasisPM.App.Views.MergeConflictsWindow"
         x:DataType="vm:MergeConflictsViewModel"
         Name="Root"
-        Title="{loc:Tr dialog.conflicts.title}"
+        Title="{Binding TitleText}"
         Width="780" Height="620" MinWidth="580" MinHeight="440"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BasisBackgroundBrush}">
     <Grid RowDefinitions="Auto,Auto,Auto,*,Auto,Auto" Margin="26">
         <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,10">
-            <TextBlock Text="{loc:Tr dialog.conflicts.title}" Classes="h2"/>
+            <TextBlock Text="{Binding TitleText}" Classes="h2"/>
             <TextBlock Text="{Binding ProjectName}" Classes="dim" FontSize="12" TextTrimming="CharacterEllipsis"/>
         </StackPanel>
 
@@ -24,8 +24,8 @@
                     <TextBlock Text="{loc:Tr dialog.conflicts.keepAllMine}"/>
                 </Button>
                 <Button Command="{Binding UseAllBasisCommand}" IsEnabled="{Binding IsIdle}"
-                        ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.useAllBasis}">
-                    <TextBlock Text="{loc:Tr dialog.conflicts.useAllBasis}"/>
+                        ToolTip.Tip="{Binding UseAllTheirsTooltip}">
+                    <TextBlock Text="{Binding UseAllTheirsLabel}"/>
                 </Button>
             </StackPanel>
             <Button Grid.Column="1" Classes="iconBtn" Command="{Binding RefreshCommand}" IsEnabled="{Binding IsIdle}"
@@ -63,8 +63,8 @@
                                             <TextBlock Text="{loc:Tr dialog.conflicts.keepMine}" FontSize="12"/>
                                         </Button>
                                         <Button Command="{Binding #Root.((vm:MergeConflictsViewModel)DataContext).UseBasisCommand}"
-                                                CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.useBasis}">
-                                            <TextBlock Text="{loc:Tr dialog.conflicts.useBasis}" FontSize="12"/>
+                                                CommandParameter="{Binding}" ToolTip.Tip="{Binding #Root.((vm:MergeConflictsViewModel)DataContext).UseTheirsTooltip}">
+                                            <TextBlock Text="{Binding #Root.((vm:MergeConflictsViewModel)DataContext).UseTheirsLabel}" FontSize="12"/>
                                         </Button>
                                         <Button Classes="iconBtn" IsVisible="{Binding CanOpen}"
                                                 Command="{Binding #Root.((vm:MergeConflictsViewModel)DataContext).OpenFileCommand}"
@@ -106,10 +106,10 @@
 
         <Grid Grid.Row="5" ColumnDefinitions="Auto,*,Auto" Margin="0,14,0,0">
             <Button Grid.Column="0" Classes="danger" Click="OnAbort" IsEnabled="{Binding IsIdle}"
-                    ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.abort}">
+                    ToolTip.Tip="{Binding AbortTooltip}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconUndo}" VerticalAlignment="Center"/>
-                    <TextBlock Text="{loc:Tr dialog.conflicts.abort}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding AbortLabel}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10">
@@ -117,10 +117,10 @@
                     <TextBlock Text="{loc:Tr dialog.conflicts.later}"/>
                 </Button>
                 <Button Classes="cta" Command="{Binding FinishCommand}" IsEnabled="{Binding CanFinish}"
-                        ToolTip.Tip="{loc:Tr dialog.conflicts.tooltip.finish}">
+                        ToolTip.Tip="{Binding FinishTooltip}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon Classes="leadingIcon" Data="{StaticResource IconCheck}" VerticalAlignment="Center"/>
-                        <TextBlock Text="{loc:Tr dialog.conflicts.finish}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding FinishLabel}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
             </StackPanel>

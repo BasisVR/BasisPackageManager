@@ -5,13 +5,13 @@
         xmlns:loc="using:BasisPM.App.Localization"
         x:Class="BasisPM.App.Views.BasisUpdateWindow"
         x:DataType="vm:BasisUpdateReviewViewModel"
-        Title="{loc:Tr dialog.basisUpdate.title}"
+        Title="{Binding HeaderText}"
         Width="640" Height="680" MinWidth="520" MinHeight="460"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BasisBackgroundBrush}">
     <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Margin="26">
         <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,14">
-            <TextBlock Text="{loc:Tr dialog.basisUpdate.title}" Classes="h2"/>
+            <TextBlock Text="{Binding HeaderText}" Classes="h2"/>
             <TextBlock Text="{Binding Subtitle}" Classes="dim" FontSize="12" TextTrimming="CharacterEllipsis"/>
         </StackPanel>
 
@@ -42,13 +42,17 @@
                 <StackPanel Spacing="16" Margin="0,0,6,0">
 
                     <StackPanel Spacing="16" IsVisible="{Binding IsUpdate}">
+                        <TextBlock Text="{Binding SwitchSummary}" IsVisible="{Binding IsSwitch}" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"/>
                         <WrapPanel>
-                            <Border Classes="versionPill" Margin="0,0,8,6">
+                            <Border Classes="versionPill" Margin="0,0,8,6" IsVisible="{Binding HasIncoming}">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                     <PathIcon Width="12" Height="12" Data="{StaticResource IconUpdate}"
                                               Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding IncomingLabel}" Classes="brand" FontWeight="Bold" FontSize="12"/>
                                 </StackPanel>
+                            </Border>
+                            <Border Classes="versionPill" Margin="0,0,8,6" IsVisible="{Binding HasOutgoing}">
+                                <TextBlock Text="{Binding OutgoingLabel}" Classes="muted" FontSize="12"/>
                             </Border>
                             <Border Classes="versionPill" Margin="0,0,8,6" IsVisible="{Binding HasLocalCommits}">
                                 <TextBlock Text="{Binding LocalCommitsLabel}" Classes="muted" FontSize="12"/>
@@ -63,6 +67,21 @@
                                 <PathIcon Width="14" Height="14" Data="{StaticResource IconCheck}" Margin="0,2,10,0"
                                           Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Top"/>
                                 <TextBlock Grid.Column="1" Text="{Binding ModeNote}" FontSize="13" TextWrapping="Wrap"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsSeparateHistory}">
+                                <PathIcon Width="14" Height="14" Data="{StaticResource IconCheck}" Margin="0,2,10,0"
+                                          Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Top"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SeparateHistoryNote}" FontSize="13" TextWrapping="Wrap"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding HasMatch}">
+                                <PathIcon Width="14" Height="14" Data="{StaticResource IconTag}" Margin="0,2,10,0"
+                                          Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Top"/>
+                                <TextBlock Grid.Column="1" Text="{Binding MatchText}" FontSize="13" TextWrapping="Wrap"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding HasLayout}">
+                                <PathIcon Width="14" Height="14" Data="{StaticResource IconInfo}" Margin="0,2,10,0"
+                                          Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Top"/>
+                                <TextBlock Grid.Column="1" Text="{Binding LayoutNote}" FontSize="13" TextWrapping="Wrap"/>
                             </Grid>
                             <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding HasUncommitted}">
                                 <PathIcon Width="14" Height="14" Data="{StaticResource IconCheck}" Margin="0,2,10,0"
@@ -124,7 +143,7 @@
                             </Border>
                         </StackPanel>
 
-                        <StackPanel Spacing="8">
+                        <StackPanel Spacing="8" IsVisible="{Binding HasCommits}">
                             <TextBlock Text="{loc:Tr dialog.basisUpdate.whatsNew}" Classes="h3"/>
                             <Border Classes="glass" Padding="6">
                                 <ItemsControl ItemsSource="{Binding Commits}">
@@ -152,21 +171,14 @@
                         <TextBlock Text="{loc:Tr dialog.basisUpdate.upToDate.title}" Classes="h3" HorizontalAlignment="Center"/>
                         <TextBlock Text="{Binding UpToDateBody}" Classes="muted" FontSize="13" TextWrapping="Wrap"
                                    TextAlignment="Center" MaxWidth="460"/>
+                        <TextBlock Text="{Binding MatchText}" IsVisible="{Binding HasMatch}" Classes="dim" FontSize="12" TextWrapping="Wrap"
+                                   TextAlignment="Center" MaxWidth="460"/>
                     </StackPanel>
 
                     <StackPanel Spacing="12" IsVisible="{Binding IsUnrelated}">
                         <TextBlock Text="{loc:Tr dialog.basisUpdate.unrelated.title}" Classes="h3"/>
                         <TextBlock Text="{loc:Tr dialog.basisUpdate.unrelated.body}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                        <Border Classes="glass" Padding="14,12" IsVisible="{Binding HasMatch}">
-                            <Grid ColumnDefinitions="Auto,*">
-                                <PathIcon Width="16" Height="16" Data="{StaticResource IconTag}" Margin="0,2,12,0"
-                                          Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Top"/>
-                                <TextBlock Grid.Column="1" Text="{Binding MatchText}" FontSize="13" TextWrapping="Wrap"/>
-                            </Grid>
-                        </Border>
-                        <TextBlock Text="{loc:Tr dialog.basisUpdate.unrelated.explain}" IsVisible="{Binding HasMatch}"
-                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                        <TextBlock Text="{loc:Tr dialog.basisUpdate.unrelated.noMatch}" IsVisible="{Binding !HasMatch}"
+                        <TextBlock Text="{loc:Tr dialog.basisUpdate.unrelated.noMatch}"
                                    Foreground="{StaticResource BasisWarningBrush}" FontSize="13" TextWrapping="Wrap"/>
                     </StackPanel>
 

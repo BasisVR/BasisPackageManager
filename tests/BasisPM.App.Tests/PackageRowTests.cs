@@ -54,6 +54,25 @@ public sealed class PackageRowTests
     }
 
     [AvaloniaFact]
+    public void Dependency_declared_by_basis_is_included_and_read_only()
+    {
+        const string url = "https://github.com/vendor/utils.git#abc123";
+        var row = new PackageRow(Entry(url: url), installedVersion: url, isIncluded: true);
+
+        Assert.True(row.IsIncluded);
+        Assert.False(row.IsEmbedded);
+        Assert.True(row.IsInstalled);
+        Assert.False(row.IsManageable);
+        Assert.False(row.CanUpdate);
+        Assert.False(row.CanRemove);
+        Assert.False(row.CanMountToEdit);
+        Assert.False(row.CanChooseVersion);
+        Assert.True(row.HasGitUrl);
+        Assert.Equal("abc123", row.InstalledLabel);
+        Assert.False(new PackageRow(Entry(), installedVersion: null, isEmbedded: true).IsIncluded);
+    }
+
+    [AvaloniaFact]
     public void Passes_through_catalog_fields()
     {
         var row = new PackageRow(Entry(display: "Basis SDK", version: "2.1.0"), null);

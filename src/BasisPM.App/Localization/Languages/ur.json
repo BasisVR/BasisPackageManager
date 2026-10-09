@@ -571,6 +571,10 @@
       "value": "انسٹال کے لیے دستیاب"
     },
     {
+      "key": "packages.header.packagesFor",
+      "value": "{0} کے پیکجز"
+    },
+    {
       "key": "packages.header.community",
       "value": "GitHub سے کمیونٹی پیکج شامل کریں"
     },

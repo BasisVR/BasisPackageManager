@@ -28,6 +28,59 @@ public sealed class MountService
 
     public static bool IsWorkingClone(string? folder) => !string.IsNullOrEmpty(folder) && Directory.Exists(Path.Combine(folder, ".git"));
 
+    public MountRecord? FindMount(string unityProjectPath, string packageId)
+    {
+        if (BasisDevStore.Read(unityProjectPath, packageId) is { } sidecar && BasisDevStore.ResolveFolder(unityProjectPath, sidecar) is { } folder)
+            return new MountRecord(unityProjectPath, packageId, folder, sidecar.Manifest.Original ?? _registry.Find(unityProjectPath, packageId)?.OriginalManifestValue ?? "");
+        return _registry.Find(unityProjectPath, packageId);
+    }
+
+    public IReadOnlyList<MountRecord> ListMounts(string unityProjectPath)
+    {
+        var mounts = new Dictionary<string, MountRecord>(StringComparer.OrdinalIgnoreCase);
+        foreach (var record in _registry.ForInstall(unityProjectPath)) mounts[record.PackageId] = record;
+        foreach (var sidecar in BasisDevStore.List(unityProjectPath))
+        {
+            if (BasisDevStore.ResolveFolder(unityProjectPath, sidecar) is not { } folder) continue;
+            mounts.TryGetValue(sidecar.Package, out var record);
+            mounts[sidecar.Package] = new MountRecord(unityProjectPath, sidecar.Package, folder, sidecar.Manifest.Original ?? record?.OriginalManifestValue ?? "");
+        }
+        return mounts.Values.OrderBy(m => m.PackageId, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    public async Task<bool> HasLocalWorkAsync(string folder, CancellationToken ct = default)
+    {
+        if (!IsWorkingClone(folder)) return false;
+        var status = await _git.GetStatusAsync(folder, ct).ConfigureAwait(false);
+        return status.ChangeCount > 0 || await _git.HasUnpublishedWorkAsync(folder, ct).ConfigureAwait(false);
+    }
+
+    public async Task RecordAsync(BasisInstall install, string packageId, string folder, string originalManifestValue, string? mountedManifestValue)
+    {
+        try
+        {
+            var parsed = UpmGitUrl.Parse(originalManifestValue);
+            var origin = parsed is null ? await _git.GetRemoteUrlAsync(folder, "origin").ConfigureAwait(false) : null;
+            BasisDevStore.Write(install.UnityProjectPath, new BasisDevSidecar
+            {
+                Package = packageId,
+                Folder = BasisDevStore.RelativeFolder(install.UnityProjectPath, folder),
+                Upstream = new BasisDevUpstream
+                {
+                    Url = parsed?.CloneUrl ?? UpmGitUrl.Parse(origin)?.CloneUrl ?? origin ?? "",
+                    Ref = parsed?.Ref,
+                    Path = parsed?.Path,
+                    Commit = await _git.ResolveCommitAsync(folder, "HEAD").ConfigureAwait(false),
+                },
+                Manifest = new BasisDevManifestLine { Original = string.IsNullOrWhiteSpace(originalManifestValue) ? null : originalManifestValue, Mounted = mountedManifestValue },
+                Recorded = DateTimeOffset.UtcNow,
+                Tool = BasisDevStore.ToolName,
+            });
+            GitExclude.Add(install.RepoRoot, BasisDevStore.Root(install.UnityProjectPath), _git.GetCommonGitDir);
+        }
+        catch (Exception ex) { DiagnosticLog.Write($"Recording the {BasisDevStore.FolderName} sidecar for {packageId}", ex); }
+    }
+
     public async Task<MountResult> MountAsync(BasisInstall install, string packageId, string manifestGitValue, Action<string>? onProgress = null, CancellationToken ct = default)
     {
         var parsed = UpmGitUrl.Parse(manifestGitValue);
@@ -62,6 +115,7 @@ public sealed class MountService
 
             _registry.Add(new MountRecord(install.UnityProjectPath, packageId, dest, manifestGitValue));
             GitExclude.Add(install.RepoRoot, dest, _git.GetCommonGitDir);
+            await RecordAsync(install, packageId, dest, manifestGitValue, null).ConfigureAwait(false);
             return MountResult.Success(dest);
         }
 
@@ -95,37 +149,55 @@ public sealed class MountService
 
         _registry.Add(new MountRecord(install.UnityProjectPath, packageId, workspace, manifestGitValue));
         GitExclude.Add(install.RepoRoot, workspace, _git.GetCommonGitDir);
+        await RecordAsync(install, packageId, workspace, manifestGitValue, "file:" + relative).ConfigureAwait(false);
         return MountResult.Success(workspace);
     }
 
-    public async Task<MountResult> SwapBackAsync(BasisInstall install, string packageId, CancellationToken ct = default)
+    public Task<MountResult> SwapBackAsync(BasisInstall install, string packageId, CancellationToken ct = default) =>
+        UnmountAsync(install, packageId, restoreManifest: true, ct: ct);
+
+    public async Task<MountResult> UnmountAsync(BasisInstall install, string packageId, bool restoreManifest, string? folder = null, string? restoreLine = null, CancellationToken ct = default)
     {
-        var record = _registry.Find(install.UnityProjectPath, packageId);
-        var dest = record?.FolderPath ?? Path.Combine(install.UnityProjectPath, "Packages", packageId);
+        var record = FindMount(install.UnityProjectPath, packageId);
+        var dest = folder ?? record?.FolderPath ?? Path.Combine(install.UnityProjectPath, "Packages", packageId);
         if (Directory.Exists(dest) && !IsWorkingClone(dest))
             return MountResult.Fail($"{dest} isn't a mounted git clone, so it was left untouched.");
 
-        // Prefer the exact original line; otherwise reconstruct from the clone's origin.
-        var restore = record?.OriginalManifestValue;
-        if (string.IsNullOrEmpty(restore) && Directory.Exists(dest))
+        if (restoreManifest)
         {
-            var origin = await _git.GetRemoteUrlAsync(dest, "origin", ct).ConfigureAwait(false);
-            restore = UpmGitUrl.Parse(origin)?.CloneUrl;
-        }
-        if (string.IsNullOrEmpty(restore))
-            return MountResult.Fail("Couldn't determine the original git URL to restore.");
+            // Prefer the exact original line; otherwise reconstruct from the clone's origin.
+            var restore = string.IsNullOrEmpty(restoreLine) ? record?.OriginalManifestValue : restoreLine;
+            if (string.IsNullOrEmpty(restore) && Directory.Exists(dest))
+            {
+                var origin = await _git.GetRemoteUrlAsync(dest, "origin", ct).ConfigureAwait(false);
+                restore = UpmGitUrl.Parse(origin)?.CloneUrl;
+            }
+            if (string.IsNullOrEmpty(restore))
+                return MountResult.Fail("Couldn't determine the original git URL to restore.");
 
-        var info = await _projects.LoadAsync(install.UnityProjectPath, ct).ConfigureAwait(false);
-        info.Manifest.Dependencies[packageId] = restore;
-        await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
-        install.Manifest = info.Manifest;
+            var info = await _projects.LoadAsync(install.UnityProjectPath, ct).ConfigureAwait(false);
+            info.Manifest.Dependencies[packageId] = restore;
+            await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, info.Manifest, ct).ConfigureAwait(false);
+            install.Manifest = info.Manifest;
+        }
 
         try { if (Directory.Exists(dest)) ForceDeleteDirectory(dest); }
-        catch (Exception ex) { DiagnosticLog.Write($"Deleting mounted package directory {dest}", ex); return MountResult.Fail($"Restored the manifest, but couldn't delete {dest}: {ex.Message}"); }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write($"Deleting mounted package directory {dest}", ex);
+            return MountResult.Fail(restoreManifest ? $"Restored the manifest, but couldn't delete {dest}: {ex.Message}" : $"Couldn't delete {dest}: {ex.Message}");
+        }
 
-        _registry.Remove(install.UnityProjectPath, packageId);
-        GitExclude.Remove(install.RepoRoot, dest, _git.GetCommonGitDir);
+        Forget(install, packageId, dest);
         return MountResult.Success(dest);
+    }
+
+    public void Forget(BasisInstall install, string packageId, string? folder)
+    {
+        _registry.Remove(install.UnityProjectPath, packageId);
+        try { BasisDevStore.Delete(install.UnityProjectPath, packageId); }
+        catch (Exception ex) { DiagnosticLog.Write($"Deleting the {BasisDevStore.FolderName} sidecar for {packageId}", ex); }
+        if (folder is not null) GitExclude.Remove(install.RepoRoot, folder, _git.GetCommonGitDir);
     }
 
     private static void TryForceDelete(string path)

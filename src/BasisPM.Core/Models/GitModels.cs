@@ -22,10 +22,14 @@ public sealed record GitStatus(string Branch, string ShortCommit, IReadOnlyList<
     public int ChangeCount => Changes.Count;
 }
 
-public sealed record AheadBehind(bool HasUpstream, int Ahead, int Behind)
+public sealed record AheadBehind(bool HasUpstream, int Ahead, int Behind, string? Name = null)
 {
     public static readonly AheadBehind None = new(false, 0, 0);
     public bool IsUpToDate => HasUpstream && Ahead == 0 && Behind == 0;
 }
 
 public sealed record GitResult(bool Ok, int Code, string Output);
+
+public sealed record GitTreeChange(string OldMode, string NewMode, string OldSha, string NewSha, char Status, string Path);
+
+public sealed record GitPushEstimate(int Commits, long? Bytes);

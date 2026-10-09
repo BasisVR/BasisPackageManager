@@ -571,6 +571,10 @@
       "value": "متاح للتثبيت"
     },
     {
+      "key": "packages.header.packagesFor",
+      "value": "حزم {0}"
+    },
+    {
       "key": "packages.header.community",
       "value": "إضافة حزمة مجتمعية من GitHub"
     },
