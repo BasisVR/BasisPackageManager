@@ -36,6 +36,7 @@ public sealed class ServerPackageService
     private static readonly Regex IdPattern = new("^[a-z0-9][a-z0-9._-]*$", RegexOptions.CultureInvariant);
     private static readonly Regex NuGetIdPattern = new(@"^[A-Za-z0-9_][A-Za-z0-9_.-]*$", RegexOptions.CultureInvariant);
     private static readonly Regex NuGetVersionPattern = new(@"^[0-9A-Za-z.*+\-\[\]\(\), ]+$", RegexOptions.CultureInvariant);
+    private static readonly Regex PlatformPattern = new("^(win|linux|osx)(-(x64|x86|arm64|arm))?$", RegexOptions.CultureInvariant);
     private static readonly string[] SkippedFolders = { "obj", "bin", "node_modules", "Library" };
 
     private static readonly JsonSerializerOptions ManifestJson = new()
@@ -142,6 +143,8 @@ public sealed class ServerPackageService
             .ToDictionary(g => g.Key, g => (IReadOnlyDictionary<string, string>)g
                 .GroupBy(e => Attr(e, "Package"), StringComparer.OrdinalIgnoreCase)
                 .ToDictionary(p => p.Key, p => Unescape(Attr(p.Last(), "Version")), StringComparer.OrdinalIgnoreCase), StringComparer.Ordinal);
+        var references = LoadBinaries(document, "BasisServerPackageReference");
+        var natives = LoadBinaries(document, "BasisServerPackageNative");
         foreach (var element in document.Descendants("BasisServerPackage"))
         {
             var id = Attr(element, "Include");
@@ -150,10 +153,25 @@ public sealed class ServerPackageService
                 Blank(Unescape(Attr(element, "Url"))), Blank(Unescape(Attr(element, "Ref"))), Blank(Attr(element, "Commit")),
                 Blank(Unescape(Attr(element, "SubPath"))), Blank(Unescape(Attr(element, "LocalPath"))),
                 modules.GetValueOrDefault(id) ?? Array.Empty<ServerPackageModule>(),
-                nuget.GetValueOrDefault(id) ?? new Dictionary<string, string>());
+                nuget.GetValueOrDefault(id) ?? new Dictionary<string, string>())
+            {
+                References = references.GetValueOrDefault(id) ?? Array.Empty<ServerPackageBinary>(),
+                Natives = natives.GetValueOrDefault(id) ?? Array.Empty<ServerPackageBinary>(),
+            };
         }
         return result;
     }
+
+    private static Dictionary<string, IReadOnlyList<ServerPackageBinary>> LoadBinaries(XDocument document, string element) =>
+        document.Descendants(element)
+            .Select(e => (Id: Attr(e, "Include"), Binary: new ServerPackageBinary(Unescape(Attr(e, "Path")), Attr(e, "Assembly"),
+                Unescape(Attr(e, "Platforms")).Split('|', StringSplitOptions.RemoveEmptyEntries))))
+            .Where(b => IsUsableBinary(b.Binary))
+            .GroupBy(b => b.Id, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => (IReadOnlyList<ServerPackageBinary>)g.Select(b => b.Binary).ToList(), StringComparer.Ordinal);
+
+    private static bool IsUsableBinary(ServerPackageBinary binary) =>
+        binary.Path.Length > 0 && GitUrlPolicy.IsSafeSubPath(binary.Path) && HostAssemblies.Contains(binary.Assembly, StringComparer.Ordinal) && binary.Platforms.All(PlatformPattern.IsMatch);
 
     public IReadOnlyDictionary<string, string> LoadLinks(string repoRoot)
     {
@@ -174,6 +192,8 @@ public sealed class ServerPackageService
         var problems = new List<string>();
         var found = new List<(string Path, string Assembly)>();
         var nuget = new SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var references = new List<ServerPackageBinary>();
+        var natives = new List<ServerPackageBinary>();
         string id = "", version = "0.0.0", displayName = "", description = "";
         var packageJson = Path.Combine(packageRoot, "package.json");
         if (!File.Exists(packageJson))
@@ -218,6 +238,8 @@ public sealed class ServerPackageService
                         else nuget[package.Name] = packageVersion;
                     }
                 }
+                ReadBinaries(server, "references", "Reference", packageRoot, references, problems);
+                ReadBinaries(server, "natives", "Native file", packageRoot, natives, problems);
             }
             if (!explicitModules) Discover(packageRoot, found);
         }
@@ -230,7 +252,33 @@ public sealed class ServerPackageService
         var result = distinct.Select(m => new ServerPackageModule(m.Path, m.Assembly, Excludes(packageRoot, m.Path, distinct))).ToList();
         if (problems.Count == 0 && result.Count == 0)
             problems.Add("The package has no server code: add a \"basisServer\" section to package.json, an .asmref into a Basis network assembly, or a Server~/<assembly> folder.");
-        return new ServerPackageDeclaration(id, version, displayName, description, result, nuget, problems);
+        return new ServerPackageDeclaration(id, version, displayName, description, result, nuget, problems) { References = references, Natives = natives };
+    }
+
+    private static void ReadBinaries(JsonElement server, string key, string label, string packageRoot, List<ServerPackageBinary> found, List<string> problems)
+    {
+        if (!server.TryGetProperty(key, out var items) || items.ValueKind != JsonValueKind.Array) return;
+        foreach (var item in items.EnumerateArray())
+        {
+            var path = (Text(item, "path") ?? "").Replace('\\', '/').Trim('/');
+            var requested = Text(item, "assembly") ?? "";
+            var assembly = HostAssemblies.FirstOrDefault(h => h.Equals(requested, StringComparison.OrdinalIgnoreCase));
+            var platforms = new List<string>();
+            var unknown = new List<string>();
+            if (item.ValueKind == JsonValueKind.Object && item.TryGetProperty("platforms", out var value) && value.ValueKind != JsonValueKind.Null)
+                foreach (var token in value.ValueKind == JsonValueKind.Array ? value.EnumerateArray().ToList() : new List<JsonElement> { value })
+                {
+                    var name = token.ValueKind == JsonValueKind.String ? token.GetString()!.Trim().ToLowerInvariant() : token.GetRawText();
+                    if (!PlatformPattern.IsMatch(name)) unknown.Add(name);
+                    else if (!platforms.Contains(name)) platforms.Add(name);
+                }
+            if (assembly is null) problems.Add($"{label} \"{path}\" targets \"{requested}\"; server packages compile into {string.Join(", ", HostAssemblies)}.");
+            else if (!GitUrlPolicy.IsSafeSubPath(path)) problems.Add($"{label} \"{path}\" must stay inside the package.");
+            else if (key == "references" && !path.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)) problems.Add($"{label} \"{path}\" must be a .dll file.");
+            else if (!File.Exists(Path.Combine(packageRoot, path))) problems.Add($"{label} \"{path}\" was not found.");
+            else if (unknown.Count > 0) problems.Add($"{label} \"{path}\" lists unknown platforms ({string.Join(", ", unknown.Select(u => $"\"{u}\""))}). Use win, linux or osx, optionally followed by -x64, -x86, -arm64 or -arm.");
+            else if (!found.Any(b => b.Path == path && b.Assembly == assembly)) found.Add(new ServerPackageBinary(path, assembly, platforms));
+        }
     }
 
     public async Task<IReadOnlyList<ServerPackageInfo>> ListAsync(string repoRoot, CancellationToken ct = default)
@@ -277,7 +325,11 @@ public sealed class ServerPackageService
             }
             result.Add(new ServerPackageInfo(id, declaration?.DisplayName is { Length: > 0 } name ? name : id,
                 declaration?.Version ?? locked?.Version ?? "", source, locked?.Commit, place.Root, link, status,
-                declaration?.Modules is { Count: > 0 } modules ? modules : locked?.Modules ?? Array.Empty<ServerPackageModule>(), detail));
+                declaration?.Modules is { Count: > 0 } modules ? modules : locked?.Modules ?? Array.Empty<ServerPackageModule>(), detail)
+            {
+                References = declaration?.References is { Count: > 0 } references ? references : locked?.References ?? Array.Empty<ServerPackageBinary>(),
+                Natives = declaration?.Natives is { Count: > 0 } natives ? natives : locked?.Natives ?? Array.Empty<ServerPackageBinary>(),
+            });
         }
         return result;
     }
@@ -515,7 +567,11 @@ public sealed class ServerPackageService
                 usable ? declaration!.Version : old?.Version ?? "",
                 source, parsed.CloneUrl, parsed.Ref, commit, parsed.SubPath, parsed.LocalPath,
                 usable ? declaration!.Modules : old?.Modules ?? Array.Empty<ServerPackageModule>(),
-                usable ? declaration!.NuGet : old?.NuGet ?? new Dictionary<string, string>()));
+                usable ? declaration!.NuGet : old?.NuGet ?? new Dictionary<string, string>())
+            {
+                References = usable ? declaration!.References : old?.References ?? Array.Empty<ServerPackageBinary>(),
+                Natives = usable ? declaration!.Natives : old?.Natives ?? Array.Empty<ServerPackageBinary>(),
+            });
         }
         Directory.CreateDirectory(PackagesDirectory(repoRoot));
         AtomicFile.WriteAllText(LockPath(repoRoot), BuildLock(entries));
@@ -566,15 +622,32 @@ public sealed class ServerPackageService
             }
             foreach (var (package, version) in entry.NuGet.OrderBy(p => p.Key, StringComparer.OrdinalIgnoreCase))
                 data.Add(new XElement("BasisServerPackageNuGet", new XAttribute("Include", entry.Id), new XAttribute("Package", package), new XAttribute("Version", Escape(version))));
-            foreach (var host in entry.Modules.Select(m => m.Assembly).Distinct(StringComparer.Ordinal).Where(hosts.ContainsKey))
-            {
+            var binaries = entry.References.Select(b => (Binary: b, Native: false)).Concat(entry.Natives.Select(b => (Binary: b, Native: true))).Where(b => IsUsableBinary(b.Binary)).ToList();
+            foreach (var (binary, native) in binaries)
+                data.Add(new XElement(native ? "BasisServerPackageNative" : "BasisServerPackageReference",
+                    new XAttribute("Include", entry.Id),
+                    new XAttribute("Path", Escape(binary.Path)),
+                    new XAttribute("Assembly", binary.Assembly),
+                    new XAttribute("Platforms", string.Join('|', binary.Platforms))));
+            var moduleHosts = entry.Modules.Select(m => m.Assembly).Distinct(StringComparer.Ordinal).Where(hosts.ContainsKey).ToList();
+            foreach (var host in moduleHosts.Concat(binaries.Select(b => b.Binary.Assembly)).Distinct(StringComparer.Ordinal))
                 hosts[host].Add(new XElement("BasisServerPackageMissing",
                     new XAttribute("Include", entry.Id),
                     new XAttribute("Root", $"$({rootProperty})"),
                     new XAttribute("Condition", $"!Exists('$({rootProperty})package.json')")));
+            foreach (var host in moduleHosts)
                 foreach (var (package, version) in entry.NuGet)
                     if (!references[host].TryGetValue(package, out var existing) || CompareVersions(version, existing) > 0)
                         references[host][package] = version;
+            foreach (var (binary, native) in binaries)
+            {
+                var file = $"$({rootProperty})" + EscapeSegments(binary.Path);
+                var item = native
+                    ? new XElement("None", new XAttribute("Include", file), new XAttribute("Link", Escape(Path.GetFileName(binary.Path))),
+                        new XAttribute("CopyToOutputDirectory", "PreserveNewest"), new XAttribute("CopyToPublishDirectory", "PreserveNewest"), new XAttribute("Visible", "false"))
+                    : new XElement("Reference", new XAttribute("Include", Escape(Path.GetFileNameWithoutExtension(binary.Path))), new XAttribute("HintPath", file));
+                if (PlatformCondition(binary.Platforms) is { } condition) item.Add(new XAttribute("Condition", condition));
+                hosts[binary.Assembly].Add(item);
             }
             hosts["BasisNetworkConsole"].Add(new XElement("AssemblyMetadata",
                 new XAttribute("Include", MetadataPrefix + entry.Id),
@@ -583,6 +656,14 @@ public sealed class ServerPackageService
         foreach (var (host, packages) in references)
             foreach (var (package, version) in packages)
                 hosts[host].Add(new XElement("PackageReference", new XAttribute("Include", package), new XAttribute("Version", Escape(version))));
+        if (entries.Any(e => e.References.Concat(e.Natives).Any(IsUsableBinary)))
+            properties.Add(
+                new XElement("BasisServerPackageRid", new XAttribute("Condition", "'$(BasisServerPackageRid)' == ''"), "$(RuntimeIdentifier)"),
+                new XElement("BasisServerPackageRid", new XAttribute("Condition", "'$(BasisServerPackageRid)' == ''"), "$(NETCoreSdkRuntimeIdentifier)"),
+                new XElement("BasisServerPackageOS", new XAttribute("Condition", "'$(BasisServerPackageOS)' == '' and $(BasisServerPackageRid.StartsWith('win'))"), "win"),
+                new XElement("BasisServerPackageOS", new XAttribute("Condition", "'$(BasisServerPackageOS)' == '' and $(BasisServerPackageRid.StartsWith('osx'))"), "osx"),
+                new XElement("BasisServerPackageOS", new XAttribute("Condition", "'$(BasisServerPackageOS)' == ''"), "linux"),
+                new XElement("BasisServerPackageArch", new XAttribute("Condition", "'$(BasisServerPackageArch)' == ''"), "$(BasisServerPackageRid.Substring($([MSBuild]::Add($(BasisServerPackageRid.LastIndexOf('-')), 1))))"));
         if (properties.HasElements) project.Add(properties);
         if (data.HasElements) project.Add(data);
         foreach (var host in HostAssemblies)
@@ -594,6 +675,11 @@ public sealed class ServerPackageService
             document.Save(writer);
         return builder.Append('\n').ToString();
     }
+
+    private static string? PlatformCondition(IReadOnlyList<string> platforms) => platforms.Count == 0 ? null : string.Join(" or ", platforms.Select(p =>
+        p.IndexOf('-') is var dash and > 0
+            ? $"('$(BasisServerPackageOS)' == '{p[..dash]}' and '$(BasisServerPackageArch)' == '{p[(dash + 1)..]}')"
+            : $"'$(BasisServerPackageOS)' == '{p}'"));
 
     public static string PropertyKey(string id)
     {

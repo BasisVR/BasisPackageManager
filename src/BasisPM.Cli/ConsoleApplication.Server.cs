@@ -17,7 +17,7 @@ internal sealed partial class ConsoleApplication
         var packages = await _serverPackages.ListAsync(install.RepoRoot);
         if (Out.JsonMode)
         {
-            Out.Json(packages.Select(p => new { id = p.Id, name = p.DisplayName, version = p.Version, status = p.Status, source = p.Source, commit = p.Commit, linkedFolder = p.LinkedFolder, folder = p.Folder, assemblies = p.Modules.Select(m => m.Assembly).Distinct(), detail = p.Detail }));
+            Out.Json(packages.Select(p => new { id = p.Id, name = p.DisplayName, version = p.Version, status = p.Status, source = p.Source, commit = p.Commit, linkedFolder = p.LinkedFolder, folder = p.Folder, assemblies = p.Modules.Select(m => m.Assembly).Distinct(), references = p.References.Select(b => b.Path), natives = p.Natives.Select(b => b.Path), detail = p.Detail }));
             return;
         }
         if (packages.Count == 0)
@@ -32,6 +32,7 @@ internal sealed partial class ConsoleApplication
                 new Span(package.ShortCommit.Length > 0 ? "  @ " + package.ShortCommit : "", Tone.Dim));
             Out.Note($"    {(package.IsLinked ? "built from " + package.LinkedFolder : package.Source)}");
             if (package.Assemblies.Length > 0) Out.Note($"    compiled into {package.Assemblies}");
+            if (package.References.Count + package.Natives.Count > 0) Out.Note($"    ships prebuilt {string.Join(", ", package.References.Concat(package.Natives).Select(b => Path.GetFileName(b.Path)).Distinct(StringComparer.OrdinalIgnoreCase))}");
             if (!string.IsNullOrWhiteSpace(package.Detail)) Out.Say(new Span("    ! ", Tone.Warn), new Span(package.Detail));
         }
     }

@@ -189,7 +189,12 @@ packages forward, `server-remove <id>` takes them out again, and `server-restore
 missing and records the exact commits in `packages-lock.props`. `server-link <id> <folder>` builds a
 package from a working copy on this machine without touching the committed files. `server-build`
 compiles the server; `dotnet build` and `dotnet publish` restore missing server packages by
-themselves, so CI and Docker builds need only git.
+themselves, so CI and Docker builds need only git. Packages can also ship prebuilt .NET assemblies
+and native libraries for chosen platforms (`win`, `linux`, `osx`, optionally with `-x64`, `-x86`,
+`-arm64` or `-arm`); the build picks the ones for the runtime identifier it targets. Publishing for
+another operating system (for example `-r linux-x64` on Windows) also needs
+`-p:BasisServerPackageRid=linux-x64` (or a `BasisServerPackageRid` environment variable), because the
+server's libraries build without a runtime identifier.
 
 For packages, `info <id>` and `versions <id>` show details and releases,
 `install-package <id> --version <ref>` installs a specific release, `remove-package <id>` and

@@ -14,6 +14,8 @@ public sealed class ServerPackageManifest
 
 public sealed record ServerPackageModule(string Path, string Assembly, IReadOnlyList<string> Excludes);
 
+public sealed record ServerPackageBinary(string Path, string Assembly, IReadOnlyList<string> Platforms);
+
 public sealed record ServerPackageDeclaration(
     string Id,
     string Version,
@@ -23,6 +25,8 @@ public sealed record ServerPackageDeclaration(
     IReadOnlyDictionary<string, string> NuGet,
     IReadOnlyList<string> Problems)
 {
+    public IReadOnlyList<ServerPackageBinary> References { get; init; } = Array.Empty<ServerPackageBinary>();
+    public IReadOnlyList<ServerPackageBinary> Natives { get; init; } = Array.Empty<ServerPackageBinary>();
     public bool IsValid => Problems.Count == 0 && Modules.Count > 0;
 }
 
@@ -36,7 +40,11 @@ public sealed record ServerPackageLockEntry(
     string? SubPath,
     string? LocalPath,
     IReadOnlyList<ServerPackageModule> Modules,
-    IReadOnlyDictionary<string, string> NuGet);
+    IReadOnlyDictionary<string, string> NuGet)
+{
+    public IReadOnlyList<ServerPackageBinary> References { get; init; } = Array.Empty<ServerPackageBinary>();
+    public IReadOnlyList<ServerPackageBinary> Natives { get; init; } = Array.Empty<ServerPackageBinary>();
+}
 
 public enum ServerPackageStatus { Ready, NotRestored, Changed, Missing, Invalid }
 
@@ -52,6 +60,8 @@ public sealed record ServerPackageInfo(
     IReadOnlyList<ServerPackageModule> Modules,
     string? Detail)
 {
+    public IReadOnlyList<ServerPackageBinary> References { get; init; } = Array.Empty<ServerPackageBinary>();
+    public IReadOnlyList<ServerPackageBinary> Natives { get; init; } = Array.Empty<ServerPackageBinary>();
     public bool IsLinked => LinkedFolder is not null;
     public bool IsLocal => Source.StartsWith("file:", StringComparison.OrdinalIgnoreCase);
     public string ShortCommit => Commit is { Length: > 7 } commit ? commit[..7] : Commit ?? "";

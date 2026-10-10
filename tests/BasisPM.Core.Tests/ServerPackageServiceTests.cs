@@ -114,6 +114,80 @@ public sealed class ServerPackageServiceTests
     }
 
     [Fact]
+    public void Declaration_reads_prebuilt_references_and_natives()
+    {
+        using var t = new TempDir();
+        t.WriteFile("pkg/package.json", """
+            {
+              "name": "com.test.binaries",
+              "basisServer": {
+                "modules": [ { "path": "Shared", "assembly": "BasisNetworkCore" } ],
+                "references": [
+                  { "path": "Server~/Plugins/Lib.Win64.dll", "assembly": "basisnetworkcore", "platforms": [ "WIN", "win" ] },
+                  { "path": "Server~\\Plugins\\Lib.Posix.dll", "assembly": "BasisNetworkCore", "platforms": [ "linux", " osx-arm64 " ] }
+                ],
+                "natives": [
+                  { "path": "Plugins/win64/native.dll", "assembly": "BasisNetworkCore", "platforms": "win-x64" },
+                  { "path": "Plugins/any/data.bin", "assembly": "BasisNetworkConsole", "platforms": [] },
+                  { "path": "Plugins/any/data.bin", "assembly": "BasisNetworkConsole" }
+                ]
+              }
+            }
+            """);
+        t.CreateDir("pkg/Shared");
+        t.WriteFile("pkg/Server~/Plugins/Lib.Win64.dll", "x");
+        t.WriteFile("pkg/Server~/Plugins/Lib.Posix.dll", "x");
+        t.WriteFile("pkg/Plugins/win64/native.dll", "x");
+        t.WriteFile("pkg/Plugins/any/data.bin", "x");
+
+        var declaration = ServerPackageService.ReadDeclaration(t.Combine("pkg"));
+
+        Assert.True(declaration.IsValid, string.Join(" ", declaration.Problems));
+        Assert.Equal(new[] { ("Server~/Plugins/Lib.Win64.dll", "BasisNetworkCore", "win"), ("Server~/Plugins/Lib.Posix.dll", "BasisNetworkCore", "linux|osx-arm64") },
+            declaration.References.Select(b => (b.Path, b.Assembly, string.Join('|', b.Platforms))));
+        Assert.Equal(new[] { ("Plugins/win64/native.dll", "BasisNetworkCore", "win-x64"), ("Plugins/any/data.bin", "BasisNetworkConsole", "") },
+            declaration.Natives.Select(b => (b.Path, b.Assembly, string.Join('|', b.Platforms))));
+    }
+
+    [Fact]
+    public void Declaration_rejects_bad_binaries()
+    {
+        using var t = new TempDir();
+        t.WriteFile("pkg/package.json", """
+            {
+              "name": "com.test.badbinaries",
+              "basisServer": {
+                "modules": [ { "path": "Shared", "assembly": "BasisNetworkCore" } ],
+                "references": [
+                  { "path": "Lib/Unity.dll", "assembly": "Assembly-CSharp" },
+                  { "path": "../outside.dll", "assembly": "BasisNetworkCore" },
+                  { "path": "Lib/readme.txt", "assembly": "BasisNetworkCore" },
+                  { "path": "Lib/Missing.dll", "assembly": "BasisNetworkCore" }
+                ],
+                "natives": [
+                  { "path": "Lib/native.so", "assembly": "BasisNetworkCore", "platforms": [ "windows", "linux-riscv64", 5 ] }
+                ]
+              }
+            }
+            """);
+        t.CreateDir("pkg/Shared");
+        t.WriteFile("pkg/Lib/Unity.dll", "x");
+        t.WriteFile("pkg/Lib/readme.txt", "x");
+        t.WriteFile("pkg/Lib/native.so", "x");
+
+        var declaration = ServerPackageService.ReadDeclaration(t.Combine("pkg"));
+
+        Assert.False(declaration.IsValid);
+        Assert.Contains(declaration.Problems, p => p.Contains("Assembly-CSharp"));
+        Assert.Contains(declaration.Problems, p => p.Contains("../outside.dll") && p.Contains("stay inside"));
+        Assert.Contains(declaration.Problems, p => p.Contains("readme.txt") && p.Contains(".dll file"));
+        Assert.Contains(declaration.Problems, p => p.Contains("Missing.dll") && p.Contains("not found"));
+        Assert.Contains(declaration.Problems, p => p.Contains("\"windows\"") && p.Contains("\"linux-riscv64\"") && p.Contains("\"5\""));
+        Assert.Empty(declaration.References);
+        Assert.Empty(declaration.Natives);
+    }
+
+    [Fact]
     public void Declaration_discovers_asmrefs_by_name_and_guid_and_server_only_folders()
     {
         using var t = new TempDir();
@@ -242,6 +316,123 @@ public sealed class ServerPackageServiceTests
 
         Assert.Equal("Shared.Lib", (string?)reference.Attribute("Include"));
         Assert.Equal("1.10.0", (string?)reference.Attribute("Version"));
+    }
+
+    [Fact]
+    public void Lock_without_binaries_has_no_platform_properties()
+    {
+        var entry = new ServerPackageLockEntry("com.test.plain", "1.0.0", "file:plain", null, null, null, null, "plain",
+            new[] { new ServerPackageModule("", "BasisNetworkCore", Array.Empty<string>()) }, new Dictionary<string, string>());
+
+        var text = ServerPackageService.BuildLock(new[] { entry });
+
+        Assert.DoesNotContain("BasisServerPackageRid", text);
+        Assert.DoesNotContain("BasisServerPackageOS", text);
+        Assert.DoesNotContain("<Reference", text);
+        Assert.DoesNotContain("<None", text);
+    }
+
+    [Fact]
+    public void Lock_references_and_copies_binaries_per_platform()
+    {
+        var entry = new ServerPackageLockEntry("com.test.binaries", "1.0.0", "file:binaries", null, null, null, null, "binaries",
+            new[] { new ServerPackageModule("Shared", "BasisNetworkCore", Array.Empty<string>()) }, new Dictionary<string, string> { ["Some.Library"] = "1.0.0" })
+        {
+            References = new[] { new ServerPackageBinary("Server~/Plugins/Lib.Win64.dll", "BasisNetworkCore", new[] { "win" }), new ServerPackageBinary("Server~/Plugins/Lib.Posix.dll", "BasisNetworkCore", new[] { "linux", "osx" }) },
+            Natives = new[] { new ServerPackageBinary("Plugins/linux64/libnative.so", "BasisNetworkConsole", new[] { "linux-x64" }), new ServerPackageBinary("Plugins/any/data 1%.bin", "BasisNetworkConsole", Array.Empty<string>()) },
+        };
+
+        var lockFile = XDocument.Parse(ServerPackageService.BuildLock(new[] { entry }));
+        var root = $"$(BasisServerPackageRoot_{ServerPackageService.PropertyKey("com.test.binaries")})";
+        var properties = lockFile.Root!.Element("PropertyGroup")!;
+
+        Assert.Equal(new[] { "$(RuntimeIdentifier)", "$(NETCoreSdkRuntimeIdentifier)" }, properties.Elements("BasisServerPackageRid").Select(e => e.Value));
+        Assert.Equal(new[] { "win", "osx", "linux" }, properties.Elements("BasisServerPackageOS").Select(e => e.Value));
+        Assert.Single(properties.Elements("BasisServerPackageArch"));
+        var core = Group(lockFile, CoreGroup);
+        var references = core.Elements("Reference").ToList();
+        Assert.Equal(new[] { "Lib.Win64", "Lib.Posix" }, references.Select(r => (string?)r.Attribute("Include")));
+        Assert.Equal(root + "Server~/Plugins/Lib.Win64.dll", (string?)references[0].Attribute("HintPath"));
+        Assert.Equal("'$(BasisServerPackageOS)' == 'win'", (string?)references[0].Attribute("Condition"));
+        Assert.Equal("'$(BasisServerPackageOS)' == 'linux' or '$(BasisServerPackageOS)' == 'osx'", (string?)references[1].Attribute("Condition"));
+        Assert.Single(core.Elements("PackageReference"));
+        var console = Group(lockFile, ConsoleGroup);
+        Assert.Empty(console.Elements("PackageReference"));
+        Assert.NotNull(console.Element("BasisServerPackageMissing"));
+        var natives = console.Elements("None").ToList();
+        Assert.Equal(root + "Plugins/linux64/libnative.so", (string?)natives[0].Attribute("Include"));
+        Assert.Equal("libnative.so", (string?)natives[0].Attribute("Link"));
+        Assert.Equal("PreserveNewest", (string?)natives[0].Attribute("CopyToOutputDirectory"));
+        Assert.Equal("PreserveNewest", (string?)natives[0].Attribute("CopyToPublishDirectory"));
+        Assert.Equal("false", (string?)natives[0].Attribute("Visible"));
+        Assert.Equal("('$(BasisServerPackageOS)' == 'linux' and '$(BasisServerPackageArch)' == 'x64')", (string?)natives[0].Attribute("Condition"));
+        Assert.Equal(root + "Plugins/any/data 1%25.bin", (string?)natives[1].Attribute("Include"));
+        Assert.Equal("data 1%25.bin", (string?)natives[1].Attribute("Link"));
+        Assert.Null(natives[1].Attribute("Condition"));
+        Assert.Equal(new[] { "BasisServerPackageReference", "BasisServerPackageReference", "BasisServerPackageNative", "BasisServerPackageNative" },
+            lockFile.Root.Elements("ItemGroup").First().Elements().Where(e => e.Name.LocalName.EndsWith("Reference") || e.Name.LocalName.EndsWith("Native")).Select(e => e.Name.LocalName));
+    }
+
+    [Fact]
+    public void Lock_round_trips_binaries()
+    {
+        using var t = new TempDir();
+        var repo = NewRepo(t);
+        var entry = new ServerPackageLockEntry("com.test.binaries", "1.0.0", "file:binaries", null, null, null, null, "binaries",
+            new[] { new ServerPackageModule("", "BasisNetworkCore", Array.Empty<string>()) }, new Dictionary<string, string>())
+        {
+            References = new[] { new ServerPackageBinary("Server~/Plug ins/Lib 50%.dll", "BasisNetworkCore", new[] { "win", "linux-arm64" }) },
+            Natives = new[] { new ServerPackageBinary("native/lib$x;y.so", "BasisNetworkServer", Array.Empty<string>()) },
+        };
+        Directory.CreateDirectory(ServerPackageService.PackagesDirectory(repo));
+        File.WriteAllText(ServerPackageService.LockPath(repo), ServerPackageService.BuildLock(new[] { entry }));
+
+        var read = new ServerPackageService(new GitService()).LoadLock(repo)["com.test.binaries"];
+
+        var reference = Assert.Single(read.References);
+        Assert.Equal("Server~/Plug ins/Lib 50%.dll", reference.Path);
+        Assert.Equal("BasisNetworkCore", reference.Assembly);
+        Assert.Equal(new[] { "win", "linux-arm64" }, reference.Platforms);
+        var native = Assert.Single(read.Natives);
+        Assert.Equal("native/lib$x;y.so", native.Path);
+        Assert.Equal("BasisNetworkServer", native.Assembly);
+        Assert.Empty(native.Platforms);
+    }
+
+    [Fact]
+    public async Task Writing_the_lock_keeps_recorded_binaries_while_a_package_is_missing()
+    {
+        using var t = new TempDir();
+        var repo = NewRepo(t);
+        t.WriteFile("repo/Basis Server/Packages/local/package.json", """
+            {
+              "name": "com.test.local",
+              "basisServer": {
+                "modules": [ { "path": "Shared", "assembly": "BasisNetworkCore" } ],
+                "references": [ { "path": "Plugins/Lib.dll", "assembly": "BasisNetworkCore", "platforms": "win" } ],
+                "natives": [ { "path": "Plugins/native.dll", "assembly": "BasisNetworkCore" } ]
+              }
+            }
+            """);
+        t.CreateDir("repo/Basis Server/Packages/local/Shared");
+        t.WriteFile("repo/Basis Server/Packages/local/Plugins/Lib.dll", "x");
+        t.WriteFile("repo/Basis Server/Packages/local/Plugins/native.dll", "x");
+        var service = new ServerPackageService(new GitService());
+
+        var installed = await service.InstallAsync(repo, "file:local");
+        Assert.True(installed.Ok, installed.Message);
+        Assert.Single(service.LoadLock(repo)["com.test.local"].References);
+        Directory.Delete(t.Combine("repo/Basis Server/Packages/local"), true);
+        await service.WriteLockAsync(repo);
+
+        var locked = service.LoadLock(repo)["com.test.local"];
+        Assert.Equal("Plugins/Lib.dll", Assert.Single(locked.References).Path);
+        Assert.Equal("Plugins/native.dll", Assert.Single(locked.Natives).Path);
+        Assert.Contains("<Reference Include=\"Lib\"", File.ReadAllText(ServerPackageService.LockPath(repo)));
+        var info = Assert.Single(await service.ListAsync(repo));
+        Assert.Equal(ServerPackageStatus.Missing, info.Status);
+        Assert.Single(info.References);
+        Assert.Single(info.Natives);
     }
 
     [Fact]
