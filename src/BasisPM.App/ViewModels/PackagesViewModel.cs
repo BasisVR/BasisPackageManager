@@ -172,6 +172,8 @@ public sealed partial class PackagesViewModel : ObservableObject
     public string InstallName => _install?.DisplayName ?? L.Tr("packages.empty.noInstallSelected");
     public bool HasInstall => _install is not null && _install.HasUnityProject;
     public bool HasInstalls => InstallOptions.Count > 0;
+    private RelayCommand? _openInUnityCommand;
+    public RelayCommand OpenInUnityCommand => _openInUnityCommand ??= new RelayCommand(() => _install is null ? Task.CompletedTask : _shell.OpenProjectInUnityAsync(_install));
 
     // Packages "Available" list layout: false = rows (default), true = a grid of cards. Persisted.
     public bool IsGridView

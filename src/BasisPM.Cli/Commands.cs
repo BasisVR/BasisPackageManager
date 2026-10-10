@@ -42,12 +42,40 @@ internal sealed partial class ConsoleApplication
         {
             Name = "clone-basis", Group = ProjectsGroup, Aliases = new[] { "clone" },
             Summary = "Clone BasisVR/Basis and add it to your projects",
-            Usage = new[] { "clone-basis <empty-folder> [branch] [--name <name>]" },
-            Details = "Downloads Basis with its full history (a few GB), checks out the branch (developer unless you name another) and saves the clone as a project, like New project in the app.",
-            Options = new[] { new CliOption("--name", "Display name for the new project", "<name>") },
+            Usage = new[] { "clone-basis <empty-folder> [branch] [--name <name>] [--without <part>[,<part>]]" },
+            Details = "Downloads Basis with its full history (a few GB), checks out the branch (developer unless you name another) and saves the clone as a project, like New project in the app. "
+                + "--without leaves parts out of the folder (server: the Basis Server folder, images: Basis/Images). Git still has them, so updates keep working, and 'parts add' brings them back.",
+            Options = new[] { new CliOption("--name", "Display name for the new project", "<name>"), new CliOption("--without", "Parts to leave out: server, images", "<parts>", ValueKind: ArgKind.Part) },
             Args = new[] { ArgKind.Path, ArgKind.BasisBranch },
-            Examples = new[] { new CliExample("clone-basis C:\\BasisVR\\Basis", "Clone the developer branch"), new CliExample("clone-basis ~/Basis long-term-support-20260916 --name LTS", "Clone a long-term-support branch") },
+            Examples = new[]
+            {
+                new CliExample("clone-basis C:\\BasisVR\\Basis", "Clone the developer branch"),
+                new CliExample("clone-basis ~/Basis long-term-support-20260916 --name LTS", "Clone a long-term-support branch"),
+                new CliExample("clone-basis D:\\Worlds\\Basis --without server,images", "Clone without the Basis Server and the readme images"),
+            },
+            SeeAlso = new[] { "parts" },
             Run = CloneBasisAsync,
+        },
+        new()
+        {
+            Name = "parts", Group = ProjectsGroup, Aliases = new[] { "part" }, Json = true,
+            Summary = "Leave the Basis Server or images out of the project",
+            Usage = new[] { "parts", "parts remove <part>... [--keep-ignored] [--yes]", "parts add <part>..." },
+            Details = "Parts are folders a project can do without: server (Basis Server) and images (Basis/Images). 'remove' takes a part out of the project folder with git's sparse "
+                + "checkout and 'add' brings it back. Git keeps the files either way, so Basis updates, branch switches and your commits are unaffected. Removing a part also deletes "
+                + "the files git ignores in it, such as build output and the server's config; it asks first unless you pass --yes, and --keep-ignored leaves them. A part with "
+                + "uncommitted changes isn't removed.",
+            Options = new[] { new CliOption("--keep-ignored", "Leave the files git ignores where they are"), Yes },
+            Verbs = new() { ["add"] = new[] { ArgKind.Part }, ["remove"] = new[] { ArgKind.Part } },
+            RepeatLastArg = true,
+            Examples = new[]
+            {
+                new CliExample("parts", "Show which parts the project has and which are left out"),
+                new CliExample("parts remove server", "Leave the Basis Server out of the project"),
+                new CliExample("parts add server images", "Bring both parts back"),
+            },
+            SeeAlso = new[] { "clone-basis", "status" },
+            Run = PartsAsync,
         },
         new()
         {

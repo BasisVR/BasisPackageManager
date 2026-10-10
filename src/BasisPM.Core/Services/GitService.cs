@@ -42,15 +42,19 @@ public sealed class GitService
 
     public bool CanFetch(string? url) => !string.IsNullOrWhiteSpace(url) && IsFetchableUrl(url.Trim());
 
-    public async Task<GitResult> CloneAsync(string url, string destPath, string? branch, Action<string>? onProgress = null, CancellationToken ct = default)
+    public async Task<GitResult> CloneAsync(string url, string destPath, string? branch, Action<string>? onProgress = null, CancellationToken ct = default, IReadOnlyCollection<string>? sparsePatterns = null)
     {
         var git = FindGit() ?? throw new InvalidOperationException("Git was not found. Install Git and make sure it is on your PATH.");
         if (!IsFetchableUrl(url))
             return new GitResult(false, -1, "Refused to clone: the URL uses an unsupported or unsafe git transport.");
         if (!GitUrlPolicy.IsSafeRef(branch))
             return new GitResult(false, -1, "Refused to clone: the branch name is not valid.");
+        var sparse = sparsePatterns is { Count: > 0 };
+        if (sparse && !IsSparsePatternList(sparsePatterns!))
+            return new GitResult(false, -1, "Refused to clone: a folder to leave out is not valid.");
 
         var args = new List<string> { "clone", "--progress" };
+        if (sparse) args.Add("--no-checkout");
         if (!string.IsNullOrWhiteSpace(branch))
         {
             args.Add("--branch");
@@ -61,7 +65,12 @@ public sealed class GitService
         args.Add(destPath);
 
         var (code, _, err) = await RunAsync(git, args, null, onProgress, ct).ConfigureAwait(false);
-        return new GitResult(code == 0, code, err.Trim());
+        if (code != 0 || !sparse) return new GitResult(code == 0, code, err.Trim());
+        var set = await SetSparseCheckoutAsync(destPath, sparsePatterns!, ct).ConfigureAwait(false);
+        if (!set.Ok) return new GitResult(false, set.Code, $"Cloned, but couldn't leave out the chosen folders: {set.Output}");
+        var checkout = await GetCurrentBranchAsync(destPath, ct).ConfigureAwait(false) ?? "HEAD";
+        var (checkoutCode, checkoutOut, checkoutErr) = await RunGitAsync(destPath, new[] { "checkout", "--progress", checkout, "--" }, onProgress, ct).ConfigureAwait(false);
+        return checkoutCode == 0 ? new GitResult(true, 0, err.Trim()) : new GitResult(false, checkoutCode, $"Cloned, but couldn't check out its files: {Combine(checkoutOut, checkoutErr)}");
     }
 
     /// <summary>Clones, then checks out a specific ref — works for a branch, tag, OR commit (unlike clone --branch).</summary>
@@ -635,8 +644,23 @@ public sealed class GitService
     public async Task<IReadOnlyList<GitWorkingEntry>> GetWorkingEntriesAsync(string repoRoot, CancellationToken ct = default)
     {
         var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "status", "--porcelain=v1", "-z", "--untracked-files=all" }, null, ct).ConfigureAwait(false);
+        return code == 0 ? ParseWorkingEntries(outText) : new List<GitWorkingEntry>();
+    }
+
+    public async Task<IReadOnlyList<GitWorkingEntry>?> GetWorkingEntriesAsync(string repoRoot, string folder, bool includeIgnored, CancellationToken ct = default)
+    {
+        if (!IsTreePath(folder)) return null;
+        var args = new List<string> { "status", "--porcelain=v1", "-z", "--untracked-files=all" };
+        if (includeIgnored) args.Add("--ignored");
+        args.Add("--");
+        args.Add(Literal(folder));
+        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        return code == 0 ? ParseWorkingEntries(outText) : null;
+    }
+
+    private static List<GitWorkingEntry> ParseWorkingEntries(string outText)
+    {
         var entries = new List<GitWorkingEntry>();
-        if (code != 0) return entries;
         var fields = SplitNul(outText);
         for (var i = 0; i < fields.Count; i++)
         {
@@ -1245,6 +1269,36 @@ public sealed class GitService
         var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "rev-list", "--count", "HEAD", "--branches", "--not", "--remotes", "--tags" }, null, ct).ConfigureAwait(false);
         return code != 0 || !int.TryParse(outText.Trim(), out var count) || count > 0;
     }
+
+    public async Task<GitSparseCheckout> GetSparseCheckoutAsync(string repoRoot, CancellationToken ct = default)
+    {
+        if (!await GetConfigFlagAsync(repoRoot, "core.sparseCheckout", ct).ConfigureAwait(false)) return GitSparseCheckout.Off;
+        var cone = await GetConfigFlagAsync(repoRoot, "core.sparseCheckoutCone", ct).ConfigureAwait(false);
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "sparse-checkout", "list" }, null, ct).ConfigureAwait(false);
+        var patterns = code == 0 ? outText.Split('\n').Select(line => line.TrimEnd('\r')).Where(line => line.Trim().Length > 0).ToList() : new List<string>();
+        return new GitSparseCheckout(true, cone, patterns);
+    }
+
+    public async Task<GitResult> SetSparseCheckoutAsync(string repoRoot, IReadOnlyCollection<string> patterns, CancellationToken ct = default)
+    {
+        if (patterns.Count == 0 || !IsSparsePatternList(patterns)) return new GitResult(false, -1, "Refused to change which folders are checked out: a pattern is not valid.");
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "sparse-checkout", "set", "--no-cone", "--stdin" }, null, ct, string.Join('\n', patterns) + "\n").ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<GitResult> DisableSparseCheckoutAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "sparse-checkout", "disable" }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<bool> GetConfigFlagAsync(string repoRoot, string key, CancellationToken ct = default)
+    {
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "config", "--type=bool", "--get", key }, null, ct).ConfigureAwait(false);
+        return code == 0 && outText.Trim() == "true";
+    }
+
+    private static bool IsSparsePatternList(IReadOnlyCollection<string> patterns) => patterns.All(p => p.Trim().Length > 0 && !p.Any(char.IsControl));
 
     private static readonly Version DiskUsageGitVersion = new(2, 31, 0);
 

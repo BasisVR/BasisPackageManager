@@ -16,6 +16,7 @@ public sealed class InstallsViewModel : ObservableObject
     private readonly BasisInstallService _installService;
     private readonly GitService _git;
     private readonly BasisUpdateService _updates;
+    private readonly BasisPartsService _parts;
     private readonly MainWindowViewModel _shell;
 
     private InstallRow? _activeRow;
@@ -40,6 +41,7 @@ public sealed class InstallsViewModel : ObservableObject
     public RelayCommand<InstallRow> SetActiveCommand { get; }
     public RelayCommand<InstallRow> BackupCommand { get; }
     public RelayCommand<InstallRow> BasisChangesCommand { get; }
+    public RelayCommand<InstallRow> PartsCommand { get; }
     public RelayCommand ToggleLayoutCommand { get; }
 
     public bool IsGridView
@@ -62,6 +64,7 @@ public sealed class InstallsViewModel : ObservableObject
         _installService = installService;
         _git = git;
         _updates = updates;
+        _parts = new BasisPartsService(git);
         _shell = shell;
 
         AddExistingCommand = new RelayCommand(AddExistingAsync);
@@ -79,6 +82,7 @@ public sealed class InstallsViewModel : ObservableObject
         SetActiveCommand = new RelayCommand<InstallRow>(r => Activate(r, null));
         BackupCommand = new RelayCommand<InstallRow>(BackupAsync);
         BasisChangesCommand = new RelayCommand<InstallRow>(r => r is null ? Task.CompletedTask : _shell.OpenBasisChangesAsync(r.Install));
+        PartsCommand = new RelayCommand<InstallRow>(EditPartsAsync);
         ToggleLayoutCommand = new RelayCommand(() => IsGridView = !IsGridView);
     }
 
@@ -211,6 +215,7 @@ public sealed class InstallsViewModel : ObservableObject
             row.GitSummary = DescribeStatus(status);
             row.ChangeCount = status.ChangeCount;
             row.CoreHasUpdate = status.Upstream.HasUpstream && status.Upstream.Behind > 0;
+            row.LeftOutParts = await _parts.LeftOutAsync(row.RepoRoot, row.UnityProjectPath);
             if (fetch)
                 _shell.SetStatus(L.Tr("installs.status.rowSummary", row.Name, row.GitSummary), StatusKind.Info);
         }
@@ -919,6 +924,8 @@ public sealed class InstallsViewModel : ObservableObject
             _shell.SetStatus(L.Tr("installs.status.cloneFolderNotEmpty"), StatusKind.Error);
             return;
         }
+        var leaveOut = await ChooseClonePartsAsync(picked);
+        if (leaveOut is null) return;
 
         try
         {
@@ -932,7 +939,8 @@ public sealed class InstallsViewModel : ObservableObject
                     BasisInstallService.BasisRepoUrl,
                     picked,
                     BasisInstallService.DefaultBranch,
-                    line => ReportActivity(activity, line));
+                    line => ReportActivity(activity, line),
+                    sparsePatterns: BasisPartsService.ClonePatterns(leaveOut));
             }
             finally
             {
@@ -955,7 +963,9 @@ public sealed class InstallsViewModel : ObservableObject
             install.Alias = string.IsNullOrWhiteSpace(alias) ? null : alias;
             AddRow(install, activate: true);
             await PersistAsync();
-            _shell.SetStatus(L.Tr("installs.status.basisCloned", install.DisplayName), StatusKind.Success);
+            _shell.SetStatus(leaveOut.Count == 0
+                ? L.Tr("installs.status.basisCloned", install.DisplayName)
+                : L.Tr("installs.status.basisClonedWithout", install.DisplayName, PartsText.Names(leaveOut)), StatusKind.Success);
             _shell.NavigateTo("packages");
         }
         catch (Exception ex)
@@ -963,6 +973,68 @@ public sealed class InstallsViewModel : ObservableObject
             DiagnosticLog.Write("Cloning a Basis installation", ex);
             _shell.SetStatus(L.Tr("installs.status.cloneError", ex.Message), StatusKind.Error, Path.GetFileName(picked));
         }
+    }
+
+    private async Task<IReadOnlyList<BasisPart>?> ChooseClonePartsAsync(string folder)
+    {
+        var settings = await _settingsService.LoadAsync();
+        var leaveOut = await BasisPM.App.Services.Dialogs.ChooseClonePartsAsync(new CloneBasisViewModel(folder, settings.CloneLeaveOut));
+        if (leaveOut is null) return null;
+        try { await _settingsService.UpdateAsync(s => s.CloneLeaveOut = leaveOut.Select(p => p.Id).ToList()); }
+        catch (Exception ex) { DiagnosticLog.Write("Remembering the parts to leave out of new clones", ex); }
+        return leaveOut;
+    }
+
+    private async Task EditPartsAsync(InstallRow? row)
+    {
+        if (row is null) return;
+        if (!row.Install.IsGitRepo) { _shell.SetStatus(L.Tr("installs.status.notGitRepo", row.Name), StatusKind.Error); return; }
+        if (!_git.IsAvailable) { _shell.SetStatus(L.Tr("installs.status.gitNotFound"), StatusKind.Error); return; }
+        if (row.IsBusy) { _shell.SetStatus(L.Tr("installs.status.partsBusy", row.Name), StatusKind.Info, row.Name); return; }
+        var model = new ProjectPartsViewModel(row.Name, () => _parts.ScanAsync(row.RepoRoot, row.UnityProjectPath));
+        _ = model.LoadAsync();
+        if (await BasisPM.App.Services.Dialogs.EditPartsAsync(model) is { } choice) await SetPartsAsync(row, choice.LeaveOut, choice.DeleteIgnored);
+    }
+
+    public async Task IncludePartAsync(BasisInstall install, BasisPart part)
+    {
+        var row = Installs.FirstOrDefault(r => Platform.PathsEqual(r.RepoRoot, install.RepoRoot));
+        if (row is null) return;
+        IReadOnlyList<BasisPart> leftOut;
+        try { leftOut = await _parts.LeftOutAsync(row.RepoRoot, row.UnityProjectPath); }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write($"Reading the parts left out of {row.RepoRoot}", ex);
+            _shell.SetStatus(L.Tr("installs.status.partsFailed", row.Name, ex.Message), StatusKind.Error, row.Name);
+            return;
+        }
+        await SetPartsAsync(row, leftOut.Where(p => p != part).ToList(), deleteIgnored: false);
+    }
+
+    public async Task<BasisPartsResult?> SetPartsAsync(InstallRow row, IReadOnlyCollection<BasisPart> leaveOut, bool deleteIgnored)
+    {
+        if (row.IsBusy) { _shell.SetStatus(L.Tr("installs.status.partsBusy", row.Name), StatusKind.Info, row.Name); return null; }
+        row.IsBusy = true;
+        var changing = L.Tr("installs.status.changingParts", row.Name);
+        _shell.SetStatus(changing, StatusKind.Info, row.Name);
+        var activity = _shell.BeginActivity(changing, row.Name);
+        BasisPartsResult result;
+        try { result = await _parts.ApplyAsync(row.RepoRoot, row.UnityProjectPath, leaveOut, deleteIgnored); }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write($"Changing the parts of {row.RepoRoot}", ex);
+            _shell.SetStatus(L.Tr("installs.status.partsFailed", row.Name, ex.Message), StatusKind.Error, row.Name);
+            return null;
+        }
+        finally
+        {
+            row.IsBusy = false;
+            _shell.EndActivity(activity);
+        }
+        _shell.SetStatus(PartsText.Describe(row.Name, result), !result.Ok ? StatusKind.Error : result.Kept.Count > 0 ? StatusKind.Info : StatusKind.Success, row.Name);
+        await RefreshGitInfoAsync(row, fetch: false);
+        if (result.Changed && row.IsActive) _shell.ServerVM.SetActiveInstall(row.Install);
+        return result;
     }
 
     // Launches the install's Unity project — the resolved Basis/Basis subfolder (install.UnityProjectPath) —
@@ -1087,6 +1159,24 @@ public sealed class InstallRow : ObservableObject
     // True only when the checked-out branch is behind its upstream — i.e. an update is actually
     // available. Drives the "Update Core" button's brand-red styling (neutral when up to date).
     public bool CoreHasUpdate { get => _coreHasUpdate; set => SetField(ref _coreHasUpdate, value); }
+
+    private IReadOnlyList<BasisPart> _leftOutParts = Array.Empty<BasisPart>();
+
+    public IReadOnlyList<BasisPart> LeftOutParts
+    {
+        get => _leftOutParts;
+        set
+        {
+            if (_leftOutParts.SequenceEqual(value)) return;
+            _leftOutParts = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(HasLeftOutParts));
+            OnPropertyChanged(nameof(LeftOutText));
+        }
+    }
+
+    public bool HasLeftOutParts => _leftOutParts.Count > 0;
+    public string LeftOutText => HasLeftOutParts ? L.Tr("installs.row.leftOut", PartsText.Names(_leftOutParts)) : "";
 
     private BasisUpdateCheck? _basisCheck;
     private bool _isCheckingBasis;

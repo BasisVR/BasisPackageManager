@@ -1,0 +1,72 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BasisPM.App.ViewModels"
+        xmlns:loc="using:BasisPM.App.Localization"
+        x:Class="BasisPM.App.Views.ProjectPartsWindow"
+        x:DataType="vm:ProjectPartsViewModel"
+        Title="{loc:Tr dialog.parts.title}"
+        Width="560" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <StackPanel Margin="26,24" Spacing="16">
+        <TextBlock Text="{Binding Heading}" Classes="h3" TextWrapping="Wrap"/>
+        <TextBlock Text="{loc:Tr dialog.parts.intro}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+        <StackPanel Spacing="6" IsVisible="{Binding IsLoading}">
+            <TextBlock Text="{loc:Tr dialog.parts.loading}" Classes="muted" FontSize="12"/>
+            <ProgressBar IsIndeterminate="True" Height="4" CornerRadius="2"/>
+        </StackPanel>
+        <Border CornerRadius="10" Padding="12" Background="#26F59E0B" BorderBrush="#80F59E0B" BorderThickness="1" IsVisible="{Binding IsCustom}">
+            <TextBlock Text="{loc:Tr dialog.parts.custom}" TextWrapping="Wrap"/>
+        </Border>
+        <Border CornerRadius="10" Padding="12" Background="#26EF1237" BorderBrush="#80EF1237" BorderThickness="1" IsVisible="{Binding HasError}">
+            <TextBlock Text="{Binding Error}" TextWrapping="Wrap"/>
+        </Border>
+        <TextBlock Text="{loc:Tr dialog.parts.none}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding ShowNone}"/>
+        <Border Classes="card" Padding="0" ClipToBounds="True" IsVisible="{Binding HasParts}">
+            <ItemsControl ItemsSource="{Binding Parts}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:PartOption">
+                        <Border Padding="14,10" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                            <StackPanel Spacing="6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <CheckBox IsChecked="{Binding IsIncluded}" IsEnabled="{Binding CanToggle}">
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding Location}" Classes="dim" FontSize="11" IsVisible="{Binding ShowsLocation}"/>
+                                            <TextBlock Text="{Binding Description}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </CheckBox>
+                                    <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Top" Margin="12,2,0,0" IsVisible="{Binding ShowsStatus}">
+                                        <TextBlock Text="{Binding StatusText}" FontSize="11" Classes="muted"/>
+                                    </Border>
+                                </Grid>
+                                <TextBlock Text="{Binding UnsavedText}" Foreground="{StaticResource BasisWarningBrush}" FontSize="12"
+                                           TextWrapping="Wrap" Margin="28,0,0,0" IsVisible="{Binding HasUnsavedWork}"/>
+                                <TextBlock Text="{Binding RepositoriesText}" Classes="muted" FontSize="12"
+                                           TextWrapping="Wrap" Margin="28,0,0,0" IsVisible="{Binding ShowsRepositories}"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+        <CheckBox IsChecked="{Binding DeleteIgnored}" IsVisible="{Binding ShowDeleteIgnored}">
+            <TextBlock Text="{Binding DeleteIgnoredText}" FontSize="12" TextWrapping="Wrap"/>
+        </CheckBox>
+        <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+            <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.parts.tooltip.cancel}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.parts.cancel}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Classes="primary" Click="OnApply" IsEnabled="{Binding CanApply}" ToolTip.Tip="{loc:Tr dialog.parts.tooltip.apply}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconCheck}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.parts.apply}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</Window>

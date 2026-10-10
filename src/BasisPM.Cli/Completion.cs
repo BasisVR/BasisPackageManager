@@ -121,6 +121,7 @@ internal sealed partial class ConsoleApplication
             case ArgKind.ConfigKey: return SettingKeys.Select(k => k.Key);
             case ArgKind.ContentMode: return new[] { "avatar", "world", "prop" };
             case ArgKind.UnityStream: return new[] { "lts", "supported", "tech", "beta", "alpha" };
+            case ArgKind.Part: return BasisPartsService.All.Select(p => p.Id);
             case ArgKind.UnityModule: return UnityModules;
             case ArgKind.Path: return shell ? Enumerable.Empty<string>() : PathCandidates(current);
         }

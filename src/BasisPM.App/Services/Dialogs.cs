@@ -153,4 +153,16 @@ public static class Dialogs
         var owner = Owner;
         if (owner is not null) await new BasisChangesWindow(model).ShowDialog(owner);
     }
+
+    public static async Task<IReadOnlyList<BasisPart>?> ChooseClonePartsAsync(CloneBasisViewModel model)
+    {
+        var owner = Owner;
+        return owner is null ? null : await new CloneBasisWindow { DataContext = model }.ShowDialog<IReadOnlyList<BasisPart>?>(owner);
+    }
+
+    public static async Task<ProjectPartsChoice?> EditPartsAsync(ProjectPartsViewModel model)
+    {
+        var owner = Owner;
+        return owner is null ? null : await new ProjectPartsWindow { DataContext = model }.ShowDialog<ProjectPartsChoice?>(owner);
+    }
 }

@@ -33,3 +33,8 @@ public sealed record GitResult(bool Ok, int Code, string Output);
 public sealed record GitTreeChange(string OldMode, string NewMode, string OldSha, string NewSha, char Status, string Path);
 
 public sealed record GitPushEstimate(int Commits, long? Bytes);
+
+public sealed record GitSparseCheckout(bool Enabled, bool Cone, IReadOnlyList<string> Patterns)
+{
+    public static readonly GitSparseCheckout Off = new(false, false, Array.Empty<string>());
+}

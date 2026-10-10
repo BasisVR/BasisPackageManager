@@ -4385,6 +4385,222 @@
     {
       "key": "settings.activity.blocker.getDotNet",
       "value": "Get .NET 10"
+    },
+    {
+      "key": "installs.button.parts",
+      "value": "Parts"
+    },
+    {
+      "key": "installs.tooltip.parts",
+      "value": "Choose which parts of Basis this project keeps on disk, such as the Basis Server"
+    },
+    {
+      "key": "installs.row.leftOut",
+      "value": "Without {0}"
+    },
+    {
+      "key": "installs.row.leftOutTip",
+      "value": "Left out of this project's folder. Git still has these files, so Basis updates keep working. Use Parts to add them back."
+    },
+    {
+      "key": "installs.status.changingParts",
+      "value": "Changing the parts of {0}…"
+    },
+    {
+      "key": "installs.status.partsFailed",
+      "value": "Couldn't change the parts of {0}: {1}"
+    },
+    {
+      "key": "installs.status.partsBusy",
+      "value": "{0} is busy with another task. Change its parts when that finishes."
+    },
+    {
+      "key": "installs.status.basisClonedWithout",
+      "value": "Cloned {0} without {1}. Use Parts on the project to add anything back."
+    },
+    {
+      "key": "parts.server.name",
+      "value": "Basis Server"
+    },
+    {
+      "key": "parts.server.description",
+      "value": "The source for building and running your own Basis server. Leave it out if this project only makes content."
+    },
+    {
+      "key": "parts.images.name",
+      "value": "Images"
+    },
+    {
+      "key": "parts.images.description",
+      "value": "Pictures for the Basis readme on GitHub. Unity doesn't use them."
+    },
+    {
+      "key": "parts.status.included",
+      "value": "Included"
+    },
+    {
+      "key": "parts.status.leftOut",
+      "value": "Left out"
+    },
+    {
+      "key": "parts.status.leavingOut",
+      "value": "Will be left out"
+    },
+    {
+      "key": "parts.status.addingBack",
+      "value": "Will be added back"
+    },
+    {
+      "key": "parts.unsaved",
+      "value": "Not committed yet: {0}. Commit, move or discard these changes before leaving this out."
+    },
+    {
+      "key": "parts.repositories",
+      "value": "Git clones inside it stay where they are: {0}."
+    },
+    {
+      "key": "parts.more",
+      "value": "{0} and {1} more"
+    },
+    {
+      "key": "parts.result.unchanged",
+      "value": "Nothing changed in {0}."
+    },
+    {
+      "key": "parts.result.removed",
+      "value": "Left {0} out of {1}."
+    },
+    {
+      "key": "parts.result.added",
+      "value": "Added {0} back to {1}."
+    },
+    {
+      "key": "parts.result.deleted",
+      "value": "Removed the files git ignores there ({0} in all)."
+    },
+    {
+      "key": "parts.result.ignoredLeft",
+      "value": "Files git ignores are still in its folder ({0} in all)."
+    },
+    {
+      "key": "parts.result.kept",
+      "value": "Some files stayed: {0}."
+    },
+    {
+      "key": "parts.failure.notGit",
+      "value": "{0} isn't a git repository, so parts can't be left out of it."
+    },
+    {
+      "key": "parts.failure.custom",
+      "value": "{0} uses its own sparse checkout, so its folders are left as they are."
+    },
+    {
+      "key": "parts.failure.busy",
+      "value": "Finish or undo the Basis update, merge or other git operation in {0} first."
+    },
+    {
+      "key": "parts.failure.unsaved",
+      "value": "These files have changes that aren't committed yet: {0}. Commit, move or discard them first."
+    },
+    {
+      "key": "parts.failure.git",
+      "value": "Git couldn't change which folders are checked out: {0}"
+    },
+    {
+      "key": "dialog.cloneBasis.title",
+      "value": "Clone Basis"
+    },
+    {
+      "key": "dialog.cloneBasis.heading",
+      "value": "Clone Basis"
+    },
+    {
+      "key": "dialog.cloneBasis.intro",
+      "value": "Untick anything this project doesn't need. Git still downloads it, so Basis updates keep working, and you can add it back later with Parts on the project."
+    },
+    {
+      "key": "dialog.cloneBasis.remembered",
+      "value": "Your choice is remembered for the next clone."
+    },
+    {
+      "key": "dialog.cloneBasis.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key": "dialog.cloneBasis.clone",
+      "value": "Clone"
+    },
+    {
+      "key": "dialog.cloneBasis.tooltip.cancel",
+      "value": "Close without cloning"
+    },
+    {
+      "key": "dialog.cloneBasis.tooltip.clone",
+      "value": "Clone Basis into this folder with the parts you picked"
+    },
+    {
+      "key": "dialog.parts.title",
+      "value": "Parts"
+    },
+    {
+      "key": "dialog.parts.heading",
+      "value": "Parts of {0}"
+    },
+    {
+      "key": "dialog.parts.intro",
+      "value": "Unticked parts are removed from this project's folder. Git keeps their files, so Basis updates and your commits are unaffected, and ticking a part again brings it back."
+    },
+    {
+      "key": "dialog.parts.loading",
+      "value": "Checking the project…"
+    },
+    {
+      "key": "dialog.parts.custom",
+      "value": "This project uses its own sparse checkout, so its folders are left as they are."
+    },
+    {
+      "key": "dialog.parts.none",
+      "value": "This project has none of the optional parts."
+    },
+    {
+      "key": "dialog.parts.error",
+      "value": "Couldn't check this project: {0}"
+    },
+    {
+      "key": "dialog.parts.deleteIgnored",
+      "value": "Also delete the files git ignores in what you leave out, such as build output and the server's config ({0} in all)"
+    },
+    {
+      "key": "dialog.parts.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key": "dialog.parts.apply",
+      "value": "Apply"
+    },
+    {
+      "key": "dialog.parts.tooltip.cancel",
+      "value": "Close without changing anything"
+    },
+    {
+      "key": "dialog.parts.tooltip.apply",
+      "value": "Add or remove the parts you changed"
+    },
+    {
+      "key": "server.leftOut.title",
+      "value": "The Basis Server is left out of this project"
+    },
+    {
+      "key": "server.leftOut.body",
+      "value": "Its folder isn't checked out, so there is nothing to build or run here. Git still has its files, so adding it back is quick."
+    },
+    {
+      "key": "server.leftOut.addBack",
+      "value": "Add it back"
+    },
+    {
+      "key": "server.leftOut.addBackTip",
+      "value": "Check the Basis Server folder out again for this project"
     }
   ]
 }

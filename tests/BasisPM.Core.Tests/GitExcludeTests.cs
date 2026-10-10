@@ -9,16 +9,17 @@ public sealed class GitExcludeTests
     [Fact]
     public void PatternFor_anchors_to_repo_root_so_only_the_mount_is_ignored()
     {
-        var repo = @"C:\repo";
-        Assert.Equal("/Basis/.basisdev/com.x/", GitExclude.PatternFor(repo, @"C:\repo\Basis\.basisdev\com.x"));
-        Assert.Equal("/Basis/Packages/com.x/", GitExclude.PatternFor(repo, @"C:\repo\Basis\Packages\com.x"));
+        var repo = Path.Combine(Path.GetTempPath(), "repo");
+        Assert.Equal("/Basis/.basisdev/com.x/", GitExclude.PatternFor(repo, Path.Combine(repo, "Basis", ".basisdev", "com.x")));
+        Assert.Equal("/Basis/Packages/com.x/", GitExclude.PatternFor(repo, Path.Combine(repo, "Basis", "Packages", "com.x")));
     }
 
     [Fact]
     public void PatternFor_is_null_when_the_folder_is_not_inside_the_repo()
     {
-        Assert.Null(GitExclude.PatternFor(@"C:\repo", @"C:\repo"));         // the repo root itself
-        Assert.Null(GitExclude.PatternFor(@"C:\repo", @"C:\elsewhere\x"));  // a sibling, not a child
+        var repo = Path.Combine(Path.GetTempPath(), "repo");
+        Assert.Null(GitExclude.PatternFor(repo, repo));                                                // the repo root itself
+        Assert.Null(GitExclude.PatternFor(repo, Path.Combine(Path.GetTempPath(), "elsewhere", "x")));  // a sibling, not a child
     }
 
     [Fact]

@@ -15,8 +15,10 @@ public sealed class ServerViewModel : ObservableObject
     private readonly CatalogService _catalogs;
     private readonly UserSettingsService _settings;
     private readonly VersionService _versions;
+    private readonly BasisPartsService _parts;
     private readonly MainWindowViewModel _shell;
     private Catalog? _catalog;
+    private bool _isServerLeftOut;
     private string _serverPackageSource = "";
     private string _serverPackagesNotice = "";
     private bool _canManageServerPackages;
@@ -73,6 +75,7 @@ public sealed class ServerViewModel : ObservableObject
         private set { if (SetField(ref _serverPackagesNotice, value)) OnPropertyChanged(nameof(HasServerPackagesNotice)); }
     }
     public bool HasServerPackagesNotice => !string.IsNullOrEmpty(_serverPackagesNotice);
+    public bool IsServerLeftOut { get => _isServerLeftOut; private set => SetField(ref _isServerLeftOut, value); }
 
     public RelayCommand BuildCommand { get; }
     public RelayCommand RunCommand { get; }
@@ -90,15 +93,18 @@ public sealed class ServerViewModel : ObservableObject
     public RelayCommand<ServerPackageRow> RemoveServerPackageCommand { get; }
     public RelayCommand<ServerPackageRow> OpenServerPackageFolderCommand { get; }
     public RelayCommand<CatalogPackageVersion> InstallServerCatalogPackageCommand { get; }
+    public RelayCommand AddServerBackCommand { get; }
 
-    public ServerViewModel(BasisServerService service, ServerPackageService packages, CatalogService catalogs, UserSettingsService settings, VersionService versions, MainWindowViewModel shell)
+    public ServerViewModel(BasisServerService service, ServerPackageService packages, CatalogService catalogs, UserSettingsService settings, VersionService versions, BasisPartsService parts, MainWindowViewModel shell)
     {
         _service = service;
         _packages = packages;
         _catalogs = catalogs;
         _settings = settings;
         _versions = versions;
+        _parts = parts;
         _shell = shell;
+        AddServerBackCommand = new RelayCommand(AddServerBackAsync);
         AddServerPackageCommand = new RelayCommand(AddServerPackageAsync);
         RestoreServerPackagesCommand = new RelayCommand(RestoreServerPackagesAsync);
         UpdateServerPackageCommand = new RelayCommand<ServerPackageRow>(UpdateServerPackageAsync);
@@ -148,6 +154,7 @@ public sealed class ServerViewModel : ObservableObject
         ConfigFields.Clear();
         ContentFiles.Clear();
         _configRoot = _install?.RepoRoot;
+        _ = RefreshServerLeftOutAsync();
         if (_install is null) { RaiseCollections(); await RefreshServerPackagesAsync(); return; }
         try
         {
@@ -164,6 +171,24 @@ public sealed class ServerViewModel : ObservableObject
         catch (Exception ex) { DiagnosticLog.Write("Loading the Basis server configuration", ex); SetStatus($"Could not load server configuration: {ex.Message}", StatusKind.Error); }
         RaiseCollections();
         await RefreshServerPackagesAsync();
+    }
+
+    private async Task RefreshServerLeftOutAsync()
+    {
+        var install = _install;
+        var leftOut = false;
+        if (install is not null)
+        {
+            try { leftOut = (await _parts.LeftOutAsync(install.RepoRoot, install.UnityProjectPath)).Contains(BasisPartsService.Server); }
+            catch (Exception ex) { DiagnosticLog.Write("Checking whether the Basis Server is left out", ex); }
+        }
+        if (ReferenceEquals(install, _install)) IsServerLeftOut = leftOut;
+    }
+
+    private async Task AddServerBackAsync()
+    {
+        if (_install is null) { MissingInstall(); return; }
+        await _shell.InstallsVM.IncludePartAsync(_install, BasisPartsService.Server);
     }
 
     private async Task RefreshServerPackagesAsync()

@@ -119,6 +119,10 @@
                                             <TextBlock Text="{Binding ChangeCount, StringFormat='{}{0} changed'}"
                                                        FontSize="11" Classes="brand" FontWeight="Bold"/>
                                         </Border>
+                                        <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding HasLeftOutParts}"
+                                                ToolTip.Tip="{loc:Tr installs.row.leftOutTip}">
+                                            <TextBlock Text="{Binding LeftOutText}" FontSize="11" Classes="muted"/>
+                                        </Border>
                                         <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisUpdateAvailable}"
                                                 ToolTip.Tip="{Binding BasisPillTooltip}">
                                             <StackPanel Orientation="Horizontal" Spacing="6">
@@ -172,6 +176,15 @@
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
                                             <TextBlock Text="{loc:Tr installs.button.changeBranch}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button IsVisible="{Binding IsGitRepo}"
+                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).PartsCommand}"
+                                            CommandParameter="{Binding}"
+                                            ToolTip.Tip="{loc:Tr installs.tooltip.parts}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconParts}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr installs.button.parts}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <Button IsVisible="{Binding HasUnityProject}"
@@ -256,6 +269,11 @@
                                         <TextBlock Text="{Binding ChangeCount, StringFormat='{}{0} changed'}"
                                                    FontSize="11" Classes="brand" FontWeight="Bold"/>
                                     </Border>
+                                    <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding HasLeftOutParts}"
+                                            ToolTip.Tip="{loc:Tr installs.row.leftOutTip}">
+                                        <TextBlock Text="{Binding LeftOutText}" FontSize="11" Classes="muted"
+                                                   MaxWidth="210" TextTrimming="CharacterEllipsis"/>
+                                    </Border>
                                     <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisUpdateAvailable}"
                                             ToolTip.Tip="{Binding BasisPillTooltip}">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
@@ -309,6 +327,12 @@
                                                     CommandParameter="{Binding}"
                                                     ToolTip.Tip="{loc:Tr installs.tooltip.changeBranch}">
                                                 <PathIcon Width="16" Height="16" Data="{StaticResource IconBranch}"/>
+                                            </Button>
+                                            <Button Classes="iconBtn" IsVisible="{Binding IsGitRepo}"
+                                                    Command="{Binding #Root.((vm:InstallsViewModel)DataContext).PartsCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip.Tip="{loc:Tr installs.tooltip.parts}">
+                                                <PathIcon Width="16" Height="16" Data="{StaticResource IconParts}"/>
                                             </Button>
                                             <Button Classes="iconBtn" IsVisible="{Binding HasUnityProject}"
                                                     Command="{Binding #Root.((vm:InstallsViewModel)DataContext).BasisChangesCommand}"

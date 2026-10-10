@@ -22,13 +22,14 @@ public sealed class MountRegistryTests
     }
 
     [Fact]
-    public void Find_is_case_insensitive()
+    public void Find_ignores_package_id_case_and_path_case_where_the_os_does()
     {
         using var t = new TempDir();
         var reg = new MountRegistry(t.Path);
         reg.Add(Record(@"C:\Install", "com.x"));
 
-        Assert.NotNull(reg.Find(@"c:\install", "COM.X"));
+        Assert.NotNull(reg.Find(@"C:\Install", "COM.X"));
+        Assert.Equal(Platform.PathComparison() == StringComparison.OrdinalIgnoreCase, reg.Find(@"c:\install", "com.x") is not null);
     }
 
     [Fact]

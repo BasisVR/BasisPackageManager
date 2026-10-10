@@ -46,6 +46,13 @@ Running from source (`dotnet run`) skips the in-app updater — update with `git
   whether it is behind its own remote or has local changes. **Change branch** either switches to
   another branch of your project (uncommitted edits come along) or moves the project onto another
   Basis branch, such as a long-term-support one, keeping your commits and edits.
+- **Parts**: when cloning, untick **Basis Server** (the `Basis Server` folder) or **Images**
+  (`Basis/Images`, the readme pictures) to leave them out of the project; the choice is remembered
+  for the next clone, and **Parts** on a project adds or removes them later. Left-out parts use
+  git's sparse checkout, so git still has their files: Basis updates, branch switches and your
+  commits work as before, and ticking a part again brings it back. A part with uncommitted changes
+  isn't removed, and the files git ignores in it (build output, the server's config) are deleted
+  with it unless you choose to keep them.
 - **Basis updates**: whatever git setup a project has (a clone of `BasisVR/Basis`, a fork, a copy
   pushed to your own repository, or no git at all), **Update Basis** fetches the latest Basis
   straight from GitHub; your own remotes are never used or changed. A project that shares history
@@ -135,6 +142,11 @@ for a whole shell session.
 The console follows the same project model as the desktop app: it clones `BasisVR/Basis` first,
 detects packages already bundled under `Basis/Packages`, and only installs additional packages.
 Converting an arbitrary Unity project into Basis is not supported; use a complete Basis checkout.
+
+`clone-basis <folder> --without server,images` leaves parts out of a new clone. `parts` shows which
+parts a project has, `parts remove server` takes the `Basis Server` folder out (it asks before
+deleting the files git ignores there, such as build output; `--keep-ignored` leaves them), and
+`parts add server` brings it back.
 
 `basispm help` lists every command, and `basispm help <command>` (or `<command> --help`) shows its
 options and examples. A mistyped command or option gets a suggestion. Commands that list or show

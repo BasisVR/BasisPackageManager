@@ -262,6 +262,7 @@ internal sealed partial class ConsoleApplication
     {
         var options = values.ToList();
         var name = TakeValue(options, "--name");
+        var leaveOut = ParseParts(TakeValues(options, "--without"));
         Expect(options, 1, 2, "an empty folder to clone into");
         if (!_git.IsAvailable) throw new InvalidOperationException("Git was not found on PATH. Install it from https://git-scm.com/ and try again.");
         var destination = FullPath(options[0]);
@@ -274,9 +275,9 @@ internal sealed partial class ConsoleApplication
 
         await RunOperationAsync(async ct =>
         {
-            var result = await _git.CloneAsync(BasisInstallService.BasisRepoUrl, destination, branch, Out.Progress, ct);
+            var result = await _git.CloneAsync(BasisInstallService.BasisRepoUrl, destination, branch, Out.Progress, ct, BasisPartsService.ClonePatterns(leaveOut));
             if (!result.Ok) throw new InvalidOperationException($"Clone failed: {Tail(result.Output)}");
-        }, $"Cloning Basis {branch}" + Out.Ellipsis);
+        }, $"Cloning Basis {branch}" + (leaveOut.Count == 0 ? "" : $" without {string.Join(" and ", leaveOut.Select(p => p.Name))}") + Out.Ellipsis);
 
         var install = await _installs.LoadAsync(destination);
         if (!install.HasUnityProject)
@@ -290,6 +291,7 @@ internal sealed partial class ConsoleApplication
         if (_interactive) _sessionProject = destination;
         Out.Success($"Cloned Basis {branch} into {destination} and added it to your projects{(alias is null ? "" : " as " + alias)}.");
         Out.Say($"Unity project: {install.UnityProjectPath} (Unity {install.UnityVersion})");
+        if (leaveOut.Count > 0) Out.Say($"Left out: {string.Join(", ", leaveOut.Select(p => p.Name))}. '{Prefix}parts add {string.Join(" ", leaveOut.Select(p => p.Id))}' brings them back.");
         Out.Note($"Next: '{Prefix}doctor' checks this computer has what Basis needs, '{Prefix}open-unity' opens it.");
     }
 
@@ -304,10 +306,12 @@ internal sealed partial class ConsoleApplication
         var reconcile = sources.WithIssues.Count;
         GitStatus? git = null;
         BasisUpdateState? state = null;
+        IReadOnlyList<BasisPart> leftOut = Array.Empty<BasisPart>();
         if (install.IsGitRepo)
         {
             git = await _git.GetStatusAsync(install.RepoRoot);
             state = await _updates.LoadStateAsync(install.RepoRoot);
+            leftOut = await new BasisPartsService(_git).LeftOutAsync(install.RepoRoot, install.UnityProjectPath);
         }
         var hasServer = _server.HasServerProject(install.RepoRoot);
         var serverBuilt = hasServer && File.Exists(_server.GetPaths(install.RepoRoot).ExecutablePath);
@@ -323,6 +327,7 @@ internal sealed partial class ConsoleApplication
                 pending = state is null ? null : new { operation = state.Operation, basisBranch = state.BasisBranch, targetBranch = state.TargetBranch, phase = state.Phase },
                 packages = new { bundled = embedded.Count, manifest = install.Manifest.Dependencies.Count, devClones = clones, devClonesInUse = inUse, toReconcile = reconcile },
                 server = new { source = hasServer, built = serverBuilt, packages = serverPackages },
+                leftOut = leftOut.Select(p => p.Id),
             });
             return;
         }
@@ -343,6 +348,7 @@ internal sealed partial class ConsoleApplication
         var cloneText = clones == 0 ? "none" : $"{clones} ({(inUse == 0 ? "none" : inUse.ToString())} in use)";
         rows.Add(new Span[] { "Dev clones", reconcile > 0 ? new Span($"{cloneText}, {Plural(reconcile, "package")} to reconcile: run '{Prefix}basisdev'", Tone.Warn) : cloneText });
         if (hasServer) rows.Add(new Span[] { "Server", $"Basis Server source found, {(serverBuilt ? "built" : "not built yet")}" + (serverPackages > 0 ? $", {Plural(serverPackages, "server package")}" : "") });
+        if (leftOut.Count > 0) rows.Add(new Span[] { "Left out", $"{string.Join(", ", leftOut.Select(p => p.Name))} ('{Prefix}parts add {string.Join(" ", leftOut.Select(p => p.Id))}' brings them back)" });
         Out.Table(rows);
         if (!install.IsBasisCheckout && install.HasUnityProject) Out.Warning("This Unity project has no Packages/com.basis.framework, so it isn't a complete Basis checkout.");
         Out.Note($"'{Prefix}check-updates' looks for a newer Basis; '{Prefix}doctor' checks git, Unity and the SDKs.");

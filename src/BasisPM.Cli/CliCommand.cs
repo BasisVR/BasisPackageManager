@@ -1,6 +1,6 @@
 namespace BasisPM.Cli;
 
-internal enum ArgKind { None, Path, Verb, Project, Package, InstalledPackage, CatalogPackage, ProjectBranch, BasisBranch, ConflictPath, ConflictChoice, ServerPackage, ServerConfigKey, ServerContent, ConfigKey, Shell, Command, UnityVersion, UnityModule, ContentMode, UnityStream, PackageList }
+internal enum ArgKind { None, Path, Verb, Project, Package, InstalledPackage, CatalogPackage, ProjectBranch, BasisBranch, ConflictPath, ConflictChoice, ServerPackage, ServerConfigKey, ServerContent, ConfigKey, Shell, Command, UnityVersion, UnityModule, ContentMode, UnityStream, PackageList, Part }
 
 internal sealed record CliOption(string Flag, string Help, string? Value = null, string? Short = null, ArgKind ValueKind = ArgKind.None)
 {
