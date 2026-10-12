@@ -233,7 +233,7 @@
                             <TextBlock Text="{Binding UpdateBannerText}"
                                        Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="13"
                                        TextWrapping="Wrap" VerticalAlignment="Center"/>
-                            <ProgressBar IsVisible="{Binding IsUpdating}"
+                            <ProgressBar Classes="bannerProgress" IsVisible="{Binding IsUpdating}"
                                          Minimum="0" Maximum="100" Value="{Binding UpdateProgress}"
                                          ShowProgressText="True"
                                          Foreground="#FFFFFF" Background="#33FFFFFF"

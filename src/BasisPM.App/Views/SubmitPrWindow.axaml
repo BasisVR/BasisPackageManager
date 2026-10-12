@@ -1,43 +1,125 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BasisPM.App.ViewModels"
         xmlns:loc="using:BasisPM.App.Localization"
         x:Class="BasisPM.App.Views.SubmitPrWindow"
+        x:DataType="vm:SubmitPrViewModel"
+        Name="Root"
         Title="{loc:Tr dialog.submitPr.title}"
-        Width="500" SizeToContent="Height"
-        CanResize="False"
+        Width="1080" Height="740" MinWidth="780" MinHeight="540"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BasisBackgroundBrush}">
-    <StackPanel Margin="26" Spacing="14">
-        <TextBlock Text="{loc:Tr dialog.submitPr.title}" Classes="h3"/>
-        <TextBlock x:Name="SubText" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
-        <StackPanel Spacing="6">
-            <TextBlock Text="{loc:Tr dialog.submitPr.titleLabel}" Classes="muted" FontSize="11"/>
-            <TextBox x:Name="TitleBox" Watermark="{loc:Tr dialog.submitPr.titleWatermark}" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.title}"/>
+    <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="24">
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,14">
+            <TextBlock Text="{loc:Tr dialog.submitPr.title}" Classes="h2"/>
+            <TextBlock Text="{Binding Subtitle}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
         </StackPanel>
-        <StackPanel Spacing="6">
-            <TextBlock Text="{loc:Tr dialog.submitPr.descriptionLabel}" Classes="muted" FontSize="11"/>
-            <TextBox x:Name="BodyBox" AcceptsReturn="True" Height="96" TextWrapping="Wrap"
-                     Watermark="{loc:Tr dialog.submitPr.descriptionWatermark}" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.description}"/>
+
+        <Grid Grid.Row="1" ColumnDefinitions="340,14,*">
+            <Border Grid.Column="0" Classes="glass" Padding="0">
+                <Grid RowDefinitions="Auto,*">
+                    <TextBlock Text="{Binding FilesText}" Classes="muted" FontSize="12" FontWeight="SemiBold" Margin="14,10,10,6"/>
+                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl ItemsSource="{Binding Files}" Margin="8,0,8,10">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:PrChangeItem">
+                                    <Button Classes="fileRow" Classes.selected="{Binding IsSelected}"
+                                            Command="{Binding #Root.((vm:SubmitPrViewModel)DataContext).SelectFileCommand}"
+                                            CommandParameter="{Binding}" ToolTip.Tip="{Binding DisplayPath}">
+                                        <Grid ColumnDefinitions="18,*">
+                                            <TextBlock Text="{Binding KindLetter}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12" FontWeight="Bold"
+                                                       Classes.kindA="{Binding IsAdded}" Classes.kindD="{Binding IsDeleted}" Classes.kindM="{Binding IsModified}"
+                                                       VerticalAlignment="Center" ToolTip.Tip="{Binding KindLabel}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding DisplayPath}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12"
+                                                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Column="2" RowDefinitions="*,12,Auto">
+                <Border Grid.Row="0" Classes="glass" Padding="0">
+                    <Grid RowDefinitions="Auto,*">
+                        <Border Padding="14,10" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Text="{Binding DiffTitle}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12"
+                                           TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding DiffTitle}" VerticalAlignment="Center"/>
+                                <ProgressBar Grid.Column="1" IsIndeterminate="True" IsVisible="{Binding IsDiffLoading}" Width="80" Height="3" CornerRadius="2" Margin="10,0,0,0"/>
+                            </Grid>
+                        </Border>
+                        <Panel Grid.Row="1">
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" IsVisible="{Binding HasDiff}">
+                                <ItemsControl ItemsSource="{Binding DiffLines}" Margin="0,6,0,10">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <VirtualizingStackPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:DiffLineItem">
+                                            <Border Classes.diffAdded="{Binding IsAdded}" Classes.diffRemoved="{Binding IsRemoved}" Padding="14,0">
+                                                <TextBlock Text="{Binding Text}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12"
+                                                           Classes.diffHunk="{Binding IsHunk}" Classes.diffMeta="{Binding IsMeta}"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <TextBlock IsVisible="{Binding !HasDiff}" Text="{Binding DiffHint}" Classes="dim" FontSize="12"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" TextAlignment="Center"/>
+                        </Panel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="2" Classes="glass" Padding="16,14" IsEnabled="{Binding IsIdle}">
+                    <StackPanel Spacing="10">
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="{loc:Tr dialog.submitPr.titleLabel}" Classes="muted" FontSize="11"/>
+                            <TextBox x:Name="TitleBox" Text="{Binding Title}" Watermark="{loc:Tr dialog.submitPr.titleWatermark}" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.title}"/>
+                        </StackPanel>
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="{loc:Tr dialog.submitPr.descriptionLabel}" Classes="muted" FontSize="11"/>
+                            <TextBox Text="{Binding Body}" AcceptsReturn="True" TextWrapping="Wrap" Height="64"
+                                     Watermark="{loc:Tr dialog.submitPr.descriptionWatermark}" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.description}"/>
+                        </StackPanel>
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="{loc:Tr dialog.submitPr.branchLabel}" Classes="muted" FontSize="11"/>
+                            <TextBox Text="{Binding Branch}" FontFamily="{StaticResource MonoFontFamily}" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.branch}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <StackPanel Grid.Row="2" Spacing="6" Margin="0,12,0,0">
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsSigningIn}" Height="4" CornerRadius="2"/>
+            <TextBlock Text="{loc:Tr dialog.submitPr.signingIn}" IsVisible="{Binding IsSigningIn}" Classes="dim" FontSize="12"/>
+            <TextBlock Text="{Binding ErrorText}" IsVisible="{Binding HasError}" Foreground="{StaticResource BasisDangerBrush}" FontSize="12" TextWrapping="Wrap"/>
+            <TextBlock Text="{loc:Tr dialog.submitPr.hint}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
         </StackPanel>
-        <StackPanel Spacing="6">
-            <TextBlock Text="{loc:Tr dialog.submitPr.branchLabel}" Classes="muted" FontSize="11"/>
-            <TextBox x:Name="BranchBox" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.branch}"/>
-        </StackPanel>
-        <TextBlock Text="{loc:Tr dialog.submitPr.hint}"
-                   Classes="dim" FontSize="11" TextWrapping="Wrap"/>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,14,0,0">
             <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.cancel}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.submitPr.cancel}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
-            <Button Classes="primary" Click="OnOk" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.openPr}">
+            <Button Classes="primary" Click="OnOk" IsEnabled="{Binding IsIdle}" ToolTip.Tip="{loc:Tr dialog.submitPr.tooltip.openPr}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
                     <TextBlock Text="{loc:Tr dialog.submitPr.openPr}" VerticalAlignment="Center"/>
                 </StackPanel>
             </Button>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

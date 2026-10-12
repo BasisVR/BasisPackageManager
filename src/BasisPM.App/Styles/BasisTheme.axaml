@@ -494,6 +494,15 @@
         <Setter Property="Background" Value="#F1EAF7"/>
         <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandPressedBrush}"/>
     </Style>
+    <Style Selector="Button.bannerPrimary TextBlock, Button.bannerPrimary PathIcon">
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandBrush}"/>
+    </Style>
+    <Style Selector="Button.bannerPrimary:pointerover TextBlock, Button.bannerPrimary:pointerover PathIcon">
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandPressedBrush}"/>
+    </Style>
+    <Style Selector="ProgressBar.bannerProgress /template/ TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource BasisBackgroundBrush}"/>
+    </Style>
 
     <Style Selector="Button.bannerGhost">
         <Setter Property="Background" Value="#22FFFFFF"/>
@@ -620,6 +629,40 @@
     <Style Selector="Border.glass.edited:pointerover">
         <Setter Property="Background" Value="#33F59E0B"/>
         <Setter Property="BorderBrush" Value="#B3F59E0B"/>
+    </Style>
+
+    <Style Selector="Button.fileRow">
+        <Setter Property="Background" Value="#00221F44"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="6,3"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    </Style>
+    <Style Selector="Button.fileRow.selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.kindA">
+        <Setter Property="Foreground" Value="{StaticResource BasisSuccessBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.kindD">
+        <Setter Property="Foreground" Value="{StaticResource BasisDangerBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.kindM">
+        <Setter Property="Foreground" Value="{StaticResource BasisWarningBrush}"/>
+    </Style>
+    <Style Selector="Border.diffAdded">
+        <Setter Property="Background" Value="#2622C55E"/>
+    </Style>
+    <Style Selector="Border.diffRemoved">
+        <Setter Property="Background" Value="#26EF1237"/>
+    </Style>
+    <Style Selector="TextBlock.diffHunk">
+        <Setter Property="Foreground" Value="{StaticResource BasisPurpleBrush}"/>
+    </Style>
+    <Style Selector="TextBlock.diffMeta">
+        <Setter Property="Foreground" Value="{StaticResource BasisTextDimBrush}"/>
     </Style>
 
     <!-- Soft fade-in for panels/overlays that toggle via IsVisible (update banner, clone form,

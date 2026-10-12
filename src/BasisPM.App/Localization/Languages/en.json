@@ -2895,6 +2895,50 @@
       "value": "Update the package"
     },
     {
+      "key": "dialog.submitPr.files",
+      "value": "{0} changed files"
+    },
+    {
+      "key": "dialog.submitPr.filesOne",
+      "value": "1 changed file"
+    },
+    {
+      "key": "dialog.submitPr.diff.pick",
+      "value": "Pick a file on the left to see what changed."
+    },
+    {
+      "key": "dialog.submitPr.diff.loading",
+      "value": "Loading the changes…"
+    },
+    {
+      "key": "dialog.submitPr.diff.failed",
+      "value": "Couldn't show the changes: {0}"
+    },
+    {
+      "key": "dialog.submitPr.kind.added",
+      "value": "New file"
+    },
+    {
+      "key": "dialog.submitPr.kind.deleted",
+      "value": "Deleted"
+    },
+    {
+      "key": "dialog.submitPr.kind.modified",
+      "value": "Changed"
+    },
+    {
+      "key": "dialog.submitPr.kind.renamed",
+      "value": "Renamed"
+    },
+    {
+      "key": "dialog.submitPr.kind.conflicted",
+      "value": "Has merge conflicts"
+    },
+    {
+      "key": "dialog.submitPr.signingIn",
+      "value": "Signing in to GitHub…"
+    },
+    {
       "key": "dialog.versionPicker.betaPill",
       "value": "beta"
     },

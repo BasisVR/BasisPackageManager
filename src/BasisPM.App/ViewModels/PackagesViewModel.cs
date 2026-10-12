@@ -1302,20 +1302,15 @@ public sealed partial class PackagesViewModel : ObservableObject
         try
         {
             // Nothing to PR if the working clone is clean — bail before sign-in and a fork.
-            var status = await _gitService.GetStatusAsync(folderPath);
-            if (status.ChangeCount == 0) { SetStatus(L.Tr("develop.status.noChangesToSubmit", packageId), StatusKind.Info); return; }
+            var changes = await _gitService.GetChangesAsync(folderPath);
+            if (changes.Count == 0) { SetStatus(L.Tr("develop.status.noChangesToSubmit", packageId), StatusKind.Info); return; }
 
-            var token = await GetOrPromptTokenAsync();
-            if (string.IsNullOrEmpty(token)) { SetStatus(L.Tr("develop.status.signInFirst"), StatusKind.Error); return; }
-            var user = await _ghApi.GetUserAsync(token);
-            if (user is null) { SetStatus(L.Tr("develop.status.loginUnverified"), StatusKind.Error); return; }
-
-            var draft = await Dialogs.SubmitPrAsync(packageId);
+            var draft = await Dialogs.SubmitPrAsync(new SubmitPrViewModel(new SubmitPrHost(_gitService, _ghAuth, _ghApi, folderPath), packageId, changes));
             if (draft is null) return;
 
             IsBusy = true;
             SetStatus(L.Tr("develop.status.submittingPr", packageId));
-            var result = await _contributeService.SubmitPrAsync(folderPath, token, user, draft,
+            var result = await _contributeService.SubmitPrAsync(folderPath, draft.Token, draft.User, draft.Request,
                 line => Avalonia.Threading.Dispatcher.UIThread.Post(() => SetStatus(line)));
             if (result.Ok)
             {
@@ -1326,17 +1321,6 @@ public sealed partial class PackagesViewModel : ObservableObject
         }
         catch (Exception ex) { DiagnosticLog.Write("Creating a package contribution pull request", ex); SetStatus(L.Tr("develop.status.prError", ex.Message), StatusKind.Error); }
         finally { IsBusy = false; }
-    }
-
-    // Uses the gh CLI token if the user is signed in there; otherwise prompts once for a PAT.
-    private async Task<string?> GetOrPromptTokenAsync()
-    {
-        var token = await _ghAuth.GetTokenAsync();
-        if (!string.IsNullOrEmpty(token)) return token;
-        var pat = await Dialogs.SignInAsync();
-        if (string.IsNullOrWhiteSpace(pat)) return null;
-        _ghAuth.SetPersonalAccessToken(pat);
-        return await _ghAuth.GetTokenAsync();
     }
 
     // Re-reads the manifest from disk (mount/swap rewrote it) before rebuilding the lists.

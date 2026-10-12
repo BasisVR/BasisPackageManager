@@ -9,42 +9,6 @@
         Width="1180" Height="800" MinWidth="860" MinHeight="580"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BasisBackgroundBrush}">
-    <Window.Styles>
-        <Style Selector="Button.fileRow">
-            <Setter Property="Background" Value="#00221F44"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="CornerRadius" Value="6"/>
-            <Setter Property="Padding" Value="6,3"/>
-            <Setter Property="FontWeight" Value="Normal"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        </Style>
-        <Style Selector="Button.fileRow.selected /template/ ContentPresenter">
-            <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
-        </Style>
-        <Style Selector="TextBlock.kindA">
-            <Setter Property="Foreground" Value="{StaticResource BasisSuccessBrush}"/>
-        </Style>
-        <Style Selector="TextBlock.kindD">
-            <Setter Property="Foreground" Value="{StaticResource BasisDangerBrush}"/>
-        </Style>
-        <Style Selector="TextBlock.kindM">
-            <Setter Property="Foreground" Value="{StaticResource BasisWarningBrush}"/>
-        </Style>
-        <Style Selector="Border.diffAdded">
-            <Setter Property="Background" Value="#2622C55E"/>
-        </Style>
-        <Style Selector="Border.diffRemoved">
-            <Setter Property="Background" Value="#26EF1237"/>
-        </Style>
-        <Style Selector="TextBlock.diffHunk">
-            <Setter Property="Foreground" Value="{StaticResource BasisPurpleBrush}"/>
-        </Style>
-        <Style Selector="TextBlock.diffMeta">
-            <Setter Property="Foreground" Value="{StaticResource BasisTextDimBrush}"/>
-        </Style>
-    </Window.Styles>
-
     <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="24">
         <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,14">
             <StackPanel Spacing="4">

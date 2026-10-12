@@ -99,25 +99,11 @@ public static class Dialogs
         return files?.FirstOrDefault()?.TryGetLocalPath();
     }
 
-    /// <summary>Collects pull-request details for a mounted package; returns the request, or null if cancelled.</summary>
-    public static async Task<PrRequest?> SubmitPrAsync(string packageId)
+    /// <summary>Shows a mounted package's changes and collects pull-request details; returns the signed-in request, or null if cancelled.</summary>
+    public static async Task<SubmitPrDraft?> SubmitPrAsync(SubmitPrViewModel model)
     {
         var owner = Owner;
-        if (owner is null)
-        {
-            return null;
-        }
-
-        var id = string.IsNullOrWhiteSpace(packageId) ? "package" : packageId;
-        var slug = new string(id.Select(c => char.IsLetterOrDigit(c) ? char.ToLowerInvariant(c) : '-').ToArray()).Trim('-');
-        return await new SubmitPrWindow(id, $"basis-edit-{slug}").ShowDialog<PrRequest?>(owner);
-    }
-
-    /// <summary>Prompts for a GitHub personal access token (used on demand when a PR needs one); returns it, or null if cancelled.</summary>
-    public static async Task<string?> SignInAsync()
-    {
-        var owner = Owner;
-        return owner is null ? null : await new SignInPromptWindow().ShowDialog<string?>(owner);
+        return owner is null ? null : await new SubmitPrWindow(model).ShowDialog<SubmitPrDraft?>(owner);
     }
 
     /// <summary>Shows the version picker; returns the chosen version, or null if cancelled.</summary>

@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using BasisPM.App.Localization;
-using BasisPM.Core.Services;
+using BasisPM.App.ViewModels;
 
 namespace BasisPM.App.Views;
 
@@ -9,21 +8,23 @@ public partial class SubmitPrWindow : Window
 {
     public SubmitPrWindow() => InitializeComponent();
 
-    public SubmitPrWindow(string packageId, string suggestedBranch) : this()
+    public SubmitPrWindow(SubmitPrViewModel model) : this()
     {
-        SubText.Text = L.Tr("dialog.submitPr.contributeHint", packageId);
-        TitleBox.Text = L.Tr("dialog.submitPr.defaultTitle", packageId);
-        BranchBox.Text = suggestedBranch;
-        Opened += (_, _) => { TitleBox.Focus(); TitleBox.SelectAll(); };
+        DataContext = model;
+        model.AskForToken = () => new SignInPromptWindow().ShowDialog<string?>(this);
+        Opened += (_, _) =>
+        {
+            model.SelectFile(model.Files.FirstOrDefault());
+            TitleBox.Focus();
+            TitleBox.SelectAll();
+        };
     }
 
-    private void OnOk(object? sender, RoutedEventArgs e)
+    private async void OnOk(object? sender, RoutedEventArgs e)
     {
-        var title = TitleBox.Text?.Trim();
-        if (string.IsNullOrWhiteSpace(title)) { TitleBox.Focus(); return; }
-        var branch = string.IsNullOrWhiteSpace(BranchBox.Text) ? "basis-pm-edit" : BranchBox.Text.Trim();
-        var body = string.IsNullOrWhiteSpace(BodyBox.Text) ? null : BodyBox.Text.Trim();
-        Close(new PrRequest(title!, body, branch, null));
+        if (DataContext is not SubmitPrViewModel model) return;
+        if (string.IsNullOrWhiteSpace(model.Title)) { TitleBox.Focus(); return; }
+        if (await model.SignInAsync() is { } draft && IsVisible) Close(draft);
     }
 
     private void OnCancel(object? sender, RoutedEventArgs e) => Close(null);
