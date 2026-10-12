@@ -162,6 +162,8 @@ public sealed class MountService
         var dest = folder ?? record?.FolderPath ?? Path.Combine(install.UnityProjectPath, "Packages", packageId);
         if (Directory.Exists(dest) && !IsWorkingClone(dest))
             return MountResult.Fail($"{dest} isn't a mounted git clone, so it was left untouched.");
+        if (await Task.Run(() => DeleteBlocker(install.UnityProjectPath, dest), ct).ConfigureAwait(false) is { } blocker)
+            return MountResult.Fail($"Couldn't delete {dest}: {blocker}");
 
         if (restoreManifest)
         {
@@ -185,7 +187,8 @@ public sealed class MountService
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Deleting mounted package directory {dest}", ex);
-            return MountResult.Fail(restoreManifest ? $"Restored the manifest, but couldn't delete {dest}: {ex.Message}" : $"Couldn't delete {dest}: {ex.Message}");
+            var reason = OperatingSystem.IsWindows() && UnityProjectService.IsOpenInUnity(install.UnityProjectPath) ? $"{ex.Message} Close Unity, then try again." : ex.Message;
+            return MountResult.Fail(restoreManifest ? $"Restored the manifest, but couldn't delete {dest}: {reason}" : $"Couldn't delete {dest}: {reason}");
         }
 
         Forget(install, packageId, dest);
@@ -200,6 +203,27 @@ public sealed class MountService
         if (folder is not null) GitExclude.Remove(install.RepoRoot, folder, _git.GetCommonGitDir);
     }
 
+    public static string? DeleteBlocker(string unityProjectPath, string folder)
+    {
+        if (!OperatingSystem.IsWindows() || !Directory.Exists(folder)) return null;
+        var files = Directory.EnumerateFiles(folder).Concat(Directory.EnumerateDirectories(folder).Where(d => !IsGitDir(d)).SelectMany(d => Directory.EnumerateFiles(d, "*", SearchOption.AllDirectories)));
+        if (files.FirstOrDefault(IsInUse) is not { } busy) return null;
+        var name = Path.GetFileName(busy);
+        return UnityProjectService.IsOpenInUnity(unityProjectPath)
+            ? $"Unity is using {name}. Close Unity, then try again."
+            : $"{name} is in use by another program, usually Unity. Close it, then try again.";
+    }
+
+    private static bool IsInUse(string file)
+    {
+        try { using var probe = new FileStream(file, FileMode.Open, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete); }
+        catch (IOException ex) when ((ex.HResult & 0xFFFF) is 32 or 33) { return true; }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        return false;
+    }
+
+    private static bool IsGitDir(string path) => string.Equals(Path.GetFileName(path), ".git", StringComparison.OrdinalIgnoreCase);
+
     private static void TryForceDelete(string path)
     {
         try { if (Directory.Exists(path)) ForceDeleteDirectory(path); }
@@ -213,6 +237,11 @@ public sealed class MountService
         {
             try { File.SetAttributes(file, FileAttributes.Normal); }
             catch (Exception ex) { DiagnosticLog.Write($"Clearing file attributes for {file}", ex); }
+        }
+        foreach (var entry in Directory.EnumerateFileSystemEntries(path).Where(e => !IsGitDir(e)).ToList())
+        {
+            if (Directory.Exists(entry)) Directory.Delete(entry, recursive: true);
+            else File.Delete(entry);
         }
         Directory.Delete(path, recursive: true);
     }

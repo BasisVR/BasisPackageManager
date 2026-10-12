@@ -74,6 +74,82 @@ public sealed class MountServiceTests
         Assert.DoesNotContain("com.x", File.ReadAllText(manifest));
     }
 
+    [WindowsFact]
+    public async Task SwapBack_changes_nothing_while_a_file_in_the_clone_is_in_use()
+    {
+        using var t = new TempDir();
+        var (service, install, manifest) = MountedClone(t);
+        var clone = t.Combine("Basis/Packages/com.x");
+
+        using (new FileStream(t.Combine("Basis/Packages/com.x/Plugins/steam_api64.dll"), FileMode.Open, FileAccess.Read, FileShare.Read))
+        {
+            var result = await service.SwapBackAsync(install, "com.x");
+            Assert.False(result.Ok);
+            Assert.Equal($"Couldn't delete {clone}: steam_api64.dll is in use by another program, usually Unity. Close it, then try again.", result.Error);
+        }
+
+        Assert.True(MountService.IsWorkingClone(clone));
+        Assert.True(File.Exists(t.Combine("Basis/Packages/com.x/package.json")));
+        Assert.DoesNotContain("com.x", File.ReadAllText(manifest));
+    }
+
+    [WindowsFact]
+    public void DeleteBlocker_tells_the_user_to_close_Unity_when_it_has_the_project_open()
+    {
+        using var t = new TempDir();
+        var (_, install, _) = MountedClone(t);
+        var lockFile = t.WriteFile("Basis/Temp/UnityLockfile", "");
+        using var dll = new FileStream(t.Combine("Basis/Packages/com.x/Plugins/steam_api64.dll"), FileMode.Open, FileAccess.Read, FileShare.Read);
+        using var unity = new FileStream(lockFile, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+
+        Assert.Equal("Unity is using steam_api64.dll. Close Unity, then try again.", MountService.DeleteBlocker(install.UnityProjectPath, t.Combine("Basis/Packages/com.x")));
+    }
+
+    [Fact]
+    public void DeleteBlocker_ignores_free_files_and_anything_under_git()
+    {
+        using var t = new TempDir();
+        var (_, install, _) = MountedClone(t);
+        using var index = new FileStream(t.WriteFile("Basis/Packages/com.x/.git/index", "x"), FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        Assert.Null(MountService.DeleteBlocker(install.UnityProjectPath, t.Combine("Basis/Packages/com.x")));
+    }
+
+    [WindowsFact]
+    public async Task A_failed_delete_keeps_git_so_swap_back_can_run_again()
+    {
+        using var t = new TempDir();
+        var (service, install, manifest) = MountedClone(t);
+        var clone = t.Combine("Basis/Packages/com.x");
+
+        using (new FileStream(t.Combine("Basis/Packages/com.x/Plugins/steam_api64.dll"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+        {
+            var failed = await service.SwapBackAsync(install, "com.x");
+            Assert.False(failed.Ok);
+            Assert.StartsWith($"Restored the manifest, but couldn't delete {clone}", failed.Error);
+            Assert.True(MountService.IsWorkingClone(clone));
+        }
+
+        var result = await service.SwapBackAsync(install, "com.x");
+        Assert.True(result.Ok);
+        Assert.False(Directory.Exists(clone));
+        Assert.Contains("https://github.com/o/r.git", File.ReadAllText(manifest));
+    }
+
+    private static (MountService Service, BasisInstall Install, string Manifest) MountedClone(TempDir t)
+    {
+        t.CreateDir("Basis/Assets");
+        var project = t.Combine("Basis");
+        t.WriteFile("Basis/ProjectSettings/ProjectVersion.txt", "m_EditorVersion: 6000.0.0f1\n");
+        var manifest = t.WriteFile("Basis/Packages/manifest.json", """{ "dependencies": {} }""");
+        t.WriteFile("Basis/Packages/com.x/package.json", """{ "name": "com.x" }""");
+        t.WriteFile("Basis/Packages/com.x/Plugins/steam_api64.dll", "x");
+        t.WriteFile("Basis/Packages/com.x/.git/HEAD", "ref: refs/heads/main\n");
+        var registry = new MountRegistry(t.Combine("data"));
+        registry.Add(new MountRecord(project, "com.x", t.Combine("Basis/Packages/com.x"), "https://github.com/o/r.git"));
+        return (new MountService(new GitService(), new UnityProjectService(), registry), new BasisInstall { RepoRoot = t.Path, UnityProjectPath = project, Name = "Basis" }, manifest);
+    }
+
     [Fact]
     public void MountResult_helpers()
     {

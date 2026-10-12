@@ -1225,6 +1225,11 @@ public sealed partial class PackagesViewModel : ObservableObject
         var dest = Path.Combine(_install.UnityProjectPath, "Packages", row.Name);
         if (Directory.Exists(dest) && Directory.EnumerateFileSystemEntries(dest).Any())
         {
+            if (MountService.DeleteBlocker(_install.UnityProjectPath, dest) is { } blocker)
+            {
+                SetStatus(L.Tr("develop.status.clearFailed", row.Name, blocker), StatusKind.Error);
+                return;
+            }
             if (!await Dialogs.ConfirmAsync(L.Tr("develop.confirm.packageThereTitle"), L.Tr("develop.confirm.packageExists", row.Name)))
             {
                 SetStatus(L.Tr("develop.status.mountCancelled", row.Name), StatusKind.Info);
