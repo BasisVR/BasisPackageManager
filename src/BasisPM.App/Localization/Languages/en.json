@@ -235,6 +235,10 @@
       "value": "Update failed: {0}"
     },
     {
+      "key": "shell.status.updateUnfinished",
+      "value": "The update to {0} didn't finish, so this is still {1}. Try again to finish it."
+    },
+    {
       "key": "shell.update.bannerAvailable",
       "value": "Basis Package Manager {0} is available."
     },

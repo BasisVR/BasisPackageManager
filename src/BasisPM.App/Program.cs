@@ -14,6 +14,9 @@ internal static class Program
         // Must run first: services Velopack's install/update/uninstall hooks. No-op from source.
         VelopackApp.Build().Run();
 
+        try { Environment.CurrentDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); }
+        catch (Exception ex) { DiagnosticLog.Write("Moving the working directory out of the install folder", ex); }
+
         var uri = args.FirstOrDefault(DeepLink.IsDeepLink);
 
         // Single instance: a second launch forwards its deep link to the running window and exits.

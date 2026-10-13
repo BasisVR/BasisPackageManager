@@ -52,6 +52,8 @@ public sealed class UpdateService
     public string CurrentVersion =>
         Manager?.IsInstalled == true && Manager.CurrentVersion is { } v ? v.ToString() : AssemblyVersion();
 
+    public string? UnfinishedUpdateVersion => Manager?.IsInstalled == true ? Manager.UpdatePendingRestart?.Version?.ToString() : null;
+
     /// <summary>Returns update info when a newer stable release exists, otherwise null.</summary>
     public async Task<UpdateInfo?> CheckAsync()
     {

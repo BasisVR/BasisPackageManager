@@ -485,6 +485,8 @@ public sealed class MainWindowViewModel : ObservableObject
 
         await UnityVM.RefreshAsync();
 
+        if (_updateService.UnfinishedUpdateVersion is { } unfinished)
+            SetStatus(L.Tr("shell.status.updateUnfinished", unfinished, AppVersion), StatusKind.Error, null, InstallUpdateAsync, "appupdate");
         _ = CheckForUpdatesAsync(manual: false);
         _ = LoadAnnouncementsAsync();
         _ = RunFirstRunPromptsAsync();
@@ -702,6 +704,7 @@ public sealed class MainWindowViewModel : ObservableObject
         _basisUpdateTimer = new DispatcherTimer { Interval = BasisUpdateCheckInterval };
         _basisUpdateTimer.Tick += (_, _) =>
         {
+            _ = CheckForUpdatesAsync(manual: false);
             if (_autoCheckBasisUpdates) _ = InstallsVM.CheckBasisUpdatesAsync(manual: false);
         };
         _basisUpdateTimer.Start();
@@ -814,17 +817,34 @@ public sealed class MainWindowViewModel : ObservableObject
 
     private async Task InstallUpdateAsync()
     {
-        if (_pendingUpdate is null || IsUpdating) return;
+        if (IsUpdating) return;
 
         IsUpdating = true;
         UpdateProgress = 0;
         SetStatus(L.Tr("shell.status.downloadingUpdate"));
         try
         {
+            UpdateInfo? info;
+            try { info = await _updateService.CheckAsync(); }
+            catch (Exception ex) when (_pendingUpdate is not null)
+            {
+                DiagnosticLog.Write("Checking for the newest release before updating", ex);
+                info = _pendingUpdate;
+            }
+            if (info is null)
+            {
+                _pendingUpdate = null;
+                UpdateAvailable = false;
+                IsUpdating = false;
+                SetStatus(L.Tr("shell.status.upToDate"), StatusKind.Success, key: "appupdate");
+                return;
+            }
+            _pendingUpdate = info;
+            UpdateBannerText = L.Tr("shell.update.bannerAvailable", info.TargetFullRelease.Version);
             // An update restarts the process — an intentional exit, not a crash. Clear the marker first.
             CrashReporter.MarkCleanExit();
             // Velopack reports progress off the UI thread; marshal each tick back.
-            await _updateService.DownloadAndApplyAsync(_pendingUpdate,
+            await _updateService.DownloadAndApplyAsync(info,
                 pct => Dispatcher.UIThread.Post(() => UpdateProgress = pct));
             // On success the process is restarted onto the new version and never returns here.
         }
