@@ -20,6 +20,8 @@ internal sealed partial class ConsoleApplication
         new("prerelease-updates", "The app updates itself to prereleases too", s => s.PrereleaseUpdates ? "true" : "false",
             (s, v) => s.PrereleaseUpdates = v is not null && ParseBool(v) == true, v => ParseBool(v) is null ? "needs true or false" : null),
         new("language", "The app's language code, such as en or de; empty follows the system", s => s.Language, (s, v) => s.Language = string.IsNullOrWhiteSpace(v) ? null : v.Trim()),
+        new("clone-cache", "Keep a shared copy of downloaded repositories so new clones are faster", s => s.UseCloneCache ? "true" : "false",
+            (s, v) => s.UseCloneCache = v is null || ParseBool(v) == true, v => ParseBool(v) is null ? "needs true or false" : null),
     };
 
     private static List<string> SplitList(string? value) => (value ?? "").Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
@@ -87,6 +89,12 @@ internal sealed partial class ConsoleApplication
 
     private enum DoctorLevel { Ok, Info, Warn, Fail }
 
+    private static string GitInstallHint() => Platform.Current == OSPlatform.OSX
+        ? $"Run 'xcode-select --install', or see {GitService.InstallPage(Platform.Current)}"
+        : Platform.Current == OSPlatform.Linux
+            ? $"Install it with your package manager, for example 'sudo apt install git' or 'sudo dnf install git' (see {GitService.InstallPage(Platform.Current)})"
+            : $"Install it from {GitService.InstallPage(Platform.Current)} and make sure it's on your PATH";
+
     private async Task DoctorAsync(List<string> values)
     {
         Expect(values, 0, 0, "");
@@ -102,7 +110,7 @@ internal sealed partial class ConsoleApplication
             var hub = _unityHub.FindHubPath(settings.UnityHubPath);
             using var hubTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
             hubTimeout.CancelAfter(TimeSpan.FromSeconds(40));
-            var editors = hub is null ? Task.FromResult<IReadOnlyList<InstalledEditor>>(Array.Empty<InstalledEditor>()) : _unityHub.ListInstalledAsync(settings.UnityHubPath, hubTimeout.Token);
+            var editors = _unityHub.ListInstalledAsync(settings.UnityHubPath, hubTimeout.Token);
             var sdk = install is not null && _server.HasServerProject(install.RepoRoot) ? _server.HasRequiredDotNetSdkAsync(ct) : Task.FromResult(true);
             var catalog = _catalogs.TryLoadAsync(string.IsNullOrWhiteSpace(settings.CatalogUrl) ? CatalogService.DefaultCatalogUrl : settings.CatalogUrl, ct);
             var token = TryGitHubTokenAsync();
@@ -110,7 +118,7 @@ internal sealed partial class ConsoleApplication
 
             var git = _git.FindGit();
             var version = gitVersion.IsCompletedSuccessfully ? gitVersion.Result : null;
-            checks.Add(git is null ? new("Tools", DoctorLevel.Fail, "Git not found", "Basis Package Manager uses git for clones, updates and packages.", "Install it from https://git-scm.com/ and make sure it's on your PATH")
+            checks.Add(git is null ? new("Tools", DoctorLevel.Fail, "Git not found", "Basis Package Manager uses git for clones, updates and packages.", GitInstallHint())
                 : version is not null && version < BasisUpdateService.MinimumGitVersion ? new("Tools", DoctorLevel.Fail, $"Git {version.ToString(3)} is too old", $"Basis updates need {BasisUpdateService.MinimumGitVersion.ToString(2)} or newer.", "Update Git from https://git-scm.com/")
                 : version is not null && version < BasisUpdateService.PreviewGitVersion ? new("Tools", DoctorLevel.Warn, $"Git {version.ToString(3)}", $"Git {BasisUpdateService.PreviewGitVersion.ToString(2)} or newer can predict update conflicts before they happen.", "Update Git from https://git-scm.com/")
                 : new("Tools", DoctorLevel.Ok, $"Git {version?.ToString(3)}", git));
@@ -124,6 +132,8 @@ internal sealed partial class ConsoleApplication
             checks.Add(token.IsCompletedSuccessfully && token.Result is not null ? new("Tools", DoctorLevel.Ok, "GitHub sign-in", "found a token for 'contribute'")
                 : new("Tools", DoctorLevel.Info, "Not signed in to GitHub", "Only 'contribute' needs it.", "Run 'gh auth login' or set GH_TOKEN"));
             checks.Add(BasisServerService.FindSteamExecutable() is { } steam ? new("Tools", DoctorLevel.Ok, "Steam", steam) : new("Tools", DoctorLevel.Info, "Steam not found", "Only 'connect' needs it."));
+            if (install is not null && _server.HasServerProject(install.RepoRoot) && !TerminalLauncher.IsAvailable())
+                checks.Add(new("Tools", DoctorLevel.Info, "No terminal app found", "'server-run --new-window' and the app's setup wizard button open the server in one.", "Install a terminal such as GNOME Terminal or Konsole, or set TERMINAL"));
 
             if (install is null) checks.Add(new("Project", DoctorLevel.Warn, "No project selected", projectProblem, $"Pass --project <name|path>, or add one with '{Prefix}projects add <path>'"));
             else
@@ -154,6 +164,10 @@ internal sealed partial class ConsoleApplication
                 }
                 var reconcile = _basisDev.Scan(install).WithIssues.Count;
                 if (reconcile > 0) checks.Add(new("Project", DoctorLevel.Warn, $"{Plural(reconcile, "package")} to reconcile", "Development clones or mount records disagree with what Unity loads.", $"{Prefix}basisdev"));
+                foreach (var (id, advisory) in await PulledPackagesAsync(install))
+                    checks.Add(advisory.Blocks
+                        ? new("Packages", DoctorLevel.Fail, $"{id} was pulled from the Basis registry", advisory.Title, $"{Prefix}remove-package {id}")
+                        : new("Packages", DoctorLevel.Warn, $"The Basis registry warns about {id}", advisory.Title));
                 if (install.HasUnityProject && UnityProjectService.IsOpenInUnity(install.UnityProjectPath))
                     checks.Add(new("Project", DoctorLevel.Info, "Open in Unity right now", "Close Unity before updating Basis or switching branches."));
             }

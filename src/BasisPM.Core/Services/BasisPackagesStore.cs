@@ -79,12 +79,13 @@ public static class BasisPackagesStore
         Ref = string.IsNullOrWhiteSpace(upstream.Ref) ? null : upstream.Ref,
         Path = string.IsNullOrWhiteSpace(upstream.Path) ? null : upstream.Path,
         Commit = string.IsNullOrWhiteSpace(upstream.Commit) ? null : upstream.Commit,
+        ForkOf = string.IsNullOrWhiteSpace(upstream.ForkOf) ? null : upstream.ForkOf,
     };
 
     public static BasisDevSidecar? SidecarFor(string packageId, BasisPackageEntry entry)
     {
         if (!BasisDevStore.IsValidId(packageId) || string.IsNullOrWhiteSpace(entry.Url) || !GitUrlPolicy.IsSafeRef(entry.Ref) || !GitUrlPolicy.IsSafeSubPath(entry.Path)) return null;
-        var upstream = new BasisDevUpstream { Url = entry.Url.Trim(), Ref = entry.Ref, Path = entry.Path, Commit = entry.Commit };
+        var upstream = new BasisDevUpstream { Url = entry.Url.Trim(), Ref = entry.Ref, Path = entry.Path, Commit = entry.Commit, ForkOf = string.IsNullOrWhiteSpace(entry.ForkOf) ? null : entry.ForkOf.Trim() };
         var folder = BasisDevStore.FolderName + "/" + packageId;
         return new BasisDevSidecar
         {

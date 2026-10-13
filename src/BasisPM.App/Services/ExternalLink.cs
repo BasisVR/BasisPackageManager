@@ -1,3 +1,4 @@
+using BasisPM.App.Localization;
 using BasisPM.Core.Services;
 using System.Diagnostics;
 
@@ -66,4 +67,8 @@ public static class ExternalLink
             Console.WriteLine($"{E.Message} {E.StackTrace}");
         }
     }
+
+    public static string FileManagerName => L.Tr(OperatingSystem.IsWindows() ? "shell.fileManager.windows" : OperatingSystem.IsMacOS() ? "shell.fileManager.macos" : "shell.fileManager.linux");
+
+    public static Task<bool> RevealAsync(string? path) => string.IsNullOrWhiteSpace(path) ? Task.FromResult(false) : FileReveal.RevealAsync(path);
 }

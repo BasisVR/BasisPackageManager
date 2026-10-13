@@ -15,7 +15,7 @@
         <CheckBox Grid.Row="1" x:Name="ShowPre" Content="{loc:Tr dialog.versionPicker.showPrereleases}" Margin="0,0,0,10" Click="OnShowPreChanged"
                   ToolTip.Tip="{loc:Tr dialog.versionPicker.tooltip.showPrereleases}"/>
         <Border Grid.Row="2" Classes="card" Padding="4">
-            <ListBox x:Name="List" Background="Transparent">
+            <ListBox x:Name="List" Background="Transparent" ToolTip.Tip="{loc:Tr dialog.versionPicker.tooltip.list}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="models:PackageVersionOption">
                         <Grid ColumnDefinitions="*,Auto" Margin="10,9">
@@ -23,7 +23,8 @@
                                 <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
                                 <TextBlock Text="{Binding Kind}" Classes="dim" FontSize="10"/>
                             </StackPanel>
-                            <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsPrerelease}">
+                            <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsPrerelease}"
+                                    ToolTip.Tip="{loc:Tr dialog.versionPicker.tooltip.beta}">
                                 <TextBlock Text="{loc:Tr dialog.versionPicker.betaPill}" FontSize="10" FontWeight="Bold" Classes="brand"/>
                             </Border>
                         </Grid>

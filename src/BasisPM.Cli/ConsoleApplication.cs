@@ -11,6 +11,7 @@ internal sealed partial class ConsoleApplication
     private readonly GitService _git;
     private readonly UnityProjectService _projects;
     private readonly CatalogService _catalogs;
+    private readonly AdvisoryService? _advisoryService;
     private readonly PackageListService _packageLists;
     private readonly UserSettingsService _settings;
     private readonly UnityHubService _unityHub;
@@ -41,15 +42,17 @@ internal sealed partial class ConsoleApplication
     private Catalog? _catalog;
     private readonly string _stateDirectory;
 
-    public ConsoleApplication(UserSettingsService? settings = null, MountRegistry? mountRegistry = null, string? stateDirectory = null, CatalogService? catalogs = null)
+    public ConsoleApplication(UserSettingsService? settings = null, MountRegistry? mountRegistry = null, string? stateDirectory = null, CatalogService? catalogs = null, AdvisoryService? advisories = null)
     {
         // Keep dependency construction explicit; instance field initialization otherwise runs before
         // this body and silently depends on declaration order.
         _git = new GitService();
         _projects = new UnityProjectService();
         _catalogs = catalogs ?? new CatalogService();
+        _advisoryService = advisories ?? (catalogs is null ? new AdvisoryService() : null);
         _packageLists = new PackageListService();
         _settings = settings ?? new UserSettingsService();
+        _git.CloneCache = new GitCloneCache(stateDirectory is null ? null : Path.Combine(stateDirectory, AppDataPaths.GitCacheDirectoryName), () => _settings.Load().UseCloneCache);
         _unityHub = new UnityHubService();
         _unityReleases = new UnityReleaseService();
         _mountRegistry = mountRegistry ?? new MountRegistry();
@@ -428,7 +431,8 @@ internal sealed partial class ConsoleApplication
         var catalog = await _catalogs.LoadAsync(settings.CatalogUrl);
         foreach (var url in settings.ExtraCatalogUrls.Where(u => !string.IsNullOrWhiteSpace(u)))
             if (await _catalogs.TryLoadAsync(url.Trim()) is { } extra)
-                foreach (var (id, package) in extra.Packages) catalog.Packages.TryAdd(id, package);
+                foreach (var (id, package) in extra.Packages)
+                    if (catalog.Packages.TryAdd(id, package)) _unofficialIds.Add(id);
         return catalog;
     }
 

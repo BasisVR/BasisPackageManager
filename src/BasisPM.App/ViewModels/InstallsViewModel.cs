@@ -10,7 +10,7 @@ using BasisPM.Core.Services;
 
 namespace BasisPM.App.ViewModels;
 
-public sealed class InstallsViewModel : ObservableObject
+public sealed partial class InstallsViewModel : ObservableObject
 {
     private readonly UserSettingsService _settingsService;
     private readonly BasisInstallService _installService;
@@ -208,8 +208,37 @@ public sealed class InstallsViewModel : ObservableObject
     private Task CheckRemoteQueuedAsync(InstallRow row) =>
         Queued(row, L.Tr("installs.git.checkingRemote"), () => RefreshGitInfoAsync(row, fetch: true));
 
-    private Task BackupQueuedAsync(InstallRow row) =>
-        Queued(row, L.Tr("installs.status.backingUp", row.Name), () => BackupAsync(row));
+    private RelayCommand<InstallRow>? _syncCommand;
+    public RelayCommand<InstallRow> SyncCommand => _syncCommand ??= new RelayCommand<InstallRow>(r => r is null ? Task.CompletedTask : SyncQueuedAsync(r));
+
+    private Task SyncQueuedAsync(InstallRow row) =>
+        Queued(row, L.Tr("installs.status.syncing", row.Name), () => SyncAsync(row));
+
+    private async Task SyncAsync(InstallRow row)
+    {
+        var key = "sync|" + row.RepoRoot;
+        var activity = _shell.BeginActivity(L.Tr("installs.status.syncing", row.Name), row.Name);
+        try
+        {
+            var result = await _shell.PackagesVM.SyncProjectAsync(row.Install, line => ReportActivity(activity, line));
+            if (result.Ok) _shell.SetStatus(L.Tr("installs.status.synced", row.Name, result.Message), StatusKind.Success, row.Name, key: key);
+            else _shell.SetStatus(L.Tr("installs.status.syncFailed", row.Name, result.Message), StatusKind.Error, row.Name, () => SyncQueuedAsync(row), key);
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write($"Syncing {row.RepoRoot}", ex);
+            _shell.SetStatus(L.Tr("installs.status.syncFailed", row.Name, ex.Message), StatusKind.Error, row.Name, () => SyncQueuedAsync(row), key);
+        }
+        finally { _shell.EndActivity(activity); }
+        await RefreshGitInfoAsync(row, fetch: false);
+    }
+
+    private async Task BackupQueuedAsync(InstallRow row)
+    {
+        string? zip = null;
+        await Queued(row, L.Tr("installs.status.backingUp", row.Name), async () => zip = await BackupAsync(row));
+        if (zip is not null) await OfferToShowBackupAsync(row, zip);
+    }
 
     private async Task RefreshGitInfoAsync(InstallRow? row, bool fetch)
     {
@@ -234,6 +263,7 @@ public sealed class InstallsViewModel : ObservableObject
             row.GitSummary = DescribeStatus(status);
             row.ChangeCount = status.ChangeCount;
             row.CoreHasUpdate = status.Upstream.HasUpstream && status.Upstream.Behind > 0;
+            row.RemoteBehind = status.Upstream.HasUpstream ? status.Upstream.Behind : 0;
             row.LeftOutParts = await _parts.LeftOutAsync(row.RepoRoot, row.UnityProjectPath);
             if (fetch && !fetchFailed)
                 _shell.SetStatus(L.Tr("installs.status.rowSummary", row.Name, row.GitSummary), StatusKind.Info);
@@ -347,7 +377,7 @@ public sealed class InstallsViewModel : ObservableObject
             _shell.SetStatus(L.Tr("installs.status.switchBranchFailed", row.Name, BasisUpdateText.DescribeSwitchBlock(plan)), StatusKind.Error, row.Name, Retry, key);
             return;
         }
-        if (OperatingSystem.IsWindows() && UnityProjectService.IsOpenInUnity(row.UnityProjectPath))
+        if (UnityProjectService.IsOpenInUnity(row.UnityProjectPath))
         {
             _shell.SetStatus(L.Tr("installs.status.unityOpenSwitch", row.Name), StatusKind.Error, row.Name, Retry, key);
             return;
@@ -559,7 +589,7 @@ public sealed class InstallsViewModel : ObservableObject
             for (var i = 0; i < ready.Count; i++)
             {
                 var (row, plan) = ready[i];
-                if (OperatingSystem.IsWindows() && UnityProjectService.IsOpenInUnity(row.UnityProjectPath))
+                if (UnityProjectService.IsOpenInUnity(row.UnityProjectPath))
                 {
                     waiting.Add((row, L.Tr("installs.updateAll.reason.unityOpen")));
                     continue;
@@ -618,7 +648,7 @@ public sealed class InstallsViewModel : ObservableObject
         _ when plan.IsSwitch => L.Tr("installs.updateAll.reason.switch", plan.FromBranch ?? "", plan.BasisBranch),
         _ when plan.BaseSource == BasisBaseSource.Similarity => L.Tr("installs.updateAll.reason.firstUpdate"),
         _ when plan.PredictedConflicts is { Count: > 0 } => L.Tr("installs.updateAll.reason.conflicts"),
-        _ when OperatingSystem.IsWindows() && UnityProjectService.IsOpenInUnity(row.UnityProjectPath) => L.Tr("installs.updateAll.reason.unityOpen"),
+        _ when UnityProjectService.IsOpenInUnity(row.UnityProjectPath) => L.Tr("installs.updateAll.reason.unityOpen"),
         _ => null,
     };
 
@@ -667,12 +697,12 @@ public sealed class InstallsViewModel : ObservableObject
     private async Task ApplyBasisUpdateAsync(InstallRow row, BasisUpdateReviewViewModel review)
     {
         var plan = review.Plan;
-        if (OperatingSystem.IsWindows() && UnityProjectService.IsOpenInUnity(row.UnityProjectPath))
+        if (UnityProjectService.IsOpenInUnity(row.UnityProjectPath))
         {
             _shell.SetStatus(L.Tr("installs.status.unityOpen", row.Name), StatusKind.Error, row.Name, () => UpdateBasisQueuedAsync(row, plan.BasisBranch), "basis|" + row.RepoRoot);
             return;
         }
-        if (review.Backup && !await BackupAsync(row)) return;
+        if (review.Backup && await BackupAsync(row) is null) return;
 
         var unityBefore = row.UnityVersion;
         row.IsBusy = true;
@@ -707,7 +737,7 @@ public sealed class InstallsViewModel : ObservableObject
             (path, choice) => _updates.ResolveAsync(row.RepoRoot, path, choice),
             () => _updates.ContinueAsync(row.RepoRoot),
             () => _updates.AbortAsync(row.RepoRoot),
-            () => OperatingSystem.IsWindows() && UnityProjectService.IsOpenInUnity(row.UnityProjectPath));
+            () => UnityProjectService.IsOpenInUnity(row.UnityProjectPath));
         await model.LoadAsync();
         var outcome = await BasisPM.App.Services.Dialogs.ResolveBasisConflictsAsync(model);
         if (outcome is null)
@@ -734,6 +764,7 @@ public sealed class InstallsViewModel : ObservableObject
                     : unityChanged ? L.Tr("installs.status.basisUpdatedUnity", row.Name, info.Branch, row.UnityVersion, unityBefore)
                     : info.IsBasisSwitch ? L.Tr("installs.status.basisSwitched", row.Name, info.FromBranch ?? "", info.Branch)
                     : L.Tr("installs.status.basisUpdated", row.Name, info.Branch, ShortSha(result.NewHead)), StatusKind.Success, row.Name, key: switching ? "branch|" + row.RepoRoot : "basis|" + row.RepoRoot);
+                _shell.PackagesVM.VerifyAfterBasisChange(row.RepoRoot);
                 break;
             case BasisUpdateResultKind.Aborted:
                 await ReloadRowAsync(row);
@@ -803,13 +834,13 @@ public sealed class InstallsViewModel : ObservableObject
 
     private static string ShortSha(string? sha) => string.IsNullOrEmpty(sha) ? "" : sha.Length > 9 ? sha[..9] : sha;
 
-    private async Task<bool> BackupAsync(InstallRow? row)
+    private async Task<string?> BackupAsync(InstallRow? row)
     {
-        if (row is null) return false;
+        if (row is null) return null;
         if (!BackupService.LooksLikeUnityProject(row.UnityProjectPath))
         {
             _shell.SetStatus(L.Tr("installs.status.noUnityToBackup", row.Name), StatusKind.Error);
-            return false;
+            return null;
         }
         row.IsBusy = true;
         _shell.SetStatus(L.Tr("installs.status.backingUp", row.Name));
@@ -824,19 +855,27 @@ public sealed class InstallsViewModel : ObservableObject
                     _shell.ReportActivity(activity, msg);
                 }));
             _shell.SetStatus(L.Tr("installs.status.backedUp", row.Name, zip), StatusKind.Success, row.Name, key: "backup|" + row.RepoRoot);
-            return true;
+            return zip;
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Backing up Basis installation {row.RepoRoot}", ex);
             _shell.SetStatus(L.Tr("installs.status.backupFailed", ex.Message), StatusKind.Error, row.Name, () => BackupQueuedAsync(row), "backup|" + row.RepoRoot);
-            return false;
+            return null;
         }
         finally
         {
             row.IsBusy = false;
             _shell.EndActivity(activity);
         }
+    }
+
+    private async Task OfferToShowBackupAsync(InstallRow row, string zip)
+    {
+        var file = new FileInfo(zip);
+        if (!file.Exists || !await BasisPM.App.Services.Dialogs.AskShowBackupAsync(row.Name, DiskSpace.Human(file.Length), zip)) return;
+        if (!await BasisPM.App.Services.ExternalLink.RevealAsync(zip))
+            _shell.SetStatus(L.Tr("installs.status.showBackupFailed", zip, BasisPM.App.Services.ExternalLink.FileManagerName), StatusKind.Error, row.Name);
     }
 
     /// <summary>
@@ -1207,9 +1246,10 @@ public sealed class InstallRow : ObservableObject
     public bool IsGitRepo => Install.IsGitRepo;
     public string UnityVersionLabel => Install.HasUnityProject ? L.Tr("installs.row.unityVersion", Install.UnityVersion) : L.Tr("installs.row.noUnityProject");
 
-    public string Branch { get => _branch; set => SetField(ref _branch, value); }
-    public string Commit { get => _commit; set { if (SetField(ref _commit, value)) OnPropertyChanged(nameof(BranchCommit)); } }
+    public string Branch { get => _branch; set { if (SetField(ref _branch, value)) RaiseBranch(); } }
+    public string Commit { get => _commit; set { if (SetField(ref _commit, value)) RaiseBranch(); } }
     public string BranchCommit => string.IsNullOrEmpty(_commit) ? _branch : $"{_branch} · {_commit}";
+    public string BranchTooltip => IsGitRepo ? L.Tr("installs.tooltip.branch", BranchCommit) : L.Tr("installs.tooltip.branchNoGit");
     public string GitSummary { get => _gitSummary; set => SetField(ref _gitSummary, value); }
     public int ChangeCount { get => _changeCount; set { if (SetField(ref _changeCount, value)) OnPropertyChanged(nameof(HasLocalChanges)); } }
     public bool HasLocalChanges => _changeCount > 0;
@@ -1218,6 +1258,9 @@ public sealed class InstallRow : ObservableObject
     // True only when the checked-out branch is behind its upstream — i.e. an update is actually
     // available. Drives the "Update Core" button's brand-red styling (neutral when up to date).
     public bool CoreHasUpdate { get => _coreHasUpdate; set => SetField(ref _coreHasUpdate, value); }
+    private int _remoteBehind;
+    public int RemoteBehind { get => _remoteBehind; set { if (SetField(ref _remoteBehind, value)) OnPropertyChanged(nameof(SyncLabel)); } }
+    public string SyncLabel => L.Tr("installs.button.sync", _remoteBehind);
 
     private IReadOnlyList<BasisPart> _leftOutParts = Array.Empty<BasisPart>();
 
@@ -1273,7 +1316,8 @@ public sealed class InstallRow : ObservableObject
         }
     }
 
-    public string BasisPillTooltip => _basisCheck?.Detail ?? L.Tr("installs.basis.tooltip", _basisCheck?.BasisBranch ?? BasisInstallService.DefaultBranch);
+    public string BasisPillTooltip => _basisCheck?.Detail ?? (BasisUpdateAvailable ? L.Tr("installs.tooltip.basisUpdateAvailable", _basisCheck!.BasisBranch)
+        : L.Tr("installs.basis.tooltip", _basisCheck?.BasisBranch ?? BasisInstallService.DefaultBranch));
     public string UpdateButtonLabel => BranchSwitchInProgress ? L.Tr("installs.button.finishSwitch")
         : BasisUpdateInProgress ? L.Tr("installs.button.finishUpdate") : L.Tr("installs.button.updateBasis");
     public string UpdateButtonTooltip => BranchSwitchInProgress ? L.Tr("installs.tooltip.finishSwitch")
@@ -1303,6 +1347,12 @@ public sealed class InstallRow : ObservableObject
 
     public void RefreshName() => OnPropertyChanged(nameof(Name));
 
+    private void RaiseBranch()
+    {
+        OnPropertyChanged(nameof(BranchCommit));
+        OnPropertyChanged(nameof(BranchTooltip));
+    }
+
     public void UpdateInstall(BasisInstall install)
     {
         Install = install;
@@ -1311,5 +1361,6 @@ public sealed class InstallRow : ObservableObject
         OnPropertyChanged(nameof(UnityVersionLabel));
         OnPropertyChanged(nameof(HasUnityProject));
         OnPropertyChanged(nameof(IsGitRepo));
+        OnPropertyChanged(nameof(BranchTooltip));
     }
 }

@@ -118,6 +118,12 @@ public sealed class BasisUpdateReviewViewModel : ObservableObject
         BasisUpdateDecision.SetUpGit => L.Tr("dialog.basisUpdate.setUpGit"),
         _ => IsSwitch ? L.Tr("dialog.basisUpdate.switchTo", BasisBranch) : L.Tr("dialog.basisUpdate.update"),
     };
+    public string PrimaryTooltip => PrimaryDecision switch
+    {
+        BasisUpdateDecision.Follow => L.Tr("dialog.basisUpdate.tooltip.follow"),
+        BasisUpdateDecision.SetUpGit => L.Tr("dialog.basisUpdate.tooltip.setUpGit"),
+        _ => IsSwitch ? L.Tr("dialog.basisUpdate.tooltip.switchTo") : L.Tr("dialog.basisUpdate.tooltip.primary"),
+    };
     public string CancelLabel => HasPrimary ? L.Tr("dialog.basisUpdate.cancel") : L.Tr("dialog.basisUpdate.close");
     public bool ShowBackup => IsUpdate && _plan.CanApply;
 
@@ -156,7 +162,7 @@ public sealed class BasisUpdateReviewViewModel : ObservableObject
         nameof(HasReplacedMeta), nameof(ReplacedMetaNote),
         nameof(HasPredictedConflicts), nameof(PredictedNote), nameof(PredictedConflicts), nameof(PredictionUnknown), nameof(HasBlocking), nameof(BlockingPaths),
         nameof(Commits), nameof(HasCommits), nameof(HasMoreCommits), nameof(MoreCommitsLabel), nameof(UpToDateBody), nameof(HasMatch), nameof(MatchText),
-        nameof(HasLayout), nameof(LayoutNote), nameof(BlockText), nameof(HasPrimary), nameof(PrimaryDecision), nameof(PrimaryLabel), nameof(CancelLabel),
+        nameof(HasLayout), nameof(LayoutNote), nameof(BlockText), nameof(HasPrimary), nameof(PrimaryDecision), nameof(PrimaryLabel), nameof(PrimaryTooltip), nameof(CancelLabel),
         nameof(ShowBackup),
     };
 

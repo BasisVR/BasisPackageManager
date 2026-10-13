@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>Basis Package Manager</string>
+    <key>CFBundleDisplayName</key>
+    <string>Basis Package Manager</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.BasisPackageManager.BasisPackageManager</string>
+    <key>CFBundleVersion</key>
+    <string>__VERSION__</string>
+    <key>CFBundleShortVersionString</key>
+    <string>__SHORT_VERSION__</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleExecutable</key>
+    <string>BasisPM.App</string>
+    <key>CFBundleIconFile</key>
+    <string>BasisPM.icns</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.developer-tools</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>com.BasisPackageManager.BasisPackageManager.link</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>basispm</string>
+            </array>
+        </dict>
+    </array>
+    <key>NSDocumentsFolderUsageDescription</key>
+    <string>Basis Package Manager reads and updates the Basis projects you keep in your Documents folder.</string>
+    <key>NSDesktopFolderUsageDescription</key>
+    <string>Basis Package Manager reads and updates the Basis projects you keep on your Desktop.</string>
+    <key>NSDownloadsFolderUsageDescription</key>
+    <string>Basis Package Manager reads and updates the Basis projects you keep in your Downloads folder.</string>
+</dict>
+</plist>

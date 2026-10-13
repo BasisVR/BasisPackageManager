@@ -1,0 +1,26 @@
+{
+  "id": "town.mr.vrsl-urp",
+  "name": "VR Stage Lighting URP",
+  "description": "Standalone Unity 6 / URP 17+ realtime lighting and raymarched volumetric beams driven from DMX or AudioLink data. Render-pass injection at runtime, no URP Renderer Feature changes, no project-side renderer settings touched. Co-installable with com.acchosen.vr-stage-lighting (asset GUIDs, shader names, and runtime globals are namespaced to avoid collision); existing upstream scenes continue to work alongside.",
+  "author": "towneh",
+  "authorUrl": "https://github.com/towneh",
+  "category": "Misc",
+  "tags": [
+    "URP",
+    "Stage Lighting",
+    "AudioLink",
+    "DMX",
+    "Volumetric"
+  ],
+  "gitUrl": "https://github.com/towneh/vrsl-urp.git",
+  "repoUrl": "https://github.com/towneh/vrsl-urp",
+  "unity": "6000.4",
+  "basisVersion": "developer",
+  "license": "MIT",
+  "version": "0.3.0-rc.2",
+  "icon": "💡",
+  "dependencies": {
+    "com.unity.render-pipelines.universal": "17.4.0",
+    "com.unity.ugui": "2.0.0"
+  }
+}

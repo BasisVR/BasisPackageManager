@@ -46,6 +46,12 @@ public sealed class CatalogPackageVersion
     [JsonPropertyName("forks")] public int Forks { get; set; }
     [JsonPropertyName("updated")] public string? Updated { get; set; }
     [JsonPropertyName("server"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool Server { get; set; }
+    [JsonPropertyName("ref"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Ref { get; set; }
+    [JsonPropertyName("commit"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Commit { get; set; }
+    [JsonPropertyName("reviewedCommit"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? ReviewedCommit { get; set; }
+    [JsonPropertyName("unityRelease"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? UnityRelease { get; set; }
+    [JsonPropertyName("basis"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull), JsonConverter(typeof(BasisCompatibilityConverter))] public BasisCompatibility? Basis { get; set; }
+    [JsonPropertyName("gitDependencies"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public Dictionary<string, string>? GitDependencies { get; set; }
 }
 
 public sealed class CatalogAuthor

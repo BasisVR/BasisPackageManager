@@ -1,0 +1,150 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BasisPM.App.ViewModels"
+        xmlns:loc="using:BasisPM.App.Localization"
+        xmlns:sys="using:System"
+        x:Class="BasisPM.App.Views.PublishPackageWindow"
+        x:DataType="vm:PublishPackageViewModel"
+        Title="{Binding Title}"
+        Width="1000" Height="760" MinWidth="780" MinHeight="560"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="24">
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,14">
+            <TextBlock Text="{Binding Title}" Classes="h2"/>
+            <TextBlock Text="{Binding CurrentVersionText}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding BranchText}" Classes="dim" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasBranchText}"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,14,380">
+            <Border Grid.Column="0" Classes="glass" Padding="16,14" IsEnabled="{Binding IsIdle}">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Spacing="12" Margin="0,0,8,0">
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="{loc:Tr dialog.publish.versionLabel}" Classes="muted" FontSize="11"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBox x:Name="VersionBox" Text="{Binding Version}" Width="150" FontFamily="{StaticResource MonoFontFamily}"
+                                         ToolTip.Tip="{loc:Tr dialog.publish.tooltip.version}"/>
+                                <Button Command="{Binding PatchCommand}" ToolTip.Tip="{loc:Tr dialog.publish.tooltip.patch}">
+                                    <TextBlock Text="{loc:Tr dialog.publish.patch}"/>
+                                </Button>
+                                <Button Command="{Binding MinorCommand}" ToolTip.Tip="{loc:Tr dialog.publish.tooltip.minor}">
+                                    <TextBlock Text="{loc:Tr dialog.publish.minor}"/>
+                                </Button>
+                                <Button Command="{Binding MajorCommand}" ToolTip.Tip="{loc:Tr dialog.publish.tooltip.major}">
+                                    <TextBlock Text="{loc:Tr dialog.publish.major}"/>
+                                </Button>
+                            </StackPanel>
+                            <TextBlock Text="{Binding TagPreview}" Classes="dim" FontSize="11"/>
+                            <TextBlock Text="{Binding VersionError}" IsVisible="{Binding HasVersionError}" Foreground="{StaticResource BasisDangerBrush}" FontSize="12" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="{loc:Tr dialog.publish.notesLabel}" Classes="muted" FontSize="11"/>
+                            <TextBox Text="{Binding Notes}" AcceptsReturn="True" TextWrapping="Wrap" Height="150"
+                                     Watermark="{loc:Tr dialog.publish.notesWatermark}" ToolTip.Tip="{loc:Tr dialog.publish.tooltip.notes}"/>
+                        </StackPanel>
+                        <CheckBox IsChecked="{Binding CreateRelease}" ToolTip.Tip="{loc:Tr dialog.publish.tooltip.release}">
+                            <TextBlock Text="{loc:Tr dialog.publish.release}" TextWrapping="Wrap"/>
+                        </CheckBox>
+                        <Border CornerRadius="10" Padding="12" Background="#26F59E0B" BorderBrush="#80F59E0B" BorderThickness="1" IsVisible="{Binding HasChangedFiles}">
+                            <TextBlock Text="{Binding ChangedFilesText}" TextWrapping="Wrap" FontSize="12"/>
+                        </Border>
+                        <Border CornerRadius="10" Padding="12" Background="#26EF1237" BorderBrush="#80EF1237" BorderThickness="1" IsVisible="{Binding IsDetached}">
+                            <TextBlock Text="{loc:Tr dialog.publish.detached}" TextWrapping="Wrap" FontSize="12"/>
+                        </Border>
+                        <Border Classes="card" Padding="14,12" IsVisible="{Binding NeedsRepository}">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="{loc:Tr dialog.publish.repositoryHeading}" FontWeight="SemiBold"/>
+                                <TextBlock Text="{loc:Tr dialog.publish.repositoryIntro}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                                <TextBox Text="{Binding RepositoryName}" FontFamily="{StaticResource MonoFontFamily}" ToolTip.Tip="{loc:Tr dialog.publish.tooltip.repositoryName}"/>
+                                <CheckBox IsChecked="{Binding PrivateRepository}" ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.private}">
+                                    <TextBlock Text="{loc:Tr dialog.newPackage.private}"/>
+                                </CheckBox>
+                            </StackPanel>
+                        </Border>
+                        <Border Classes="card" Padding="14,12" IsVisible="{Binding CanSubmitToRegistry}">
+                            <StackPanel Spacing="8">
+                                <CheckBox IsChecked="{Binding SubmitToRegistry}" ToolTip.Tip="{loc:Tr dialog.publish.tooltip.registry}">
+                                    <StackPanel Spacing="1">
+                                        <TextBlock Text="{loc:Tr dialog.publish.registry}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{loc:Tr dialog.publish.registryHint}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </CheckBox>
+                                <Grid ColumnDefinitions="200,12,*" IsVisible="{Binding SubmitToRegistry}" Margin="28,0,0,0">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="{loc:Tr dialog.publish.categoryLabel}" Classes="muted" FontSize="11"/>
+                                        <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding Category}" HorizontalAlignment="Stretch"
+                                                  ToolTip.Tip="{loc:Tr dialog.publish.tooltip.category}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Spacing="4">
+                                        <TextBlock Text="{loc:Tr dialog.publish.tagsLabel}" Classes="muted" FontSize="11"/>
+                                        <TextBox Text="{Binding TagsText}" Watermark="{loc:Tr dialog.publish.tagsWatermark}" ToolTip.Tip="{loc:Tr dialog.publish.tooltip.tags}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <Grid Grid.Column="2" RowDefinitions="Auto,*,12,Auto,*">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="2,0,2,6">
+                    <TextBlock Text="{Binding ChecksText}" Classes="muted" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                    <ProgressBar Grid.Column="1" IsIndeterminate="True" IsVisible="{Binding IsChecking}" Width="80" Height="3" CornerRadius="2" Margin="10,0,0,0"/>
+                </Grid>
+                <Border Grid.Row="1" Classes="glass" Padding="0">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl ItemsSource="{Binding Issues}" Margin="10,8">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:PublishIssueItem">
+                                    <StackPanel Spacing="2" Margin="0,4">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <PathIcon Width="13" Height="13" Data="{StaticResource IconWarning}" Foreground="{StaticResource BasisDangerBrush}" IsVisible="{Binding IsError}" VerticalAlignment="Center"/>
+                                            <PathIcon Width="13" Height="13" Data="{StaticResource IconInfo}" Foreground="{StaticResource BasisWarningBrush}" IsVisible="{Binding !IsError}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding SeverityLabel}" FontSize="11" FontWeight="SemiBold" Classes="muted" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Message}" FontSize="12" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding Location}" Classes="dim" FontSize="11" FontFamily="{StaticResource MonoFontFamily}" IsVisible="{Binding HasLocation}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+                <TextBlock Grid.Row="3" Text="{Binding CommitsText}" Classes="muted" FontSize="12" FontWeight="SemiBold" Margin="2,0,2,6"/>
+                <Border Grid.Row="4" Classes="glass" Padding="0">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Commits}" Margin="10,8">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="sys:String">
+                                    <TextBlock Text="{Binding}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12" Margin="0,2"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <StackPanel Grid.Row="2" Spacing="6" Margin="0,12,0,0">
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsSigningIn}" Height="4" CornerRadius="2"/>
+            <TextBlock Text="{Binding ErrorText}" IsVisible="{Binding HasError}" Foreground="{StaticResource BasisDangerBrush}" FontSize="12" TextWrapping="Wrap"/>
+            <TextBlock Text="{loc:Tr dialog.publish.hint}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,14,0,0">
+            <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.publish.tooltip.cancel}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.publish.cancel}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+            <Button Classes="primary" Click="OnPublish" IsEnabled="{Binding CanPublish}" ToolTip.Tip="{loc:Tr dialog.publish.tooltip.publish}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconTag}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.publish.publish}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

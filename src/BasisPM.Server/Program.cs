@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using BasisPM.Core.Models;
 using BasisPM.Core.Services;
 using BasisPM.Server.Models;
@@ -9,22 +8,34 @@ using BasisPM.Server.Services;
 // Emits index.html + packages.json + catalog.json + packagelists.json (+ legacy bundles.json) for GitHub Pages (no server required).
 if (args.Length >= 1 && args[0].Equals("generate", StringComparison.OrdinalIgnoreCase))
 {
-    await GenerateStaticSiteAsync(args.Length >= 2 ? args[1] : "dist");
+    var flags = args.Skip(1).Where(a => a.StartsWith("--", StringComparison.Ordinal)).Select(a => a.ToLowerInvariant()).ToHashSet();
+    var outDir = args.Skip(1).FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal)) ?? "dist";
+    if (flags.Contains("--check") && await CheckSeedAsync(null, flags.Contains("--offline")) > 0)
+    {
+        Console.Error.WriteLine("The seed has errors, so nothing was generated.");
+        Environment.ExitCode = 1;
+        return;
+    }
+    await GenerateStaticSiteAsync(outDir, !flags.Contains("--no-versions") && !flags.Contains("--offline"));
+    return;
+}
+
+if (args.Length >= 1 && (args[0].Equals("check", StringComparison.OrdinalIgnoreCase) || args[0].Equals("validate", StringComparison.OrdinalIgnoreCase)))
+{
+    var folder = args.Skip(1).FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal));
+    Environment.ExitCode = await CheckSeedAsync(folder, args.Skip(1).Any(a => a.Equals("--offline", StringComparison.OrdinalIgnoreCase))) > 0 ? 1 : 0;
     return;
 }
 
 var builder = WebApplication.CreateBuilder(args);
 
 var dataDir = Path.Combine(builder.Environment.ContentRootPath, "App_Data");
-var seedPath = Path.Combine(builder.Environment.ContentRootPath, "seed", "packages.json");
-var store = new PackageStore(dataDir, seedPath);
+var seedDir = RegistrySite.SeedFolder(builder.Environment.ContentRootPath)!;
+var store = new PackageStore(dataDir, seedDir);
 store.ResolveImages(Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "icons"));
 builder.Services.AddSingleton(store);
 
-var packageListSeed = Path.Combine(builder.Environment.ContentRootPath, "seed", "packagelists.json");
-if (!File.Exists(packageListSeed))
-    packageListSeed = Path.Combine(builder.Environment.ContentRootPath, "seed", "bundles.json"); // legacy seed name
-builder.Services.AddSingleton(new PackageListStore(packageListSeed));
+builder.Services.AddSingleton(new PackageListStore(RegistrySite.PackageListsFile(seedDir)));
 
 var app = builder.Build();
 
@@ -37,6 +48,8 @@ app.MapGet("/packages.json", (PackageStore store) => Results.Ok(store.All()));
 app.MapGet("/catalog.json", (PackageStore store) => Results.Ok(store.ToCatalog()));
 app.MapGet("/packagelists.json", (PackageListStore packageLists) => Results.Ok(packageLists.All()));
 app.MapGet("/bundles.json", (PackageListStore packageLists) => Results.Ok(packageLists.All())); // legacy alias
+var advisoriesSeed = Path.Combine(builder.Environment.ContentRootPath, "seed", AdvisoryService.FileName);
+app.MapGet("/" + AdvisoryService.FileName, () => Results.Ok(LoadAdvisories(advisoriesSeed)));
 
 var api = app.MapGroup("/api");
 
@@ -109,15 +122,30 @@ app.MapFallbackToFile("index.html");
 
 app.Run();
 
-static async Task GenerateStaticSiteAsync(string outDir)
+static async Task<int> CheckSeedAsync(string? folder, bool offline)
+{
+    var seedDir = folder ?? RegistrySite.SeedFolder();
+    if (seedDir is null || !Directory.Exists(seedDir)) { Console.Error.WriteLine("Could not find the seed folder."); return 1; }
+    var project = RegistrySite.FindProjectFolder(seedDir);
+    var icons = project is null ? null : Path.Combine(project, "wwwroot", "icons");
+    var source = offline ? null : new HttpPackageVersionSource(Environment.GetEnvironmentVariable("GITHUB_TOKEN"), git: new GitService());
+    var result = await SeedValidator.CheckAsync(seedDir, icons, source);
+    Console.WriteLine(SeedValidator.Format(result));
+    return result.Errors;
+}
+
+static async Task GenerateStaticSiteAsync(string outDir, bool crawlVersions)
 {
     var baseDir = AppContext.BaseDirectory;
-    var seedPath = ResolveUp(baseDir, Path.Combine("seed", "packages.json"));
-    var indexPath = ResolveUp(baseDir, Path.Combine("wwwroot", "index.html"));
-    if (seedPath is null) { Console.Error.WriteLine("Could not find seed/packages.json"); Environment.Exit(1); }
+    var seedDir = RegistrySite.SeedFolder();
+    var project = RegistrySite.FindProjectFolder(baseDir);
+    var indexPath = project is not null && File.Exists(Path.Combine(project, "wwwroot", "index.html"))
+        ? Path.Combine(project, "wwwroot", "index.html")
+        : ResolveUp(baseDir, Path.Combine("wwwroot", "index.html"));
+    if (seedDir is null || !Directory.Exists(seedDir)) { Console.Error.WriteLine("Could not find the seed folder"); Environment.Exit(1); }
     if (indexPath is null) { Console.Error.WriteLine("Could not find wwwroot/index.html"); Environment.Exit(1); }
 
-    var packages = PackageStore.LoadSeed(seedPath);
+    var packages = PackageStore.LoadSeed(seedDir);
 
     // Packages present in the Basis developer-branch manifest ship with Basis → mark them "built-in".
     // This wins over the official/community derivation for the source badge.
@@ -128,18 +156,21 @@ static async Task GenerateStaticSiteAsync(string outDir)
 
     // Bake real stars / forks / last-updated from GitHub/GitLab into the static bundle.
     var stats = new RepoStatsService(Environment.GetEnvironmentVariable("GITHUB_TOKEN"));
-    var github = new GitHubService();
+    var crawler = new PackageVersionCrawler(new HttpPackageVersionSource(Environment.GetEnvironmentVariable("GITHUB_TOKEN"), git: new GitService()));
     var missingStats = 0;
     foreach (var p in packages)
     {
         var s = await stats.FetchAsync(p.RepoUrl ?? p.GitUrl);
         if (s is null) missingStats++;
 
-        // Read the package's package.json once (authoritative for UPM): version + license.
-        var upm = await FetchUpmPackageAsync(github, p.GitUrl ?? p.RepoUrl);
-        if (!string.IsNullOrWhiteSpace(upm?.Version)) p.Version = upm!.Version;
+        var current = await crawler.ReadCurrentAsync(p);
+        if (!string.IsNullOrWhiteSpace(current?.Version)) p.Version = current!.Version;
         // License: an explicit seed value wins; otherwise take what the package declares.
-        if (string.IsNullOrWhiteSpace(p.License) && !string.IsNullOrWhiteSpace(upm?.License)) p.License = upm!.License;
+        if (string.IsNullOrWhiteSpace(p.License) && !string.IsNullOrWhiteSpace(current?.License)) p.License = current!.License;
+        var released = crawlVersions ? await crawler.CrawlAsync(p) : new List<RegistryVersion>();
+        if (released.Count > 0) p.Version = released[0].Version;
+        else if (current is not null) current.Version = p.Version;
+        p.Versions = released.Count > 0 ? released : current is null ? null : new List<RegistryVersion> { current };
 
         if (s is not null)
         {
@@ -150,7 +181,7 @@ static async Task GenerateStaticSiteAsync(string outDir)
             if (string.IsNullOrWhiteSpace(p.Description) && !string.IsNullOrWhiteSpace(s.Description))
                 p.Description = s.Description!;
         }
-        Console.WriteLine($"  · {p.Id}: {p.Stars} stars, {p.Forks} forks, v{p.Version}, {p.License ?? "no license"}");
+        Console.WriteLine($"  · {p.Id}: {p.Stars} stars, {p.Forks} forks, v{p.Version}, {(released.Count == 1 ? "1 release" : $"{released.Count} releases")}, {p.License ?? "no license"}");
     }
 
     Directory.CreateDirectory(outDir);
@@ -166,19 +197,14 @@ static async Task GenerateStaticSiteAsync(string outDir)
         PackageStore.ResolveImages(packages, iconsDir);
     }
 
-    var opts = new JsonSerializerOptions
-    {
-        WriteIndented = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-    };
+    var opts = RegistrySite.OutputOptions;
 
     File.WriteAllText(Path.Combine(outDir, "packages.json"), JsonSerializer.Serialize(packages, opts));
     File.WriteAllText(Path.Combine(outDir, "catalog.json"), JsonSerializer.Serialize(PackageStore.BuildCatalog(packages), opts));
+    if (RegistrySite.CopyChecks(seedDir, outDir)) Console.WriteLine($"  copied seed/{RegistrySite.ChecksFile}");
 
     // Curated package lists for the website's Package Lists view + install-back.
-    var packageListSeed = ResolveUp(baseDir, Path.Combine("seed", "packagelists.json"))
-                       ?? ResolveUp(baseDir, Path.Combine("seed", "bundles.json")); // legacy seed name
-    var packageLists = PackageListStore.LoadSeed(packageListSeed);
+    var packageLists = PackageListStore.LoadSeed(RegistrySite.PackageListsFile(seedDir));
     // "Basis Recommended" always holds every registry package — refill it from the current list so
     // it can never drift behind newly-added packages.
     var recommended = packageLists.FirstOrDefault(pl => pl.Id == "basis-recommended");
@@ -190,6 +216,10 @@ static async Task GenerateStaticSiteAsync(string outDir)
     var packageListsJson = JsonSerializer.Serialize(packageLists, opts);
     File.WriteAllText(Path.Combine(outDir, "packagelists.json"), packageListsJson);
     File.WriteAllText(Path.Combine(outDir, "bundles.json"), packageListsJson); // legacy filename for pre-rename clients
+    var advisories = LoadAdvisories(Path.Combine(seedDir, AdvisoryService.FileName));
+    File.WriteAllText(Path.Combine(outDir, AdvisoryService.FileName), JsonSerializer.Serialize(advisories, opts));
+    var advised = packages.Where(p => AdvisoryService.Match(advisories, p.Id, p.GitUrl ?? p.RepoUrl, p.ReviewedCommit, unknownCommitMatches: false) is { Blocks: true }).Select(p => p.Id).ToList();
+    if (advised.Count > 0) Console.Error.WriteLine($"Warning: {string.Join(", ", advised)} {(advised.Count == 1 ? "is" : "are")} still listed but pulled by an advisory. Remove {(advised.Count == 1 ? "its file" : "their files")} from seed/packages/.");
 
     File.Copy(indexPath, Path.Combine(outDir, "index.html"), overwrite: true);
 
@@ -197,17 +227,6 @@ static async Task GenerateStaticSiteAsync(string outDir)
     if (missingStats > 0)
         Console.Error.WriteLine($"Warning: repository stats could not be read for {missingStats} of {packages.Count} packages, so they ship with 0 stars and forks. Set GITHUB_TOKEN if the GitHub API rate limit was hit.");
     if (missingStats * 2 > packages.Count) Environment.ExitCode = 1;
-}
-
-static async Task<UpmPackageJson?> FetchUpmPackageAsync(GitHubService github, string? gitOrRepoUrl)
-{
-    if (string.IsNullOrWhiteSpace(gitOrRepoUrl) || UpmGitUrl.Parse(gitOrRepoUrl) is not { IsGitHub: true }) return null;
-    try
-    {
-        var loc = GitHubService.Parse(gitOrRepoUrl);
-        return await github.FetchPackageJsonAsync(loc);
-    }
-    catch (Exception ex) { DiagnosticLog.Write($"Loading package metadata from {gitOrRepoUrl}", ex); return null; }
 }
 
 // The set of package ids declared in the Basis developer-branch Packages/manifest.json — these ship
@@ -250,6 +269,17 @@ static async Task<HashSet<string>> FetchBuiltInIdsAsync(string? token)
     }
     catch (Exception ex) { DiagnosticLog.Write($"Reading embedded packages from {repo}@{branch}:{lockPath}", ex); }
     return ids;
+}
+
+static IReadOnlyList<PackageAdvisory> LoadAdvisories(string? path)
+{
+    if (path is null || !File.Exists(path)) return Array.Empty<PackageAdvisory>();
+    try { return AdvisoryService.Parse(File.ReadAllText(path)); }
+    catch (JsonException ex)
+    {
+        DiagnosticLog.Write($"Reading package advisories from {path}", ex);
+        throw new InvalidOperationException($"{path} isn't valid JSON: {ex.Message}", ex);
+    }
 }
 
 static bool IsTrue(string? v) =>

@@ -164,7 +164,7 @@ public sealed class BasisDevItemTests
         var move = Assert.Single(item.Choices);
         Assert.Equal(BasisDevAction.Move, move.Action);
         Assert.Equal("Move to .basisdev", move.Label);
-        Assert.Equal("Move Packages/com.x to .basisdev/com.x and point manifest.json at it", move.Tooltip);
+        Assert.Equal("Move the clone from Packages/com.x to .basisdev/com.x, where this app keeps package clones, and point Packages/manifest.json at the new place. Close Unity first if it has the files open.", move.Tooltip);
         Assert.True(move.IsPrimary);
         Assert.False(move.IsDestructive);
     }

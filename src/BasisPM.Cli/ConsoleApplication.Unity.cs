@@ -59,8 +59,7 @@ internal sealed partial class ConsoleApplication
     private async Task<List<InstalledEditor>> ListAllEditorsAsync(UserSettings settings)
     {
         IReadOnlyList<InstalledEditor> hubEditors = Array.Empty<InstalledEditor>();
-        if (_unityHub.FindHubPath(settings.UnityHubPath) is not null)
-            await RunOperationAsync(async ct => hubEditors = await _unityHub.ListInstalledAsync(settings.UnityHubPath, ct), "Asking Unity Hub for its editors" + Out.Ellipsis);
+        await RunOperationAsync(async ct => hubEditors = await _unityHub.ListInstalledAsync(settings.UnityHubPath, ct), "Looking for Unity editors" + Out.Ellipsis);
         var editors = hubEditors.ToList();
         foreach (var manual in settings.ManualEditors)
             if (!string.IsNullOrWhiteSpace(manual.Path) && !editors.Any(e => e.Version.Equals(manual.Version, StringComparison.OrdinalIgnoreCase) || Platform.PathsEqual(e.Path, manual.Path)))
@@ -77,7 +76,7 @@ internal sealed partial class ConsoleApplication
         var required = install?.UnityVersion is { } v && v != "unknown" ? v : null;
         if (Out.JsonMode)
         {
-            Out.Json(new { hub, required, editors = editors.Select(e => new { version = e.Version, path = e.Path, manual = e.IsManual, needed = e.Version == required }) });
+            Out.Json(new { hub, required, editors = editors.Select(e => new { version = e.Version, path = e.Path, architecture = e.Architecture, manual = e.IsManual, needed = e.Version == required }) });
             return;
         }
         Out.Say(new Span("Unity Hub  ", Tone.Dim), hub is null ? new Span("not found", Tone.Warn) : new Span(hub));
@@ -102,8 +101,7 @@ internal sealed partial class ConsoleApplication
         await RunOperationAsync(async ct => releases = await _unityReleases.FetchAllAsync("6000", ct), "Loading Unity releases" + Out.Ellipsis);
         var settings = await _settings.LoadAsync();
         var installed = settings.ManualEditors.Select(m => m.Version).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        if (_unityHub.FindHubPath(settings.UnityHubPath) is not null)
-            foreach (var editor in await _unityHub.ListInstalledAsync(settings.UnityHubPath)) installed.Add(editor.Version);
+        foreach (var editor in await _unityHub.ListInstalledAsync(settings.UnityHubPath)) installed.Add(editor.Version);
         var required = (await TryLoadInstallAsync())?.UnityVersion;
         var shown = releases.Where(r => stream is null || r.Stream.Equals(stream, StringComparison.OrdinalIgnoreCase))
             .Where(r => search is null || r.Version.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -161,7 +159,7 @@ internal sealed partial class ConsoleApplication
             ?? throw new InvalidOperationException($"Unity {version} isn't installed. '{Prefix}unity' lists the editors you have.");
         if (editor.IsManual) throw new InvalidOperationException($"Unity {version} was added by folder, and Unity Hub can only add modules to editors it installed.");
         var code = 0;
-        await RunOperationAsync(async ct => code = await _unityHub.InstallModulesAsync(editor.Version, modules, settings.UnityHubPath, ct), $"Adding {string.Join(", ", modules)} to Unity {editor.Version}" + Out.Ellipsis);
+        await RunOperationAsync(async ct => code = await _unityHub.InstallModulesAsync(editor.Version, modules, settings.UnityHubPath, ct, editor.Architecture), $"Adding {string.Join(", ", modules)} to Unity {editor.Version}" + Out.Ellipsis);
         if (code != 0) throw new InvalidOperationException($"Unity Hub couldn't add the modules (exit code {code}).");
         Out.Success($"Added {string.Join(", ", modules)} to Unity {editor.Version}.");
     }

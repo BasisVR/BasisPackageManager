@@ -9,4 +9,5 @@ public sealed class InstalledEditor
     // True for editors the user registered by hand (no Unity Hub involved). These are launched
     // directly and are "removed" (forgotten) rather than uninstalled — we never touch their files.
     public bool IsManual { get; init; }
+    public string? Architecture { get; init; }
 }

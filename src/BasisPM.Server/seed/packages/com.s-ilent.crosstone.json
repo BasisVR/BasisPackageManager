@@ -1,0 +1,22 @@
+{
+  "id": "com.s-ilent.crosstone",
+  "name": "Silent's Cel Shading Shader",
+  "description": "Unity shaders for cel/toon shading. Designed to take Unity's HDR lighting into account while presenting materials in the best possible way.",
+  "author": "Silent",
+  "authorUrl": "https://gitlab.com/s-ilent",
+  "category": "Shaders",
+  "tags": [
+    "tools",
+    "editor",
+    "shader",
+    "material"
+  ],
+  "gitUrl": "https://gitlab.com/s-ilent/SCSS.git",
+  "repoUrl": "https://gitlab.com/s-ilent/SCSS",
+  "unity": "6000.4",
+  "basisVersion": "main",
+  "license": "MIT",
+  "version": "1.2.0",
+  "icon": "🖌️",
+  "discord": "https://discord.gg/7x3fNpfh6f"
+}

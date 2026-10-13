@@ -13,7 +13,7 @@
             <TextBlock Text="{loc:Tr dialog.packageListPicker.subtitle}" Classes="dim" FontSize="12"/>
         </StackPanel>
         <Border Grid.Row="1" Classes="card" Padding="4">
-            <ListBox x:Name="List" Background="Transparent">
+            <ListBox x:Name="List" Background="Transparent" ToolTip.Tip="{loc:Tr dialog.packageListPicker.tooltip.list}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="views:PackageListPickerRow">
                         <Grid ColumnDefinitions="Auto,*" Margin="10,10">

@@ -10,6 +10,7 @@ internal sealed partial class ConsoleApplication
     private static readonly string[] Shells = { "powershell", "bash", "zsh", "fish" };
     internal static readonly string[] UnityModules =
     {
+        "windows-coreclr", "linux-coreclr", "mac-coreclr", "windows-server-coreclr", "linux-server-coreclr", "mac-server-coreclr",
         "windows-il2cpp", "windows-mono", "android", "android-sdk-ndk-tools", "android-open-jdk", "linux-il2cpp", "linux-mono", "linux-server",
         "mac-il2cpp", "mac-mono", "mac-server", "windows-server", "ios", "webgl", "universal-windows-platform", "documentation",
     };

@@ -155,7 +155,7 @@ public sealed class UnityProjectService
     {
         var lockFile = Path.Combine(unityProjectPath, "Temp", "UnityLockfile");
         if (!File.Exists(lockFile)) return false;
-        if (!OperatingSystem.IsWindows()) return true;
+        if (!OperatingSystem.IsWindows()) return UnityOpenProbe.IsOpen(unityProjectPath);
         try
         {
             using var probe = new FileStream(lockFile, FileMode.Open, FileAccess.ReadWrite, FileShare.None);

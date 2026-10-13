@@ -154,6 +154,96 @@ public sealed class GitHubApiService
         }
         catch (Exception ex) { DiagnosticLog.Write("Loading GitHub releases", ex); return Array.Empty<GitHubRelease>(); }
     }
+
+    public async Task<DateTimeOffset?> GetCommitDateAsync(string owner, string repo, string sha, string? token = null, CancellationToken ct = default)
+    {
+        if (!IsRepoPart(owner) || !IsRepoPart(repo) || sha.Length is < 7 or > 64 || !sha.All(Uri.IsHexDigit)) return null;
+        using var req = new HttpRequestMessage(HttpMethod.Get, $"repos/{owner}/{repo}/commits/{sha}");
+        if (!string.IsNullOrEmpty(token)) req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        try
+        {
+            using var res = await _http.SendAsync(req, ct).ConfigureAwait(false);
+            if (!res.IsSuccessStatusCode) return null;
+            var commit = await res.Content.ReadFromJsonAsync<GitHubCommit>(cancellationToken: ct).ConfigureAwait(false);
+            return commit?.Commit?.Committer?.Date;
+        }
+        catch (Exception ex) { DiagnosticLog.Write($"Loading GitHub commit {owner}/{repo}@{sha}", ex); return null; }
+    }
+
+    public async Task<GitHubRelease> CreateReleaseAsync(string token, string owner, string repo, string tag, string name, string? body, bool prerelease, CancellationToken ct = default)
+    {
+        using var req = Request(HttpMethod.Post, $"repos/{owner}/{repo}/releases", token);
+        req.Content = JsonContent.Create(new { tag_name = tag, name, body, draft = false, prerelease });
+        var res = await _http.SendAsync(req, ct).ConfigureAwait(false);
+        if (!res.IsSuccessStatusCode)
+        {
+            var text = await res.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+            throw new InvalidOperationException($"GitHub couldn't create the release ({(int)res.StatusCode}): {text}");
+        }
+        return await res.Content.ReadFromJsonAsync<GitHubRelease>(cancellationToken: ct).ConfigureAwait(false)
+               ?? throw new InvalidOperationException("Create-release returned no body.");
+    }
+
+    public async Task<string?> GetBranchShaAsync(string token, string owner, string repo, string branch, CancellationToken ct = default)
+    {
+        using var req = Request(HttpMethod.Get, $"repos/{owner}/{repo}/git/ref/heads/{Uri.EscapeDataString(branch)}", token);
+        using var res = await _http.SendAsync(req, ct).ConfigureAwait(false);
+        if (!res.IsSuccessStatusCode) return null;
+        var reference = await res.Content.ReadFromJsonAsync<GitHubRef>(cancellationToken: ct).ConfigureAwait(false);
+        return reference?.Object?.Sha is { Length: > 0 } sha ? sha : null;
+    }
+
+    public async Task<bool> CreateBranchAsync(string token, string owner, string repo, string branch, string sha, CancellationToken ct = default)
+    {
+        using var req = Request(HttpMethod.Post, $"repos/{owner}/{repo}/git/refs", token);
+        req.Content = JsonContent.Create(new { @ref = "refs/heads/" + branch, sha });
+        using var res = await _http.SendAsync(req, ct).ConfigureAwait(false);
+        if (res.IsSuccessStatusCode) return true;
+        if (res.StatusCode == HttpStatusCode.UnprocessableEntity) return false;
+        var text = await res.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+        throw new InvalidOperationException($"GitHub couldn't create branch {branch} on {owner}/{repo} ({(int)res.StatusCode}): {text}");
+    }
+
+    public async Task<string?> GetFileShaAsync(string token, string owner, string repo, string path, string branch, CancellationToken ct = default)
+    {
+        using var req = Request(HttpMethod.Get, $"repos/{owner}/{repo}/contents/{EscapePath(path)}?ref={Uri.EscapeDataString(branch)}", token);
+        using var res = await _http.SendAsync(req, ct).ConfigureAwait(false);
+        if (!res.IsSuccessStatusCode) return null;
+        var file = await res.Content.ReadFromJsonAsync<GitHubContent>(cancellationToken: ct).ConfigureAwait(false);
+        return file?.Sha is { Length: > 0 } sha ? sha : null;
+    }
+
+    public async Task PutFileAsync(string token, string owner, string repo, string path, string branch, string message, string content, string? sha, CancellationToken ct = default)
+    {
+        using var req = Request(HttpMethod.Put, $"repos/{owner}/{repo}/contents/{EscapePath(path)}", token);
+        var encoded = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(content));
+        req.Content = sha is null
+            ? JsonContent.Create(new { message, content = encoded, branch })
+            : JsonContent.Create(new { message, content = encoded, branch, sha });
+        using var res = await _http.SendAsync(req, ct).ConfigureAwait(false);
+        if (res.IsSuccessStatusCode) return;
+        var text = await res.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
+        throw new InvalidOperationException($"GitHub couldn't write {path} on {owner}/{repo} ({(int)res.StatusCode}): {text}");
+    }
+
+    private static string EscapePath(string path) => string.Join('/', path.Split('/', StringSplitOptions.RemoveEmptyEntries).Select(Uri.EscapeDataString));
+}
+
+public sealed class GitHubRef
+{
+    [JsonPropertyName("ref")] public string Ref { get; set; } = "";
+    [JsonPropertyName("object")] public GitHubRefObject? Object { get; set; }
+}
+
+public sealed class GitHubRefObject
+{
+    [JsonPropertyName("sha")] public string Sha { get; set; } = "";
+}
+
+public sealed class GitHubContent
+{
+    [JsonPropertyName("path")] public string Path { get; set; } = "";
+    [JsonPropertyName("sha")] public string Sha { get; set; } = "";
 }
 
 public sealed class GitHubUser
@@ -204,4 +294,22 @@ public sealed class GitHubRelease
     [JsonPropertyName("prerelease")] public bool Prerelease { get; set; }
     [JsonPropertyName("draft")] public bool Draft { get; set; }
     [JsonPropertyName("published_at")] public DateTimeOffset? PublishedAt { get; set; }
+    [JsonPropertyName("body")] public string? Body { get; set; }
+    [JsonPropertyName("html_url")] public string? HtmlUrl { get; set; }
+}
+
+public sealed class GitHubCommit
+{
+    [JsonPropertyName("sha")] public string Sha { get; set; } = "";
+    [JsonPropertyName("commit")] public GitHubCommitDetail? Commit { get; set; }
+}
+
+public sealed class GitHubCommitDetail
+{
+    [JsonPropertyName("committer")] public GitHubCommitPerson? Committer { get; set; }
+}
+
+public sealed class GitHubCommitPerson
+{
+    [JsonPropertyName("date")] public DateTimeOffset? Date { get; set; }
 }

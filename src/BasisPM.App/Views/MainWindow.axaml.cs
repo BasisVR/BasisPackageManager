@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using BasisPM.App.Localization;
+using BasisPM.App.Services;
 using BasisPM.App.ViewModels;
 using BasisPM.Core.Services;
 
@@ -8,6 +9,8 @@ namespace BasisPM.App.Views;
 
 public partial class MainWindow : Window
 {
+    private bool _serverStopConfirmed;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -17,6 +20,17 @@ public partial class MainWindow : Window
         Activated += OnForegroundChanged;
         Deactivated += OnForegroundChanged;
         PropertyChanged += (_, e) => { if (e.Property == WindowStateProperty) OnForegroundChanged(this, EventArgs.Empty); };
+        Closing += OnClosing;
+    }
+
+    private async void OnClosing(object? sender, WindowClosingEventArgs e)
+    {
+        if (_serverStopConfirmed || DataContext is not MainWindowViewModel vm || !vm.ServerVM.IsServerRunning) return;
+        e.Cancel = true;
+        if (!await Dialogs.ConfirmAsync(L.Tr("server.console.closeTitle"), L.Tr("server.console.closeBody", vm.ServerVM.RunningProjectName))) return;
+        await vm.ServerVM.StopServerAsync();
+        _serverStopConfirmed = true;
+        Close();
     }
 
     private void OnForegroundChanged(object? sender, EventArgs e)

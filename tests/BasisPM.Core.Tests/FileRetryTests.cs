@@ -97,7 +97,7 @@ public sealed class FileRetryTests
         var install = new BasisInstall { RepoRoot = t.Path, UnityProjectPath = project, Name = "Basis" };
         var release = ReleaseLater(new FileStream(dll, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 
-        var result = await service.SwapBackAsync(install, "com.x");
+        var result = await service.UnmountAsync(install, "com.x", restoreManifest: true);
         await release;
 
         Assert.True(result.Ok, result.Error);

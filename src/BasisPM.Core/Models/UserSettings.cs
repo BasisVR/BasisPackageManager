@@ -58,11 +58,17 @@ public sealed class UserSettings
     [JsonPropertyName("autoCheckBasisUpdates")]
     public bool AutoCheckBasisUpdates { get; set; } = true;
 
+    [JsonPropertyName("verifyAfterInstall")]
+    public bool VerifyAfterInstall { get; set; } = true;
+
     [JsonPropertyName("dismissedBasisUpdates")]
     public List<string> DismissedBasisUpdates { get; set; } = new();
 
     [JsonPropertyName("cloneLeaveOut")]
     public List<string> CloneLeaveOut { get; set; } = new();
+
+    [JsonPropertyName("useCloneCache")]
+    public bool UseCloneCache { get; set; } = true;
 
     // Collapsible sections the user opened or closed, keyed by section id (true = open). A section
     // that isn't listed starts the way its view declares it.

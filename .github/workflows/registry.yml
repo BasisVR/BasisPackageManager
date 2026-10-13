@@ -1,0 +1,98 @@
+name: Registry
+
+on:
+  pull_request:
+    paths:
+      - 'src/BasisPM.Server/seed/**'
+  schedule:
+    - cron: '41 5 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: registry-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Check the package seed
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet run --project src/BasisPM.Server -c Release --no-launch-profile -- check
+
+  generate:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Check the seed and generate the registry site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet run --project src/BasisPM.Server -c Release --no-launch-profile -- generate "$RUNNER_TEMP/registry" --check
+
+      - name: Upload the generated site
+        uses: actions/upload-artifact@v7
+        with:
+          name: registry-site
+          path: ${{ runner.temp }}/registry
+          retention-days: 14
+
+      - name: Look for the website deploy token
+        id: deploy
+        if: vars.REGISTRY_DEPLOY == 'true'
+        env:
+          DEPLOY_TOKEN: ${{ secrets.WEBSITE_DEPLOY_TOKEN }}
+        run: |
+          if [ -z "$DEPLOY_TOKEN" ]; then
+            echo "::notice::REGISTRY_DEPLOY is true but the WEBSITE_DEPLOY_TOKEN secret isn't set, so the site was not deployed."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out the website
+        if: steps.deploy.outputs.ready == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.REGISTRY_WEBSITE_REPO || 'BasisVR/basisvr.github.io' }}
+          token: ${{ secrets.WEBSITE_DEPLOY_TOKEN }}
+          path: website
+
+      - name: Deploy the registry to the website
+        if: steps.deploy.outputs.ready == 'true'
+        env:
+          SITE: ${{ runner.temp }}/registry
+        working-directory: website
+        run: |
+          mkdir -p packages
+          cp -R "$SITE"/. packages/
+          git add packages
+          if git diff --cached --quiet; then
+            echo "The website already has this registry."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -q -m 'Update the package registry'
+          for attempt in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase -X theirs
+          done
+          echo "::error::Couldn't push the registry to the website."
+          exit 1

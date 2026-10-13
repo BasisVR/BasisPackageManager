@@ -13,10 +13,17 @@ public static class AppDataPaths
     public const string DiagnosticLogFileName = "diagnostic.log";
     public const string CrashFileName = "lastcrash.txt";
     public const string SessionMarkerFileName = "session.lock";
+    public const string GitCacheDirectoryName = "git-cache";
 
     public static string Root => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         ApplicationDirectoryName);
 
     public static string Logs => Path.Combine(Root, LogsDirectoryName);
+
+    public static string LocalRoot => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        ApplicationDirectoryName);
+
+    public static string GitCache => Path.Combine(LocalRoot, GitCacheDirectoryName);
 }

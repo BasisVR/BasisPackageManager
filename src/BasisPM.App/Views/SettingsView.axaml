@@ -11,14 +11,23 @@
 
             <Border CornerRadius="14" Padding="32,28" Background="{StaticResource BasisHeroGradient}"
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
-                <StackPanel Spacing="6">
-                    <TextBlock Text="{loc:Tr settings.hero.tagline}" Classes="tagline"/>
-                    <TextBlock Text="{loc:Tr settings.hero.title}" Classes="h1" TextWrapping="Wrap"/>
-                    <TextBlock Text="{loc:Tr settings.hero.subtitle}" Classes="muted" FontSize="14" TextWrapping="Wrap"/>
-                </StackPanel>
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{loc:Tr settings.hero.tagline}" Classes="tagline"/>
+                        <TextBlock Text="{loc:Tr settings.hero.title}" Classes="h1" TextWrapping="Wrap"/>
+                        <TextBlock Text="{loc:Tr settings.hero.subtitle}" Classes="muted" FontSize="14" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <ToggleButton Grid.Column="1" Name="AdvancedToggle" Classes="advanced" views:SectionState.Key="settings.advanced" VerticalAlignment="Top"
+                                  Margin="16,0,0,0" ToolTip.Tip="{loc:Tr settings.tooltip.advanced}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconCode}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr shell.button.advanced}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ToggleButton>
+                </Grid>
             </Border>
 
-            <Expander views:SectionState.Key="settings.activity" IsExpanded="True" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.activity" IsExpanded="True" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr settings.tooltip.activitySection}">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.activity.title}" Classes="h3"/>
                 </Expander.Header>
@@ -33,7 +42,7 @@
                                 <Border Classes="card" Padding="14,12" Margin="0,0,0,8">
                                     <StackPanel Spacing="7">
                                         <Grid ColumnDefinitions="Auto,*,Auto">
-                                            <Border Classes="versionPill" Margin="0,0,10,0" VerticalAlignment="Center" IsVisible="{Binding HasProject}">
+                                            <Border Classes="versionPill" Margin="0,0,10,0" VerticalAlignment="Center" IsVisible="{Binding HasProject}" ToolTip.Tip="{loc:Tr settings.tooltip.taskProject}">
                                                 <TextBlock Text="{Binding Project}" FontSize="11" FontWeight="SemiBold"/>
                                             </Border>
                                             <TextBlock Grid.Column="1" Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
@@ -50,7 +59,7 @@
                     <Border Classes="card" Padding="14,12" IsVisible="{Binding Shell.PackagesVM.IsInstalling}">
                         <StackPanel Spacing="7">
                             <Grid ColumnDefinitions="Auto,*">
-                                <Border Classes="versionPill" Margin="0,0,10,0" VerticalAlignment="Center" IsVisible="{Binding Shell.PackagesVM.HasInstallProject}">
+                                <Border Classes="versionPill" Margin="0,0,10,0" VerticalAlignment="Center" IsVisible="{Binding Shell.PackagesVM.HasInstallProject}" ToolTip.Tip="{loc:Tr settings.tooltip.taskProject}">
                                     <TextBlock Text="{Binding Shell.PackagesVM.InstallProject}" FontSize="11" FontWeight="SemiBold"/>
                                 </Border>
                                 <TextBlock Grid.Column="1" Text="{Binding Shell.PackagesVM.InstallProgressText}" FontWeight="SemiBold"
@@ -74,14 +83,14 @@
                                     <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
                                         <PathIcon Width="14" Height="14" Data="{StaticResource IconWarning}" Margin="0,0,10,0"
                                                   Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
-                                        <Border Grid.Column="1" Classes="versionPill" Margin="0,0,10,0" VerticalAlignment="Center" IsVisible="{Binding HasProject}">
+                                        <Border Grid.Column="1" Classes="versionPill" Margin="0,0,10,0" VerticalAlignment="Center" IsVisible="{Binding HasProject}" ToolTip.Tip="{loc:Tr settings.tooltip.blockerProject}">
                                             <TextBlock Text="{Binding Project}" FontSize="11" FontWeight="SemiBold"/>
                                         </Border>
                                         <TextBlock Grid.Column="2" Text="{Binding Text}" TextWrapping="Wrap" VerticalAlignment="Center"/>
                                         <Button Grid.Column="3" Margin="12,0,0,0" VerticalAlignment="Center" Command="{Binding Action}"
-                                                Content="{Binding ActionLabel}" IsVisible="{Binding HasAction}"/>
+                                                Content="{Binding ActionLabel}" IsVisible="{Binding HasAction}" ToolTip.Tip="{Binding ActionTip}"/>
                                         <Button Grid.Column="4" Classes="iconBtn sm" Margin="8,0,0,0" VerticalAlignment="Center" Command="{Binding Dismiss}"
-                                                IsVisible="{Binding HasDismiss}" ToolTip.Tip="{loc:Tr shell.status.okTooltip}">
+                                                IsVisible="{Binding HasDismiss}" ToolTip.Tip="{loc:Tr settings.tooltip.dismissBlocker}">
                                             <PathIcon Width="13" Height="13" Data="{StaticResource IconClose}"/>
                                         </Button>
                                     </Grid>
@@ -92,7 +101,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander views:SectionState.Key="settings.language" IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.language" IsExpanded="False" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr settings.tooltip.languageSection}">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.language.title}" Classes="h3"/>
                 </Expander.Header>
@@ -110,19 +119,19 @@
                 </StackPanel>
             </Expander>
 
-            <Expander views:SectionState.Key="settings.general" IsExpanded="True" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.general" IsExpanded="True" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr settings.tooltip.generalSection}">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.section.general}" Classes="h3"/>
                 </Expander.Header>
                 <StackPanel Spacing="20" Margin="0,10,0,0">
-                    <StackPanel Spacing="6">
+                    <StackPanel Spacing="6" IsVisible="{Binding #AdvancedToggle.IsChecked}">
                         <TextBlock Text="{loc:Tr settings.catalog.title}" Classes="h3"/>
                         <TextBlock Text="{loc:Tr settings.catalog.description}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                         <TextBox Text="{Binding CatalogUrl}" Watermark="https://basisvr.org/packages/catalog.json" ToolTip.Tip="{loc:Tr settings.tooltip.catalogUrl}"/>
                     </StackPanel>
 
-                    <StackPanel Spacing="6">
+                    <StackPanel Spacing="6" IsVisible="{Binding #AdvancedToggle.IsChecked}">
                         <TextBlock Text="{loc:Tr settings.extraCatalogs.title}" Classes="h3"/>
                         <TextBlock Text="{loc:Tr settings.extraCatalogs.description}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>
@@ -134,7 +143,7 @@
                                         <Button Grid.Column="1" Classes="iconBtn danger" Margin="8,0,0,0"
                                                 Command="{Binding $parent[ItemsControl].((vm:SettingsViewModel)DataContext).RemoveCatalogCommand}"
                                                 CommandParameter="{Binding}"
-                                                ToolTip.Tip="{loc:Tr settings.extraCatalogs.remove}">
+                                                ToolTip.Tip="{loc:Tr settings.tooltip.removeCatalog}">
                                             <PathIcon Width="14" Height="14" Data="{StaticResource IconClose}"/>
                                         </Button>
                                     </Grid>
@@ -143,7 +152,7 @@
                         </ItemsControl>
                         <Grid ColumnDefinitions="*,Auto">
                             <TextBox Grid.Column="0" Text="{Binding NewCatalogUrl}"
-                                     Watermark="{loc:Tr settings.extraCatalogs.watermark}" ToolTip.Tip="{loc:Tr settings.tooltip.extraCatalogUrl}"/>
+                                     Watermark="{loc:Tr settings.extraCatalogs.watermark}" ToolTip.Tip="{loc:Tr settings.tooltip.newCatalogUrl}"/>
                             <Button Grid.Column="1" Margin="8,0,0,0"
                                     Classes="primary" Command="{Binding AddCatalogCommand}" ToolTip.Tip="{loc:Tr settings.tooltip.addCatalog}">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
@@ -154,7 +163,7 @@
                         </Grid>
                     </StackPanel>
 
-                    <StackPanel Spacing="6">
+                    <StackPanel Spacing="6" IsVisible="{Binding #AdvancedToggle.IsChecked}">
                         <TextBlock Text="{loc:Tr settings.unityHub.title}" Classes="h3"/>
                         <TextBlock Text="{loc:Tr settings.unityHub.description}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap"/>
@@ -162,10 +171,13 @@
                     </StackPanel>
 
                     <CheckBox Content="{loc:Tr settings.toggle.prerelease}" IsChecked="{Binding PrereleaseUpdates}"
-                              ToolTip.Tip="{loc:Tr settings.toggle.prerelease.tip}"/>
+                              IsVisible="{Binding #AdvancedToggle.IsChecked}" ToolTip.Tip="{loc:Tr settings.toggle.prerelease.tip}"/>
 
                     <CheckBox Content="{loc:Tr settings.toggle.autoCheckBasis}" IsChecked="{Binding AutoCheckBasisUpdates}"
                               ToolTip.Tip="{loc:Tr settings.toggle.autoCheckBasis.tip}"/>
+
+                    <CheckBox Content="{loc:Tr settings.toggle.verifyAfterInstall}" IsChecked="{Binding VerifyAfterInstall}"
+                              IsVisible="{Binding #AdvancedToggle.IsChecked}" ToolTip.Tip="{loc:Tr settings.toggle.verifyAfterInstall.tip}"/>
 
                     <Button Classes="primary" Command="{Binding SaveCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr settings.tooltip.save}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
@@ -176,7 +188,39 @@
                 </StackPanel>
             </Expander>
 
-            <Expander views:SectionState.Key="settings.detected" IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.cloneCache" IsExpanded="False" HorizontalAlignment="Stretch" IsVisible="{Binding #AdvancedToggle.IsChecked}"
+                      ToolTip.Tip="{loc:Tr settings.tooltip.cloneCacheSection}">
+                <Expander.Header>
+                    <TextBlock Text="{loc:Tr settings.cloneCache.title}" Classes="h3"/>
+                </Expander.Header>
+                <StackPanel Spacing="14" Margin="0,10,0,0">
+                    <TextBlock Text="{loc:Tr settings.cloneCache.description}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                    <CheckBox Content="{loc:Tr settings.cloneCache.toggle}" IsChecked="{Binding UseCloneCache}"
+                              ToolTip.Tip="{loc:Tr settings.tooltip.cloneCacheToggle}"/>
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding CloneCacheSizeText}" FontSize="12"/>
+                            <TextBlock Text="{Binding CloneCacheFolder}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Classes="iconBtn" Margin="12,0,0,0" VerticalAlignment="Center"
+                                Command="{Binding OpenCloneCacheFolderCommand}" ToolTip.Tip="{loc:Tr settings.tooltip.cloneCacheFolder}">
+                            <PathIcon Width="16" Height="16" Data="{StaticResource IconFolderOpen}"/>
+                        </Button>
+                        <Button Grid.Column="2" Classes="danger" Margin="8,0,0,0" VerticalAlignment="Center"
+                                Command="{Binding ClearCloneCacheCommand}" IsVisible="{Binding HasCloneCache}" IsEnabled="{Binding CanClearCloneCache}"
+                                ToolTip.Tip="{loc:Tr settings.tooltip.cloneCacheClear}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconDelete}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr settings.cloneCache.clear}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <TextBlock Text="{Binding CloneCacheStatus}" IsVisible="{Binding HasCloneCacheStatus}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Expander>
+
+            <Expander views:SectionState.Key="settings.detected" IsExpanded="False" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr settings.tooltip.detectedSection}"
+                      IsVisible="{Binding #AdvancedToggle.IsChecked}">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.detected.title}" Classes="h3"/>
                 </Expander.Header>
@@ -193,17 +237,24 @@
                         <TextBlock Text="{loc:Tr settings.detected.settingsFile}" Classes="muted" FontSize="11"/>
                         <TextBlock Text="{Binding SettingsPath}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
                     </StackPanel>
+                    <StackPanel Spacing="4" IsVisible="{Binding CanInstallCommandLineTool}">
+                        <TextBlock Text="{loc:Tr settings.detected.cli}" Classes="muted" FontSize="11"/>
+                        <TextBlock Text="{Binding CommandLineToolStatus}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
+                        <Button Command="{Binding InstallCommandLineToolCommand}" HorizontalAlignment="Left" Margin="0,4,0,0" ToolTip.Tip="{loc:Tr settings.tooltip.cliInstall}">
+                            <TextBlock Text="{loc:Tr settings.cli.install}"/>
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
             </Expander>
 
-            <Expander views:SectionState.Key="settings.about" IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.about" IsExpanded="False" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr settings.tooltip.aboutSection}">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.about.title}" Classes="h3"/>
                 </Expander.Header>
                 <StackPanel Spacing="16" Margin="0,10,0,0">
                     <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                         <TextBlock Text="{loc:Tr settings.about.version}" Classes="muted" FontSize="12" VerticalAlignment="Center"/>
-                        <Border Classes="versionPill" VerticalAlignment="Center">
+                        <Border Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="{loc:Tr settings.tooltip.appVersion}">
                             <TextBlock Text="{Binding AppVersion}" FontSize="12" FontWeight="SemiBold"/>
                         </Border>
                     </StackPanel>
@@ -218,7 +269,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander views:SectionState.Key="settings.logs" IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.logs" IsExpanded="False" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr settings.tooltip.logsSection}">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.logs.title}" Classes="h3"/>
                 </Expander.Header>
@@ -227,13 +278,13 @@
                         <TextBlock Grid.Column="0" Text="{loc:Tr settings.logs.description}"
                                    Classes="muted" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Top">
-                            <Button Classes="iconBtn" Click="OnCopyLogs" ToolTip.Tip="{loc:Tr settings.logs.copy}">
+                            <Button Classes="iconBtn" Click="OnCopyLogs" ToolTip.Tip="{loc:Tr logs.tooltip.copy}">
                                 <PathIcon Width="16" Height="16" Data="{StaticResource IconCopy}"/>
                             </Button>
-                            <Button Classes="iconBtn" Command="{Binding Logs.OpenFolderCommand}" ToolTip.Tip="{loc:Tr settings.logs.openFolder}">
+                            <Button Classes="iconBtn" Command="{Binding Logs.OpenFolderCommand}" ToolTip.Tip="{loc:Tr logs.tooltip.openFolder}">
                                 <PathIcon Width="16" Height="16" Data="{StaticResource IconFolderOpen}"/>
                             </Button>
-                            <Button Classes="iconBtn" Command="{Binding Logs.ClearCommand}" ToolTip.Tip="{loc:Tr settings.logs.clear}">
+                            <Button Classes="iconBtn" Command="{Binding Logs.ClearCommand}" ToolTip.Tip="{loc:Tr logs.tooltip.clear}">
                                 <PathIcon Width="16" Height="16" Data="{StaticResource IconDelete}"/>
                             </Button>
                         </StackPanel>
@@ -261,7 +312,7 @@
             <!-- Licenses & attributions: every third-party component bundled in the app, its
                  licence, copyright and source. The interface icons (Fluent System Icons) are
                  credited here too, per the project's attribution requirements. -->
-            <Expander views:SectionState.Key="settings.licenses" IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.licenses" IsExpanded="False" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr settings.tooltip.licensesSection}">
                 <Expander.Header>
                     <StackPanel Orientation="Horizontal" Spacing="10">
                         <PathIcon Width="18" Height="18" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
@@ -279,7 +330,7 @@
                                     <TextBlock Text="{loc:Tr settings.licenses.role.thisApp}" Classes="muted" FontSize="11"/>
                                     <TextBlock Text="© 2026 BasisVR · github.com/BasisVR/BasisPackageManager" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="MIT License">
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="{loc:Tr settings.tooltip.licenseMit}">
                                     <TextBlock Text="MIT" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
                                 </Border>
                             </Grid>
@@ -291,7 +342,7 @@
                                     <TextBlock Text="{loc:Tr settings.licenses.role.framework}" Classes="muted" FontSize="11"/>
                                     <TextBlock Text="© .NET Foundation and Contributors · avaloniaui.net" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="MIT License">
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="{loc:Tr settings.tooltip.licenseMit}">
                                     <TextBlock Text="MIT" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
                                 </Border>
                             </Grid>
@@ -303,7 +354,7 @@
                                     <TextBlock Text="{loc:Tr settings.licenses.role.icons}" Classes="muted" FontSize="11"/>
                                     <TextBlock Text="© Microsoft Corporation · github.com/microsoft/fluentui-system-icons" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="MIT License">
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="{loc:Tr settings.tooltip.licenseMit}">
                                     <TextBlock Text="MIT" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
                                 </Border>
                             </Grid>
@@ -315,7 +366,7 @@
                                     <TextBlock Text="{loc:Tr settings.licenses.role.font}" Classes="muted" FontSize="11"/>
                                     <TextBlock Text="© The Inter Project Authors · rsms.me/inter" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="SIL Open Font License 1.1">
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="{loc:Tr settings.tooltip.licenseOfl}">
                                     <TextBlock Text="OFL 1.1" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
                                 </Border>
                             </Grid>
@@ -327,7 +378,7 @@
                                     <TextBlock Text="{loc:Tr settings.licenses.role.updater}" Classes="muted" FontSize="11"/>
                                     <TextBlock Text="© Caelan Sayler &amp; Velopack contributors · velopack.io" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="MIT License">
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="{loc:Tr settings.tooltip.licenseMit}">
                                     <TextBlock Text="MIT" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
                                 </Border>
                             </Grid>
@@ -339,7 +390,7 @@
                                     <TextBlock Text="{loc:Tr settings.licenses.role.runtime}" Classes="muted" FontSize="11"/>
                                     <TextBlock Text="© .NET Foundation and Contributors · dotnet.microsoft.com" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="MIT License">
+                                <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Center" ToolTip.Tip="{loc:Tr settings.tooltip.licenseMit}">
                                     <TextBlock Text="MIT" FontSize="11" FontWeight="SemiBold" Classes="muted"/>
                                 </Border>
                             </Grid>
@@ -350,7 +401,7 @@
 
             <!-- Danger zone: wipe every setting and cached record and return the app to a
                  first-time state. Clones and files on disk are left untouched. -->
-            <Expander views:SectionState.Key="settings.reset" IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="settings.reset" IsExpanded="False" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr settings.tooltip.resetSection}">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr settings.reset.title}" Classes="h3"/>
                 </Expander.Header>

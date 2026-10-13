@@ -77,11 +77,7 @@ internal sealed partial class ConsoleApplication
         if (plan.BlockingPaths.Count > 0)
             throw new InvalidOperationException($"Files ignored by git are in the way of files on {target.Name}. Remove or move them, then try again:\n  " + string.Join("\n  ", plan.BlockingPaths.Take(10)));
         if (!plan.CanSwitch) throw new InvalidOperationException(DescribeSwitchBlock(plan));
-        if (UnityProjectService.IsOpenInUnity(install.UnityProjectPath))
-        {
-            if (OperatingSystem.IsWindows()) throw new InvalidOperationException("Unity has this project open. Close Unity, then switch branches again.");
-            Out.Warning("Unity may still have this project open. Close it first if it is running.");
-        }
+        if (UnityProjectService.IsOpenInUnity(install.UnityProjectPath)) throw new InvalidOperationException("Unity has this project open. Close Unity, then switch branches again.");
         if (plan.CollidingPaths.Count > 0)
         {
             Out.Say($"{Plural(plan.CollidingPaths.Count, "file")} you're editing {(plan.CollidingPaths.Count == 1 ? "is" : "are")} different on {target.Name}. They're set aside, then merged back after the switch:");
@@ -183,11 +179,7 @@ internal sealed partial class ConsoleApplication
         PrintPlan(plan);
         if (plan.BlockingPaths.Count > 0)
             throw new InvalidOperationException("Files ignored by git are in the way of new Basis files. Remove or move them, then try again:\n  " + string.Join("\n  ", plan.BlockingPaths.Take(10)));
-        if (UnityProjectService.IsOpenInUnity(install.UnityProjectPath))
-        {
-            if (OperatingSystem.IsWindows()) throw new InvalidOperationException("Unity has this project open. Close Unity, then run the update again.");
-            Out.Warning("Unity may still have this project open. Close it first if it is running.");
-        }
+        if (UnityProjectService.IsOpenInUnity(install.UnityProjectPath)) throw new InvalidOperationException("Unity has this project open. Close Unity, then run the update again.");
         if (!assumeYes && !Confirm(plan.IsSwitch ? $"Move to Basis {plan.BasisBranch} now?" : "Update now?"))
         {
             Out.Warning("Update cancelled.");
@@ -422,7 +414,7 @@ internal sealed partial class ConsoleApplication
         {
             var (root, name, plan) = ready[i];
             var before = await _installs.LoadAsync(root, AliasOf(settings, root));
-            if (OperatingSystem.IsWindows() && UnityProjectService.IsOpenInUnity(before.UnityProjectPath))
+            if (UnityProjectService.IsOpenInUnity(before.UnityProjectPath))
             {
                 waiting.Add((name, "Unity has it open"));
                 continue;
@@ -479,7 +471,7 @@ internal sealed partial class ConsoleApplication
         _ when plan.IsSwitch => $"would move from Basis {plan.FromBranch} to {plan.BasisBranch}",
         _ when plan.BaseSource == BasisBaseSource.Similarity => "first update of a copy: check where it started",
         _ when plan.PredictedConflicts is { Count: > 0 } conflicts => $"{Plural(conflicts.Count, "file")} changed on both sides",
-        _ when OperatingSystem.IsWindows() && UnityProjectService.IsOpenInUnity(_projects.Detect(root).ResolvedPath ?? root) => "Unity has it open",
+        _ when UnityProjectService.IsOpenInUnity(_projects.Detect(root).ResolvedPath ?? root) => "Unity has it open",
         _ => null,
     };
 

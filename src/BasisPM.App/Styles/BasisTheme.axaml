@@ -126,6 +126,22 @@
         <Setter Property="FontFamily" Value="fonts:Inter#Inter"/>
     </Style>
 
+    <Style Selector=":is(TopLevel)">
+        <Setter Property="ToolTip.ShowOnDisabled" Value="True"/>
+    </Style>
+
+    <Style Selector="ToolTip">
+        <Setter Property="Background" Value="{StaticResource BasisSurfaceBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBorderStrongBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="12,9"/>
+        <Setter Property="MaxWidth" Value="360"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
+    </Style>
+
     <Style Selector="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
     </Style>
@@ -675,5 +691,60 @@
                 <KeyFrame Cue="100%"><Setter Property="Opacity" Value="1"/></KeyFrame>
             </Animation>
         </Style.Animations>
+    </Style>
+
+    <Style Selector="ToggleButton.advanced">
+        <Setter Property="Background" Value="#00221F44"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBorderStrongBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="14,7"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" Easing="CubicEaseOut"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="ToggleButton.advanced:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.98)"/>
+    </Style>
+    <Style Selector="ToggleButton.advanced /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="ToggleButton.advanced:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.advanced:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource BasisSurfaceMutedBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.advanced:checked /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#3FEF1237"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.advanced:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#59EF1237"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandHoverBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.advanced:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#3FEF1237"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandPressedBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.advanced TextBlock, ToggleButton.advanced PathIcon">
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.advanced:checked PathIcon">
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandHoverBrush}"/>
     </Style>
 </Styles>

@@ -1,0 +1,135 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BasisPM.App.ViewModels"
+        xmlns:loc="using:BasisPM.App.Localization"
+        xmlns:sys="using:System"
+        x:Class="BasisPM.App.Views.PackageReviewWindow"
+        x:DataType="vm:PackageReviewViewModel"
+        Title="{Binding Title}"
+        Width="640" SizeToContent="Height" MaxHeight="820"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <DockPanel Margin="26,24">
+        <StackPanel DockPanel.Dock="Top" Spacing="10" Margin="0,0,0,14">
+            <TextBlock Text="{Binding Title}" Classes="h3" TextWrapping="Wrap"/>
+            <Border CornerRadius="10" Padding="12" Background="#26F59E0B" BorderBrush="#80F59E0B" BorderThickness="1" IsVisible="{Binding HasReason}">
+                <Grid ColumnDefinitions="Auto,*">
+                    <PathIcon Width="16" Height="16" Margin="0,1,10,0" VerticalAlignment="Top" Data="{StaticResource IconWarning}" Foreground="{StaticResource BasisWarningBrush}"/>
+                    <TextBlock Grid.Column="1" Text="{Binding Reason}" TextWrapping="Wrap" FontSize="13"/>
+                </Grid>
+            </Border>
+            <Border CornerRadius="10" Padding="12" Background="#26EF1237" BorderBrush="#80EF1237" BorderThickness="1" IsVisible="{Binding HasAdvisory}">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="{Binding AdvisoryHeading}" FontWeight="SemiBold" Foreground="{StaticResource BasisDangerBrush}"/>
+                    <TextBlock Text="{Binding AdvisoryTitle}" TextWrapping="Wrap" FontSize="13"/>
+                    <TextBlock Text="{Binding AdvisoryDetails}" Classes="muted" TextWrapping="Wrap" FontSize="12" IsVisible="{Binding HasAdvisoryDetails}"/>
+                </StackPanel>
+            </Border>
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr review.source}" Classes="dim" FontSize="12" Margin="0,0,14,4"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SourceText}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr review.version}" Classes="dim" FontSize="12" Margin="0,0,14,0" IsVisible="{Binding HasVersion}"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding VersionText}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasVersion}"/>
+            </Grid>
+            <TextBlock Text="{Binding NameWarning}" Foreground="{StaticResource BasisWarningBrush}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasNameWarning}"/>
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Spacing="14" Margin="0,14,0,0">
+            <TextBlock Text="{Binding Footer}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasFooter}"/>
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Grid.Column="0" Classes="link" Click="OnOpenFolder" ToolTip.Tip="{loc:Tr review.tooltip.openFolder}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <PathIcon Width="13" Height="13" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr review.button.openFolder}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10">
+                    <Button Click="OnCancel" IsCancel="True" IsDefault="{Binding CancelIsPrimary}" Classes.primary="{Binding CancelIsPrimary}" ToolTip.Tip="{loc:Tr review.tooltip.cancel}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr review.button.cancel}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="OnInstall" IsVisible="{Binding CanInstall}" IsDefault="{Binding InstallIsPrimary}" Classes.primary="{Binding InstallIsPrimary}" ToolTip.Tip="{loc:Tr review.tooltip.install}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconCheck}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding InstallLabel}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="16">
+                <StackPanel Spacing="8" IsVisible="{Binding ShowSafety}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{loc:Tr review.safety.header}" FontWeight="SemiBold" FontSize="14"/>
+                        <TextBlock Grid.Column="1" Text="{Binding ScanSummary}" Classes="dim" FontSize="11" VerticalAlignment="Center"/>
+                    </Grid>
+                    <Border Classes="card" Padding="14,12" IsVisible="{Binding NothingFound}">
+                        <TextBlock Text="{Binding NothingFoundText}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                    </Border>
+                    <ItemsControl ItemsSource="{Binding Capabilities}" IsVisible="{Binding HasCapabilities}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ReviewCapabilityItem">
+                                <Border Classes="glass" Padding="14,10" Margin="0,0,0,8">
+                                    <StackPanel Spacing="4">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <PathIcon Width="14" Height="14" Margin="0,2,8,0" VerticalAlignment="Top" Data="{StaticResource IconWarning}"
+                                                      Foreground="{StaticResource BasisDangerBrush}" IsVisible="{Binding IsHigh}"/>
+                                            <PathIcon Width="14" Height="14" Margin="0,2,8,0" VerticalAlignment="Top" Data="{StaticResource IconInfo}"
+                                                      Foreground="{StaticResource BasisWarningBrush}" IsVisible="{Binding !IsHigh}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Title}" FontWeight="SemiBold" FontSize="13" TextWrapping="Wrap"/>
+                                        </Grid>
+                                        <TextBlock Text="{Binding Why}" Classes="muted" FontSize="12" TextWrapping="Wrap" Margin="22,0,0,0"/>
+                                        <ItemsControl ItemsSource="{Binding Places}" Margin="22,2,0,0">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="sys:String">
+                                                    <TextBlock Text="{Binding}" FontFamily="{StaticResource MonoFontFamily}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <TextBlock Text="{Binding More}" Classes="dim" FontSize="11" Margin="22,0,0,0" IsVisible="{Binding HasMore}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <StackPanel Spacing="8" IsVisible="{Binding HasIssues}">
+                    <TextBlock Text="{loc:Tr review.compat.header}" FontWeight="SemiBold" FontSize="14"/>
+                    <ItemsControl ItemsSource="{Binding Issues}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ReviewIssueItem">
+                                <Border Classes="glass" Padding="14,10" Margin="0,0,0,8">
+                                    <StackPanel Spacing="4">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border CornerRadius="999" Padding="8,2" BorderThickness="1" VerticalAlignment="Center"
+                                                    Background="#26EF1237" BorderBrush="#80EF1237" IsVisible="{Binding IsError}" ToolTip.Tip="{loc:Tr review.tooltip.error}">
+                                                <TextBlock Text="{Binding SeverityLabel}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BasisDangerBrush}"/>
+                                            </Border>
+                                            <Border CornerRadius="999" Padding="8,2" BorderThickness="1" VerticalAlignment="Center"
+                                                    Background="#26F59E0B" BorderBrush="#80F59E0B" IsVisible="{Binding IsWarning}" ToolTip.Tip="{loc:Tr review.tooltip.warning}">
+                                                <TextBlock Text="{Binding SeverityLabel}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BasisWarningBrush}"/>
+                                            </Border>
+                                            <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsInfo}" ToolTip.Tip="{loc:Tr review.tooltip.info}">
+                                                <TextBlock Text="{Binding SeverityLabel}" FontSize="9" FontWeight="Bold" Classes="muted"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding Location}" FontFamily="{StaticResource MonoFontFamily}" Classes="dim" FontSize="11"
+                                                       VerticalAlignment="Center" IsVisible="{Binding HasLocation}"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Message}" FontSize="12" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding Fix}" Classes="muted" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasFix}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

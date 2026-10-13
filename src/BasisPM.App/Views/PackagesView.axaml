@@ -3,6 +3,7 @@
              xmlns:vm="using:BasisPM.App.ViewModels"
              xmlns:models="using:BasisPM.Core.Models"
              xmlns:loc="using:BasisPM.App.Localization"
+             xmlns:views="using:BasisPM.App.Views"
              x:Class="BasisPM.App.Views.PackagesView"
              x:DataType="vm:PackagesViewModel"
              Name="Root">
@@ -24,6 +25,16 @@
                 </Button>
                 <ProgressBar IsVisible="{Binding IsWorking}" IsIndeterminate="True"
                              Height="4" CornerRadius="2" Margin="0,-2,0,0"/>
+                <Button Classes="primary" HorizontalAlignment="Stretch"
+                        IsVisible="{Binding UpdateAvailable}" IsEnabled="{Binding IsIdle}"
+                        Command="{Binding #Root.((vm:PackagesViewModel)DataContext).UpdatePackageCommand}"
+                        CommandParameter="{Binding}"
+                        ToolTip.Tip="{Binding UpdateTooltip}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding UpdateButtonLabel}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                </Button>
                 <Button Classes="secondary" HorizontalAlignment="Stretch"
                         IsVisible="{Binding IsManageable}" IsEnabled="{Binding IsIdle}" Click="OnManageClick"
                         ToolTip.Tip="{loc:Tr packages.tooltip.manage}">
@@ -92,32 +103,65 @@
             <Border CornerRadius="12" Padding="14,6"
                     Background="{StaticResource BasisHeroGradient}"
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
-                <WrapPanel VerticalAlignment="Center">
-                    <TextBlock Text="{loc:Tr packages.hero.title}" Classes="h3" VerticalAlignment="Center" Margin="0,3,16,3"
-                               IsVisible="{Binding !HasInstalls}"/>
-                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" Margin="0,3,12,3" IsVisible="{Binding HasInstalls}">
-                        <TextBlock Text="{loc:Tr packages.label.project}" Classes="muted" FontSize="12" VerticalAlignment="Center"/>
-                        <ComboBox MinWidth="230" MaxDropDownHeight="360" VerticalAlignment="Center"
-                                  ItemsSource="{Binding InstallOptions}" SelectedItem="{Binding SelectedInstall}"
-                                  ToolTip.Tip="{loc:Tr packages.tooltip.projectPicker}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate DataType="models:BasisInstall">
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding UnityVersion, StringFormat='Unity {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        <Button Classes="primary" Command="{Binding OpenInUnityCommand}" VerticalAlignment="Center" IsVisible="{Binding HasInstall}"
-                                ToolTip.Tip="{loc:Tr installs.tooltip.openInUnity}">
+                <StackPanel>
+                    <WrapPanel VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Tr packages.hero.title}" Classes="h3" VerticalAlignment="Center" Margin="0,3,16,3"
+                                   IsVisible="{Binding !HasInstalls}"/>
+                        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" Margin="0,3,12,3" IsVisible="{Binding HasInstalls}">
+                            <TextBlock Text="{loc:Tr packages.label.project}" Classes="muted" FontSize="12" VerticalAlignment="Center"/>
+                            <ComboBox MinWidth="230" MaxDropDownHeight="360" VerticalAlignment="Center"
+                                      ItemsSource="{Binding InstallOptions}" SelectedItem="{Binding SelectedInstall}"
+                                      ToolTip.Tip="{loc:Tr packages.tooltip.projectPicker}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="models:BasisInstall">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding UnityVersion, StringFormat='Unity {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Button Classes="primary" Command="{Binding OpenInUnityCommand}" VerticalAlignment="Center" IsVisible="{Binding HasInstall}"
+                                    ToolTip.Tip="{loc:Tr installs.tooltip.openInUnity}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,3">
+                            <Button Command="{Binding InstallPackageListFromRegistryCommand}" VerticalAlignment="Center"
+                                    IsVisible="{Binding HasRegistryPackageLists}"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.installPackageList}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr packages.button.packageLists}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Classes="iconBtn" Command="{Binding RefreshCommand}" VerticalAlignment="Center"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.refresh}">
+                                <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+                            </Button>
+                            <ToggleButton Name="AdvancedToggle" Classes="advanced" views:SectionState.Key="packages.advanced"
+                                          ToolTip.Tip="{loc:Tr packages.tooltip.advanced}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconCode}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr shell.button.advanced}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </ToggleButton>
+                        </StackPanel>
+                    </WrapPanel>
+                    <WrapPanel IsVisible="{Binding #AdvancedToggle.IsChecked}" Margin="0,3">
+                        <WrapPanel.Styles>
+                            <Style Selector="WrapPanel > Button"><Setter Property="Margin" Value="0,3,8,3"/></Style>
+                        </WrapPanel.Styles>
+                        <Button Command="{Binding NewPackageCommand}" VerticalAlignment="Center" IsVisible="{Binding HasInstall}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.newPackage}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.newPackage}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="0,3">
                         <Button Command="{Binding CreatePackageListCommand}" VerticalAlignment="Center" IsVisible="{Binding HasInstall}"
                                 ToolTip.Tip="{loc:Tr packages.tooltip.createPackageList}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
@@ -125,25 +169,30 @@
                                 <TextBlock Text="{loc:Tr packages.button.createPackageList}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding InstallPackageListFromRegistryCommand}" VerticalAlignment="Center"
-                                IsVisible="{Binding HasRegistryPackageLists}"
-                                ToolTip.Tip="{loc:Tr packages.button.installPackageList}">
+                        <Button Command="{Binding InstallPackageListFromFileCommand}" VerticalAlignment="Center"
+                                IsVisible="{Binding HasInstalls}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.installPackageListFile}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr packages.button.packageLists}" VerticalAlignment="Center"/>
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.packageListFromFile}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Classes="iconBtn" Command="{Binding InstallPackageListFromFileCommand}" VerticalAlignment="Center"
-                                IsVisible="{Binding HasInstalls}"
-                                ToolTip.Tip="{loc:Tr packages.button.installPackageListFile}">
-                            <PathIcon Width="16" Height="16" Data="{StaticResource IconFolderOpen}"/>
+                        <Button Command="{Binding VerifyProjectCommand}" VerticalAlignment="Center" IsVisible="{Binding HasInstall}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.verifyAll}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconCheck}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.verifyAll}" VerticalAlignment="Center"/>
+                            </StackPanel>
                         </Button>
-                        <Button Classes="iconBtn" Command="{Binding RefreshCommand}" VerticalAlignment="Center"
-                                ToolTip.Tip="{loc:Tr packages.button.refresh}">
-                            <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+                        <Button Command="{Binding LicensesCommand}" VerticalAlignment="Center" IsVisible="{Binding HasInstall}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.licenses}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr packages.button.licenses}" VerticalAlignment="Center"/>
+                            </StackPanel>
                         </Button>
-                    </StackPanel>
-                </WrapPanel>
+                    </WrapPanel>
+                </StackPanel>
             </Border>
 
             <Border Classes="card" IsVisible="{Binding !HasInstall}">
@@ -183,6 +232,45 @@
                     </Border>
                 </Panel>
 
+                <Border Classes="card" Padding="16,14" IsVisible="{Binding HasPulledPackages}" Background="#26EF1237" BorderBrush="#80EF1237">
+                    <StackPanel Spacing="10">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Grid.Column="0" Width="18" Height="18" Margin="0,2,0,0" VerticalAlignment="Top"
+                                      Data="{StaticResource IconWarning}" Foreground="{StaticResource BasisDangerBrush}"/>
+                            <StackPanel Grid.Column="1" Margin="12,0,0,0" Spacing="2">
+                                <TextBlock Text="{Binding PulledTitle}" FontWeight="SemiBold" FontSize="14" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding PulledBody}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding PulledPackages}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="vm:PulledPackageItem">
+                                    <Border Classes="glass" Padding="14,10" Margin="0,0,0,8">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="3" Margin="0,0,16,0">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"/>
+                                                    <Border CornerRadius="999" Padding="8,2" BorderThickness="1" Background="#26EF1237" BorderBrush="#80EF1237"
+                                                            VerticalAlignment="Center" ToolTip.Tip="{loc:Tr advisory.tooltip.pill}">
+                                                        <TextBlock Text="{Binding Label}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BasisDangerBrush}"/>
+                                                    </Border>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Title}" FontSize="12" TextWrapping="Wrap"/>
+                                                <TextBlock Text="{Binding Details}" Classes="muted" FontSize="11" TextWrapping="Wrap" IsVisible="{Binding HasDetails}"/>
+                                            </StackPanel>
+                                            <Button Grid.Column="1" Classes="danger" VerticalAlignment="Center"
+                                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RemovePulledCommand}" CommandParameter="{Binding}"
+                                                    ToolTip.Tip="{loc:Tr advisory.tooltip.remove}">
+                                                <TextBlock Text="{loc:Tr advisory.button.remove}"/>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
                 <Panel>
                     <Panel.IsVisible>
                         <MultiBinding Converter="{x:Static BoolConverters.And}">
@@ -200,14 +288,23 @@
                                     <TextBlock Text="{loc:Tr basisdev.banner.title}" FontWeight="SemiBold" FontSize="14"/>
                                     <TextBlock Text="{Binding BasisDevSummary}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <Button Grid.Column="2" Classes="primary" VerticalAlignment="Center"
-                                        IsVisible="{Binding CanFixBasisDevRecords}" Command="{Binding FixBasisDevRecordsCommand}"
-                                        ToolTip.Tip="{loc:Tr basisdev.tooltip.fixRecords}">
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconCheck}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{loc:Tr basisdev.button.fixRecords}" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <Button IsVisible="{Binding CanRestoreAll}" Command="{Binding RestoreAllCommand}"
+                                            ToolTip.Tip="{loc:Tr basisdev.tooltip.restoreAll}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding RestoreAllLabel}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="primary"
+                                            IsVisible="{Binding CanFixBasisDevRecords}" Command="{Binding FixBasisDevRecordsCommand}"
+                                            ToolTip.Tip="{loc:Tr basisdev.tooltip.fixRecords}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconCheck}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr basisdev.button.fixRecords}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
                             </Grid>
                             <ItemsControl ItemsSource="{Binding BasisDevIssues}">
                                 <ItemsControl.ItemTemplate>
@@ -217,7 +314,8 @@
                                                 <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,16,0">
                                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                                         <TextBlock Text="{Binding Id}" FontWeight="SemiBold" FontSize="13" VerticalAlignment="Center"/>
-                                                        <Border Background="#26F59E0B" BorderBrush="#80F59E0B" BorderThickness="1" CornerRadius="999" Padding="8,2" VerticalAlignment="Center">
+                                                        <Border Background="#26F59E0B" BorderBrush="#80F59E0B" BorderThickness="1" CornerRadius="999" Padding="8,2" VerticalAlignment="Center"
+                                                                ToolTip.Tip="{Binding IssueText}">
                                                             <TextBlock Text="{Binding IssueLabel}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BasisWarningBrush}"/>
                                                         </Border>
                                                     </StackPanel>
@@ -266,7 +364,7 @@
                             <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
                                 <TextBlock Grid.Column="0" Text="{Binding ListHeaderLabel}" Classes="h3" VerticalAlignment="Center"/>
                                 <Border Grid.Column="1" Classes="brandBadge" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center"
-                                        IsVisible="{Binding !ShowInstalledOnly}">
+                                        IsVisible="{Binding !ShowInstalledOnly}" ToolTip.Tip="{loc:Tr packages.tooltip.basisRegistry}">
                                     <TextBlock Text="{loc:Tr packages.badge.basisRegistry}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
                                 </Border>
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
@@ -275,7 +373,7 @@
                                             ToolTip.Tip="{loc:Tr packages.tooltip.updateAll}">
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{loc:Tr packages.button.updateAll}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding UpdateAllLabel}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <Button Content="{Binding InstalledToggleLabel}" Command="{Binding ToggleInstalledCommand}"
@@ -299,15 +397,15 @@
                                     <ComboBox Grid.Column="1" Margin="10,0,0,0" MinWidth="150" VerticalAlignment="Center" MaxDropDownHeight="360"
                                               ItemsSource="{Binding SourceFacets}" SelectedItem="{Binding SelectedSourceFacet}"
                                               ItemTemplate="{StaticResource FacetOption}"
-                                              ToolTip.Tip="{loc:Tr packages.filter.source}"/>
+                                              ToolTip.Tip="{loc:Tr packages.tooltip.sourceFilter}"/>
                                     <ComboBox Grid.Column="2" Margin="10,0,0,0" MinWidth="150" VerticalAlignment="Center" MaxDropDownHeight="360"
                                               ItemsSource="{Binding CategoryFacets}" SelectedItem="{Binding SelectedCategoryFacet}"
                                               ItemTemplate="{StaticResource FacetOption}"
                                               IsVisible="{Binding HasCategoryFacets}"
-                                              ToolTip.Tip="{loc:Tr packages.filter.category}"/>
+                                              ToolTip.Tip="{loc:Tr packages.tooltip.categoryFilter}"/>
                                     <ComboBox Grid.Column="3" Margin="10,0,0,0" MinWidth="170" VerticalAlignment="Center"
                                               ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SelectedSort}"
-                                              ToolTip.Tip="{loc:Tr packages.filter.sortBy}">
+                                              ToolTip.Tip="{loc:Tr packages.tooltip.sort}">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate x:DataType="vm:SortOption">
                                                 <TextBlock Text="{Binding Label}"/>
@@ -333,19 +431,28 @@
                                                 <StackPanel Grid.Column="1" Margin="14,0,16,0" Spacing="3" VerticalAlignment="Center">
                                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                                         <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
-                                                        <Border Background="{StaticResource BasisSurfaceHoverBrush}" CornerRadius="999" Padding="8,2" VerticalAlignment="Center">
+                                                        <Border Background="{StaticResource BasisSurfaceHoverBrush}" CornerRadius="999" Padding="8,2" VerticalAlignment="Center"
+                                                                ToolTip.Tip="{loc:Tr packages.tooltip.owner}">
                                                             <TextBlock Text="{Binding Owner}" FontSize="10" FontWeight="Bold" Classes="muted"/>
                                                         </Border>
-                                                        <Border Classes="unofficialBadge" VerticalAlignment="Center" IsVisible="{Binding IsUnofficial}">
+                                                        <Border Classes="unofficialBadge" VerticalAlignment="Center" IsVisible="{Binding IsUnofficial}" ToolTip.Tip="{loc:Tr packages.tooltip.unofficial}">
                                                             <TextBlock Text="{loc:Tr packages.badge.unofficial}" FontSize="9" FontWeight="Bold"
                                                                        Foreground="{StaticResource BasisWarningBrush}"/>
                                                         </Border>
+                                                        <Border VerticalAlignment="Center" CornerRadius="999" Padding="8,2" BorderThickness="1" Background="#26EF1237" BorderBrush="#80EF1237"
+                                                                IsVisible="{Binding IsPulled}" ToolTip.Tip="{Binding AdvisoryText}">
+                                                            <TextBlock Text="{Binding AdvisoryLabel}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BasisDangerBrush}"/>
+                                                        </Border>
+                                                        <Border VerticalAlignment="Center" CornerRadius="999" Padding="8,2" BorderThickness="1" Background="#26F59E0B" BorderBrush="#80F59E0B"
+                                                                IsVisible="{Binding IsAdvisoryWarning}" ToolTip.Tip="{Binding AdvisoryText}">
+                                                            <TextBlock Text="{Binding AdvisoryLabel}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BasisWarningBrush}"/>
+                                                        </Border>
                                                         <Border VerticalAlignment="Center" IsVisible="{Binding IsMounted}"
-                                                                Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="999" Padding="8,2">
+                                                                Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="999" Padding="8,2" ToolTip.Tip="{loc:Tr packages.tooltip.mounted}">
                                                             <TextBlock Text="{loc:Tr packages.badge.mounted}" FontSize="9" FontWeight="Bold"
                                                                        Foreground="{StaticResource BasisBlueBrush}"/>
                                                         </Border>
-                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsIncluded}">
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsIncluded}" ToolTip.Tip="{loc:Tr packages.tooltip.included}">
                                                             <TextBlock Text="{loc:Tr packages.badge.included}" FontSize="9" FontWeight="Bold" Classes="brand"/>
                                                         </Border>
                                                         <Border VerticalAlignment="Center" IsVisible="{Binding HasBasisDevIssue}" ToolTip.Tip="{Binding BasisDev.IssueText}"
@@ -354,7 +461,7 @@
                                                         </Border>
                                                         <!-- License sits with the name/description (identity), not down with the version/branch pills. -->
                                                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasLicense}"
-                                                                ToolTip.Tip="{loc:Tr packages.label.license}">
+                                                                ToolTip.Tip="{loc:Tr packages.tooltip.license}">
                                                             <StackPanel Orientation="Horizontal" Spacing="4">
                                                                 <PathIcon Width="11" Height="11" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
                                                                 <TextBlock Text="{Binding License}" FontSize="11" Classes="muted" VerticalAlignment="Center"/>
@@ -372,7 +479,7 @@
                                                         <!-- One status pill: the installed branch/version (green) when installed,
                                                              else a greyed "Not Installed". No separate available-version pill. -->
                                                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsAvailableToInstall}"
-                                                                Background="#12FFFFFF" BorderBrush="#26FFFFFF">
+                                                                Background="#12FFFFFF" BorderBrush="#26FFFFFF" ToolTip.Tip="{loc:Tr packages.tooltip.notInstalled}">
                                                             <TextBlock Text="{loc:Tr packages.state.notInstalled}" FontSize="11" Classes="dim"/>
                                                         </Border>
                                                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasInstalledVersion}"
@@ -382,18 +489,37 @@
                                                                 <TextBlock Text="{Binding InstalledLabel}" FontSize="11" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center" MaxWidth="180" TextTrimming="CharacterEllipsis"/>
                                                             </StackPanel>
                                                         </Border>
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding UpdateAvailable}"
+                                                                Background="#26EF1237" BorderBrush="#80EF1237" ToolTip.Tip="{Binding UpdateTooltip}">
+                                                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconUpdate}" Foreground="{StaticResource BasisBrandHoverBrush}" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{Binding UpdateBadge}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource BasisBrandHoverBrush}" VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </Border>
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasDependencyGaps}"
+                                                                Background="#26F59E0B" BorderBrush="#80F59E0B" ToolTip.Tip="{Binding DependencyGapText}">
+                                                            <TextBlock Text="{Binding DependencyGapLabel}" FontSize="11" Foreground="{StaticResource BasisWarningBrush}"/>
+                                                        </Border>
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasInstallWarning}"
+                                                                Background="#26F59E0B" BorderBrush="#80F59E0B" ToolTip.Tip="{Binding InstallWarningTooltip}">
+                                                            <TextBlock Text="{loc:Tr packages.compat.badge}" FontSize="11" Foreground="{StaticResource BasisWarningBrush}"/>
+                                                        </Border>
                                                         <TextBlock Text="{Binding Author, StringFormat='by {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center" IsVisible="{Binding HasAuthor}"/>
                                                         <TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" Classes="dim" FontSize="11" VerticalAlignment="Center" IsVisible="{Binding HasUnity}"/>
-                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasCategory}">
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasCategory}" ToolTip.Tip="{loc:Tr packages.tooltip.category}">
                                                             <TextBlock Text="{Binding Category}" FontSize="11" Classes="muted"/>
                                                         </Border>
                                                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsServerPackage}" Background="#269333EA" BorderBrush="#809333EA" ToolTip.Tip="{loc:Tr packages.badge.serverTip}"><TextBlock Text="{loc:Tr packages.badge.server}" FontSize="11" Foreground="{StaticResource BasisPurpleBrush}"/></Border>
-                                                        <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" IsVisible="{Binding HasStars}">
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding CheckWorks}" Background="#2622C55E" BorderBrush="#8022C55E" ToolTip.Tip="{Binding CheckTip}"><TextBlock Text="{Binding CheckLabel}" FontSize="11" Foreground="{StaticResource BasisSuccessBrush}"/></Border>
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding CheckWarns}" Background="#26F59E0B" BorderBrush="#80F59E0B" ToolTip.Tip="{Binding CheckTip}"><TextBlock Text="{Binding CheckLabel}" FontSize="11" Foreground="{StaticResource BasisWarningBrush}"/></Border>
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding CheckBreaks}" Background="#26EF1237" BorderBrush="#80EF1237" ToolTip.Tip="{Binding CheckTip}"><TextBlock Text="{Binding CheckLabel}" FontSize="11" Foreground="{StaticResource BasisDangerBrush}"/></Border>
+                                                        <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding CheckUnknown}" ToolTip.Tip="{Binding CheckTip}"><TextBlock Text="{Binding CheckLabel}" FontSize="11" Classes="muted"/></Border>
+                                                        <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" IsVisible="{Binding HasStars}" ToolTip.Tip="{loc:Tr packages.tooltip.stars}">
                                                             <TextBlock Text="★" FontSize="11" Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
                                                             <TextBlock Text="{Binding StarsText}" FontSize="11" Classes="muted" VerticalAlignment="Center"/>
                                                         </StackPanel>
                                                         <Button Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
-                                                                ToolTip.Tip="{Binding Link}"
+                                                                ToolTip.Tip="{Binding LinkTooltip}"
                                                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
                                                                 CommandParameter="{Binding Link}">
                                                             <PathIcon Width="14" Height="14" Data="{StaticResource IconOpenExternal}"/>
@@ -431,16 +557,24 @@
                                                         <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="13"
                                                                    TextTrimming="CharacterEllipsis" MaxWidth="150"/>
                                                         <TextBlock Text="{Binding Owner}" Classes="dim" FontSize="10"/>
-                                                        <Border Classes="unofficialBadge" HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding IsUnofficial}">
+                                                        <Border Classes="unofficialBadge" HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding IsUnofficial}" ToolTip.Tip="{loc:Tr packages.tooltip.unofficial}">
                                                             <TextBlock Text="{loc:Tr packages.badge.unofficial}" FontSize="9" FontWeight="Bold"
                                                                        Foreground="{StaticResource BasisWarningBrush}"/>
                                                         </Border>
+                                                        <Border HorizontalAlignment="Left" Margin="0,2,0,0" CornerRadius="999" Padding="8,2" BorderThickness="1" Background="#26EF1237" BorderBrush="#80EF1237"
+                                                                IsVisible="{Binding IsPulled}" ToolTip.Tip="{Binding AdvisoryText}">
+                                                            <TextBlock Text="{Binding AdvisoryLabel}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BasisDangerBrush}"/>
+                                                        </Border>
+                                                        <Border HorizontalAlignment="Left" Margin="0,2,0,0" CornerRadius="999" Padding="8,2" BorderThickness="1" Background="#26F59E0B" BorderBrush="#80F59E0B"
+                                                                IsVisible="{Binding IsAdvisoryWarning}" ToolTip.Tip="{Binding AdvisoryText}">
+                                                            <TextBlock Text="{Binding AdvisoryLabel}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BasisWarningBrush}"/>
+                                                        </Border>
                                                         <Border HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding IsMounted}"
-                                                                Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="999" Padding="8,2">
+                                                                Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="999" Padding="8,2" ToolTip.Tip="{loc:Tr packages.tooltip.mounted}">
                                                             <TextBlock Text="{loc:Tr packages.badge.mounted}" FontSize="9" FontWeight="Bold"
                                                                        Foreground="{StaticResource BasisBlueBrush}"/>
                                                         </Border>
-                                                        <Border Classes="versionPill" HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding IsIncluded}">
+                                                        <Border Classes="versionPill" HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding IsIncluded}" ToolTip.Tip="{loc:Tr packages.tooltip.included}">
                                                             <TextBlock Text="{loc:Tr packages.badge.included}" FontSize="9" FontWeight="Bold" Classes="brand"/>
                                                         </Border>
                                                         <Border HorizontalAlignment="Left" Margin="0,2,0,0" IsVisible="{Binding HasBasisDevIssue}" ToolTip.Tip="{Binding BasisDev.IssueText}"
@@ -466,7 +600,7 @@
                                                         </Style>
                                                     </WrapPanel.Styles>
                                                     <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsAvailableToInstall}"
-                                                            Background="#12FFFFFF" BorderBrush="#26FFFFFF">
+                                                            Background="#12FFFFFF" BorderBrush="#26FFFFFF" ToolTip.Tip="{loc:Tr packages.tooltip.notInstalled}">
                                                         <TextBlock Text="{loc:Tr packages.state.notInstalled}" FontSize="10" Classes="dim"/>
                                                     </Border>
                                                     <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasInstalledVersion}"
@@ -476,16 +610,35 @@
                                                             <TextBlock Text="{Binding InstalledLabel}" FontSize="10" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center" MaxWidth="150" TextTrimming="CharacterEllipsis"/>
                                                         </StackPanel>
                                                     </Border>
-                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasCategory}">
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding UpdateAvailable}"
+                                                            Background="#26EF1237" BorderBrush="#80EF1237" ToolTip.Tip="{Binding UpdateTooltip}">
+                                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                                            <PathIcon Width="10" Height="10" Data="{StaticResource IconUpdate}" Foreground="{StaticResource BasisBrandHoverBrush}" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding UpdateBadge}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource BasisBrandHoverBrush}" VerticalAlignment="Center" MaxWidth="150" TextTrimming="CharacterEllipsis"/>
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasDependencyGaps}"
+                                                            Background="#26F59E0B" BorderBrush="#80F59E0B" ToolTip.Tip="{Binding DependencyGapText}">
+                                                        <TextBlock Text="{Binding DependencyGapLabel}" FontSize="10" Foreground="{StaticResource BasisWarningBrush}"/>
+                                                    </Border>
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasInstallWarning}"
+                                                            Background="#26F59E0B" BorderBrush="#80F59E0B" ToolTip.Tip="{Binding InstallWarningTooltip}">
+                                                        <TextBlock Text="{loc:Tr packages.compat.badge}" FontSize="10" Foreground="{StaticResource BasisWarningBrush}"/>
+                                                    </Border>
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasCategory}" ToolTip.Tip="{loc:Tr packages.tooltip.category}">
                                                         <TextBlock Text="{Binding Category}" FontSize="10" Classes="muted"/>
                                                     </Border>
                                                     <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsServerPackage}" Background="#269333EA" BorderBrush="#809333EA" ToolTip.Tip="{loc:Tr packages.badge.serverTip}"><TextBlock Text="{loc:Tr packages.badge.server}" FontSize="10" Foreground="{StaticResource BasisPurpleBrush}"/></Border>
-                                                    <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" IsVisible="{Binding HasStars}">
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding CheckWorks}" Background="#2622C55E" BorderBrush="#8022C55E" ToolTip.Tip="{Binding CheckTip}"><TextBlock Text="{Binding CheckLabel}" FontSize="10" Foreground="{StaticResource BasisSuccessBrush}"/></Border>
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding CheckWarns}" Background="#26F59E0B" BorderBrush="#80F59E0B" ToolTip.Tip="{Binding CheckTip}"><TextBlock Text="{Binding CheckLabel}" FontSize="10" Foreground="{StaticResource BasisWarningBrush}"/></Border>
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding CheckBreaks}" Background="#26EF1237" BorderBrush="#80EF1237" ToolTip.Tip="{Binding CheckTip}"><TextBlock Text="{Binding CheckLabel}" FontSize="10" Foreground="{StaticResource BasisDangerBrush}"/></Border>
+                                                    <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding CheckUnknown}" ToolTip.Tip="{Binding CheckTip}"><TextBlock Text="{Binding CheckLabel}" FontSize="10" Classes="muted"/></Border>
+                                                    <StackPanel Orientation="Horizontal" Spacing="3" VerticalAlignment="Center" IsVisible="{Binding HasStars}" ToolTip.Tip="{loc:Tr packages.tooltip.stars}">
                                                         <TextBlock Text="★" FontSize="10" Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
                                                         <TextBlock Text="{Binding StarsText}" FontSize="10" Classes="muted" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                     <Button Classes="link" VerticalAlignment="Center" IsVisible="{Binding HasLink}"
-                                                            ToolTip.Tip="{Binding Link}"
+                                                            ToolTip.Tip="{Binding LinkTooltip}"
                                                             Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
                                                             CommandParameter="{Binding Link}">
                                                         <PathIcon Width="14" Height="14" Data="{StaticResource IconOpenExternal}"/>
@@ -505,7 +658,13 @@
                 </Border>
 
                 <!-- Community from GitHub -->
-                <Border Classes="card" Padding="20,16" IsVisible="{Binding HasInstall}">
+                <Border Classes="card" Padding="20,16">
+                    <Border.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="HasInstall"/>
+                            <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
+                        </MultiBinding>
+                    </Border.IsVisible>
                     <StackPanel Spacing="10">
                         <TextBlock Text="{loc:Tr packages.header.community}" Classes="h3"/>
                         <TextBlock Classes="muted" FontSize="11" TextWrapping="Wrap"
@@ -555,35 +714,45 @@
                             <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,3,0,0">
                                 <TextBlock Text="{Binding Author, StringFormat='by {0}'}" Classes="muted" FontSize="12" IsVisible="{Binding HasAuthor}"/>
                                 <TextBlock Text="{Binding Owner}" Classes="dim" FontSize="12"/>
-                                <Border Classes="unofficialBadge" VerticalAlignment="Center" IsVisible="{Binding IsUnofficial}">
+                                <Border Classes="unofficialBadge" VerticalAlignment="Center" IsVisible="{Binding IsUnofficial}" ToolTip.Tip="{loc:Tr packages.tooltip.unofficial}">
                                     <TextBlock Text="{loc:Tr packages.badge.unofficial}" FontSize="9" FontWeight="Bold"
                                                Foreground="{StaticResource BasisWarningBrush}"/>
                                 </Border>
+                                <Border VerticalAlignment="Center" CornerRadius="999" Padding="8,2" BorderThickness="1" Background="#26EF1237" BorderBrush="#80EF1237"
+                                        IsVisible="{Binding IsPulled}" ToolTip.Tip="{Binding AdvisoryText}">
+                                    <TextBlock Text="{Binding AdvisoryLabel}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BasisDangerBrush}"/>
+                                </Border>
+                                <Border VerticalAlignment="Center" CornerRadius="999" Padding="8,2" BorderThickness="1" Background="#26F59E0B" BorderBrush="#80F59E0B"
+                                        IsVisible="{Binding IsAdvisoryWarning}" ToolTip.Tip="{Binding AdvisoryText}">
+                                    <TextBlock Text="{Binding AdvisoryLabel}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BasisWarningBrush}"/>
+                                </Border>
                                 <Border VerticalAlignment="Center" IsVisible="{Binding IsMounted}"
-                                        Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="999" Padding="8,2">
+                                        Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="999" Padding="8,2" ToolTip.Tip="{loc:Tr packages.tooltip.mounted}">
                                     <TextBlock Text="{loc:Tr packages.badge.mounted}" FontSize="9" FontWeight="Bold"
                                                Foreground="{StaticResource BasisBlueBrush}"/>
                                 </Border>
-                                <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsIncluded}">
+                                <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsIncluded}" ToolTip.Tip="{loc:Tr packages.tooltip.included}">
                                     <TextBlock Text="{loc:Tr packages.badge.included}" FontSize="9" FontWeight="Bold" Classes="brand"/>
                                 </Border>
-                                <Border VerticalAlignment="Center" IsVisible="{Binding HasBasisDevIssue}"
+                                <Border VerticalAlignment="Center" IsVisible="{Binding HasBasisDevIssue}" ToolTip.Tip="{Binding BasisDev.IssueText}"
                                         Background="#26F59E0B" BorderBrush="#80F59E0B" BorderThickness="1" CornerRadius="999" Padding="8,2">
                                     <TextBlock Text="{Binding BasisDevIssueLabel}" FontSize="9" FontWeight="Bold" Foreground="{StaticResource BasisWarningBrush}"/>
                                 </Border>
                             </StackPanel>
                         </StackPanel>
                         <Button Grid.Column="2" Classes="iconBtn" VerticalAlignment="Top"
-                                ToolTip.Tip="{loc:Tr packages.detail.close}"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.closeDetail}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).CloseDetailCommand}">
                             <PathIcon Width="15" Height="15" Data="{StaticResource IconClose}"/>
                         </Button>
                     </Grid>
 
                     <TextBlock Text="{Binding Description}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding ApiUpgradeText}" Classes="muted" FontSize="12" TextWrapping="Wrap"
+                               IsVisible="{Binding HasApiUpgrade}" ToolTip.Tip="{Binding ApiUpgradeDetails}"/>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Border Classes="versionPill"><TextBlock Text="{Binding Version, StringFormat='v{0}'}" FontSize="11" Classes="brand"/></Border>
+                        <Border Classes="versionPill" ToolTip.Tip="{loc:Tr packages.tooltip.registryVersion}"><TextBlock Text="{Binding Version, StringFormat='v{0}'}" FontSize="11" Classes="brand"/></Border>
                         <Border Classes="versionPill" IsVisible="{Binding HasInstalledVersion}"
                                 Background="#2622C55E" BorderBrush="#8022C55E" ToolTip.Tip="{Binding InstalledVersionText}">
                             <StackPanel Orientation="Horizontal" Spacing="5">
@@ -591,75 +760,129 @@
                                 <TextBlock Text="{Binding InstalledLabel}" FontSize="11" Foreground="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center" MaxWidth="300" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
                         </Border>
-                        <Border Classes="versionPill" IsVisible="{Binding HasLicense}">
+                        <Border Classes="versionPill" IsVisible="{Binding HasLicense}" ToolTip.Tip="{loc:Tr packages.tooltip.license}">
                             <StackPanel Orientation="Horizontal" Spacing="4">
                                 <PathIcon Width="11" Height="11" Data="{StaticResource IconLicense}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{Binding License}" FontSize="11" Classes="muted" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Border>
-                        <Border Classes="versionPill" IsVisible="{Binding HasUnity}"><TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" FontSize="11" Classes="muted"/></Border>
-                        <Border Classes="versionPill" IsVisible="{Binding HasCategory}"><TextBlock Text="{Binding Category}" FontSize="11" Classes="muted"/></Border>
+                        <Border Classes="versionPill" IsVisible="{Binding HasUnity}" ToolTip.Tip="{loc:Tr packages.tooltip.unityVersion}"><TextBlock Text="{Binding Unity, StringFormat='Unity {0}'}" FontSize="11" Classes="muted"/></Border>
+                        <Border Classes="versionPill" IsVisible="{Binding HasCategory}" ToolTip.Tip="{loc:Tr packages.tooltip.category}"><TextBlock Text="{Binding Category}" FontSize="11" Classes="muted"/></Border>
                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding IsServerPackage}" Background="#269333EA" BorderBrush="#809333EA" ToolTip.Tip="{loc:Tr packages.badge.serverTip}"><TextBlock Text="{loc:Tr packages.badge.server}" FontSize="11" Foreground="{StaticResource BasisPurpleBrush}"/></Border>
                     </StackPanel>
 
-                    <StackPanel Spacing="6" IsVisible="{Binding HasDependencies}">
+                    <StackPanel Spacing="6" IsVisible="{Binding HasCheck}">
+                        <TextBlock Text="{loc:Tr packages.detail.checks}" Classes="dim" FontSize="11" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding CheckDetail}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                        <ItemsControl ItemsSource="{Binding CheckIssueItems}" IsVisible="{Binding HasCheckIssues}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:PackageCheckIssueItem">
+                                    <Border Classes="glass" Padding="10,8" CornerRadius="8" Margin="0,0,0,6">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <Ellipse Grid.Column="0" Width="8" Height="8" Margin="0,5,8,0" VerticalAlignment="Top" Fill="{StaticResource BasisDangerBrush}" IsVisible="{Binding IsError}"/>
+                                            <Ellipse Grid.Column="0" Width="8" Height="8" Margin="0,5,8,0" VerticalAlignment="Top" Fill="{StaticResource BasisWarningBrush}" IsVisible="{Binding IsWarning}"/>
+                                            <Ellipse Grid.Column="0" Width="8" Height="8" Margin="0,5,8,0" VerticalAlignment="Top" Fill="{StaticResource BasisTextDimBrush}" IsVisible="{Binding IsInfo}"/>
+                                            <StackPanel Grid.Column="1" Spacing="3">
+                                                <TextBlock Text="{Binding Message}" FontSize="12" TextWrapping="Wrap"/>
+                                                <TextBlock Text="{Binding Location}" Classes="muted" FontSize="11" FontFamily="{StaticResource MonoFontFamily}" TextWrapping="Wrap" IsVisible="{Binding HasLocation}"/>
+                                                <TextBlock Text="{Binding Fix}" Classes="dim" FontSize="11" TextWrapping="Wrap" IsVisible="{Binding HasFix}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Text="{Binding MoreCheckIssuesText}" Classes="dim" FontSize="11" TextWrapping="Wrap" IsVisible="{Binding HasMoreCheckIssues}"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding #AdvancedToggle.IsChecked}">
+                            <Button Content="{loc:Tr packages.button.checkAgain}" FontSize="12" Padding="12,6" IsVisible="{Binding CanRemove}"
+                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).VerifyPackageCommand}" CommandParameter="{Binding}"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.checkAgain}"/>
+                            <Button Content="{loc:Tr packages.button.openCheckLog}" FontSize="12" Padding="12,6" IsVisible="{Binding HasCheckLog}"
+                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenCheckLogCommand}" CommandParameter="{Binding}"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.openCheckLog}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Spacing="6" IsVisible="{Binding HasDependencies}" ToolTip.Tip="{loc:Tr packages.tooltip.dependencies}">
                         <TextBlock Text="{loc:Tr packages.detail.dependencies}" Classes="dim" FontSize="11" FontWeight="Bold"/>
                         <TextBlock Text="{Binding DependencySummary}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                     </StackPanel>
 
-                    <StackPanel Spacing="6" IsVisible="{Binding HasGitUrl}">
-                        <TextBlock Text="{loc:Tr packages.detail.gitUrl}" Classes="dim" FontSize="11" FontWeight="Bold"/>
-                        <Border Classes="glass" Padding="10,8" CornerRadius="8">
-                            <TextBlock Text="{Binding GitUrl}" FontFamily="{StaticResource MonoFontFamily}" FontSize="11" Classes="muted" TextWrapping="Wrap"/>
-                        </Border>
-                    </StackPanel>
+                    <Border IsVisible="{Binding HasCompatibilityNote}" Background="#26F59E0B" BorderBrush="#80F59E0B" BorderThickness="1" CornerRadius="10" Padding="12,10">
+                        <TextBlock Text="{Binding CompatibilityNote}" FontSize="12" TextWrapping="Wrap" Foreground="{StaticResource BasisWarningBrush}"/>
+                    </Border>
 
-                    <StackPanel Spacing="6" IsVisible="{Binding HasBasisDev}">
-                        <TextBlock Text="{loc:Tr basisdev.detail.source}" Classes="dim" FontSize="11" FontWeight="Bold"/>
-                        <Border Classes="glass" Classes.edited="{Binding HasBasisDevIssue}" Padding="12,10" CornerRadius="8">
-                            <Panel DataContext="{Binding BasisDev}">
-                                <StackPanel Spacing="8" x:DataType="vm:BasisDevItem">
-                                    <TextBlock Text="{Binding SourceText}" FontSize="12" TextWrapping="Wrap"/>
-                                    <StackPanel Spacing="1" IsVisible="{Binding HasClone}">
-                                        <TextBlock Text="{loc:Tr basisdev.detail.clone}" Classes="dim" FontSize="10" FontWeight="Bold"/>
-                                        <TextBlock Text="{Binding CloneText}" Classes="muted" FontSize="11" TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                    <StackPanel Spacing="1" IsVisible="{Binding HasUpstream}">
-                                        <TextBlock Text="{loc:Tr basisdev.detail.upstream}" Classes="dim" FontSize="10" FontWeight="Bold"/>
-                                        <TextBlock Text="{Binding UpstreamText}" FontFamily="{StaticResource MonoFontFamily}" Classes="muted" FontSize="11" TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                    <StackPanel Spacing="1" IsVisible="{Binding HasComparison}">
-                                        <TextBlock Text="{loc:Tr basisdev.detail.compare}" Classes="dim" FontSize="10" FontWeight="Bold"/>
-                                        <TextBlock Text="{Binding ComparisonText}" Classes="muted" FontSize="11" TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding IssueText}" IsVisible="{Binding HasIssue}" FontSize="12" TextWrapping="Wrap"
-                                               Foreground="{StaticResource BasisWarningBrush}"/>
-                                    <ItemsControl ItemsSource="{Binding Choices}" IsVisible="{Binding HasChoices}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <WrapPanel/>
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate DataType="vm:BasisDevChoice">
-                                                <Button Margin="0,0,8,6" FontSize="12" Padding="12,6"
-                                                        Classes.primary="{Binding IsPrimary}" Classes.danger="{Binding IsDestructive}"
-                                                        Content="{Binding Label}" ToolTip.Tip="{Binding Tooltip}"
-                                                        Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RunBasisDevChoiceCommand}"
-                                                        CommandParameter="{Binding}"/>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                    <Border IsVisible="{Binding HasDependencyGaps}" Background="#26F59E0B" BorderBrush="#80F59E0B" BorderThickness="1" CornerRadius="10" Padding="12,10">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{Binding DependencyGapText}" FontSize="12" TextWrapping="Wrap" Foreground="{StaticResource BasisWarningBrush}"/>
+                            <Button HorizontalAlignment="Left" IsVisible="{Binding CanInstallMissing}" IsEnabled="{Binding IsIdle}"
+                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallMissingCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.installMissing}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr packages.button.installMissing}" VerticalAlignment="Center"/>
                                 </StackPanel>
-                            </Panel>
-                        </Border>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Spacing="16" IsVisible="{Binding #AdvancedToggle.IsChecked}">
+                        <StackPanel Spacing="6" IsVisible="{Binding HasGitUrl}">
+                            <TextBlock Text="{loc:Tr packages.detail.gitUrl}" Classes="dim" FontSize="11" FontWeight="Bold"/>
+                            <Border Classes="glass" Padding="10,8" CornerRadius="8" ToolTip.Tip="{loc:Tr packages.tooltip.gitUrl}">
+                                <TextBlock Text="{Binding GitUrl}" FontFamily="{StaticResource MonoFontFamily}" FontSize="11" Classes="muted" TextWrapping="Wrap"/>
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Spacing="6" IsVisible="{Binding HasBasisDev}">
+                            <TextBlock Text="{loc:Tr basisdev.detail.source}" Classes="dim" FontSize="11" FontWeight="Bold"/>
+                            <Border Classes="glass" Classes.edited="{Binding HasBasisDevIssue}" Padding="12,10" CornerRadius="8">
+                                <Panel DataContext="{Binding BasisDev}">
+                                    <StackPanel Spacing="8" x:DataType="vm:BasisDevItem">
+                                        <TextBlock Text="{Binding SourceText}" FontSize="12" TextWrapping="Wrap"/>
+                                        <StackPanel Spacing="1" IsVisible="{Binding HasClone}">
+                                            <TextBlock Text="{loc:Tr basisdev.detail.clone}" Classes="dim" FontSize="10" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding CloneText}" Classes="muted" FontSize="11" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <StackPanel Spacing="1" IsVisible="{Binding HasUpstream}">
+                                            <TextBlock Text="{loc:Tr basisdev.detail.upstream}" Classes="dim" FontSize="10" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding UpstreamText}" FontFamily="{StaticResource MonoFontFamily}" Classes="muted" FontSize="11" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <StackPanel Spacing="1" IsVisible="{Binding HasComparison}">
+                                            <TextBlock Text="{loc:Tr basisdev.detail.compare}" Classes="dim" FontSize="10" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding ComparisonText}" Classes="muted" FontSize="11" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding IssueText}" IsVisible="{Binding HasIssue}" FontSize="12" TextWrapping="Wrap"
+                                                   Foreground="{StaticResource BasisWarningBrush}"/>
+                                        <ItemsControl ItemsSource="{Binding Choices}" IsVisible="{Binding HasChoices}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate DataType="vm:BasisDevChoice">
+                                                    <Button Margin="0,0,8,6" FontSize="12" Padding="12,6"
+                                                            Classes.primary="{Binding IsPrimary}" Classes.danger="{Binding IsDestructive}"
+                                                            Content="{Binding Label}" ToolTip.Tip="{Binding Tooltip}"
+                                                            Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RunBasisDevChoiceCommand}"
+                                                            CommandParameter="{Binding}"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Panel>
+                            </Border>
+                        </StackPanel>
                     </StackPanel>
 
                     <StackPanel Spacing="8" Margin="0,4,0,0">
                         <!-- Locally mounted for editing: it's the local Packages/ folder, not the registry
                              git URL. The label flips to "Local edits" once the working clone is dirty. -->
                         <Border IsVisible="{Binding IsMounted}"
-                                Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="10" Padding="12,10">
+                                Background="#263B82F6" BorderBrush="#803B82F6" BorderThickness="1" CornerRadius="10" Padding="12,10"
+                                ToolTip.Tip="{loc:Tr packages.tooltip.mounted}">
                             <StackPanel Spacing="4">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <PathIcon Width="16" Height="16" Data="{StaticResource IconEdit}" Foreground="{StaticResource BasisBlueBrush}" VerticalAlignment="Center"/>
@@ -684,12 +907,12 @@
                                      Height="4" CornerRadius="2" Margin="0,-4,0,0"/>
                         <Button Classes="primary" HorizontalAlignment="Stretch"
                                 IsVisible="{Binding CanUpdate}" IsEnabled="{Binding IsIdle}"
-                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
-                                CommandParameter="{Binding Entry}"
+                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).UpdatePackageCommand}"
+                                CommandParameter="{Binding}"
                                 ToolTip.Tip="{loc:Tr packages.tooltip.update}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr packages.button.update}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding UpdateButtonLabel}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <Button HorizontalAlignment="Stretch"
@@ -702,59 +925,81 @@
                                 <TextBlock Text="{loc:Tr packages.button.chooseVersion}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <!-- Mount to edit: clone this git package into the project and swap the manifest to it. -->
-                        <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding CanMountToEdit}" IsEnabled="{Binding IsIdle}"
-                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).MountCommand}"
-                                CommandParameter="{Binding}"
-                                ToolTip.Tip="{loc:Tr develop.tooltip.mountToEdit}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconEdit}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr develop.button.mountToEdit}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <!-- Mounted-package actions: reveal the working clone, or turn edits into a PR. -->
-                        <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding IsMounted}"
-                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenFolderCommand}"
-                                CommandParameter="{Binding}"
-                                ToolTip.Tip="{loc:Tr packages.tooltip.openFolder}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr packages.button.openFolder}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding CanSubmitPr}" IsEnabled="{Binding IsIdle}"
-                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SubmitPrCommand}"
-                                CommandParameter="{Binding}"
-                                ToolTip.Tip="{loc:Tr develop.tooltip.submitPr}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr develop.button.submitPr}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding CanSendToBasis}"
-                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SendToBasisCommand}"
-                                CommandParameter="{Binding}"
-                                ToolTip.Tip="{loc:Tr packages.tooltip.sendToBasis}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconChanges}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr packages.button.sendToBasis}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <!-- Accidental edits made directly in Library/PackageCache → turn them into a PR. -->
-                        <Button Classes="primary" HorizontalAlignment="Stretch"
-                                IsVisible="{Binding HasDrift}" IsEnabled="{Binding IsIdle}"
-                                Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ReviewDriftCommand}"
-                                CommandParameter="{Binding}"
-                                ToolTip.Tip="{loc:Tr packages.tooltip.reviewDrift}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr packages.button.reviewDrift}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
+                        <StackPanel Spacing="8" IsVisible="{Binding #AdvancedToggle.IsChecked}">
+                            <!-- Mount to edit: clone this git package into the project and swap the manifest to it. -->
+                            <Button HorizontalAlignment="Stretch"
+                                    IsVisible="{Binding CanMountToEdit}" IsEnabled="{Binding IsIdle}"
+                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).MountCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="{loc:Tr develop.tooltip.mountToEdit}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconEdit}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr develop.button.mountToEdit}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <!-- Mounted-package actions: reveal the working clone, or turn edits into a PR. -->
+                            <Button HorizontalAlignment="Stretch"
+                                    IsVisible="{Binding IsMounted}"
+                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenFolderCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.openFolder}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr packages.button.openFolder}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button HorizontalAlignment="Stretch"
+                                    IsVisible="{Binding CanSubmitPr}" IsEnabled="{Binding IsIdle}"
+                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SubmitPrCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="{loc:Tr develop.tooltip.submitPr}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr develop.button.submitPr}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button HorizontalAlignment="Stretch"
+                                    IsVisible="{Binding CanShare}" IsEnabled="{Binding IsIdle}"
+                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ShareCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.share}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr packages.button.share}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button HorizontalAlignment="Stretch"
+                                    IsVisible="{Binding CanPublish}" IsEnabled="{Binding IsIdle}"
+                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).PublishCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.publish}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconTag}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr packages.button.publish}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button HorizontalAlignment="Stretch"
+                                    IsVisible="{Binding CanSendToBasis}"
+                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SendToBasisCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.sendToBasis}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconChanges}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr packages.button.sendToBasis}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <!-- Accidental edits made directly in Library/PackageCache → turn them into a PR. -->
+                            <Button Classes="primary" HorizontalAlignment="Stretch"
+                                    IsVisible="{Binding HasDrift}" IsEnabled="{Binding IsIdle}"
+                                    Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ReviewDriftCommand}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip.Tip="{loc:Tr packages.tooltip.reviewDrift}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{loc:Tr packages.button.reviewDrift}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                         <Button Classes="danger" HorizontalAlignment="Stretch"
                                 IsVisible="{Binding CanRemove}" IsEnabled="{Binding IsIdle}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RemoveCommand}"
@@ -769,7 +1014,7 @@
                                 IsVisible="{Binding HasLink}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).OpenLinkCommand}"
                                 CommandParameter="{Binding Link}"
-                                ToolTip.Tip="{Binding Link}">
+                                ToolTip.Tip="{Binding LinkTooltip}">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <PathIcon Width="13" Height="13" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr packages.detail.website}" VerticalAlignment="Center"/>

@@ -41,11 +41,23 @@ public static class Dialogs
         return owner is null ? null : await new PackageListPickerWindow(lists).ShowDialog<PackageList?>(owner);
     }
 
+    public static async Task<bool> ReviewPackageAsync(PackageReviewViewModel model)
+    {
+        var owner = Owner;
+        return owner is not null && await new PackageReviewWindow { DataContext = model }.ShowDialog<bool>(owner);
+    }
+
     /// <summary>A yes/no prompt; returns true only if the user chose Yes.</summary>
     public static async Task<bool> ConfirmAsync(string title, string message)
     {
         var owner = Owner;
         return owner is not null && await new ConfirmWindow(title, message).ShowDialog<bool>(owner);
+    }
+
+    public static async Task<bool> AskShowBackupAsync(string project, string size, string zip)
+    {
+        var owner = Owner;
+        return owner is not null && await new BackupDoneDialog(project, size, zip).ShowDialog<bool>(owner);
     }
 
     /// <summary>Shows the create-package-list dialog; returns the draft, or null if cancelled.</summary>
@@ -150,5 +162,41 @@ public static class Dialogs
     {
         var owner = Owner;
         return owner is null ? null : await new ProjectPartsWindow { DataContext = model }.ShowDialog<ProjectPartsChoice?>(owner);
+    }
+
+    public static async Task<bool> ReviewPackageUpdateAsync(PackageUpdateViewModel model)
+    {
+        var owner = Owner;
+        return owner is not null && await new PackageUpdateWindow(model).ShowDialog<bool>(owner);
+    }
+
+    public static async Task<SharePackageDraft?> SharePackageAsync(SharePackageViewModel model)
+    {
+        var owner = Owner;
+        return owner is null ? null : await new SharePackageWindow(model).ShowDialog<SharePackageDraft?>(owner);
+    }
+
+    public static async Task ShowLicensesAsync(LicensesViewModel model)
+    {
+        var owner = Owner;
+        if (owner is not null) await new LicensesWindow { DataContext = model }.ShowDialog(owner);
+    }
+
+    public static async Task ShowStorageAsync(ProjectStorageViewModel model)
+    {
+        var owner = Owner;
+        if (owner is not null) await new ProjectStorageWindow { DataContext = model }.ShowDialog(owner);
+    }
+
+    public static async Task<NewPackageDraft?> NewPackageAsync(NewPackageViewModel model)
+    {
+        var owner = Owner;
+        return owner is null ? null : await new NewPackageWindow(model).ShowDialog<NewPackageDraft?>(owner);
+    }
+
+    public static async Task<PublishDraft?> PublishPackageAsync(PublishPackageViewModel model)
+    {
+        var owner = Owner;
+        return owner is null ? null : await new PublishPackageWindow(model).ShowDialog<PublishDraft?>(owner);
     }
 }

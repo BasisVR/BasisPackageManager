@@ -995,7 +995,9 @@ public sealed class BasisUpdateService
     private static List<string> CandidateBranches(IReadOnlyDictionary<string, string> heads) =>
         OrderBranches(heads.Keys.Where(IsCandidateBranch)).Take(CandidateBranchLimit + 1).ToList();
 
-    private static bool IsCandidateBranch(string branch) => branch == BasisInstallService.DefaultBranch || IsLongTermSupport(branch);
+    private static bool IsCandidateBranch(string branch) => branch == BasisInstallService.DefaultBranch || IsLongTermSupport(branch) || IsExperimental(branch);
+
+    private static bool IsExperimental(string branch) => branch.StartsWith("experimental", StringComparison.OrdinalIgnoreCase);
 
     private static List<BasisLayout> CandidateLayouts(IEnumerable<string> tracked)
     {

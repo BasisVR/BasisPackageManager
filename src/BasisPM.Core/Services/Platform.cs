@@ -32,11 +32,11 @@ public static class Platform
 }
 
 /// <summary>A resolved "how to start this process" description — the pure output of the launcher decisions.</summary>
-public readonly record struct LaunchSpec(string FileName, IReadOnlyList<string> Arguments, bool UseShellExecute)
+public readonly record struct LaunchSpec(string FileName, IReadOnlyList<string> Arguments, bool UseShellExecute, string? RawArguments = null)
 {
     public ProcessStartInfo ToStartInfo()
     {
-        var psi = new ProcessStartInfo { FileName = FileName, UseShellExecute = UseShellExecute };
+        var psi = new ProcessStartInfo { FileName = FileName, UseShellExecute = UseShellExecute, Arguments = RawArguments ?? "" };
         foreach (var a in Arguments) psi.ArgumentList.Add(a);
         return psi;
     }
@@ -102,6 +102,80 @@ public static class AppLauncher
     {
         try { Process.Start(GuiAppSpec(Platform.Current, appPath, args).ToStartInfo()); return true; }
         catch (Exception ex) { DiagnosticLog.Write($"Launching GUI application {appPath}", ex); return false; }
+    }
+}
+
+public static class FileReveal
+{
+    private const string FileManager = "org.freedesktop.FileManager1";
+    private const string FileManagerPath = "/org/freedesktop/FileManager1";
+
+    public static IReadOnlyList<LaunchSpec> Specs(OSPlatform os, string path)
+    {
+        if (os == OSPlatform.Windows) return new[] { new LaunchSpec("explorer.exe", Array.Empty<string>(), UseShellExecute: true, RawArguments: $"/select,\"{path}\"") };
+        if (os == OSPlatform.OSX) return new[] { new LaunchSpec("open", new[] { "-R", path }, UseShellExecute: false) };
+        var uri = "file://" + string.Join('/', path.Split('/').Select(Uri.EscapeDataString));
+        return new[]
+        {
+            new LaunchSpec("dbus-send", new[] { "--session", "--print-reply", "--dest=" + FileManager, "--type=method_call", FileManagerPath, FileManager + ".ShowItems", "array:string:" + uri, "string:" }, UseShellExecute: false),
+            new LaunchSpec("gdbus", new[] { "call", "--session", "--dest", FileManager, "--object-path", FileManagerPath, "--method", FileManager + ".ShowItems", $"['{uri}']", "''" }, UseShellExecute: false),
+        };
+    }
+
+    public static async Task<bool> RevealAsync(string path)
+    {
+        try
+        {
+            var full = Path.GetFullPath(path);
+            if (File.Exists(full) || Directory.Exists(full))
+                foreach (var spec in Specs(Platform.Current, full))
+                {
+                    var program = spec.UseShellExecute ? spec.FileName : ExecutableFinder.Locate(spec.FileName);
+                    if (program is null) continue;
+                    if (await TryRunAsync(spec with { FileName = program })) return true;
+                    break;
+                }
+            var folder = Path.GetDirectoryName(full);
+            if (folder is null || !Directory.Exists(folder)) return false;
+            Process.Start(new ProcessStartInfo(folder) { UseShellExecute = true })?.Dispose();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write($"Showing {path} in the file manager", ex);
+            return false;
+        }
+    }
+
+    private static async Task<bool> TryRunAsync(LaunchSpec spec)
+    {
+        try
+        {
+            var psi = spec.ToStartInfo();
+            if (spec.UseShellExecute)
+            {
+                Process.Start(psi)?.Dispose();
+                return true;
+            }
+            psi.RedirectStandardOutput = psi.RedirectStandardError = true;
+            using var process = Process.Start(psi);
+            if (process is null) return false;
+            var drained = Task.WhenAll(process.StandardOutput.ReadToEndAsync(), process.StandardError.ReadToEndAsync());
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            try { await process.WaitForExitAsync(timeout.Token); }
+            catch (OperationCanceledException)
+            {
+                process.Kill();
+                return false;
+            }
+            await drained;
+            return process.ExitCode == 0;
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write($"Running {spec.FileName} to show a file", ex);
+            return false;
+        }
     }
 }
 

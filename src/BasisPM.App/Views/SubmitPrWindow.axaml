@@ -30,7 +30,7 @@
                                 <DataTemplate x:DataType="vm:PrChangeItem">
                                     <Button Classes="fileRow" Classes.selected="{Binding IsSelected}"
                                             Command="{Binding #Root.((vm:SubmitPrViewModel)DataContext).SelectFileCommand}"
-                                            CommandParameter="{Binding}" ToolTip.Tip="{Binding DisplayPath}">
+                                            CommandParameter="{Binding}" ToolTip.Tip="{Binding RowTooltip}">
                                         <Grid ColumnDefinitions="18,*">
                                             <TextBlock Text="{Binding KindLetter}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12" FontWeight="Bold"
                                                        Classes.kindA="{Binding IsAdded}" Classes.kindD="{Binding IsDeleted}" Classes.kindM="{Binding IsModified}"

@@ -12,16 +12,33 @@ namespace BasisPM.App.Services;
 public static class SingleInstance
 {
     private const string MutexName = @"Local\BasisPackageManager.SingleInstance";
-    private const string PipeName = "BasisPackageManager.DeepLink";
+    private const string LockFileName = "instance.lock";
+    private static readonly string PipeName = "BasisPackageManager.DeepLink" + (OperatingSystem.IsLinux() ? "." + Environment.UserName : "");
 
     private static Mutex? _mutex;
+    private static FileStream? _lock;
 
     /// <summary>True if this process is the first/primary instance; false if another is already running.</summary>
     public static bool TryBecomePrimary()
     {
+        if (!OperatingSystem.IsWindows() && TryLockFile() is { } primary) return primary;
         _mutex = new Mutex(initiallyOwned: true, MutexName, out var createdNew);
         return createdNew;
     }
+
+    private static bool? TryLockFile()
+    {
+        try
+        {
+            Directory.CreateDirectory(AppDataPaths.LocalRoot);
+            _lock = new FileStream(Path.Combine(AppDataPaths.LocalRoot, LockFileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+            return true;
+        }
+        catch (IOException ex) when (IsHeldByAnotherProcess(ex)) { return false; }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write("Locking the single-instance file", ex); return null; }
+    }
+
+    public static bool IsHeldByAnotherProcess(IOException ex) => ex is not FileNotFoundException and not DirectoryNotFoundException && ex.HResult is 11 or 35;
 
     [DllImport("user32.dll")]
     private static extern bool AllowSetForegroundWindow(int processId);

@@ -22,6 +22,7 @@ public sealed class PrChangeItem : ObservableObject
 
     public GitFileChange Change { get; }
     public string DisplayPath => Change.Path;
+    public string RowTooltip => L.Tr("dialog.submitPr.tooltip.fileRow", DisplayPath);
     public bool IsAdded => Change.Kind is GitChangeKind.Added or GitChangeKind.Untracked;
     public bool IsDeleted => Change.Kind == GitChangeKind.Deleted;
     public bool IsModified => !IsAdded && !IsDeleted;

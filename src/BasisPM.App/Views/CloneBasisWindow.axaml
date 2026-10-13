@@ -20,7 +20,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="vm:PartOption">
                         <Border Padding="14,10" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
-                            <CheckBox IsChecked="{Binding IsIncluded}">
+                            <CheckBox IsChecked="{Binding IsIncluded}" ToolTip.Tip="{loc:Tr dialog.cloneBasis.tooltip.part}">
                                 <StackPanel Spacing="2">
                                     <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
                                     <TextBlock Text="{Binding Location}" Classes="dim" FontSize="11" IsVisible="{Binding ShowsLocation}"/>

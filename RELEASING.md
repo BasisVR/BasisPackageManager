@@ -198,6 +198,12 @@ runs `vpk pack … --signAppIdentity … --signInstallIdentity … --notaryProfi
 Velopack signs, notarizes and staples automatically. The hardened-runtime entitlements a .NET
 app needs are in [`build/entitlements.plist`](build/entitlements.plist).
 
+The bundle's `Info.plist` comes from [`build/macos/Info.plist`](build/macos/Info.plist), with the
+version filled in at pack time. It registers the `basispm://` link scheme (Velopack has no option
+for that) and the icon [`build/macos/BasisPM.icns`](build/macos/BasisPM.icns). Keep its
+`CFBundleIdentifier` as `com.BasisPackageManager.BasisPackageManager`: macOS treats a bundle with a
+new identifier as a different app. The AppImage icon is [`build/linux/BasisPM.png`](build/linux/BasisPM.png).
+
 ## Cost summary
 
 | Platform | What | Cost |
@@ -207,4 +213,5 @@ app needs are in [`build/entitlements.plist`](build/entitlements.plist).
 | Linux    | — | free |
 
 Windows is signed through SignPath at no cost. macOS can keep shipping unsigned for now (Mac users
-right-click → Open the first time); add Apple's $99/yr once Mac matters enough to remove that prompt.
+allow it once under System Settings → Privacy & Security → Open Anyway); add Apple's $99/yr once Mac
+matters enough to remove that step.

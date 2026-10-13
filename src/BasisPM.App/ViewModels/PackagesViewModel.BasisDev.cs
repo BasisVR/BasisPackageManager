@@ -22,7 +22,7 @@ public sealed partial class PackagesViewModel
     private RelayCommand<BasisDevItem>? _openBasisDevFolderCommand;
     private RelayCommand<PackageRow>? _sendToBasisCommand;
 
-    private BasisDevService BasisDev => _basisDevService ??= new BasisDevService(_gitService, _projectService, _mountRegistry, _mountService);
+    private BasisDevService BasisDev => _basisDevService ??= new BasisDevService(_gitService, _projectService, _mountRegistry, _mountService, Updates);
 
     public ObservableCollection<BasisDevItem> BasisDevIssues { get; } = new();
     public bool HasBasisDevIssues => BasisDevIssues.Count > 0 || _basisDevStale.Count > 0;
@@ -108,6 +108,9 @@ public sealed partial class PackagesViewModel
         OnPropertyChanged(nameof(CanFixBasisDevRecords));
         OnPropertyChanged(nameof(BasisDevSummary));
         OnPropertyChanged(nameof(BasisDevStaleText));
+        OnPropertyChanged(nameof(CanRestoreAll));
+        OnPropertyChanged(nameof(RestorableCount));
+        OnPropertyChanged(nameof(RestoreAllLabel));
     }
 
     private async Task RunBasisDevChoiceAsync(BasisDevChoice? choice)
@@ -127,6 +130,7 @@ public sealed partial class PackagesViewModel
             try
             {
                 void Progress(string line) => Avalonia.Threading.Dispatcher.UIThread.Post(() => SetStatus(line, StatusKind.Info, install.DisplayName));
+                BasisDev.ApproveUpdate = choice.Action == BasisDevAction.Switch ? ListedReview(install) : null;
                 var result = await BasisDev.ApplyAsync(install, id, choice.Action, force: false, Progress);
                 if (!result.Ok && result.NeedsForce)
                 {
@@ -154,7 +158,11 @@ public sealed partial class PackagesViewModel
                 DiagnosticLog.Write($"Reconciling {id}", ex);
                 SetStatus(L.Tr("basisdev.status.failed", id, ex.Message), StatusKind.Error, install.DisplayName, Retry, key);
             }
-            finally { IsBusy = false; }
+            finally
+            {
+                BasisDev.ApproveUpdate = null;
+                IsBusy = false;
+            }
         });
 
     private async Task FixBasisDevRecordsAsync()
@@ -202,6 +210,7 @@ public sealed partial class PackagesViewModel
         BasisDevAction.Ignore => L.Tr("basisdev.status.ignored", id),
         BasisDevAction.Unignore => L.Tr("basisdev.status.unignored", id),
         BasisDevAction.Move => L.Tr("basisdev.status.moved", id),
+        BasisDevAction.Switch => L.Tr("basisdev.status.switched", id),
         _ => L.Tr("basisdev.status.recloned", id),
     };
 }

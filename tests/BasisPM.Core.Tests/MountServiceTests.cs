@@ -67,7 +67,7 @@ public sealed class MountServiceTests
         var service = new MountService(new GitService(), new UnityProjectService(), registry);
         var install = new BasisInstall { RepoRoot = t.Path, UnityProjectPath = project, Name = "Basis" };
 
-        var result = await service.SwapBackAsync(install, "com.x");
+        var result = await service.UnmountAsync(install, "com.x", restoreManifest: true);
 
         Assert.False(result.Ok);
         Assert.True(File.Exists(package));
@@ -83,7 +83,7 @@ public sealed class MountServiceTests
 
         using (new FileStream(t.Combine("Basis/Packages/com.x/Plugins/steam_api64.dll"), FileMode.Open, FileAccess.Read, FileShare.Read))
         {
-            var result = await service.SwapBackAsync(install, "com.x");
+            var result = await service.UnmountAsync(install, "com.x", restoreManifest: true);
             Assert.False(result.Ok);
             Assert.Equal($"Couldn't delete {clone}: steam_api64.dll is in use by another program, usually Unity. Close it, then try again.", result.Error);
         }
@@ -124,13 +124,13 @@ public sealed class MountServiceTests
 
         using (new FileStream(t.Combine("Basis/Packages/com.x/Plugins/steam_api64.dll"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
         {
-            var failed = await service.SwapBackAsync(install, "com.x");
+            var failed = await service.UnmountAsync(install, "com.x", restoreManifest: true);
             Assert.False(failed.Ok);
             Assert.StartsWith($"Restored the manifest, but couldn't delete {clone}", failed.Error);
             Assert.True(MountService.IsWorkingClone(clone));
         }
 
-        var result = await service.SwapBackAsync(install, "com.x");
+        var result = await service.UnmountAsync(install, "com.x", restoreManifest: true);
         Assert.True(result.Ok);
         Assert.False(Directory.Exists(clone));
         Assert.Contains("https://github.com/o/r.git", File.ReadAllText(manifest));

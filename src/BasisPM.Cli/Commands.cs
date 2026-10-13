@@ -84,11 +84,44 @@ internal sealed partial class ConsoleApplication
         },
         new()
         {
+            Name = "sync", Group = ProjectsGroup,
+            Summary = "Pull your team's commits, then restore packages",
+            Usage = new[] { "sync [--yes]" },
+            Details = "Pulls the current branch from its own remote (fast-forward only, so your commits and edits are never rewritten), then clones the packages "
+                + "Packages/basispackages.json lists that are missing and moves clones to the listed versions, like 'restore'. Basis itself isn't touched; use 'update-basis' for that.",
+            Options = new[] { new CliOption("--yes", "Install listed packages that need review without asking", Short: "-y") },
+            SeeAlso = new[] { "restore", "update-basis" }, Run = SyncProjectAsync,
+        },
+        new()
+        {
             Name = "backup", Group = ProjectsGroup, Summary = "Zip the project's Assets, Packages and settings",
             Usage = new[] { "backup [--to <folder>]" },
             Details = "Library and the other caches Unity rebuilds are left out, which keeps backups small. The zip goes into a BasisBackups folder next to the clone unless you pass --to.",
             Options = new[] { new CliOption("--to", "Folder to write the zip to", "<folder>", ValueKind: ArgKind.Path) },
             Run = BackupAsync,
+        },
+        new()
+        {
+            Name = "storage", Group = ProjectsGroup, Aliases = new[] { "disk" }, Json = true,
+            Summary = "Show how much disk space the project uses",
+            Usage = new[] { "storage" },
+            Details = "Measures the whole project and splits out Unity's Library (and its PackageCache), Temp, Logs and obj folders, the Basis Server build output "
+                + "and each .basisdev clone, and says which clones Unity doesn't load. It also shows the shared download cache.",
+            SeeAlso = new[] { "clean" }, Run = StorageAsync,
+        },
+        new()
+        {
+            Name = "clean", Group = ProjectsGroup,
+            Summary = "Free disk space used by Library, Temp, logs or clones",
+            Usage = new[] { "clean library|temp|logs|clones|cache [--yes]" },
+            Details = "library deletes Unity's Library folder; Unity rebuilds it the next time it opens the project, which can take a long time. temp deletes Unity's Temp folder. "
+                + "Both refuse while Unity has the project open. logs deletes the project's log files, leaving any that are in use. clones removes .basisdev clones Unity "
+                + "doesn't load, as long as they have no uncommitted or unpushed work and aren't listed in Packages/basispackages.json. cache empties the shared download "
+                + "cache that makes new clones faster; it isn't tied to a project.",
+            Verbs = new() { ["library"] = Array.Empty<ArgKind>(), ["temp"] = Array.Empty<ArgKind>(), ["logs"] = Array.Empty<ArgKind>(), ["clones"] = Array.Empty<ArgKind>(), ["cache"] = Array.Empty<ArgKind>() },
+            Options = new[] { Yes },
+            Examples = new[] { new CliExample("clean library --yes", "Delete Library so Unity rebuilds it"), new CliExample("clean clones", "Remove clones Unity doesn't use") },
+            SeeAlso = new[] { "storage" }, Run = CleanAsync,
         },
         new()
         {
@@ -193,14 +226,17 @@ internal sealed partial class ConsoleApplication
         {
             Name = "install-package", Group = PackagesGroup, Aliases = new[] { "install", "add" },
             Summary = "Install registry packages and their dependencies",
-            Usage = new[] { "install-package <package-id>... [--version <ref>] [--yes]" },
-            Details = "Each package is cloned into the project as an editable working copy, pinned to its newest stable release, and its registry dependencies are added to "
-                + "manifest.json. Without git it becomes a manifest dependency instead. Installing a package that is already there moves it to the newest release, or to the "
-                + "--version you name. Packages that ship with Basis are skipped.",
+            Usage = new[] { "install-package <package-id>... [--version <ref>] [--no-deps] [--yes]" },
+            Details = "Each package is cloned into the project as an editable working copy, pinned to its newest stable release that works with the project's Unity and Basis, "
+                + "and its registry dependencies are added to manifest.json. Packages its package.json needs (dependencies, vpmDependencies or gitDependencies) that the project "
+                + "doesn't have are installed after it unless you pass --no-deps. Without git it becomes a manifest dependency instead. Installing a package that is already there "
+                + "moves its working copy to the newest release, or to the --version you name, in place: your edits are kept when they don't clash. Packages that ship with Basis are skipped. A package from a catalog you added, or a version the Basis registry hasn't checked, is "
+                + "checked for risky code and shown to you before Unity can load it. Packages the registry has pulled are refused.",
             Options = new[]
             {
                 new CliOption("--version", "A release tag, branch or commit; 'latest' is the newest release, 'default' the default branch", "<ref>"),
-                new CliOption("--yes", "Replace a working copy that has local edits without asking", Short: "-y"),
+                new CliOption("--no-deps", "Don't install the packages its package.json needs"),
+                new CliOption("--yes", "Replace a working copy whose edits clash with the update, or install a package that needs review, without asking", Short: "-y"),
             },
             Args = new[] { ArgKind.CatalogPackage }, RepeatLastArg = true,
             Examples = new[] { new CliExample("install-package com.example.tools", "Install the newest release"), new CliExample("install-package com.example.tools --version v2.1.0", "Install or switch to a specific release") },
@@ -208,14 +244,73 @@ internal sealed partial class ConsoleApplication
         },
         new()
         {
+            Name = "verify", Group = PackagesGroup, Aliases = new[] { "verify-packages" }, Json = true,
+            Summary = "Check packages for conflicts and compile the project",
+            Usage = new[] { "verify [<package-id>...] [--no-compile] [--batch|--open-editor] [--upgrade-apis] [--timeout <minutes>] [--record <file>]" },
+            Details = "Looks for problems Unity hits with the project's packages: types, namespaces, assemblies, DLLs or GUIDs that clash, package.json mistakes, "
+                + "scripts Unity won't compile and dependencies it can't find. Then it compiles the project with its own Unity version: in batch mode when Unity is "
+                + "closed, or by reading the result of the open editor's next recompile. Naming packages limits the report to them and the problems they cause. "
+                + "Results are saved, so the app shows them too and the next run marks anything new. Exits with code 1 when it finds an error or can't compile. "
+                + "--record adds the results to a registry checks file under the project's Basis branch.",
+            Options = new[]
+            {
+                new CliOption("--no-compile", "Only look for conflicts and package problems"),
+                new CliOption("--batch", "Compile in batch mode (Unity must be closed)"),
+                new CliOption("--open-editor", "Read the result of the open editor's next recompile"),
+                new CliOption("--upgrade-apis", "Rename obsolete Unity APIs in .basisdev clones, then compile again"),
+                new CliOption("--timeout", "Minutes to wait for Unity (default 60)", "<minutes>"),
+                new CliOption("--record", "Add the results to a registry checks file", "<file>", ValueKind: ArgKind.Path),
+            },
+            Args = new[] { ArgKind.InstalledPackage }, RepeatLastArg = true,
+            Examples = new[]
+            {
+                new CliExample("verify", "Check every package, then compile the project"),
+                new CliExample("verify com.basis.steamlobby", "Report only on one package"),
+                new CliExample("verify --no-compile", "Look for conflicts without starting Unity"),
+            },
+            SeeAlso = new[] { "check-package", "check-registry", "install-package" },
+            Run = VerifyAsync,
+        },
+        new()
+        {
+            Name = "check-package", Group = PackagesGroup, Json = true,
+            Summary = "Check a package folder for Unity package problems",
+            Usage = new[] { "check-package <folder>" },
+            Details = "For package authors: checks package.json, assembly definitions, namespaces and the folder layout, and, when a project is picked, conflicts "
+                + "with the packages already in it. Nothing is installed or compiled. Exits with code 1 when it finds an error.",
+            Args = new[] { ArgKind.Path },
+            SeeAlso = new[] { "verify" },
+            Run = CheckPackageAsync,
+        },
+        new()
+        {
+            Name = "check-registry", Group = PackagesGroup,
+            Summary = "Install and check every registry package in turn",
+            Usage = new[] { "check-registry [<package-id>...] [--record <file>] [--no-compile] [--yes]" },
+            Details = "For registry maintainers, on a spare clone of Basis: installs each registry package (or the ones you name) into the project, checks it like "
+                + "'verify' does, then puts the project's package files back. --record saves each result in a registry checks file under the project's Basis "
+                + "branch, which is how basisvr.org/packages/checks.json is made. Exits with code 1 when a package couldn't be checked.",
+            Options = new[]
+            {
+                new CliOption("--record", "Add the results to a registry checks file", "<file>", ValueKind: ArgKind.Path),
+                new CliOption("--no-compile", "Only look for conflicts and package problems"),
+                Yes,
+            },
+            Args = new[] { ArgKind.CatalogPackage }, RepeatLastArg = true,
+            SeeAlso = new[] { "verify" },
+            Run = CheckRegistryAsync,
+        },
+        new()
+        {
             Name = "remove-package", Group = PackagesGroup, Aliases = new[] { "uninstall", "remove" },
             Summary = "Remove packages you added on top of Basis",
             Usage = new[] { "remove-package <package-id>... [--yes] [--force]" },
-            Details = "Deletes the package's working copy and its manifest.json line, and its Basis Server side when it has one. Asks first when the working copy has uncommitted edits or unpushed commits.",
+            Details = "Deletes the package's working copy and its manifest.json line, and its Basis Server side when it has one. Asks first when other packages in the project need it, "
+                + "and when the working copy has uncommitted edits or unpushed commits.",
             Options = new[]
             {
                 new CliOption("--yes", "Discard local edits in the working copy without asking", Short: "-y"),
-                new CliOption("--force", "Remove a manifest.json line even when git history can't show whether Basis needs it"),
+                new CliOption("--force", "Remove it even when other packages need it, or when git history can't show whether Basis needs its manifest.json line"),
             },
             Args = new[] { ArgKind.InstalledPackage }, RepeatLastArg = true, Run = RemovePackageAsync,
         },
@@ -223,18 +318,42 @@ internal sealed partial class ConsoleApplication
         {
             Name = "update-packages", Group = PackagesGroup, Aliases = new[] { "upgrade" },
             Summary = "Move installed packages to their newest release",
-            Usage = new[] { "update-packages [package-id]... [--dry-run] [--yes]" },
-            Details = "Without ids it updates every registry package in the project. Working copies with local edits are skipped, never discarded. --dry-run lists what would change.",
-            Options = new[] { new CliOption("--dry-run", "List the updates without installing them"), Yes },
+            Usage = new[] { "update-packages [package-id]... [--dry-run] [--notes] [--yes]" },
+            Details = "Without ids it checks every git package in the project. A package on a release moves to the newest release that works with the project's Unity and "
+                + "Basis; one on a branch picks up that branch's new commits. Working copies are moved in place, so edits and commits are kept; when they clash with the update "
+                + "the package is left as it was and the clashing files are listed. --dry-run lists what would change and --notes adds each update's release notes.",
+            Options = new[] { new CliOption("--dry-run", "List the updates without installing them"), new CliOption("--notes", "Show the release notes of each update"), Yes },
             Args = new[] { ArgKind.InstalledPackage }, RepeatLastArg = true, Run = UpdatePackagesAsync,
         },
         new()
         {
+            Name = "release-notes", Group = PackagesGroup, Aliases = new[] { "whats-new" }, Json = true,
+            Summary = "Show what changed in a package's next update",
+            Usage = new[] { "release-notes <package-id> [--to <ref>]" },
+            Details = "Lists the GitHub release notes and the commits between the installed version and the update that's available, or the --to version you name.",
+            Options = new[] { new CliOption("--to", "Show the changes up to this release, branch or commit", "<ref>") },
+            Args = new[] { ArgKind.InstalledPackage },
+            Examples = new[] { new CliExample("release-notes com.example.tools", "What the next update brings"), new CliExample("release-notes com.example.tools --to v2.0.0", "Everything up to a release") },
+            SeeAlso = new[] { "update-packages", "versions" }, Run = ReleaseNotesAsync,
+        },
+        new()
+        {
+            Name = "restore", Group = PackagesGroup, Aliases = new[] { "restore-packages" },
+            Summary = "Clone the packages basispackages.json lists",
+            Usage = new[] { "restore [--no-switch] [--yes]" },
+            Details = "Clones every package Packages/basispackages.json lists that's missing from .basisdev, at the commit it lists, and moves existing clones to the listed "
+                + "version when a teammate changed it (clones with clashing edits are left alone). Run it after cloning a project or in CI. Exits with code 1 when anything couldn't be restored.",
+            Options = new[] { new CliOption("--no-switch", "Only clone missing packages; leave existing clones where they are"), new CliOption("--yes", "Install listed packages that need review without asking", Short: "-y") },
+            SeeAlso = new[] { "sync", "basisdev" }, Run = RestorePackagesAsync,
+        },
+        new()
+        {
             Name = "add-git", Group = PackagesGroup, Summary = "Add a package straight from a GitHub repository",
-            Usage = new[] { "add-git <github-url|owner/repo> [--force]" },
+            Usage = new[] { "add-git <github-url|owner/repo> [--force] [--yes]" },
             Details = "Takes a repository URL or owner/repo, with an optional folder (?path=Packages/x, or a /tree/<branch>/<folder> URL) and #ref. It reads the package.json there, "
-                + "adds the package to manifest.json and pulls in its registry dependencies. A package that ships with Basis is only replaced with --force.",
-            Options = new[] { new CliOption("--force", "Replace a package that ships with Basis") },
+                + "clones the package into .basisdev and pulls in its registry dependencies. A package that isn't in the Basis registry is checked for risky code and "
+                + "shown to you before manifest.json points at it. A package that ships with Basis is only replaced with --force.",
+            Options = new[] { new CliOption("--force", "Replace a package that ships with Basis"), new CliOption("--yes", "Install without asking, even when the package needs review", Short: "-y") },
             Examples = new[] { new CliExample("add-git owner/repo#v1.2.0", "Add the package at the repository root, pinned to a tag"), new CliExample("add-git \"https://github.com/owner/repo.git?path=Packages/com.owner.tool\"", "Add a package from a subfolder") },
             Run = AddGitAsync,
         },
@@ -247,7 +366,23 @@ internal sealed partial class ConsoleApplication
         {
             Name = "install-package-list", Group = PackagesGroup, Aliases = new[] { "install-list" },
             Summary = "Add every package in a package list or .json file",
-            Usage = new[] { "install-package-list <list-id|file.json>" }, Args = new[] { ArgKind.PackageList }, Run = InstallPackageListAsync,
+            Usage = new[] { "install-package-list <list-id|file.json> [--yes]" }, Args = new[] { ArgKind.PackageList }, Run = InstallPackageListAsync,
+            Details = "Registry packages are added from the registry's own repository, whatever URL the list gives. A listed package that isn't in the registry is cloned, "
+                + "checked for risky code and shown to you before Unity can load it.",
+            Options = new[] { new CliOption("--yes", "Install packages that need review without asking", Short: "-y") },
+        },
+        new()
+        {
+            Name = "scan", Group = PackagesGroup, Json = true,
+            Summary = "Check a package folder or git URL for risky code",
+            Usage = new[] { "scan <folder|git-url> [--strict]" },
+            Details = "Looks through a package without running it: editor code that runs by itself, programs it starts, code it loads at run time, compiled and native "
+                + "libraries, saved-login paths and chat webhooks. A git URL is downloaded to a temporary folder first. It finds common warning signs; it can't prove a "
+                + "package is safe.",
+            Options = new[] { new CliOption("--strict", "Exit with code 1 when anything high-risk is found") },
+            Args = new[] { ArgKind.Path },
+            Examples = new[] { new CliExample("scan https://github.com/owner/repo.git#v1.2.0", "Check a release before adding it to the registry"), new CliExample("scan ./Packages/com.example.tool --strict", "Check a local package and fail on anything high-risk") },
+            SeeAlso = new[] { "add-git", "install-package" }, Run = ScanPackageAsync,
         },
         new()
         {
@@ -261,23 +396,98 @@ internal sealed partial class ConsoleApplication
         },
         new()
         {
+            Name = "licenses", Group = PackagesGroup, Aliases = new[] { "notices" }, Json = true,
+            Summary = "List package licenses and save third-party notices",
+            Usage = new[] { "licenses [--output <file>] [--include-unity]" },
+            Details = "Lists every package Unity loads in the project with its license, and flags packages that state no license or use a copyleft license "
+                + "(GPL, LGPL, AGPL, MPL, EPL or CC-BY-SA). --output writes third-party notices in Markdown with each package's full license text, ready to ship with a build.",
+            Options = new[] { new CliOption("--output", "Write the notices (Markdown) to this file", "<file>", ValueKind: ArgKind.Path), new CliOption("--include-unity", "Also list Unity's own com.unity.* packages") },
+            Examples = new[] { new CliExample("licenses --output THIRD-PARTY-NOTICES.md", "Save notices to ship with a build") },
+            Run = LicensesAsync,
+        },
+        new()
+        {
             Name = "basisdev", Group = DevGroup, Aliases = new[] { "dev-packages" },
             Summary = "Show and reconcile the development clones",
-            Usage = new[] { "basisdev [--all]", "basisdev reconcile", "basisdev record|forget|use|release|restore|reclone|ignore|unignore|move <package-id> [--force]" },
+            Usage = new[] { "basisdev [--all]", "basisdev reconcile", "basisdev record|forget|use|release|restore|reclone|ignore|unignore|move|switch <package-id> [--force]", "basisdev share <package-id> [--branch <name>] [--message <text>]" },
             Details = "Lists the development clones with their recorded upstream and anything that needs reconciling (--all lists every package). Installed packages are cloned into "
                 + ".basisdev and listed in Packages/basispackages.json, which the project can commit even when .basisdev is ignored. When the Basis repo has its own copy "
                 + "of a cloned package, it compares the two. 'reconcile' records clones without a sidecar or basispackages.json entry and forgets stale mount records. 'use' points manifest.json at a clone that "
                 + "isn't in use; 'release' deletes a clone (the project's own copy or manifest source stays); 'restore' and 'reclone' fix a missing clone, such as one listed in "
                 + "basispackages.json on a fresh checkout; 'ignore' stops flagging a clone that isn't used because the project, such as the Basis repo, handles the package itself; "
-                + "'move' moves an older clone from Packages into .basisdev.",
-            Options = new[] { new CliOption("--all", "List every package, not only clones and problems"), new CliOption("--force", "Go ahead even when that discards local work") },
+                + "'move' moves an older clone from Packages into .basisdev; 'switch' moves a clone to the version basispackages.json lists when a teammate changed it; "
+                + "'share' commits your edits, pushes them to your fork on GitHub (or a branch you can push to) and points basispackages.json at that branch so teammates get them.",
+            Options = new[]
+            {
+                new CliOption("--all", "List every package, not only clones and problems"), new CliOption("--force", "Go ahead even when that discards local work"),
+                new CliOption("--branch", "Branch to push shared edits to", "<name>"), new CliOption("--message", "Commit message for shared edits", "<text>"),
+            },
             Verbs = new()
             {
                 ["reconcile"] = Array.Empty<ArgKind>(), ["record"] = new[] { ArgKind.InstalledPackage }, ["forget"] = new[] { ArgKind.InstalledPackage }, ["use"] = new[] { ArgKind.InstalledPackage },
                 ["release"] = new[] { ArgKind.InstalledPackage }, ["restore"] = new[] { ArgKind.InstalledPackage }, ["reclone"] = new[] { ArgKind.InstalledPackage },
                 ["ignore"] = new[] { ArgKind.InstalledPackage }, ["unignore"] = new[] { ArgKind.InstalledPackage }, ["move"] = new[] { ArgKind.InstalledPackage },
+                ["switch"] = new[] { ArgKind.InstalledPackage }, ["share"] = new[] { ArgKind.InstalledPackage },
             },
             Run = BasisDevAsync,
+        },
+        new()
+        {
+            Name = "new-package", Group = DevGroup, Aliases = new[] { "create-package" },
+            Summary = "Create a package of your own in .basisdev",
+            Usage = new[] { "new-package <id> [--name <text>] [--description <text>] [--author <name>] [--license mit|apache-2.0|none] [--reference <assembly>]... [--no-runtime] [--no-editor] [--server] [--samples] [--github [--private]]" },
+            Details = "Creates the package in .basisdev/<id> as its own git repository with package.json, README, CHANGELOG, a license, Runtime and Editor assembly definitions "
+                + "that reference Basis (Basis Framework, BasisSDK and BasisCommon unless you pick with --reference), and optionally a Server~ part for the Basis Server and "
+                + "Samples~. manifest.json loads it with a file: line. package.json asks for this project's Unity version and, when it can be worked out, the Basis version the "
+                + "project is based on. --github creates a repository under your GitHub account and pushes the package there.",
+            Options = new[]
+            {
+                new CliOption("--name", "Display name (default: from the id)", "<text>"),
+                new CliOption("--description", "One line about what the package does", "<text>"),
+                new CliOption("--author", "Author name (default: your git user.name)", "<name>"),
+                new CliOption("--license", "mit (default), apache-2.0 or none", "<license>"),
+                new CliOption("--reference", "Basis assembly the code uses (repeatable)", "<assembly>"),
+                new CliOption("--no-runtime", "Leave out the Runtime folder"),
+                new CliOption("--no-editor", "Leave out the Editor folder"),
+                new CliOption("--server", "Add a Server~ part for the Basis Server"),
+                new CliOption("--samples", "Add a Samples~ folder"),
+                new CliOption("--github", "Create a GitHub repository and push the package"),
+                new CliOption("--private", "Make that repository private"),
+            },
+            Examples = new[]
+            {
+                new CliExample("new-package com.mystudio.seats --name \"Seats\"", "Create a package with runtime and editor code"),
+                new CliExample("new-package com.mystudio.chat --server --github", "Include server code and put it on GitHub"),
+            },
+            Run = NewPackageAsync,
+        },
+        new()
+        {
+            Name = "publish-package", Group = DevGroup, Aliases = new[] { "release-package" }, Json = true,
+            Summary = "Release a new version of a package you work on",
+            Usage = new[] { "publish-package <id> [--version <x.y.z> | --bump patch|minor|major] [--notes <text>] [--no-release] [--submit [--category <name>] [--tag <tag>]...] [--dry-run] [--yes]" },
+            Details = "Checks the package, writes the new version into package.json, adds the release notes to CHANGELOG.md, commits, tags the commit (in the style the "
+                + "repository already uses, vX.Y.Z by default), pushes the branch and the tag together and creates a GitHub release. Uncommitted changes in the clone are "
+                + "part of the release commit. The notes default to the commit subjects since the last tag. --submit then opens a pull request that adds the package "
+                + "to the Basis registry. --dry-run only shows what would happen.",
+            Options = new[]
+            {
+                new CliOption("--version", "Version to release", "<x.y.z>"),
+                new CliOption("--bump", "patch, minor or major", "<part>"),
+                new CliOption("--notes", "Release notes (default: commit subjects since the last tag)", "<text>"),
+                new CliOption("--no-release", "Push the tag without creating a GitHub release"),
+                new CliOption("--submit", "Open a pull request that adds the package to the Basis registry"),
+                new CliOption("--category", "Registry category for --submit", "<name>"),
+                new CliOption("--tag", "Registry search tag for --submit (repeatable)", "<tag>"),
+                new CliOption("--dry-run", "Show the plan and checks without changing anything"),
+                Yes,
+            },
+            Examples = new[]
+            {
+                new CliExample("publish-package com.mystudio.seats --dry-run", "See the version, tag, notes and checks"),
+                new CliExample("publish-package com.mystudio.seats --bump minor --yes", "Release the next minor version"),
+            },
+            Args = new[] { ArgKind.InstalledPackage }, Run = PublishPackageAsync,
         },
         new()
         {
@@ -426,7 +636,7 @@ internal sealed partial class ConsoleApplication
                 ["add"] = new[] { ArgKind.Path }, ["forget"] = new[] { ArgKind.UnityVersion }, ["hub"] = Array.Empty<ArgKind>(), ["open"] = Array.Empty<ArgKind>(),
             },
             RepeatLastArg = true,
-            Examples = new[] { new CliExample("unity install --module windows-il2cpp --module android", "Install the editor this project needs with two modules"), new CliExample("unity releases --stream lts", "Long-term-support releases") },
+            Examples = new[] { new CliExample("unity install --module windows-coreclr --module android", "Install the editor this project needs with two modules"), new CliExample("unity releases --stream lts", "Long-term-support releases") },
             SeeAlso = new[] { "open-unity" }, Run = UnityAsync,
         },
         new()

@@ -1,0 +1,11 @@
+[
+  {
+    "id": "basis-recommended",
+    "name": "Basis Recommended",
+    "description": "Every registry package.",
+    "author": "BasisVR",
+    "packages": [
+      { "id": "com.basis.pooltable", "name": "Basis Ported Pooltable", "gitUrl": "https://github.com/dooly123/MS-BASISSA-Billiards.git" }
+    ]
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "id": "com.yuna0x0.basis.convert",
+  "name": "Watari (Converter for Basis)",
+  "description": "Converts VRChat, VRM and Dynamic Bone components on an avatar into their Basis equivalents: jiggle physics, constraints, the avatar descriptor, HVR Vixxy controls and authored motion.",
+  "author": "yuna0x0",
+  "authorUrl": "https://github.com/yuna0x0",
+  "category": "Developer Tools",
+  "tags": [
+    "basis",
+    "basisvr",
+    "avatar",
+    "migration",
+    "converter",
+    "editor-tool",
+    "vrchat",
+    "vrm",
+    "vroid"
+  ],
+  "gitUrl": "https://github.com/yuna0x0/watari-basis.git?path=/Packages/com.yuna0x0.basis.convert",
+  "repoUrl": "https://github.com/yuna0x0/watari-basis",
+  "unity": "6000.5",
+  "basisVersion": "developer",
+  "license": "MIT",
+  "version": "0.12.2",
+  "icon": "🌉",
+  "discord": "https://discord.gg/nYXzaUS",
+  "donate": "https://yuna.tw/donate",
+  "link": "https://yuna0x0.github.io/watari-basis/"
+}

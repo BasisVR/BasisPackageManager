@@ -151,15 +151,16 @@ internal sealed partial class ConsoleApplication
             Out.Warning("A Basis server already answers on this project's health endpoint, so a second one may not get its port.");
         if (newWindow)
         {
-            using var started = _server.Start(install.RepoRoot);
+            using var started = await _server.StartInWindowAsync(install.RepoRoot);
             Out.Success($"Started the Basis server in its own window (process {started.Id}).");
             if (!File.Exists(paths.ConfigFile)) Out.Hint("Its setup wizard asks for the server's settings in that window on this first run.");
             return;
         }
         Directory.CreateDirectory(paths.RuntimeDirectory);
         Out.Hint($"Starting the Basis server from {paths.RuntimeDirectory}. Press Ctrl+C to stop it.");
-        using var process = Process.Start(new ProcessStartInfo(paths.ExecutablePath) { WorkingDirectory = paths.RuntimeDirectory, UseShellExecute = false })
-            ?? throw new InvalidOperationException("Could not start the Basis server.");
+        var start = new ProcessStartInfo(paths.ExecutablePath) { WorkingDirectory = paths.RuntimeDirectory, UseShellExecute = false };
+        foreach (var (name, value) in BasisServerService.RuntimeEnvironment()) start.Environment[name] = value;
+        using var process = Process.Start(start) ?? throw new InvalidOperationException("Could not start the Basis server.");
         _foregroundInterrupted = false;
         _foreground = process;
         try { await process.WaitForExitAsync(); }

@@ -44,20 +44,24 @@
                     <StackPanel Spacing="16" IsVisible="{Binding IsUpdate}">
                         <TextBlock Text="{Binding SwitchSummary}" IsVisible="{Binding IsSwitch}" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"/>
                         <WrapPanel>
-                            <Border Classes="versionPill" Margin="0,0,8,6" IsVisible="{Binding HasIncoming}">
+                            <Border Classes="versionPill" Margin="0,0,8,6" IsVisible="{Binding HasIncoming}"
+                                    ToolTip.Tip="{loc:Tr dialog.basisUpdate.tooltip.incomingCommits}">
                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                     <PathIcon Width="12" Height="12" Data="{StaticResource IconUpdate}"
                                               Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding IncomingLabel}" Classes="brand" FontWeight="Bold" FontSize="12"/>
                                 </StackPanel>
                             </Border>
-                            <Border Classes="versionPill" Margin="0,0,8,6" IsVisible="{Binding HasOutgoing}">
+                            <Border Classes="versionPill" Margin="0,0,8,6" IsVisible="{Binding HasOutgoing}"
+                                    ToolTip.Tip="{loc:Tr dialog.basisUpdate.tooltip.leavingCommits}">
                                 <TextBlock Text="{Binding OutgoingLabel}" Classes="muted" FontSize="12"/>
                             </Border>
-                            <Border Classes="versionPill" Margin="0,0,8,6" IsVisible="{Binding HasLocalCommits}">
+                            <Border Classes="versionPill" Margin="0,0,8,6" IsVisible="{Binding HasLocalCommits}"
+                                    ToolTip.Tip="{loc:Tr dialog.basisUpdate.tooltip.yourCommits}">
                                 <TextBlock Text="{Binding LocalCommitsLabel}" Classes="muted" FontSize="12"/>
                             </Border>
-                            <Border Classes="versionPill" Margin="0,0,8,6" IsVisible="{Binding HasUncommitted}">
+                            <Border Classes="versionPill" Margin="0,0,8,6" IsVisible="{Binding HasUncommitted}"
+                                    ToolTip.Tip="{loc:Tr dialog.basisUpdate.tooltip.uncommitted}">
                                 <TextBlock Text="{Binding UncommittedLabel}" Classes="muted" FontSize="12"/>
                             </Border>
                         </WrapPanel>
@@ -220,7 +224,7 @@
                 </StackPanel>
             </Button>
             <Button Classes="cta" Click="OnPrimary" IsVisible="{Binding HasPrimary}" IsEnabled="{Binding !IsWorking}"
-                    ToolTip.Tip="{loc:Tr dialog.basisUpdate.tooltip.primary}">
+                    ToolTip.Tip="{Binding PrimaryTooltip}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
                     <TextBlock Text="{Binding PrimaryLabel}" VerticalAlignment="Center"/>

@@ -167,7 +167,7 @@ public static class DeepLink
         "[Desktop Entry]\n" +
         "Type=Application\n" +
         "Name=Basis Package Manager\n" +
-        $"Exec=\"{exe}\" %u\n" +
+        $"Exec={DesktopIntegration.ExecQuote(exe)} %u\n" +
         "NoDisplay=true\n" +
         "StartupNotify=false\n" +
         "Terminal=false\n" +
@@ -192,7 +192,7 @@ public static class DeepLink
         }
     }
 
-    private static void RunQuiet(string exe, params string[] args)
+    internal static void RunQuiet(string exe, params string[] args)
     {
         try
         {

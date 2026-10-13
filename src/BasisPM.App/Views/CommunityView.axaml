@@ -31,7 +31,7 @@
             <!-- ── Announcements ───────────────────────────────── -->
             <Grid ColumnDefinitions="*,Auto" Margin="4,6,0,0">
                 <TextBlock Grid.Column="0" Text="{loc:Tr community.announcements.heading}" Classes="h2" VerticalAlignment="Center"/>
-                <Button Grid.Column="1" Classes="iconBtn" Command="{Binding Announcements.RefreshCommand}" ToolTip.Tip="{loc:Tr community.button.refresh}">
+                <Button Grid.Column="1" Classes="iconBtn" Command="{Binding Announcements.RefreshCommand}" ToolTip.Tip="{loc:Tr announcements.tooltip.refresh}">
                     <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
                 </Button>
             </Grid>
@@ -48,11 +48,11 @@
                         <Border Classes="card">
                             <StackPanel Spacing="10">
                                 <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                                    <Border CornerRadius="999" Padding="10,3" Background="{Binding LevelBrush}">
+                                    <Border CornerRadius="999" Padding="10,3" Background="{Binding LevelBrush}" ToolTip.Tip="{loc:Tr announcements.tooltip.level}">
                                         <TextBlock Text="{Binding LevelLabel}" FontSize="10"
                                                    FontWeight="Bold" Foreground="#FFFFFF"/>
                                     </Border>
-                                    <Border Classes="versionPill" IsVisible="{Binding IsPinned}">
+                                    <Border Classes="versionPill" IsVisible="{Binding IsPinned}" ToolTip.Tip="{loc:Tr announcements.tooltip.pinned}">
                                         <TextBlock Text="{loc:Tr community.announcements.pinned}" FontSize="10" FontWeight="Bold" Classes="muted"/>
                                     </Border>
                                     <TextBlock Text="{Binding DateDisplay}" Classes="dim" FontSize="12"

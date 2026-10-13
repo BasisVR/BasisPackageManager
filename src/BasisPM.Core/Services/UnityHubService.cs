@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using BasisPM.Core.Models;
 
@@ -8,63 +9,97 @@ namespace BasisPM.Core.Services;
 
 public sealed partial class UnityHubService
 {
-    private static readonly string[] WindowsHubPaths =
-    {
-        @"C:\Program Files\Unity Hub\Unity Hub.exe",
-        @"C:\Program Files (x86)\Unity Hub\Unity Hub.exe",
-    };
+    public const string FlatpakId = "com.unity.UnityHub";
 
-    private static readonly string[] MacHubPaths =
+    public static IReadOnlyList<string> HubCandidates(OSPlatform os, string home, string programFiles, string programFilesX86)
     {
-        "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub",
-    };
-
-    /// <summary>
-    /// Well-known Linux Unity Hub locations. The apt/.deb package drops a <c>/usr/bin/unityhub</c>
-    /// wrapper (found via PATH), but the official Linux Hub also ships as an AppImage that isn't on
-    /// PATH — so probe the common AppImage / opt locations too.
-    /// </summary>
-    private static IEnumerable<string> LinuxHubCandidates()
-    {
-        yield return "/usr/bin/unityhub";
-        yield return "/opt/unityhub/unityhub";
-        yield return "/opt/unityhub/UnityHub.AppImage";
-        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        if (!string.IsNullOrEmpty(home))
+        if (os == OSPlatform.Windows)
+            return new[] { programFiles, programFilesX86 }.Where(f => f.Length > 0).Select(f => Path.Combine(f, "Unity Hub", "Unity Hub.exe")).ToList();
+        var user = home.TrimEnd('/');
+        if (os == OSPlatform.OSX)
+            return new[] { "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub", user + "/Applications/Unity Hub.app/Contents/MacOS/Unity Hub" };
+        return new[]
         {
-            yield return Path.Combine(home, "Applications", "Unity Hub.AppImage");
-            yield return Path.Combine(home, "Applications", "UnityHub.AppImage");
-            yield return Path.Combine(home, ".local", "bin", "unityhub");
+            "/usr/bin/unityhub", "/usr/lib/unityhub/unityhub", "/opt/unityhub/unityhub", "/opt/unityhub/UnityHub.AppImage",
+            user + "/Applications/Unity Hub.AppImage", user + "/Applications/UnityHub.AppImage", user + "/.local/bin/unityhub",
+            "/var/lib/flatpak/exports/bin/" + FlatpakId, user + "/.local/share/flatpak/exports/bin/" + FlatpakId,
+        };
+    }
+
+    public static List<string> HubArguments(OSPlatform os, params string[] command)
+    {
+        var arguments = os == OSPlatform.Linux ? new List<string> { "--headless" } : new List<string> { "--", "--headless" };
+        arguments.AddRange(command);
+        return arguments;
+    }
+
+    public static bool CanRunHeadless(OSPlatform os, string? display, string? waylandDisplay) =>
+        os != OSPlatform.Linux || !string.IsNullOrEmpty(display) || !string.IsNullOrEmpty(waylandDisplay);
+
+    public static string? HubLabelArchitecture(string? label)
+    {
+        if (string.IsNullOrWhiteSpace(label)) return null;
+        if (label.Contains("silicon", StringComparison.OrdinalIgnoreCase) || label.Contains("arm", StringComparison.OrdinalIgnoreCase)) return "arm64";
+        return label.Contains("intel", StringComparison.OrdinalIgnoreCase) || label.Contains("x64", StringComparison.OrdinalIgnoreCase) || label.Contains("x86", StringComparison.OrdinalIgnoreCase) ? "x86_64" : null;
+    }
+
+    public static string? ParseHubInfoExecutable(string json)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(json);
+            return document.RootElement.ValueKind == JsonValueKind.Object && document.RootElement.TryGetProperty("executablePath", out var path) && path.ValueKind == JsonValueKind.String ? path.GetString() : null;
         }
+        catch (JsonException) { return null; }
+    }
+
+    private static bool HeadlessAvailable => CanRunHeadless(Platform.Current, Environment.GetEnvironmentVariable("DISPLAY"), Environment.GetEnvironmentVariable("WAYLAND_DISPLAY"));
+
+    private static string? HubFromInfo()
+    {
+        var configs = UnityEditorLocator.HubConfigFolders(Platform.Current, Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            Environment.GetEnvironmentVariable("XDG_CONFIG_HOME"), Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+        foreach (var config in configs)
+        {
+            try
+            {
+                var file = Path.Combine(config, "hubInfo.json");
+                if (File.Exists(file) && ParseHubInfoExecutable(File.ReadAllText(file)) is { Length: > 0 } exe && File.Exists(exe)) return exe;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write("Reading Unity Hub's hubInfo.json", ex); }
+        }
+        return null;
+    }
+
+    public static string? ResolveOverride(string? overridePath)
+    {
+        if (string.IsNullOrWhiteSpace(overridePath)) return null;
+        var path = overridePath.Trim();
+        if (File.Exists(path)) return path;
+        var inner = Path.Combine(path, "Contents", "MacOS", "Unity Hub");
+        return path.EndsWith(".app", StringComparison.OrdinalIgnoreCase) && File.Exists(inner) ? inner : null;
     }
 
     public string? FindHubPath(string? overridePath = null)
     {
-        if (!string.IsNullOrEmpty(overridePath) && File.Exists(overridePath))
-        {
-            return overridePath;
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return WindowsHubPaths.FirstOrDefault(File.Exists);
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            return MacHubPaths.FirstOrDefault(File.Exists);
-        }
-
-        // Linux: the PATH wrapper first, then the well-known deb/AppImage locations.
-        return ExecutableFinder.Locate("unityhub") ?? LinuxHubCandidates().FirstOrDefault(File.Exists);
+        if (ResolveOverride(overridePath) is { } chosen) return chosen;
+        var candidates = HubCandidates(Platform.Current, Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
+        return (Platform.Current == OSPlatform.Linux ? ExecutableFinder.Locate("unityhub") : null) ?? candidates.FirstOrDefault(File.Exists) ?? HubFromInfo();
     }
 
     public async Task<IReadOnlyList<InstalledEditor>> ListInstalledAsync(string? hubOverride = null, CancellationToken ct = default)
     {
-        var hub = FindHubPath(hubOverride);
-        if (hub is null) return Array.Empty<InstalledEditor>();
+        var found = UnityEditorLocator.FindInstalled();
+        return found.Count > 0 ? found : await ListFromHubAsync(hubOverride, ct).ConfigureAwait(false);
+    }
 
-        var (code, stdout, _) = await RunAsync(hub, new[] { "--", "--headless", "editors", "--installed" }, ct).ConfigureAwait(false);
+    private async Task<IReadOnlyList<InstalledEditor>> ListFromHubAsync(string? hubOverride, CancellationToken ct)
+    {
+        var hub = FindHubPath(hubOverride);
+        if (hub is null || !HeadlessAvailable) return Array.Empty<InstalledEditor>();
+
+        var (code, stdout, _) = await RunAsync(hub, HubArguments(Platform.Current, "editors", "--installed"), ct).ConfigureAwait(false);
         if (code != 0 || string.IsNullOrWhiteSpace(stdout)) return Array.Empty<InstalledEditor>();
 
         var list = new List<InstalledEditor>();
@@ -76,6 +111,7 @@ public sealed partial class UnityHubService
             {
                 Version = m.Groups["ver"].Value,
                 Path = m.Groups["path"].Value.Trim(),
+                Architecture = HubLabelArchitecture(m.Groups["arch"].Value),
             });
         }
         return list;
@@ -90,7 +126,9 @@ public sealed partial class UnityHubService
     {
         var editors = new List<InstalledEditor>(await ListInstalledAsync(hubOverride, ct).ConfigureAwait(false));
         if (extraEditors is not null) editors.AddRange(extraEditors);
-        var editor = editors.FirstOrDefault(e => string.Equals(e.Version, unityVersion, StringComparison.OrdinalIgnoreCase));
+        InstalledEditor? Match() => editors.Where(e => string.Equals(e.Version, unityVersion, StringComparison.OrdinalIgnoreCase)).OrderByDescending(e => e.Architecture == UnityEditorLocator.NativeArchitecture).FirstOrDefault();
+        if (Match() is null) editors.AddRange(await ListFromHubAsync(hubOverride, ct).ConfigureAwait(false));
+        var editor = Match();
         // editor.Path is an executable on Windows/Linux, but on macOS Hub may report a .app bundle
         // (a directory) — accept either, and let GuiAppSpec `open` the bundle there.
         if (editor is null || (!File.Exists(editor.Path) && !Directory.Exists(editor.Path))) return false;
@@ -122,15 +160,9 @@ public sealed partial class UnityHubService
 
     public async Task<int> InstallEditorAsync(string version, string changeset, IEnumerable<string>? modules, string? hubOverride = null, CancellationToken ct = default)
     {
-        var hub = FindHubPath(hubOverride);
-        if (hub is null) throw new InvalidOperationException("Unity Hub not found.");
-
-        var args = new List<string>
-        {
-            "--", "--headless", "install",
-            "--version", version,
-            "--changeset", changeset,
-        };
+        var hub = RunnableHub(hubOverride);
+        var args = HubArguments(Platform.Current, "install", "--version", version, "--changeset", changeset);
+        if (Platform.Current == OSPlatform.OSX) args.AddRange(new[] { "-a", UnityEditorLocator.NativeArchitecture });
         if (modules is not null)
         {
             foreach (var m in modules)
@@ -145,12 +177,11 @@ public sealed partial class UnityHubService
         return code;
     }
 
-    public async Task<int> InstallModulesAsync(string version, IEnumerable<string> modules, string? hubOverride = null, CancellationToken ct = default)
+    public async Task<int> InstallModulesAsync(string version, IEnumerable<string> modules, string? hubOverride = null, CancellationToken ct = default, string? architecture = null)
     {
-        var hub = FindHubPath(hubOverride);
-        if (hub is null) throw new InvalidOperationException("Unity Hub not found.");
-
-        var args = new List<string> { "--", "--headless", "install-modules", "--version", version };
+        var hub = RunnableHub(hubOverride);
+        var args = HubArguments(Platform.Current, "install-modules", "--version", version);
+        if (Platform.Current == OSPlatform.OSX) args.AddRange(new[] { "-a", architecture ?? UnityEditorLocator.NativeArchitecture });
         foreach (var m in modules)
         {
             args.Add("-m");
@@ -160,6 +191,13 @@ public sealed partial class UnityHubService
 
         var (code, _, _) = await RunAsync(hub, args, ct).ConfigureAwait(false);
         return code;
+    }
+
+    private string RunnableHub(string? hubOverride)
+    {
+        var hub = FindHubPath(hubOverride) ?? throw new InvalidOperationException("Unity Hub not found.");
+        if (!HeadlessAvailable) throw new InvalidOperationException("Unity Hub needs a desktop session on Linux. Run this from your desktop, or start it with xvfb-run.");
+        return hub;
     }
 
     private static async Task<(int Code, string Stdout, string Stderr)> RunAsync(string exe, IEnumerable<string> args, CancellationToken ct)

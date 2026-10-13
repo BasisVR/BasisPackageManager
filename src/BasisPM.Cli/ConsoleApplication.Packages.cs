@@ -118,6 +118,14 @@ internal sealed partial class ConsoleApplication
         Row("Link", entry?.Link);
         Row("Popularity", entry is { Stars: > 0 } || entry is { Forks: > 0 } ? $"{entry.Stars} stars, {entry.Forks} forks" + (entry.Updated is { Length: >= 10 } updated ? $", updated {updated[..10]}" : "") : null);
         Row("Depends on", entry?.Dependencies is { Count: > 0 } deps ? string.Join(", ", deps.Select(d => $"{d.Key} {d.Value}")) : null);
+        if (install is not null)
+        {
+            var root = MountedPackageRoot(install, packageId) ?? local?.FolderPath;
+            var gaps = root is null ? Array.Empty<PackageDependency>() : PackageDependencies.AnalyzeInstalled(install.UnityProjectPath, root, install.Manifest, catalog);
+            Row("Missing", gaps.Any(g => g.State != DependencyState.Present && g.State != DependencyState.UnityResolves)
+                ? string.Join(", ", gaps.Where(g => g.State != DependencyState.Present && g.State != DependencyState.UnityResolves).Select(g => g.Id)) : null, Tone.Warn);
+            Row("Needed by", PackageDependencies.FindDependents(install.UnityProjectPath, packageId, catalog) is { Count: > 0 } dependents ? string.Join(", ", dependents.Select(d => d.Id)) : null);
+        }
         Row("Server", entry?.Server == true ? "also adds a Basis Server side, installed with it" : null);
         if (install is not null) Row("Installed", state, state == "no" ? Tone.Dim : Tone.Good);
         Out.Table(rows, indent: 0);
@@ -182,6 +190,7 @@ internal sealed partial class ConsoleApplication
         var options = values.ToList();
         var version = TakeValue(options, "--version");
         var assumeYes = TakeFlag(options, "--yes") | TakeFlag(options, "-y");
+        var noDeps = TakeFlag(options, "--no-deps");
         Expect(options, 1, int.MaxValue, "a package id");
         if (version is not null && options.Count > 1) throw new UsageException("--version works with one package at a time.");
         var install = await LoadInstallAsync();
@@ -199,7 +208,11 @@ internal sealed partial class ConsoleApplication
                 failed++;
                 continue;
             }
-            try { await InstallCatalogPackageAsync(install, catalog, entry, version, assumeYes, shipped); }
+            try
+            {
+                if (await InstallCatalogPackageAsync(install, catalog, entry, version, assumeYes, shipped) && !noDeps)
+                    await InstallMissingDependenciesAsync(install, catalog, entry.Name, assumeYes, shipped, 0);
+            }
             catch (Exception ex) when (ex is InvalidOperationException or IOException && options.Count > 1)
             {
                 DiagnosticLog.Write($"Installing {entry.Name}", ex);
@@ -212,6 +225,7 @@ internal sealed partial class ConsoleApplication
 
     private async Task<bool> InstallCatalogPackageAsync(BasisInstall install, Catalog catalog, CatalogPackageVersion entry, string? version, bool assumeYes, ShippedPackages shipped)
     {
+        await RefuseAdvisedAsync(entry.Name, entry.Url, entry.DisplayName);
         if (shipped.IsIncluded(entry.Name))
         {
             Out.Success($"{entry.DisplayName} ships with Basis, so it's already in {install.DisplayName}.");
@@ -220,12 +234,6 @@ internal sealed partial class ConsoleApplication
         if (shipped.Local(entry.Name) is { } local && !shipped.Mounted.Contains(entry.Name))
             throw new InvalidOperationException($"{entry.DisplayName} is already in {RelativeTo(install.UnityProjectPath, local.FolderPath)} as a local folder. Move that folder away first if you want the registry version.");
         var existing = WorkingCloneMount(install, entry.Name);
-        if (existing is not null && await HasUnsavedWorkAsync(existing)
-            && !assumeYes && !Confirm($"{entry.DisplayName} has local edits or commits in {RelativeTo(install.UnityProjectPath, existing.FolderPath)} that would be lost. Replace it?"))
-        {
-            Out.Warning($"Left {entry.DisplayName} as it is.");
-            return false;
-        }
 
         await ReloadManifestAsync(install);
         var current = existing?.OriginalManifestValue ?? install.Manifest.Dependencies.FirstOrDefault(d => d.Key.Equals(entry.Name, StringComparison.OrdinalIgnoreCase)).Value;
@@ -242,7 +250,8 @@ internal sealed partial class ConsoleApplication
         foreach (var (name, resolved) in resolution.Resolved)
         {
             if (name.Equals(entry.Name, StringComparison.OrdinalIgnoreCase) || HasDependency(install, name) || IsPresentInSource(install, shipped, name) || shipped.IsIncluded(name)) continue;
-            install.Manifest.Dependencies[name] = resolved.Url ?? resolved.Version;
+            await RefuseAdvisedAsync(name, resolved.Url, resolved.DisplayName);
+            install.Manifest.Dependencies[name] = PackageTrust.PinnedUrl(resolved) ?? resolved.Version;
             added++;
         }
         if (added > 0) await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
@@ -256,7 +265,16 @@ internal sealed partial class ConsoleApplication
         }
         else
         {
-            var (cloned, mountedUrl) = await CloneInstallAsync(install, entry.Name, url, latest);
+            var registry = !_unofficialIds.Contains(entry.Name);
+            var review = ReviewGate($"{entry.DisplayName} comes from a catalog you added, not the Basis registry, so nobody has checked it for you.", main ?? entry, registry, assumeYes);
+            bool cloned;
+            string mountedUrl;
+            try { (cloned, mountedUrl) = await CloneInstallAsync(install, entry.Name, url, latest, review, reviewRequired: !registry, assumeYes: assumeYes); }
+            catch (DeclinedException)
+            {
+                Out.Warning($"Left {entry.DisplayName} uninstalled.");
+                return false;
+            }
             if (mountedUrl != url) Out.Warning($"{UpmGitUrl.Parse(url)?.Ref} of {entry.DisplayName} isn't a Unity package (it has no package.json), so its default branch was installed instead.");
             url = mountedUrl;
             var at = UpmGitUrl.Parse(url)?.Ref is { } gitRef ? $" {gitRef}" : " (default branch)";
@@ -302,21 +320,47 @@ internal sealed partial class ConsoleApplication
 
     private static bool HasDependency(BasisInstall install, string id) => install.Manifest.Dependencies.Keys.Any(k => k.Equals(id, StringComparison.OrdinalIgnoreCase));
 
-    private async Task<(bool Cloned, string Url)> CloneInstallAsync(BasisInstall install, string packageId, string gitUrl, bool orDefaultBranch)
+    private async Task<(bool Cloned, string Url)> CloneInstallAsync(BasisInstall install, string packageId, string gitUrl, bool orDefaultBranch, Func<PackageReview, Task<bool>>? review = null, bool reviewRequired = false, bool assumeYes = false)
     {
+        if (_git.IsAvailable && WorkingCloneMount(install, packageId) is not null && UpmGitUrl.Parse(gitUrl) is { } parsed)
+        {
+            var approve = review is null ? null : PackageUpdates.ReviewBeforeUpdate(review);
+            var request = new PackageUpdateRequest(parsed.Ref, parsed.CloneUrl);
+            PackageUpdateResult updated = null!;
+            await RunOperationAsync(async ct => updated = await PackageUpdates.UpdateCloneAsync(install, packageId, request, approve, Out.Progress, ct), $"Updating {packageId}" + Out.Ellipsis);
+            if (updated.Outcome == PackageUpdateOutcome.NotAPackage && orDefaultBranch && parsed.Ref is not null)
+                await RunOperationAsync(async ct => updated = await PackageUpdates.UpdateCloneAsync(install, packageId, request with { Ref = null }, approve, Out.Progress, ct), $"Updating {packageId}" + Out.Ellipsis);
+            switch (updated.Outcome)
+            {
+                case PackageUpdateOutcome.Updated or PackageUpdateOutcome.UpToDate:
+                    return (true, updated.ManifestValue ?? gitUrl);
+                case PackageUpdateOutcome.Declined:
+                    throw new DeclinedException();
+                case PackageUpdateOutcome.Conflict:
+                    if (!assumeYes && !Confirm($"{updated.Message} Replace your copy with a clean one? Your edits will be lost."))
+                        throw new InvalidOperationException(updated.Message);
+                    break;
+                case PackageUpdateOutcome.NotAClone:
+                    break;
+                default:
+                    throw new InvalidOperationException(updated.Message);
+            }
+        }
         if (WorkingCloneMount(install, packageId) is not null)
         {
-            var swap = await _mounts.SwapBackAsync(install, packageId);
+            var swap = await _mounts.UnmountAsync(install, packageId, restoreManifest: true, restoreLine: gitUrl);
             if (!swap.Ok) throw new InvalidOperationException(swap.Error ?? "Couldn't remove the old working copy. Close Unity if it has the package open, then try again.");
         }
         if (_git.IsAvailable && UpmGitUrl.Parse(gitUrl) is not null)
         {
             MountResult result = null!;
-            await RunOperationAsync(async ct => result = await _mounts.MountAsync(install, packageId, gitUrl, Out.Progress, ct, orDefaultBranch), $"Cloning {packageId}" + Out.Ellipsis);
+            await RunOperationAsync(async ct => result = await _mounts.MountAsync(install, packageId, gitUrl, Out.Progress, ct, orDefaultBranch, review), $"Cloning {packageId}" + Out.Ellipsis);
             if (result.Ok) return (true, result.ManifestValue ?? gitUrl);
-            if (result.NotAPackage) throw new InvalidOperationException(result.Error);
+            if (result.Declined) throw new DeclinedException();
+            if (result.NotAPackage || reviewRequired) throw new InvalidOperationException(result.Error);
             Out.Warning($"Couldn't clone {packageId} ({result.Error}), so it was added to manifest.json for Unity to download instead.");
         }
+        else if (reviewRequired) throw new InvalidOperationException($"Git was not found on PATH, so {packageId} can't be downloaded and checked before Unity loads it. Install Git, then try again.");
         await ReloadManifestAsync(install);
         install.Manifest.Dependencies[packageId] = gitUrl;
         await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
@@ -353,6 +397,11 @@ internal sealed partial class ConsoleApplication
         if (shipped.Local(id) is { } local && !shipped.Mounted.Contains(id))
             throw new InvalidOperationException($"{id} is the folder {RelativeTo(install.UnityProjectPath, local.FolderPath)} inside the project, not something installed. Delete that folder yourself if you want it gone.");
         var mount = WorkingCloneMount(install, id);
+        if (!ConfirmDependents(install, id, force))
+        {
+            Out.Warning($"Kept {id}.");
+            return;
+        }
         if (!shipped.Known && mount is null && line is not null && !force)
             throw new InvalidOperationException($"This project's git history can't show which packages Basis itself needs, so removing {id} from manifest.json could break it. Add --force if you're sure it's one you added.");
         var mountedRoot = MountedPackageRoot(install, id);
@@ -362,96 +411,26 @@ internal sealed partial class ConsoleApplication
             Out.Warning($"Kept {id}.");
             return;
         }
-        if (mount is not null)
-        {
-            var swap = await _mounts.SwapBackAsync(install, id);
-            if (!swap.Ok) throw new InvalidOperationException(swap.Error ?? "Couldn't delete the working copy. Close Unity if it has the package open, then try again.");
-        }
         await ReloadManifestAsync(install);
         var key = install.Manifest.Dependencies.Keys.FirstOrDefault(k => k.Equals(id, StringComparison.OrdinalIgnoreCase));
-        if (mount is null && key is null)
+        if (mount is null && key is null && BasisPackagesStore.Find(install.UnityProjectPath, id) is null && BasisDevStore.Read(install.UnityProjectPath, id) is null)
         {
             var suggestions = Suggest(id, install.Manifest.Dependencies.Keys);
             throw new InvalidOperationException($"{id} isn't installed in {install.DisplayName}." + (suggestions.Count > 0 ? $" Did you mean {JoinOr(suggestions.Select(s => $"'{s}'"))}?" : ""));
         }
-        if (key is not null) install.Manifest.Dependencies.Remove(key);
-        await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
+        var removed = await _mounts.RemoveAsync(install, key ?? id);
+        if (!removed.Ok) throw new InvalidOperationException(removed.Error ?? "Couldn't delete the working copy. Close Unity if it has the package open, then try again.");
         var serverProblem = await RemoveServerSideAsync(install, key ?? id, mountedRoot);
         Out.Success($"Removed {key ?? id} from {install.DisplayName}.");
         if (serverProblem is not null) Out.Warning($"Its Basis Server side couldn't be removed: {serverProblem}");
-    }
-
-    private async Task UpdatePackagesAsync(List<string> values)
-    {
-        var options = values.ToList();
-        var dryRun = TakeFlag(options, "--dry-run");
-        var assumeYes = TakeFlag(options, "--yes") | TakeFlag(options, "-y");
-        var install = await LoadInstallAsync();
-        var catalog = await LoadCatalogAsync();
-        var shipped = await LoadShippedPackagesAsync(install);
-        var latest = _catalogs.AllLatest(catalog).ToDictionary(v => v.Name, StringComparer.OrdinalIgnoreCase);
-        var lines = shipped.Known ? install.Manifest.Dependencies.Where(d => d.Value?.StartsWith("file:", StringComparison.OrdinalIgnoreCase) != true).Select(d => d.Key) : Enumerable.Empty<string>();
-        var ids = options.Count > 0 ? options : lines.Union(shipped.Mounted, StringComparer.OrdinalIgnoreCase).Where(id => latest.TryGetValue(id, out var e) && !shipped.IsBuiltIn(id, e.Source)).ToList();
-        if (options.Count == 0 && !shipped.Known)
-            Out.Warning("This project's git history can't show which manifest.json lines belong to Basis, so only packages installed as working copies are checked. Name others to update them.");
-        var token = await TryGitHubTokenAsync();
-        var plan = new List<(CatalogPackageVersion Entry, string? From, string? To)>();
-        var skipped = new List<(string Id, string Reason)>();
-        await RunOperationAsync(async ct =>
-        {
-            foreach (var id in ids)
-            {
-                if (!latest.TryGetValue(id, out var entry)) { skipped.Add((id, "isn't a registry package")); continue; }
-                if (shipped.IsIncluded(id)) { skipped.Add((id, "ships with Basis")); continue; }
-                var mount = WorkingCloneMount(install, id);
-                var current = mount?.OriginalManifestValue ?? install.Manifest.Dependencies.GetValueOrDefault(id);
-                if (current is null) { skipped.Add((id, "isn't installed")); continue; }
-                if (mount is not null && await HasUnsavedWorkAsync(mount, ct)) { skipped.Add((id, "has local edits or commits, so it's left alone")); continue; }
-                Out.Progress($"Checking {id}" + Out.Ellipsis);
-                var from = UpmGitUrl.Parse(current) is { } git ? git.Ref : current;
-                var to = UpmGitUrl.Parse(entry.Url) is not null ? (await _versions.GetVersionsAsync(entry.Url, token, ct)).LatestStable?.Ref : entry.Version;
-                if (to is null)
-                {
-                    if (from is not null) skipped.Add((id, $"stays at {from}: no release could be found"));
-                    continue;
-                }
-                if (string.Equals(from, to, StringComparison.OrdinalIgnoreCase)) continue;
-                plan.Add((entry, from, to));
-            }
-        }, "Looking for newer releases" + Out.Ellipsis);
-
-        foreach (var (id, reason) in skipped) Out.Warning($"{id} {reason}.");
-        if (plan.Count == 0)
-        {
-            Out.Success(ids.Count == 0 ? "There are no registry packages to update in this project." : "Every package is on its newest release.");
-            return;
-        }
-        Out.Heading(dryRun ? "Would update" : "Updates");
-        Out.Table(plan.Select(p => new[] { new Span(p.Entry.Name), new Span(p.From ?? "default branch", Tone.Dim), new Span(Out.Arrow, Tone.Dim), new Span(p.To!, Tone.Good) }).ToList());
-        if (dryRun) return;
-        if (!assumeYes && !Confirm($"Update {Plural(plan.Count, "package")}?"))
-        {
-            Out.Warning("Cancelled.");
-            return;
-        }
-        var failed = 0;
-        foreach (var (entry, _, _) in plan)
-        {
-            try { await InstallCatalogPackageAsync(install, catalog, entry, null, true, shipped); }
-            catch (Exception ex) when (ex is InvalidOperationException or IOException)
-            {
-                DiagnosticLog.Write($"Updating {entry.Name}", ex);
-                Out.Error($"{entry.DisplayName}: {ex.Message}");
-                failed++;
-            }
-        }
-        if (failed > 0) _exitCode = 1;
     }
 
     private async Task AddGitAsync(List<string> values)
     {
         var options = values.ToList();
         var force = TakeFlag(options, "--force");
+        var assumeYes = TakeFlag(options, "--yes") | TakeFlag(options, "-y");
+        var noDeps = TakeFlag(options, "--no-deps");
         Expect(options, 1, 1, "a GitHub repository (URL or owner/repo)");
         GitHubLocator location;
         try { location = GitHubService.Parse(options[0]); }
@@ -473,16 +452,27 @@ internal sealed partial class ConsoleApplication
         if (WorkingCloneMount(install, id) is { } mount)
             throw new InvalidOperationException($"{id} is installed as an editable working copy in {RelativeTo(install.UnityProjectPath, mount.FolderPath)}. Remove it first with '{Prefix}remove-package {id}'.");
         var existed = HasDependency(install, id);
-        install.Manifest.Dependencies[id] = manifestUrl;
+        var label = string.IsNullOrWhiteSpace(package.DisplayName) ? package.Name : package.DisplayName;
+        if (!BasisDevStore.IsValidId(id)) throw new InvalidOperationException($"\"{id}\" isn't a valid package name.");
+        await RefuseAdvisedAsync(id, manifestUrl, label);
+        var catalog = await LoadCatalogAsync();
+        var listed = _catalogs.AllLatest(catalog).FirstOrDefault(p => p.Name.Equals(id, StringComparison.OrdinalIgnoreCase) && p.Url is { Length: > 0 } url && AdvisoryService.SameRepository(url, manifestUrl));
+        var registry = listed is not null && !_unofficialIds.Contains(listed.Name);
+        try { await CloneInstallAsync(install, id, manifestUrl, false, ReviewGate($"{label} isn't in the Basis registry, so nobody has checked it for you.", listed, registry, assumeYes), reviewRequired: !registry); }
+        catch (DeclinedException)
+        {
+            Out.Warning($"Left {label} uninstalled.");
+            return;
+        }
+        await ReloadManifestAsync(install);
         var added = 0;
         if (package.Dependencies is { Count: > 0 } dependencies)
         {
-            var catalog = await LoadCatalogAsync();
             added = AddCatalogDependencies(install, catalog, dependencies.Select(d => (d.Key, SemVer.TryParse(d.Value, out _) ? ">=" + d.Value.Trim() : d.Value)), shipped);
+            if (added > 0) await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
         }
-        await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
-        Out.Success($"{(existed ? "Updated" : "Added")} {(string.IsNullOrWhiteSpace(package.DisplayName) ? package.Name : package.DisplayName)} ({manifestUrl}){(added > 0 ? $" and {Plural(added, "registry dependency", "registry dependencies")}" : "")}.");
-        Out.Hint("Unity downloads it the next time it opens or refreshes the project.");
+        Out.Success($"{(existed ? "Updated" : "Added")} {label} ({manifestUrl}) as an editable working copy{(added > 0 ? $" and {Plural(added, "registry dependency", "registry dependencies")}" : "")}.");
+        if (!noDeps) await InstallMissingDependenciesAsync(install, catalog, id, assumeYes, shipped, 0);
     }
 
     private int AddCatalogDependencies(BasisInstall install, Catalog catalog, IEnumerable<(string Name, string Range)> requested, ShippedPackages shipped)
@@ -492,7 +482,12 @@ internal sealed partial class ConsoleApplication
         foreach (var (name, version) in result.Resolved)
         {
             if (HasDependency(install, name) || IsPresentInSource(install, shipped, name) || shipped.IsIncluded(name)) continue;
-            install.Manifest.Dependencies[name] = version.Url ?? version.Version;
+            if (AdvisoryService.Match(_advisoryList, name, version.Url, null, unknownCommitMatches: false) is { Blocks: true })
+            {
+                Out.Warning($"Skipped {name}: it was pulled from the Basis registry.");
+                continue;
+            }
+            install.Manifest.Dependencies[name] = PackageTrust.PinnedUrl(version) ?? version.Version;
             added++;
         }
         return added;
@@ -520,8 +515,10 @@ internal sealed partial class ConsoleApplication
 
     private async Task InstallPackageListAsync(List<string> values)
     {
-        Expect(values, 1, 1, "a package list id or .json file");
-        var value = values[0];
+        var options = values.ToList();
+        var assumeYes = TakeFlag(options, "--yes") | TakeFlag(options, "-y");
+        Expect(options, 1, 1, "a package list id or .json file");
+        var value = options[0];
         PackageList list;
         if (File.Exists(FullPath(value)) || value.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
         {
@@ -541,27 +538,50 @@ internal sealed partial class ConsoleApplication
         var install = await LoadInstallAsync();
         var catalog = await LoadCatalogAsync();
         var shipped = await LoadShippedPackagesAsync(install);
+        await LoadAdvisoriesAsync();
         await ReloadManifestAsync(install);
         int added = 0, present = 0, refused = 0;
+        var unlisted = new List<PackageListEntry>();
         foreach (var package in list.Packages)
         {
             if (string.IsNullOrWhiteSpace(package.Id)) continue;
             if (IsPresentInSource(install, shipped, package.Id) || shipped.IsIncluded(package.Id) || HasDependency(install, package.Id)) { present++; continue; }
-            if (!string.IsNullOrWhiteSpace(package.GitUrl))
+            var listed = _catalogs.AllLatest(catalog).FirstOrDefault(p => p.Name.Equals(package.Id, StringComparison.OrdinalIgnoreCase));
+            if (listed is null && !string.IsNullOrWhiteSpace(package.GitUrl))
             {
-                if (!GitUrlPolicy.IsSafeDependencyUrl(package.GitUrl))
+                if (!GitUrlPolicy.IsSafeDependencyUrl(package.GitUrl) || !BasisDevStore.IsValidId(package.Id))
                 {
                     Out.Warning($"Skipped {package.Id}: unsupported git URL.");
                     refused++;
-                    continue;
                 }
-                install.Manifest.Dependencies[package.Id] = package.GitUrl.Trim();
+                else unlisted.Add(package);
+                continue;
             }
             AddCatalogDependencies(install, catalog, new[] { (package.Id, string.IsNullOrWhiteSpace(package.Version) ? "*" : package.Version!) }, shipped);
             if (!HasDependency(install, package.Id) && !string.IsNullOrWhiteSpace(package.Version)) install.Manifest.Dependencies[package.Id] = package.Version.Trim();
             if (HasDependency(install, package.Id)) added++;
         }
         await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
+        foreach (var package in unlisted)
+        {
+            var label = string.IsNullOrWhiteSpace(package.Name) ? package.Id : package.Name;
+            try
+            {
+                await RefuseAdvisedAsync(package.Id, package.GitUrl, label);
+                await CloneInstallAsync(install, package.Id, package.GitUrl!.Trim(), false, ReviewGate($"{label} from {list.Name} isn't in the Basis registry, so nobody has checked it for you.", null, false, assumeYes), reviewRequired: true);
+                added++;
+            }
+            catch (DeclinedException)
+            {
+                Out.Warning($"Left {label} uninstalled.");
+                refused++;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Out.Error($"{label}: {ex.Message}");
+                refused++;
+            }
+        }
         Out.Success($"Added {Plural(added, "package")} from {list.Name} to {install.DisplayName}" + (present > 0 ? $"; {present} {(present == 1 ? "was" : "were")} already there" : "") + (refused > 0 ? $"; {refused} skipped" : "") + ".");
         if (added > 0) Out.Hint("Unity downloads them the next time it opens or refreshes the project.");
     }

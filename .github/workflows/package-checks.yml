@@ -1,0 +1,55 @@
+name: Package checks
+
+on:
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+    inputs:
+      branches:
+        description: 'Basis branches to check, comma separated (blank: developer, the newest long-term-support branch and experimental-branch-major-changes)'
+        required: false
+        default: ''
+      all:
+        description: 'Check every branch, even ones whose head has not moved since the last run'
+        type: boolean
+        default: false
+
+concurrency:
+  group: package-checks
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: [self-hosted, unity]
+    timeout-minutes: 720
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Build the CLI
+        run: dotnet publish src/BasisPM.Cli/BasisPM.Cli.csproj -c Release -o "${{ runner.temp }}/basispm-cli"
+
+      - name: Check registry packages on each Basis branch
+        shell: pwsh
+        run: >-
+          ./build/check-registry.ps1
+          -Cli "${{ runner.temp }}/basispm-cli"
+          -Work "${{ runner.temp }}/basis-checks"
+          -Checks "src/BasisPM.Server/seed/checks.json"
+          -Branches "${{ inputs.branches }}"
+          ${{ inputs.all && '-All' || '' }}
+
+      - name: Commit the results
+        shell: pwsh
+        run: |
+          git add src/BasisPM.Server/seed/checks.json
+          git diff --cached --quiet
+          if ($LASTEXITCODE -eq 0) { Write-Host 'No change in the package checks.'; exit 0 }
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Update package checks'
+          git push

@@ -23,6 +23,7 @@ public sealed class BasisDevUpstream
     public string? Ref { get; set; }
     public string? Path { get; set; }
     public string? Commit { get; set; }
+    public string? ForkOf { get; set; }
 
     [JsonIgnore] public string? ManifestUrl => UpmGitUrl.Parse(Url) is { } parsed ? parsed.ToManifestUrl(Ref, Path) : null;
 }
@@ -49,6 +50,7 @@ public sealed class BasisPackageEntry
     public string? Ref { get; set; }
     public string? Path { get; set; }
     public string? Commit { get; set; }
+    public string? ForkOf { get; set; }
     [JsonExtensionData] public Dictionary<string, JsonElement>? Extra { get; set; }
 }
 
@@ -73,6 +75,7 @@ public enum BasisDevIssueKind
     Unrecorded,
     Unlisted,
     InPackages,
+    VersionMismatch,
 }
 
 public enum BasisDevAction
@@ -86,6 +89,7 @@ public enum BasisDevAction
     Ignore,
     Unignore,
     Move,
+    Switch,
 }
 
 public sealed record BasisDevComparison(bool Identical, int Added, int Removed, int Modified, string? MatchingCommit)
@@ -153,6 +157,9 @@ public sealed record BasisDevPackage
                         break;
                     case BasisDevIssueKind.InPackages:
                         actions.Add(BasisDevAction.Move);
+                        break;
+                    case BasisDevIssueKind.VersionMismatch:
+                        actions.Add(BasisDevAction.Switch);
                         break;
                 }
             }

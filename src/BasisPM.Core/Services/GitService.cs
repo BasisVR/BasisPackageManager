@@ -34,7 +34,8 @@ public sealed class GitService
     {
         if (_cachedGit is not null && File.Exists(_cachedGit)) return _cachedGit;
 
-        var onPath = ExecutableFinder.Locate("git");
+        var onPath = ExecutableFinder.SelectFromPath("git", Environment.GetEnvironmentVariable("PATH"), ExecutableFinder.Extensions(Platform.Current),
+            path => ExecutableFinder.IsRunnableFile(path) && (!IsAppleGitStub(Platform.Current, path) || AppleDeveloperToolsInstalled()));
         if (onPath is not null) return _cachedGit = onPath;
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -46,6 +47,38 @@ public sealed class GitService
     }
 
     public bool IsAvailable => FindGit() is not null;
+
+    public static string InstallPage(OSPlatform os) => "https://git-scm.com/install/" + (os == OSPlatform.Windows ? "windows" : os == OSPlatform.OSX ? "mac" : "linux");
+
+    public static bool IsAppleGitStub(OSPlatform os, string path) => os == OSPlatform.OSX && path == "/usr/bin/git";
+
+    public static bool IsDeveloperDirectoryWithGit(int exitCode, string output, Func<string, bool> fileExists) =>
+        exitCode == 0 && output.Trim() is { Length: > 0 } folder && fileExists(folder.TrimEnd('/') + "/usr/bin/git");
+
+    private static bool? _appleToolsInstalled;
+    private static DateTime _appleToolsChecked;
+
+    private static bool AppleDeveloperToolsInstalled()
+    {
+        if (_appleToolsInstalled == true || _appleToolsInstalled == false && DateTime.UtcNow - _appleToolsChecked < TimeSpan.FromSeconds(30)) return _appleToolsInstalled.Value;
+        var installed = false;
+        try
+        {
+            using var process = Process.Start(new ProcessStartInfo("/usr/bin/xcode-select", "-p") { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, CreateNoWindow = true });
+            if (process is not null)
+            {
+                var output = process.StandardOutput.ReadToEndAsync();
+                _ = process.StandardError.ReadToEndAsync();
+                if (process.WaitForExit(5000)) installed = IsDeveloperDirectoryWithGit(process.ExitCode, output.Result, File.Exists);
+                else process.Kill();
+            }
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException) { DiagnosticLog.Write("Checking for the Xcode command line tools", ex); }
+        _appleToolsChecked = DateTime.UtcNow;
+        return (_appleToolsInstalled = installed).Value;
+    }
+
+    public GitCloneCache? CloneCache { get; set; }
 
     public bool CanFetch(string? url) => !string.IsNullOrWhiteSpace(url) && IsFetchableUrl(url.Trim());
 
@@ -60,24 +93,76 @@ public sealed class GitService
         if (sparse && !IsSparsePatternList(sparsePatterns!))
             return new GitResult(false, -1, "Refused to clone: a folder to leave out is not valid.");
 
-        var args = new List<string> { "clone", "--progress" };
-        if (sparse) args.Add("--no-checkout");
+        var options = new List<string> { "--progress" };
+        if (sparse) options.Add("--no-checkout");
         if (!string.IsNullOrWhiteSpace(branch))
         {
-            args.Add("--branch");
-            args.Add(branch.Trim());
+            options.Add("--branch");
+            options.Add(branch.Trim());
         }
-        args.Add("--");            // no option may follow — url/dest are positional even if they start with '-'
-        args.Add(url);
-        args.Add(destPath);
 
-        var (code, _, err) = await RunAsync(git, args, null, onProgress, ct).ConfigureAwait(false);
+        var cached = CloneCache is { IsEnabled: true } cache ? await CloneThroughCacheAsync(cache, git, url, destPath, options, onProgress, ct).ConfigureAwait(false) : null;
+        var (code, _, err) = cached ?? await RunAsync(git, CloneArgs(options, url, destPath), null, onProgress, ct).ConfigureAwait(false);
         if (code != 0 || !sparse) return new GitResult(code == 0, code, err.Trim());
         var set = await SetSparseCheckoutAsync(destPath, sparsePatterns!, ct).ConfigureAwait(false);
         if (!set.Ok) return new GitResult(false, set.Code, $"Cloned, but couldn't leave out the chosen folders: {set.Output}");
         var checkout = await GetCurrentBranchAsync(destPath, ct).ConfigureAwait(false) ?? "HEAD";
         var (checkoutCode, checkoutOut, checkoutErr) = await RunGitAsync(destPath, new[] { "checkout", "--progress", checkout, "--" }, onProgress, ct).ConfigureAwait(false);
         return checkoutCode == 0 ? new GitResult(true, 0, err.Trim()) : new GitResult(false, checkoutCode, $"Cloned, but couldn't check out its files: {Combine(checkoutOut, checkoutErr)}");
+    }
+
+    private static List<string> CloneArgs(IEnumerable<string> options, string url, string destPath)
+    {
+        var args = new List<string> { "clone" };
+        args.AddRange(options);
+        args.Add("--");            // no option may follow — url/dest are positional even if they start with '-'
+        args.Add(url);
+        args.Add(destPath);
+        return args;
+    }
+
+    private async Task<(int Code, string Stdout, string Stderr)?> CloneThroughCacheAsync(GitCloneCache cache, string git, string url, string destPath, List<string> options, Action<string>? onProgress, CancellationToken ct)
+    {
+        string mirror;
+        try { mirror = cache.MirrorPathFor(url); }
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException or IOException)
+        {
+            DiagnosticLog.Write($"Finding the clone cache entry for {url}", ex);
+            return null;
+        }
+        using var lease = await cache.AcquireAsync(mirror, cache.LockWait, ct).ConfigureAwait(false);
+        if (lease is null || !await RefreshMirrorAsync(git, url, mirror, onProgress, ct).ConfigureAwait(false)) return null;
+        var target = Path.GetFullPath(destPath);
+        var existed = Directory.Exists(target);
+        if (existed && Directory.EnumerateFileSystemEntries(target).Any()) return null;
+        var cachedOptions = options.Concat(new[] { "--reference-if-able", mirror, "--dissociate" });
+        var result = await RunAsync(git, CloneArgs(cachedOptions, url, destPath), null, onProgress, ct).ConfigureAwait(false);
+        if (result.Code == 0) return result;
+        DiagnosticLog.Write($"Cloning {url} through the clone cache", new InvalidOperationException(result.Stderr.Trim()));
+        return TryClearCloneTarget(target, existed) ? null : result;
+    }
+
+    private async Task<bool> RefreshMirrorAsync(string git, string url, string mirror, Action<string>? onProgress, CancellationToken ct)
+    {
+        var cacheFolder = Path.GetDirectoryName(mirror);
+        if (GitCloneCache.IsMirror(mirror))
+        {
+            var gitDir = "--git-dir=" + mirror;
+            var fetch = await RunAsync(git, new[] { gitDir, "fetch", "--prune", "--progress", "--", url, "+refs/heads/*:refs/heads/*", "+refs/tags/*:refs/tags/*" }, cacheFolder, onProgress, ct).ConfigureAwait(false);
+            if (fetch.Code == 0) return true;
+            var bare = await RunAsync(git, new[] { gitDir, "rev-parse", "--is-bare-repository" }, cacheFolder, null, ct).ConfigureAwait(false);
+            if (bare.Code == 0 && bare.Stdout.Trim() == "true")
+            {
+                DiagnosticLog.Write($"Refreshing the cached copy of {url}", new InvalidOperationException(fetch.Stderr.Trim()));
+                return true;
+            }
+        }
+        if (Directory.Exists(mirror) && !TryClearCloneTarget(mirror, keepFolder: false)) return false;
+        var clone = await RunAsync(git, CloneArgs(new[] { "--bare", "--progress" }, url, mirror), null, onProgress, ct).ConfigureAwait(false);
+        if (clone.Code == 0) return true;
+        DiagnosticLog.Write($"Caching a copy of {url}", new InvalidOperationException(clone.Stderr.Trim()));
+        if (Directory.Exists(mirror)) TryClearCloneTarget(mirror, keepFolder: false);
+        return false;
     }
 
     /// <summary>Clones, then checks out a specific ref — works for a branch, tag, OR commit (unlike clone --branch).</summary>
@@ -395,6 +480,60 @@ public sealed class GitService
             : new[] { "tag", "-a", tag, "-m", message };
         var (code, _, err) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
         return new GitResult(code == 0, code, err.Trim());
+    }
+
+    public async Task<GitResult> TagAnnotatedAsync(string repoRoot, string tag, string message, string name, string email, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(tag) || !GitUrlPolicy.IsSafeRef(tag))
+            return new GitResult(false, -1, $"Refused to create tag '{tag}': the name is not valid.");
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "-c", $"user.name={name.Trim()}", "-c", $"user.email={email.Trim()}", "tag", "-a", tag.Trim(), "-m", message }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<GitResult> DeleteTagAsync(string repoRoot, string tag, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(tag) || !GitUrlPolicy.IsSafeRef(tag)) return new GitResult(false, -1, $"Refused to delete tag '{tag}'.");
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "tag", "-d", tag.Trim() }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<IReadOnlyList<string>> ListTagsAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "tag", "--list" }, null, ct).ConfigureAwait(false);
+        return code == 0 ? outText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) : Array.Empty<string>();
+    }
+
+    public async Task<string?> GetLastTagAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "describe", "--tags", "--abbrev=0", "HEAD" }, null, ct).ConfigureAwait(false);
+        var tag = outText.Trim();
+        return code == 0 && tag.Length > 0 ? tag : null;
+    }
+
+    public async Task<DateTimeOffset?> GetCommitDateAsync(string repoRoot, string rev, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(rev) || !GitUrlPolicy.IsSafeRef(rev)) return null;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "show", "-s", "--format=%cI", rev.Trim(), "--" }, null, ct).ConfigureAwait(false);
+        return code == 0 && DateTimeOffset.TryParse(outText.Trim(), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var date) ? date : null;
+    }
+
+    public async Task<GitResult> PushRefsAsync(string repoRoot, string remoteOrUrl, IReadOnlyList<string> refspecs, bool atomic, Action<string>? onProgress = null, CancellationToken ct = default)
+    {
+        if (refspecs.Count == 0 || refspecs.Any(r => string.IsNullOrWhiteSpace(r) || r.TrimStart().StartsWith('-')))
+            return new GitResult(false, -1, "Refused to push: a ref name is not valid.");
+        var args = new List<string> { "push", "--progress" };
+        if (atomic) args.Add("--atomic");
+        args.Add(remoteOrUrl);
+        args.AddRange(refspecs);
+        var (code, outText, err) = await RunGitAsync(repoRoot, args, onProgress, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<GitResult> ResetSoftAsync(string repoRoot, string rev, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(rev) || !GitUrlPolicy.IsSafeRef(rev)) return new GitResult(false, -1, $"Refused to reset to '{rev}'.");
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "reset", "-q", "--soft", rev.Trim() }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
     }
 
     // ---- update / merge operations (Update Basis) ----
@@ -1156,6 +1295,32 @@ public sealed class GitService
         finally { DeleteIndexFile(index); }
     }
 
+    public async Task<GitResult> ExportTreeAsync(string repoRoot, string commit, string? subPath, string destination, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(commit) || !GitUrlPolicy.IsSafeRef(commit)) return new GitResult(false, -1, "Refused to export: the commit is not valid.");
+        if (!GitUrlPolicy.IsSafeSubPath(subPath)) return new GitResult(false, -1, "Refused to export: the folder escapes the repository.");
+        var gitDir = await GetGitDirAsync(repoRoot, ct).ConfigureAwait(false);
+        if (gitDir is null) return new GitResult(false, -1, $"{repoRoot} isn't a git repository.");
+        var index = Path.Combine(gitDir, $"basispm-export-{Guid.NewGuid():N}.index");
+        var environment = new Dictionary<string, string> { ["GIT_INDEX_FILE"] = index, ["GIT_LFS_SKIP_SMUDGE"] = "1" };
+        try
+        {
+            Directory.CreateDirectory(destination);
+            var treeish = string.IsNullOrEmpty(subPath) ? commit.Trim() + "^{tree}" : $"{commit.Trim()}:{subPath.Replace('\\', '/').Trim('/')}";
+            var (readCode, readOut, readErr) = await RunGitAsync(repoRoot, new[] { "read-tree", treeish }, null, ct, null, environment).ConfigureAwait(false);
+            if (readCode != 0) return new GitResult(false, readCode, Combine(readOut, readErr));
+            var prefix = Path.GetFullPath(destination).Replace('\\', '/').TrimEnd('/') + "/";
+            var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "checkout-index", "-a", "-f", "--prefix=" + prefix }, null, ct, null, environment).ConfigureAwait(false);
+            return new GitResult(code == 0, code, Combine(outText, err));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            DiagnosticLog.Write($"Exporting {commit} of {repoRoot}", ex);
+            return new GitResult(false, -1, ex.Message);
+        }
+        finally { DeleteIndexFile(index); }
+    }
+
     public async Task<IReadOnlyList<GitTreeChange>?> DiffTreesAsync(string repoRoot, string from, string to, CancellationToken ct = default)
     {
         if (!IsObjectName(from) || !IsObjectName(to)) return null;
@@ -1275,6 +1440,90 @@ public sealed class GitService
         if (stash == 0) return true;
         var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "rev-list", "--count", "HEAD", "--branches", "--not", "--remotes", "--tags" }, null, ct).ConfigureAwait(false);
         return code != 0 || !int.TryParse(outText.Trim(), out var count) || count > 0;
+    }
+
+    public async Task<GitResult> FetchWithTagsAsync(string repoRoot, string remoteOrUrl, IReadOnlyCollection<string>? refspecs = null, Action<string>? onProgress = null, CancellationToken ct = default)
+    {
+        var source = remoteOrUrl.Trim();
+        if (source.Length == 0 || source.StartsWith('-') || (source.Contains(':') && !IsFetchableUrl(source)))
+            return new GitResult(false, -1, "Refused to fetch: the URL uses an unsupported or unsafe git transport.");
+        var args = new List<string> { "fetch", "--tags", "--force", "--progress", "--", source };
+        foreach (var spec in refspecs ?? Array.Empty<string>())
+        {
+            if (string.IsNullOrWhiteSpace(spec) || spec.StartsWith('-') || spec.Any(c => char.IsControl(c) || char.IsWhiteSpace(c)))
+                return new GitResult(false, -1, $"Refused to fetch '{spec}': the ref is not valid.");
+            args.Add(spec.Trim());
+        }
+        var (code, outText, err) = await RunGitAsync(repoRoot, args, onProgress, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<int> CountLocalCommitsAsync(string repoRoot, string rev, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(rev) || !GitUrlPolicy.IsSafeRef(rev)) return -1;
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "rev-list", "--count", rev.Trim(), "--not", "--remotes", "--tags" }, null, ct).ConfigureAwait(false);
+        return code == 0 && int.TryParse(outText.Trim(), out var count) ? count : -1;
+    }
+
+    public async Task<(GitResult Result, string? StashSha)> StashEverythingAsync(string repoRoot, string message, CancellationToken ct = default)
+    {
+        var before = await ResolveCommitAsync(repoRoot, "refs/stash", ct).ConfigureAwait(false);
+        var args = await IdentityArgsAsync(repoRoot, ct).ConfigureAwait(false);
+        args.AddRange(new[] { "stash", "push", "--include-untracked", "-m", message });
+        var (code, outText, err) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        if (code != 0) return (new GitResult(false, code, Combine(outText, err)), null);
+        var after = await ResolveCommitAsync(repoRoot, "refs/stash", ct).ConfigureAwait(false);
+        return (new GitResult(true, 0, Combine(outText, err)), after is not null && !string.Equals(after, before, StringComparison.OrdinalIgnoreCase) ? after : null);
+    }
+
+    public async Task<GitResult> ForceCheckoutAsync(string repoRoot, string target, bool detach, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(target) || !GitUrlPolicy.IsSafeRef(target))
+            return new GitResult(false, -1, $"Refused to check out '{target}': the ref is not valid.");
+        var args = new List<string> { "-c", "advice.detachedHead=false", "checkout", "-f" };
+        if (detach) args.Add("--detach");
+        args.Add(target.Trim());
+        args.Add("--");
+        var (code, outText, err) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<GitResult> ResetHardAsync(string repoRoot, string commit, CancellationToken ct = default)
+    {
+        if (!IsObjectName(commit)) return new GitResult(false, -1, $"Refused to reset to '{commit}': it isn't a commit id.");
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "reset", "-q", "--hard", commit }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<GitResult> CleanUntrackedAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "clean", "-f", "-d", "-q" }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<string?> GetRemoteDefaultBranchAsync(string url, CancellationToken ct = default)
+    {
+        var git = FindGit();
+        if (git is null || string.IsNullOrWhiteSpace(url) || !IsFetchableUrl(url.Trim())) return null;
+        var (code, outText, _) = await RunAsync(git, new[] { "ls-remote", "--symref", url.Trim(), "HEAD" }, null, null, ct).ConfigureAwait(false);
+        if (code != 0) return null;
+        foreach (var line in outText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            if (line.StartsWith("ref: refs/heads/", StringComparison.Ordinal) && line.EndsWith("HEAD", StringComparison.Ordinal))
+                return line["ref: refs/heads/".Length..line.LastIndexOf('\t')].Trim();
+        return null;
+    }
+
+    public async Task<GitResult> RemoveRemoteAsync(string repoRoot, string remote, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(remote) || remote.StartsWith('-')) return new GitResult(false, -1, $"Refused to remove remote '{remote}'.");
+        var (code, outText, err) = await RunGitAsync(repoRoot, new[] { "remote", "remove", remote.Trim() }, null, ct).ConfigureAwait(false);
+        return new GitResult(code == 0, code, Combine(outText, err));
+    }
+
+    public async Task<IReadOnlyList<string>> ListAllTagsAsync(string repoRoot, CancellationToken ct = default)
+    {
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "tag", "--list" }, null, ct).ConfigureAwait(false);
+        return code == 0 ? outText.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) : Array.Empty<string>();
     }
 
     public async Task<GitSparseCheckout> GetSparseCheckoutAsync(string repoRoot, CancellationToken ct = default)

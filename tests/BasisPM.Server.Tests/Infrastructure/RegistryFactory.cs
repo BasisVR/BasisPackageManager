@@ -16,6 +16,7 @@ public abstract class RegistryFactory : WebApplicationFactory<Program>
 
         Environment.SetEnvironmentVariable("BASISPM_ENABLE_SUBMISSIONS", enableSubmissions ? "1" : null);
         Environment.SetEnvironmentVariable("BASISPM_SUBMIT_TOKEN", submitToken);
+        Environment.SetEnvironmentVariable("BASISPM_SEED_DIR", TestServerRoot.FixtureSeedDir);
 
         _ = Server;
     }
@@ -26,6 +27,7 @@ public abstract class RegistryFactory : WebApplicationFactory<Program>
         if (!disposing) return;
         Environment.SetEnvironmentVariable("BASISPM_ENABLE_SUBMISSIONS", null);
         Environment.SetEnvironmentVariable("BASISPM_SUBMIT_TOKEN", null);
+        Environment.SetEnvironmentVariable("BASISPM_SEED_DIR", null);
         try
         {
             if (_originalRegistry is not null)

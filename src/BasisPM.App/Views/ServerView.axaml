@@ -12,13 +12,21 @@
               BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
         <Grid ColumnDefinitions="*,Auto">
           <StackPanel Spacing="6">
-            <TextBlock Text="BASIS SERVER" Classes="tagline"/>
-            <TextBlock Text="Build, run and configure" Classes="h1"/>
+            <TextBlock Text="{loc:Tr server.hero.eyebrow}" Classes="tagline"/>
+            <TextBlock Text="{loc:Tr server.hero.title}" Classes="h1"/>
             <TextBlock Text="{Binding ProjectName}" Classes="muted" FontSize="14"/>
           </StackPanel>
-          <Button Grid.Column="1" Classes="iconBtn" Command="{Binding RefreshCommand}" ToolTip.Tip="Reload configuration and content">
-            <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
-          </Button>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Top">
+            <Button Classes="iconBtn" Command="{Binding RefreshCommand}" ToolTip.Tip="{loc:Tr server.tooltip.refresh}">
+              <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+            </Button>
+            <ToggleButton Name="AdvancedToggle" Classes="advanced" views:SectionState.Key="server.advanced" ToolTip.Tip="{loc:Tr server.tooltip.advanced}">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <PathIcon Classes="leadingIcon" Data="{StaticResource IconCode}" VerticalAlignment="Center"/>
+                <TextBlock Text="{loc:Tr shell.button.advanced}" VerticalAlignment="Center"/>
+              </StackPanel>
+            </ToggleButton>
+          </StackPanel>
         </Grid>
       </Border>
 
@@ -35,34 +43,91 @@
         </Grid>
       </Border>
 
-      <Expander views:SectionState.Key="server.runtime" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-        <Expander.Header><TextBlock Text="Server runtime" Classes="h3"/></Expander.Header>
+      <Expander views:SectionState.Key="server.runtime" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ToolTip.Tip="{loc:Tr server.tooltip.runtimeSection}">
+        <Expander.Header><TextBlock Text="{loc:Tr server.runtime.title}" Classes="h3"/></Expander.Header>
         <StackPanel Spacing="14" Margin="0,10,0,0">
-          <TextBlock Text="The server is built into Basis Server/BasisServerConsole/bin/Release/net10.0. The first run opens its console so you can complete the built-in setup wizard." Classes="muted" TextWrapping="Wrap"/>
+          <TextBlock Text="{loc:Tr server.runtime.intro}" Classes="muted" TextWrapping="Wrap"/>
           <TextBlock Text="{Binding RuntimeDirectory}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
           <Border CornerRadius="10" Padding="14" Background="{StaticResource BasisSurfaceHoverBrush}"
                   BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
             <Grid ColumnDefinitions="*,Auto">
               <StackPanel Spacing="4">
-                <TextBlock Text="Build requirement: .NET 10 SDK" FontWeight="SemiBold"/>
-                <TextBlock Text="Install the SDK—not only the runtime. Visual Studio is not required." Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                <TextBlock Text="{loc:Tr server.runtime.sdkTitle}" FontWeight="SemiBold"/>
+                <TextBlock Text="{loc:Tr server.runtime.sdkBody}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding DotNetStatus}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
               </StackPanel>
               <Button Grid.Column="1" Classes="secondary" Command="{Binding OpenDotNetDownloadCommand}"
                       IsVisible="{Binding !HasDotNet10Sdk}" Margin="16,0,0,0"
-                      VerticalAlignment="Center" Content="Download .NET 10 SDK"/>
+                      VerticalAlignment="Center" Content="{loc:Tr server.runtime.downloadSdk}" ToolTip.Tip="{loc:Tr server.tooltip.downloadDotNet}"/>
             </Grid>
           </Border>
+          <Border CornerRadius="10" Padding="14" Background="#1A9333EA" BorderBrush="#669333EA" BorderThickness="1" IsVisible="{Binding IsFirstRun}">
+            <StackPanel Spacing="10">
+              <StackPanel Spacing="4">
+                <TextBlock Text="{loc:Tr server.firstRun.title}" FontWeight="SemiBold"/>
+                <TextBlock Text="{loc:Tr server.firstRun.body}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+              </StackPanel>
+              <StackPanel Spacing="4">
+                <TextBlock Text="{loc:Tr server.firstRun.adminLabel}" Classes="muted" FontSize="11"/>
+                <TextBox Text="{Binding FirstRunAdmin}" Watermark="did:key:z6Mk…" ToolTip.Tip="{loc:Tr server.tooltip.firstRunAdmin}"/>
+                <TextBlock Text="{loc:Tr server.firstRun.adminHint}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+              </StackPanel>
+              <Button Classes="secondary" HorizontalAlignment="Left" Command="{Binding RunInOwnWindowCommand}" IsVisible="{Binding CanRunInOwnWindow}"
+                      Content="{loc:Tr server.firstRun.ownWindow}" ToolTip.Tip="{loc:Tr server.tooltip.ownWindow}"/>
+            </StackPanel>
+          </Border>
           <WrapPanel>
-            <Button Classes="primary" Command="{Binding BuildCommand}" Margin="0,0,10,8"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}"/><TextBlock Text="Build server"/></StackPanel></Button>
-            <Button Classes="secondary" Command="{Binding RunCommand}" Margin="0,0,10,8"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}"/><TextBlock Text="Run server"/></StackPanel></Button>
-            <Button Classes="secondary" Command="{Binding StopCommand}" Margin="0,0,10,8" Content="Stop server"/>
-            <Button Classes="secondary" Command="{Binding OpenRuntimeCommand}" Margin="0,0,10,8"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}"/><TextBlock Text="Open runtime folder"/></StackPanel></Button>
+            <Button Classes="primary" Command="{Binding BuildCommand}" IsEnabled="{Binding CanRunServer}" Margin="0,0,10,8" ToolTip.Tip="{loc:Tr server.tooltip.build}"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}"/><TextBlock Text="{loc:Tr server.button.build}"/></StackPanel></Button>
+            <Button Classes="secondary" Command="{Binding RunCommand}" IsEnabled="{Binding CanRunServer}" Margin="0,0,10,8" ToolTip.Tip="{loc:Tr server.tooltip.run}"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}"/><TextBlock Text="{loc:Tr server.button.run}"/></StackPanel></Button>
+            <Button Classes="secondary" Command="{Binding StopCommand}" IsEnabled="{Binding CanStopServer}" Margin="0,0,10,8" Content="{loc:Tr server.button.stop}" ToolTip.Tip="{loc:Tr server.tooltip.stop}"/>
+            <Button Classes="secondary" Command="{Binding RestartCommand}" IsVisible="{Binding IsServerRunning}" IsEnabled="{Binding CanStopServer}" Margin="0,0,10,8" ToolTip.Tip="{loc:Tr server.tooltip.restart}"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconRefresh}"/><TextBlock Text="{loc:Tr server.button.restart}"/></StackPanel></Button>
+            <Button Classes="secondary" Command="{Binding OpenRuntimeCommand}" Margin="0,0,10,8" ToolTip.Tip="{loc:Tr server.tooltip.openRuntimeFolder}"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}"/><TextBlock Text="{loc:Tr server.button.openRuntime}"/></StackPanel></Button>
           </WrapPanel>
+          <Border CornerRadius="10" Background="{StaticResource BasisSurfaceBrush}" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1"
+                  ClipToBounds="True" IsVisible="{Binding ServerConsole.IsVisible}">
+            <Grid RowDefinitions="Auto,Auto,Auto">
+              <Grid ColumnDefinitions="*,Auto" Margin="14,10,10,8">
+                <StackPanel Spacing="2" VerticalAlignment="Center">
+                  <TextBlock Text="{loc:Tr server.console.title}" FontWeight="SemiBold"/>
+                  <TextBlock Text="{Binding ServerConsole.Status}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Top">
+                  <Button Classes="iconBtn" Click="OnCopyConsole" IsEnabled="{Binding ServerConsole.HasLines}" ToolTip.Tip="{loc:Tr server.tooltip.consoleCopy}">
+                    <PathIcon Width="15" Height="15" Data="{StaticResource IconCopy}"/>
+                  </Button>
+                  <Button Classes="iconBtn" Command="{Binding ServerConsole.ClearCommand}" IsEnabled="{Binding ServerConsole.HasLines}" ToolTip.Tip="{loc:Tr server.tooltip.consoleClear}">
+                    <PathIcon Width="15" Height="15" Data="{StaticResource IconDelete}"/>
+                  </Button>
+                </StackPanel>
+              </Grid>
+              <ScrollViewer Grid.Row="1" Name="ConsoleScroll" Height="320" Background="#0B0A1C" HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl Name="ConsoleList" ItemsSource="{Binding ServerConsole.Lines}" Margin="0,6">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vm:ServerConsoleLineRow">
+                      <SelectableTextBlock Text="{Binding Text}" Foreground="{Binding Brush}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12"
+                                           TextWrapping="Wrap" Margin="14,1" SelectionBrush="#66EF1237"/>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+              <Grid Grid.Row="2" ColumnDefinitions="*,8,Auto" Margin="10">
+                <TextBox Name="ConsoleInput" Text="{Binding ServerConsole.Input}" Watermark="{Binding ServerConsole.InputHint}" IsEnabled="{Binding ServerConsole.CanType}"
+                         FontFamily="{StaticResource MonoFontFamily}" ToolTip.Tip="{loc:Tr server.tooltip.consoleInput}"/>
+                <Button Grid.Column="2" Classes="secondary" Command="{Binding ServerConsole.SendCommand}" IsEnabled="{Binding ServerConsole.CanType}"
+                        Content="{loc:Tr server.console.send}" ToolTip.Tip="{loc:Tr server.tooltip.consoleSend}"/>
+              </Grid>
+            </Grid>
+          </Border>
         </StackPanel>
       </Expander>
 
-      <Expander views:SectionState.Key="server.packages" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+      <Expander views:SectionState.Key="server.packages" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ToolTip.Tip="{loc:Tr server.tooltip.packagesSection}"
+                IsVisible="{Binding #AdvancedToggle.IsChecked}">
         <Expander.Header><TextBlock Text="{loc:Tr server.packages.title}" Classes="h3"/></Expander.Header>
         <StackPanel Spacing="14" Margin="0,10,0,0">
           <Grid ColumnDefinitions="*,Auto">
@@ -76,8 +141,8 @@
             <TextBlock Text="{Binding ServerPackagesNotice}" TextWrapping="Wrap"/>
           </Border>
           <Grid ColumnDefinitions="*,12,Auto" IsVisible="{Binding CanManageServerPackages}">
-            <TextBox Text="{Binding ServerPackageSource}" Watermark="{loc:Tr server.packages.sourceWatermark}"/>
-            <Button Grid.Column="2" Classes="primary" Command="{Binding AddServerPackageCommand}">
+            <TextBox Text="{Binding ServerPackageSource}" Watermark="{loc:Tr server.packages.sourceWatermark}" ToolTip.Tip="{loc:Tr server.tooltip.packageSource}"/>
+            <Button Grid.Column="2" Classes="primary" Command="{Binding AddServerPackageCommand}" ToolTip.Tip="{loc:Tr server.tooltip.addPackage}">
               <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}"/><TextBlock Text="{loc:Tr server.packages.add}"/></StackPanel>
             </Button>
           </Grid>
@@ -90,13 +155,13 @@
                     <StackPanel Spacing="3">
                       <WrapPanel>
                         <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                        <Border Classes="versionPill" VerticalAlignment="Center" Margin="0,0,6,0" IsVisible="{Binding HasVersion}">
+                        <Border Classes="versionPill" VerticalAlignment="Center" Margin="0,0,6,0" IsVisible="{Binding HasVersion}" ToolTip.Tip="{loc:Tr server.tooltip.packageVersion}">
                           <TextBlock Text="{Binding Version}" FontSize="11" Classes="muted"/>
                         </Border>
-                        <Border Classes="versionPill" VerticalAlignment="Center" Background="#2622C55E" BorderBrush="#8022C55E" IsVisible="{Binding IsReady}">
+                        <Border Classes="versionPill" VerticalAlignment="Center" Background="#2622C55E" BorderBrush="#8022C55E" IsVisible="{Binding IsReady}" ToolTip.Tip="{loc:Tr server.tooltip.packageReady}">
                           <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="{StaticResource BasisSuccessBrush}"/>
                         </Border>
-                        <Border Classes="versionPill" VerticalAlignment="Center" Background="#26F59E0B" BorderBrush="#80F59E0B" IsVisible="{Binding NeedsAttention}">
+                        <Border Classes="versionPill" VerticalAlignment="Center" Background="#26F59E0B" BorderBrush="#80F59E0B" IsVisible="{Binding NeedsAttention}" ToolTip.Tip="{loc:Tr server.tooltip.packageAttention}">
                           <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="{StaticResource BasisWarningBrush}"/>
                         </Border>
                       </WrapPanel>
@@ -137,7 +202,8 @@
                         <TextBlock Text="{Binding Name}" Classes="dim" FontSize="11"/>
                       </StackPanel>
                       <Button Grid.Column="1" Classes="secondary" VerticalAlignment="Center" Margin="12,0,0,0"
-                              Command="{Binding $parent[ItemsControl].((vm:ServerViewModel)DataContext).InstallServerCatalogPackageCommand}" CommandParameter="{Binding}">
+                              Command="{Binding $parent[ItemsControl].((vm:ServerViewModel)DataContext).InstallServerCatalogPackageCommand}" CommandParameter="{Binding}"
+                              ToolTip.Tip="{loc:Tr server.tooltip.installCatalogPackage}">
                         <StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}"/><TextBlock Text="{loc:Tr server.packages.install}"/></StackPanel>
                       </Button>
                     </Grid>
@@ -149,24 +215,24 @@
         </StackPanel>
       </Expander>
 
-      <Expander views:SectionState.Key="server.steam" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-        <Expander.Header><TextBlock Text="Connect Steam client" Classes="h3"/></Expander.Header>
+      <Expander views:SectionState.Key="server.steam" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ToolTip.Tip="{loc:Tr server.tooltip.steamSection}">
+        <Expander.Header><TextBlock Text="{loc:Tr server.client.title}" Classes="h3"/></Expander.Header>
         <StackPanel Spacing="14" Margin="0,10,0,0">
-          <TextBlock Text="Launches Basis Labs through Steam with the server connection argument." Classes="muted" TextWrapping="Wrap"/>
+          <TextBlock Text="{loc:Tr server.client.body}" Classes="muted" TextWrapping="Wrap"/>
           <Grid ColumnDefinitions="2*,12,*,12,2*">
-            <StackPanel><TextBlock Text="Host" Classes="muted" FontSize="11"/><TextBox Text="{Binding Host}"/></StackPanel>
-            <StackPanel Grid.Column="2"><TextBlock Text="Port" Classes="muted" FontSize="11"/><TextBox Text="{Binding Port}"/></StackPanel>
-            <StackPanel Grid.Column="4"><TextBlock Text="Password (optional)" Classes="muted" FontSize="11"/><TextBox Text="{Binding ConnectionPassword}" PasswordChar="●" Watermark="{Binding ConnectionPasswordHint}"/></StackPanel>
+            <StackPanel><TextBlock Text="{loc:Tr server.client.host}" Classes="muted" FontSize="11"/><TextBox Text="{Binding Host}" ToolTip.Tip="{loc:Tr server.tooltip.host}"/></StackPanel>
+            <StackPanel Grid.Column="2"><TextBlock Text="{loc:Tr server.client.port}" Classes="muted" FontSize="11"/><TextBox Text="{Binding Port}" ToolTip.Tip="{loc:Tr server.tooltip.port}"/></StackPanel>
+            <StackPanel Grid.Column="4"><TextBlock Text="{loc:Tr server.client.password}" Classes="muted" FontSize="11"/><TextBox Text="{Binding ConnectionPassword}" PasswordChar="●" Watermark="{Binding ConnectionPasswordHint}" ToolTip.Tip="{loc:Tr server.tooltip.connectionPassword}"/></StackPanel>
           </Grid>
-          <Button Classes="primary" Command="{Binding LaunchClientCommand}" HorizontalAlignment="Left"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}"/><TextBlock Text="Launch and connect"/></StackPanel></Button>
+          <Button Classes="primary" Command="{Binding LaunchClientCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr server.tooltip.launchClient}"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}"/><TextBlock Text="{loc:Tr server.client.launch}"/></StackPanel></Button>
         </StackPanel>
       </Expander>
 
-      <Expander views:SectionState.Key="server.config" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-        <Expander.Header><TextBlock Text="Server configuration" Classes="h3"/></Expander.Header>
+      <Expander views:SectionState.Key="server.config" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ToolTip.Tip="{loc:Tr server.tooltip.configSection}">
+        <Expander.Header><TextBlock Text="{loc:Tr server.config.title}" Classes="h3"/></Expander.Header>
         <StackPanel Spacing="12" Margin="0,10,0,0" HorizontalAlignment="Stretch">
-          <TextBlock Text="Run the server once to generate config.xml. Every setting in that file appears below." Classes="muted" TextWrapping="Wrap"/>
-          <TextBlock Text="No configuration exists yet." Classes="muted" IsVisible="{Binding !HasConfig}"/>
+          <TextBlock Text="{loc:Tr server.config.intro}" Classes="muted" TextWrapping="Wrap"/>
+          <TextBlock Text="{loc:Tr server.config.none}" Classes="muted" IsVisible="{Binding !HasConfig}"/>
           <ItemsControl ItemsSource="{Binding ConfigFields}" HorizontalAlignment="Stretch">
             <ItemsControl.Styles>
               <Style Selector="ContentPresenter">
@@ -180,33 +246,33 @@
                   <Grid ColumnDefinitions="280,16,*" HorizontalAlignment="Stretch">
                     <StackPanel Margin="0,4,0,0"><TextBlock Text="{Binding Name}" FontWeight="SemiBold"/><TextBlock Text="{Binding Description}" Classes="dim" FontSize="11" TextWrapping="Wrap"/></StackPanel>
                     <Grid Grid.Column="2" HorizontalAlignment="Stretch">
-                      <TextBox Text="{Binding Value}" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsVisible="{Binding IsNotSecret}"/>
-                      <TextBox Text="{Binding Value}" PasswordChar="●" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsVisible="{Binding IsSecret}"/>
+                      <TextBox Text="{Binding Value}" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsVisible="{Binding IsNotSecret}" ToolTip.Tip="{loc:Tr server.tooltip.configValue}"/>
+                      <TextBox Text="{Binding Value}" PasswordChar="●" HorizontalAlignment="Stretch" VerticalAlignment="Top" IsVisible="{Binding IsSecret}" ToolTip.Tip="{loc:Tr server.tooltip.configSecretValue}"/>
                     </Grid>
                   </Grid>
                 </Border>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
-          <Button Classes="primary" Command="{Binding SaveConfigCommand}" HorizontalAlignment="Left" IsVisible="{Binding HasConfig}"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconSave}"/><TextBlock Text="Save configuration"/></StackPanel></Button>
+          <Button Classes="primary" Command="{Binding SaveConfigCommand}" HorizontalAlignment="Left" IsVisible="{Binding HasConfig}" ToolTip.Tip="{loc:Tr server.tooltip.saveConfig}"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconSave}"/><TextBlock Text="{loc:Tr server.config.save}"/></StackPanel></Button>
         </StackPanel>
       </Expander>
 
-      <Expander views:SectionState.Key="server.content" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-        <Expander.Header><TextBlock Text="Default content" Classes="h3"/></Expander.Header>
+      <Expander views:SectionState.Key="server.content" IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ToolTip.Tip="{loc:Tr server.tooltip.contentSection}">
+        <Expander.Header><TextBlock Text="{loc:Tr server.content.title}" Classes="h3"/></Expander.Header>
         <StackPanel Spacing="12" Margin="0,10,0,0">
-          <TextBlock Text="Add an avatar, world or prop to the client library, or load it into the server on startup." Classes="muted" TextWrapping="Wrap"/>
+          <TextBlock Text="{loc:Tr server.content.body}" Classes="muted" TextWrapping="Wrap"/>
           <Grid ColumnDefinitions="180,12,*">
-            <StackPanel><TextBlock Text="Type" Classes="muted" FontSize="11"/><ComboBox ItemsSource="{Binding ContentModes}" SelectedItem="{Binding SelectedMode}"><ComboBox.ItemTemplate><DataTemplate DataType="vm:ContentModeOption"><TextBlock Text="{Binding Name}"/></DataTemplate></ComboBox.ItemTemplate></ComboBox></StackPanel>
-            <StackPanel Grid.Column="2"><TextBlock Text="Content URL" Classes="muted" FontSize="11"/><TextBox Text="{Binding ContentUrl}" Watermark="https://…"/></StackPanel>
+            <StackPanel><TextBlock Text="{loc:Tr server.content.type}" Classes="muted" FontSize="11"/><ComboBox ItemsSource="{Binding ContentModes}" SelectedItem="{Binding SelectedMode}" ToolTip.Tip="{loc:Tr server.tooltip.contentType}"><ComboBox.ItemTemplate><DataTemplate DataType="vm:ContentModeOption"><TextBlock Text="{Binding Name}"/></DataTemplate></ComboBox.ItemTemplate></ComboBox></StackPanel>
+            <StackPanel Grid.Column="2"><TextBlock Text="{loc:Tr server.content.url}" Classes="muted" FontSize="11"/><TextBox Text="{Binding ContentUrl}" Watermark="https://…" ToolTip.Tip="{loc:Tr server.tooltip.contentUrl}"/></StackPanel>
           </Grid>
-          <StackPanel><TextBlock Text="Unlock password (optional)" Classes="muted" FontSize="11"/><TextBox Text="{Binding ContentPassword}" PasswordChar="●"/></StackPanel>
-          <StackPanel Orientation="Horizontal" Spacing="18"><RadioButton Content="Default client library" IsChecked="{Binding AddToDefaultLibrary}"/><RadioButton Content="Load on server startup" IsChecked="{Binding AddAsInitialResource}"/></StackPanel>
-          <Button Classes="primary" Command="{Binding AddContentCommand}" HorizontalAlignment="Left"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}"/><TextBlock Text="Add content"/></StackPanel></Button>
+          <StackPanel><TextBlock Text="{loc:Tr server.content.password}" Classes="muted" FontSize="11"/><TextBox Text="{Binding ContentPassword}" PasswordChar="●" ToolTip.Tip="{loc:Tr server.tooltip.contentPassword}"/></StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="18"><RadioButton Content="{loc:Tr server.content.clientLibrary}" IsChecked="{Binding AddToDefaultLibrary}" ToolTip.Tip="{loc:Tr server.tooltip.defaultLibrary}"/><RadioButton Content="{loc:Tr server.content.loadOnStartup}" IsChecked="{Binding AddAsInitialResource}" ToolTip.Tip="{loc:Tr server.tooltip.loadOnStartup}"/></StackPanel>
+          <Button Classes="primary" Command="{Binding AddContentCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr server.tooltip.addContent}"><StackPanel Orientation="Horizontal" Spacing="8"><PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}"/><TextBlock Text="{loc:Tr server.content.add}"/></StackPanel></Button>
           <ItemsControl ItemsSource="{Binding ContentFiles}">
             <ItemsControl.ItemTemplate>
               <DataTemplate DataType="models:ServerContentFile">
-                <Border Classes="card" Padding="12" Margin="0,0,0,8"><Grid ColumnDefinitions="*,Auto"><StackPanel><TextBlock Text="{Binding Name}" FontWeight="SemiBold"/><TextBlock Text="{Binding IsDefaultLibrary, StringFormat='Default library: {0}'}" Classes="dim" FontSize="11"/></StackPanel><Button Grid.Column="1" Classes="iconBtn" Command="{Binding $parent[ItemsControl].((vm:ServerViewModel)DataContext).RemoveContentCommand}" CommandParameter="{Binding}" ToolTip.Tip="Remove content file"><PathIcon Width="15" Height="15" Data="{StaticResource IconClose}"/></Button></Grid></Border>
+                <Border Classes="card" Padding="12" Margin="0,0,0,8"><Grid ColumnDefinitions="*,Auto"><StackPanel><TextBlock Text="{Binding Name}" FontWeight="SemiBold"/><TextBlock Text="{Binding IsDefaultLibrary, StringFormat='Default library: {0}'}" Classes="dim" FontSize="11"/></StackPanel><Button Grid.Column="1" Classes="iconBtn" Command="{Binding $parent[ItemsControl].((vm:ServerViewModel)DataContext).RemoveContentCommand}" CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr server.tooltip.removeContent}"><PathIcon Width="15" Height="15" Data="{StaticResource IconClose}"/></Button></Grid></Border>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>

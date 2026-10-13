@@ -19,7 +19,7 @@
                                    Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                     </StackPanel>
                     <Button Grid.Column="1" Classes="iconBtn" VerticalAlignment="Center"
-                            Command="{Binding RefreshCommand}" ToolTip.Tip="{loc:Tr announcements.button.refresh}">
+                            Command="{Binding RefreshCommand}" ToolTip.Tip="{loc:Tr announcements.tooltip.refresh}">
                         <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
                     </Button>
                 </Grid>
@@ -39,11 +39,11 @@
                         <Border Classes="card">
                             <StackPanel Spacing="10">
                                 <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                                    <Border CornerRadius="999" Padding="10,3" Background="{Binding LevelBrush}">
+                                    <Border CornerRadius="999" Padding="10,3" Background="{Binding LevelBrush}" ToolTip.Tip="{loc:Tr announcements.tooltip.level}">
                                         <TextBlock Text="{Binding LevelLabel}" FontSize="10"
                                                    FontWeight="Bold" Foreground="#FFFFFF"/>
                                     </Border>
-                                    <Border Classes="versionPill" IsVisible="{Binding IsPinned}">
+                                    <Border Classes="versionPill" IsVisible="{Binding IsPinned}" ToolTip.Tip="{loc:Tr announcements.tooltip.pinned}">
                                         <TextBlock Text="{loc:Tr announcements.card.pinned}" FontSize="10" FontWeight="Bold" Classes="muted"/>
                                     </Border>
                                     <TextBlock Text="{Binding DateDisplay}" Classes="dim" FontSize="12"

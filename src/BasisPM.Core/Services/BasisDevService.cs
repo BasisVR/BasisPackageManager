@@ -16,15 +16,19 @@ public sealed class BasisDevService
     private readonly MountRegistry _registry;
     private readonly MountService _mounts;
     private readonly ServerPackageService _serverPackages;
+    private readonly PackageUpdateService _updates;
 
-    public BasisDevService(GitService git, UnityProjectService projects, MountRegistry registry, MountService mounts)
+    public BasisDevService(GitService git, UnityProjectService projects, MountRegistry registry, MountService mounts, PackageUpdateService? updates = null)
     {
         _git = git;
         _projects = projects;
         _registry = registry;
         _mounts = mounts;
         _serverPackages = new ServerPackageService(git);
+        _updates = updates ?? new PackageUpdateService(git, mounts, registry);
     }
+
+    public Func<PackageUpdateTarget, CancellationToken, Task<bool>>? ApproveUpdate { get; set; }
 
     public BasisDevReport Scan(BasisInstall install) => Classify(install, install.Manifest.Dependencies, null);
 
@@ -70,6 +74,7 @@ public sealed class BasisDevService
                 BasisDevAction.Ignore => MarkHandledByProject(install, package, true),
                 BasisDevAction.Unignore => MarkHandledByProject(install, package, false),
                 BasisDevAction.Move => await MoveAsync(install, package, ct).ConfigureAwait(false),
+                BasisDevAction.Switch => await SwitchAsync(install, package, onProgress, ct).ConfigureAwait(false),
                 _ => BasisDevResult.Fail($"{Describe(action)} isn't supported."),
             };
         }
@@ -115,6 +120,7 @@ public sealed class BasisDevService
         BasisDevAction.Ignore => "Ignore",
         BasisDevAction.Unignore => "Unignore",
         BasisDevAction.Move => "Move to " + BasisDevStore.FolderName,
+        BasisDevAction.Switch => "Use the listed version",
         _ => action.ToString(),
     };
 
@@ -154,6 +160,7 @@ public sealed class BasisDevService
 
     private static BasisDevPackage Classify(string project, string id, string? value, LocalPackage? local, BasisDevSidecar? sidecar, BasisPackageEntry? entry, MountRecord? record, string? looseClone, IReadOnlySet<string>? trackedFolders)
     {
+        var recorded = sidecar;
         sidecar ??= entry is null ? null : BasisPackagesStore.SidecarFor(id, entry);
         var candidates = new[] { sidecar is null ? null : BasisDevStore.ResolveFolder(project, sidecar), record?.FolderPath, looseClone };
         var cloneFolder = candidates.FirstOrDefault(MountService.IsWorkingClone) ?? candidates.FirstOrDefault(c => c is not null);
@@ -176,8 +183,9 @@ public sealed class BasisDevService
         {
             if (!cloneActive && sidecar?.HandledByProject != true) issues.Add(local is not null ? BasisDevIssueKind.Shadowed : BasisDevIssueKind.Detached);
             if (sidecar is null) issues.Add(BasisDevIssueKind.Unrecorded);
-            else if (entry is null && cloneActive && BasisDevStore.IsCloneFolder(project, cloneFolder)) issues.Add(BasisDevIssueKind.Unlisted);
+            else if (entry is null && cloneActive && BasisDevStore.IsCloneFolder(project, cloneFolder) && !string.IsNullOrWhiteSpace(sidecar.Upstream.Url)) issues.Add(BasisDevIssueKind.Unlisted);
             if (embeddedIsClone && (sidecar is not null || record is not null)) issues.Add(BasisDevIssueKind.InPackages);
+            if (entry is not null && recorded is not null && recorded.HandledByProject != true && DiffersFromListed(recorded.Upstream, entry)) issues.Add(BasisDevIssueKind.VersionMismatch);
         }
         else if ((sidecar is not null || record is not null) && cloneFolder is not null)
         {
@@ -202,6 +210,47 @@ public sealed class BasisDevService
             PackageRoot = cloneExists ? FindPackageRoot(cloneFolder!, id, sidecar?.Upstream.Path ?? UpmGitUrl.Parse(record?.OriginalManifestValue)?.Path, pointsAtClone ? target : null, deep: false) : null,
             Issues = issues,
         };
+    }
+
+    public static bool DiffersFromListed(BasisDevUpstream upstream, BasisPackageEntry entry)
+    {
+        if (!PackageUpdateService.SameRepository(upstream.Url, entry.Url)) return true;
+        if (!string.Equals(Blank(upstream.Ref), Blank(entry.Ref), StringComparison.Ordinal)) return true;
+        return Blank(upstream.Commit) is { } mine && Blank(entry.Commit) is { } listed && !string.Equals(mine, listed, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string? Blank(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    public async Task<BasisDevResult> RestoreAllAsync(BasisInstall install, bool switchListed, Action<string>? onProgress = null, CancellationToken ct = default)
+    {
+        var report = await ScanAsync(install, compare: false, ct).ConfigureAwait(false);
+        int restored = 0, switched = 0;
+        var problems = new List<string>();
+        foreach (var package in report.Packages)
+        {
+            ct.ThrowIfCancellationRequested();
+            BasisDevAction? action = package.Issues.Contains(BasisDevIssueKind.MissingClone) && package.Actions.Contains(BasisDevAction.Reclone) ? BasisDevAction.Reclone
+                : switchListed && package.Actions.Contains(BasisDevAction.Switch) ? BasisDevAction.Switch
+                : null;
+            if (action is null) continue;
+            onProgress?.Invoke((action == BasisDevAction.Reclone ? "Cloning " : "Switching ") + package.Id + "…");
+            var result = await ApplyAsync(install, package.Id, action.Value, false, onProgress, ct).ConfigureAwait(false);
+            if (!result.Ok) problems.Add(result.Message);
+            else if (action == BasisDevAction.Reclone) restored++;
+            else switched++;
+        }
+        var summary = restored == 0 && switched == 0 && problems.Count == 0
+            ? "Every listed package is already here."
+            : $"Cloned {restored} missing package(s) and moved {switched} to the version {BasisPackagesStore.FileName} lists.";
+        return problems.Count == 0 ? BasisDevResult.Success(summary) : BasisDevResult.Fail(summary + " " + string.Join(" ", problems));
+    }
+
+    private async Task<BasisDevResult> SwitchAsync(BasisInstall install, BasisDevPackage package, Action<string>? onProgress, CancellationToken ct)
+    {
+        if (package.Listed is not { } entry) return BasisDevResult.Fail($"{package.Id} isn't listed in Packages/{BasisPackagesStore.FileName}.");
+        var request = new PackageUpdateRequest(entry.Ref, entry.Url, entry.Commit, entry.ForkOf, ReplaceForkOf: true);
+        var result = await _updates.UpdateCloneAsync(install, package.Id, request, ApproveUpdate, onProgress, ct).ConfigureAwait(false);
+        return result.Ok ? BasisDevResult.Success(result.Message) : BasisDevResult.Fail(result.Message);
     }
 
     private static PackageSourceKind SourceOf(string? value, bool pointsAtClone)
@@ -350,6 +399,14 @@ public sealed class BasisDevService
         if (string.IsNullOrWhiteSpace(url)) return BasisDevResult.Fail($"The upstream of {package.Id} wasn't recorded, so it can't be cloned again.");
         var gitRef = package.Upstream?.Ref ?? package.Upstream?.Commit ?? original?.Ref;
         var clone = await _git.CloneAtAsync(url, folder, gitRef, onProgress, ct).ConfigureAwait(false);
+        var pinned = package.Upstream?.Commit;
+        var moved = "";
+        if (clone.Ok && pinned is { Length: >= 7 } && await _git.ResolveCommitAsync(folder, "HEAD", ct).ConfigureAwait(false) is { } head && !PackageScanService.SameCommit(head, pinned))
+        {
+            var checkout = await _git.CheckoutDetachedAsync(folder, pinned, ct).ConfigureAwait(false);
+            clone = checkout.Ok ? clone : new GitResult(false, checkout.Code, $"{gitRef ?? "its default branch"} now points at {PackageScanService.ShortCommit(head)}, not the recorded {PackageScanService.ShortCommit(pinned)}, and that commit is no longer in the repository. Its history was rewritten, so check the package before installing it again.");
+            if (checkout.Ok) moved = $" {gitRef ?? "Its default branch"} has moved on to {PackageScanService.ShortCommit(head)}, so the recorded {PackageScanService.ShortCommit(pinned)} was checked out.";
+        }
         if (!clone.Ok)
         {
             try { if (Directory.Exists(folder)) await BasisInstallService.DeleteFolderAsync(folder).ConfigureAwait(false); }
@@ -372,7 +429,7 @@ public sealed class BasisDevService
         ExcludeFromProject(install, folder);
         var note = package.Listed is null && LocalTarget(install.UnityProjectPath, package.ManifestValue) is { } target && IsInside(target, folder)
             ? await TryListAsync(install, package.Id, folder, sidecar.Upstream, ct).ConfigureAwait(false) : "";
-        return BasisDevResult.Success($"Cloned {package.Id} again into {RelativeTo(install.UnityProjectPath, folder)}.{note}");
+        return BasisDevResult.Success($"Cloned {package.Id} again into {RelativeTo(install.UnityProjectPath, folder)}.{moved}{note}");
     }
 
     private async Task<BasisDevResult> MoveAsync(BasisInstall install, BasisDevPackage package, CancellationToken ct)

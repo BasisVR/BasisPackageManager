@@ -12,18 +12,23 @@
   <meta http-equiv="Content-Security-Policy" content="img-src 'self' https://raw.githubusercontent.com https://gitlab.com data:;">
 
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.bunny.net" />
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.bunny.net" crossorigin />
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&amp;display=swap" rel="stylesheet" />
 
-  <!-- Tailwind config (matches the main site) then Tailwind CDN -->
+  <!-- Tailwind: compiled from tailwind.config.js by `npm run build:css` -->
   <script>
-    window.tailwind = { config: { darkMode: 'class', theme: { extend: {
-      fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
-      colors: { brand: { DEFAULT:'#ef1237', 100:'#ffd6de', 300:'#ff5775', 500:'#ef1237', 700:'#950a24' }, basisbg: '#100f27' },
-      boxShadow: { soft: '0 8px 30px rgba(0,0,0,0.08)' }
-    } } } };
+    window.basisTailwindFallback = function () {
+      window.tailwind = { config: { darkMode: 'class', theme: { extend: {
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+        colors: { brand: { DEFAULT: '#ef1237', 100: '#ffd6de', 300: '#ff5775', 500: '#ef1237', 700: '#950a24' }, basisbg: '#100f27' },
+        boxShadow: { soft: '0 8px 30px rgba(0,0,0,0.08)' }
+      } } } };
+      var script = document.createElement('script');
+      script.src = 'https://cdn.tailwindcss.com/3.4.16';
+      document.head.appendChild(script);
+    };
   </script>
-  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <link rel="stylesheet" href="/dist/tailwind.css" onerror="this.onerror=null;window.basisTailwindFallback()" />
   <script src="/theme.js" defer></script>
   <link rel="stylesheet" href="/styles.css" />
   <style>
@@ -37,7 +42,7 @@
 <body class="bg-white text-gray-800 dark:bg-basisbg dark:text-gray-100 antialiased">
 
   <!-- Backdrop -->
-  <div aria-hidden="true" class="animated-gradient fixed inset-0 -z-30 opacity-25 dark:opacity-20"></div>
+  <div aria-hidden="true" class="animated-gradient fixed inset-0 -z-30 opacity-35 dark:opacity-30"></div>
   <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
     <div class="absolute -top-24 left-1/2 -translate-x-1/2 h-[50rem] w-[50rem] rounded-full bg-gradient-to-br from-brand/20 via-pink-500/15 to-purple-600/15 blur-3xl"></div>
     <div data-parallax="8" class="absolute top-[12%] left-[8%] h-56 w-56 rounded-full bg-pink-400/25 dark:bg-pink-400/15 blur-3xl"></div>
@@ -49,7 +54,7 @@
     <!-- Top bar (shared site chrome — logo + nav are the way back to basisvr.org) -->
     <div class="flex items-center justify-between">
       <a href="/" class="inline-flex items-center gap-3">
-        <img src="https://raw.githubusercontent.com/BasisVR/basisvr.github.io/main/Images/BasisLogoN.png" alt="BasisVR Logo" class="h-10 w-10 rounded-lg ring-1 ring-gray-200 dark:ring-white/10" />
+        <img width="256" height="256" decoding="async" src="/Images/BasisLogoN.webp" alt="BasisVR Logo" class="h-10 w-10 rounded-lg ring-1 ring-gray-200 dark:ring-white/10" />
         <span class="font-semibold text-lg">BasisVR</span>
       </a>
       <div class="flex items-center">
@@ -68,12 +73,12 @@
               <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
             </svg>
           </a>
-          <a href="https://github.com/BasisVR/BasisPackageManager/releases/latest" target="_blank"
-             class="ml-6 inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white/70 px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm hover:border-brand hover:text-brand dark:border-white/10 dark:bg-white/10 dark:text-white">
+          <a id="getAppBtn" href="https://github.com/BasisVR/BasisPackageManager/releases/latest" target="_blank"
+             class="ml-6 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-brand to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow hover:shadow-lg">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
             Get the Package Manager
           </a>
-          <button id="submitBtn" class="ml-3 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-brand to-purple-600 px-4 py-2 text-sm font-semibold text-white shadow hover:shadow-lg">Submit a package</button>
+          <button id="submitBtn" class="ml-3 inline-flex items-center gap-2 rounded-2xl border border-gray-200 bg-white/70 px-4 py-2 text-sm font-semibold text-gray-600 shadow-sm hover:border-brand hover:text-brand dark:border-white/10 dark:bg-white/10 dark:text-gray-300">Submit a package</button>
         </div>
       </div>
     </div>
@@ -107,25 +112,33 @@
       <aside class="space-y-4 lg:sticky lg:top-8 self-start">
         <div id="pkgFilters" class="space-y-4">
           <div class="rounded-2xl border border-gray-200 bg-white/70 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
-            <h4 class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Source</h4>
+            <h4 class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Source</h4>
             <div id="sourceChips" class="space-y-1"></div>
           </div>
           <div class="rounded-2xl border border-gray-200 bg-white/70 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
-            <h4 class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Category</h4>
+            <h4 class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Category</h4>
             <div id="categoryChips" class="space-y-1"></div>
           </div>
         </div>
         <div id="packageListInfo" class="hidden rounded-2xl border border-gray-200 bg-white/70 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
-          <h4 class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Package Lists</h4>
+          <h4 class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Package Lists</h4>
           <p class="text-sm text-gray-600 dark:text-gray-300">Package lists — a Basis version plus a set of packages. Build your own in the <a href="https://github.com/BasisVR/BasisPackageManager" target="_blank" class="text-brand hover:underline">Basis Package Manager</a> and submit it.</p>
         </div>
       </aside>
 
       <!-- Results -->
-      <section class="rounded-2xl border border-gray-200 bg-white/40 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/[0.03] sm:p-5">
+      <section class="min-w-0 rounded-2xl border border-gray-200 bg-white/40 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/[0.03] sm:p-5">
         <div class="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 pb-4 dark:border-white/10">
           <div id="count" class="text-sm text-gray-600 dark:text-gray-300"></div>
           <div class="flex items-center gap-3">
+            <div id="viewToggle" class="inline-flex rounded-xl border border-gray-200 bg-white/70 p-1 shadow-sm dark:border-white/10 dark:bg-white/5" role="group" aria-label="View layout">
+              <button id="viewGrid" type="button" title="Grid view" aria-label="Grid view" class="rounded-lg px-2.5 py-1.5 text-gray-500 dark:text-gray-400">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+              </button>
+              <button id="viewList" type="button" title="List view" aria-label="List view" class="rounded-lg px-2.5 py-1.5 text-gray-500 dark:text-gray-400">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="3.5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="3.5" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
+              </button>
+            </div>
             <select id="sort" class="rounded-xl border border-gray-200 bg-white/70 px-3 py-2 text-sm text-gray-800 outline-none focus:border-brand dark:border-white/10 dark:bg-white/10 dark:text-gray-100">
               <option value="popular">Sort: Popular</option>
               <option value="stars">Most stars</option>
@@ -133,14 +146,6 @@
               <option value="updated">Recently updated</option>
               <option value="name">Name (A–Z)</option>
             </select>
-            <div class="inline-flex rounded-xl border border-gray-200 bg-white/70 p-1 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <button id="layoutGrid" type="button" title="Grid view" aria-label="Grid view" class="rounded-lg px-2.5 py-1.5">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-              </button>
-              <button id="layoutList" type="button" title="List view" aria-label="List view" class="rounded-lg px-2.5 py-1.5">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>
-              </button>
-            </div>
           </div>
         </div>
         <div id="grid" class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(18rem,1fr))]"></div>
@@ -155,12 +160,13 @@
 
   <div id="modal" class="hidden fixed inset-0 z-40 grid place-items-center bg-black/50 p-6 backdrop-blur-sm"></div>
   <div id="submitModal" class="hidden fixed inset-0 z-40 grid place-items-center bg-black/50 p-6 backdrop-blur-sm"></div>
+  <div id="getAppModal" class="hidden fixed inset-0 z-50 grid place-items-center bg-black/50 p-6 backdrop-blur-sm"></div>
   <div id="toast" class="pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-2xl border border-gray-200 bg-white px-5 py-3 text-sm opacity-0 shadow-lg transition dark:border-white/10 dark:bg-basisbg"></div>
 
 <script>
 const state = { search:"", source:"all", category:"all", sort:"popular", view:"packages", layout:"grid" };
-try { const saved = localStorage.getItem('pkgLayout'); if(saved==='list'||saved==='grid') state.layout = saved; } catch {}
 const REPO = "BasisVR/BasisPackageManager";
+const BASIS_REPO = "https://github.com/BasisVR/Basis";   // the core project a package list clones a fresh copy of
 let RAW = [], ALL = [], RAWPL = [], packageListsLoaded = false;
 
 const esc = s => (s??"").toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -272,19 +278,24 @@ function tabStyle(){
   document.getElementById('tabPackageLists').className  = state.view==='packagelists'  ? on : off;
 }
 
-function layoutStyle(){
+// Grid vs list layout — the container class and each button's active state follow state.layout.
+const gridClass = () => state.layout==='list'
+  ? 'flex flex-col gap-3'
+  : 'grid gap-4 grid-cols-[repeat(auto-fill,minmax(18rem,1fr))]';
+function viewStyle(){
   const on  = 'rounded-lg px-2.5 py-1.5 bg-gradient-to-r from-brand to-purple-600 text-white shadow';
-  const off = 'rounded-lg px-2.5 py-1.5 text-gray-500 dark:text-gray-300 hover:text-brand';
-  document.getElementById('layoutGrid').className = state.layout==='grid' ? on : off;
-  document.getElementById('layoutList').className = state.layout==='list' ? on : off;
+  const off = 'rounded-lg px-2.5 py-1.5 text-gray-500 hover:text-brand dark:text-gray-400 dark:hover:text-brand';
+  document.getElementById('viewGrid').className = state.layout==='grid' ? on : off;
+  document.getElementById('viewList').className = state.layout==='list' ? on : off;
+  document.getElementById('viewGrid').setAttribute('aria-pressed', state.layout==='grid');
+  document.getElementById('viewList').setAttribute('aria-pressed', state.layout==='list');
 }
-
 function setLayout(layout){
   if(state.layout===layout) return;
   state.layout = layout;
-  try { localStorage.setItem('pkgLayout', layout); } catch {}
-  layoutStyle();
-  renderGrid();   // ALL is already filtered/sorted — just re-render the current view in the new layout
+  try{ localStorage.setItem('basis:pkgLayout', layout); }catch{}
+  viewStyle();
+  renderGrid();
 }
 
 async function switchView(view){
@@ -363,14 +374,9 @@ function buildFilters(){
   document.querySelectorAll('[data-category]').forEach(el=>el.onclick=()=>{state.category=el.dataset.category;buildFilters();load();});
 }
 
-// --- Results layout (grid cards vs. list rows), shared by packages and package lists ---
-const GRID_CLS = 'grid gap-4 grid-cols-[repeat(auto-fill,minmax(18rem,1fr))]';
-const LIST_CLS = 'flex flex-col gap-3';
-const gridCls = () => state.layout==='list' ? LIST_CLS : GRID_CLS;
-const emptyState = (title, sub) => `<div class="col-span-full w-full py-20 text-center text-gray-500 dark:text-gray-400"><p class="text-lg font-semibold text-gray-900 dark:text-white">${title}</p><p class="mt-1">${sub}</p></div>`;
-
-const pkgCard = p => `
-    <div data-id="${esc(p.id)}" class="group flex cursor-pointer flex-col rounded-2xl border border-gray-200 bg-white/70 p-5 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand/20 dark:border-white/10 dark:bg-white/5">
+function pkgCard(p){
+  return `
+    <div data-id="${esc(p.id)}" class="group flex cursor-pointer flex-col rounded-2xl border border-gray-200 bg-white/70 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand/20 dark:border-white/10 dark:bg-white/5">
       <div class="flex items-start gap-3">
         <div class="inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 text-xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${imgOrIcon(p)}</div>
         <div class="min-w-0">
@@ -389,65 +395,35 @@ const pkgCard = p => `
         <button class="ml-auto rounded-xl bg-gradient-to-r from-brand to-purple-600 px-3 py-1.5 text-xs font-semibold text-white">Install</button>
       </div>
     </div>`;
-
-const pkgRow = p => `
-    <div data-id="${esc(p.id)}" class="group flex cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-white/70 p-4 shadow-sm backdrop-blur transition hover:shadow-lg hover:shadow-brand/20 dark:border-white/10 dark:bg-white/5">
+}
+function pkgRow(p){
+  return `
+    <div data-id="${esc(p.id)}" class="group flex cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-white/70 p-4 shadow-sm transition hover:shadow-lg hover:shadow-brand/20 dark:border-white/10 dark:bg-white/5">
       <div class="inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 text-xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${imgOrIcon(p)}</div>
       <div class="min-w-0 flex-1">
-        <h3 class="flex flex-wrap items-center gap-2 font-semibold">${esc(p.name)}
-          <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${badgeCls(p.source)}">${esc(p.source)}</span>${p.server?`<span title="Also installs into the Basis Server: its server code is compiled into the server build" class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-sky-500/15 text-sky-600 dark:text-sky-400 ring-1 ring-sky-500/30">Server</span>`:''}</h3>
-        <p class="truncate text-xs text-gray-500 dark:text-gray-400">by ${esc(p.author)}${hostOf(p)?' · '+hostOf(p):''}${p.basisVersion?' · Basis '+esc(p.basisVersion):''}</p>
-        <p class="mt-0.5 line-clamp-1 text-sm text-gray-600 dark:text-gray-300">${esc(p.description)}</p>
+        <h3 class="flex flex-wrap items-center gap-2 font-semibold">
+          <span class="truncate">${esc(p.name)}</span>
+          <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${badgeCls(p.source)}">${esc(p.source)}</span>${p.server?`<span title="Also installs into the Basis Server: its server code is compiled into the server build" class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide bg-sky-500/15 text-sky-600 dark:text-sky-400 ring-1 ring-sky-500/30">Server</span>`:''}
+          <span class="text-xs font-normal text-gray-500 dark:text-gray-400">by ${esc(p.author)}${hostOf(p)?' · '+hostOf(p):''}${p.basisVersion?' · Basis '+esc(p.basisVersion):''}</span>
+        </h3>
+        <p class="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-300">${esc(p.description)}</p>
       </div>
-      <div class="hidden shrink-0 items-center gap-3 text-xs text-gray-500 dark:text-gray-400 sm:flex">
+      <div class="hidden shrink-0 items-center gap-3 text-xs text-gray-500 md:flex dark:text-gray-400">
         <span>⭐ ${fmtNum(p.stars)}</span>
         <span>⑂ ${fmtNum(p.forks)}</span>
         <span>v${esc(p.version)}</span>
-        ${p.license?`<span title="License">⚖ ${esc(p.license)}</span>`:''}
       </div>
       <button class="shrink-0 rounded-xl bg-gradient-to-r from-brand to-purple-600 px-3 py-1.5 text-xs font-semibold text-white">Install</button>
     </div>`;
-
-const packageListCard = b => {
-  const n = (b.packages||[]).length;
-  const basis = b.basisBranch ? `${esc(b.basisBranch)}${b.basisCommit?'@'+esc(b.basisCommit):''}` : '';
-  return `
-    <div data-packagelist="${esc(b.id)}" class="group flex cursor-pointer flex-col rounded-2xl border border-gray-200 bg-white/70 p-5 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand/20 dark:border-white/10 dark:bg-white/5">
-      <div class="flex items-start gap-3">
-        <div class="inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 text-xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${imgOrIcon({image:b.image,icon:b.icon||'🧩'})}</div>
-        <div class="min-w-0">
-          <h3 class="flex flex-wrap items-center gap-2 font-semibold">${esc(b.name)}
-            <span class="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand ring-1 ring-brand/30">${n} pkg${n===1?'':'s'}</span></h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400">by ${esc(b.author||'—')}${basis?' · Basis '+basis:''}</p>
-        </div>
-      </div>
-      <p class="mt-3 line-clamp-2 text-sm text-gray-600 dark:text-gray-300">${esc(b.description||'')}</p>
-      <div class="mt-3 flex flex-wrap gap-1.5">${(b.tags||[]).slice(0,4).map(t=>`<span class="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600 dark:bg-white/5 dark:text-gray-300">${esc(t)}</span>`).join('')}</div>
-    </div>`;
-};
-
-const packageListRow = b => {
-  const n = (b.packages||[]).length;
-  const basis = b.basisBranch ? `${esc(b.basisBranch)}${b.basisCommit?'@'+esc(b.basisCommit):''}` : '';
-  return `
-    <div data-packagelist="${esc(b.id)}" class="group flex cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-white/70 p-4 shadow-sm backdrop-blur transition hover:shadow-lg hover:shadow-brand/20 dark:border-white/10 dark:bg-white/5">
-      <div class="inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 text-xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${imgOrIcon({image:b.image,icon:b.icon||'🧩'})}</div>
-      <div class="min-w-0 flex-1">
-        <h3 class="flex flex-wrap items-center gap-2 font-semibold">${esc(b.name)}
-          <span class="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand ring-1 ring-brand/30">${n} pkg${n===1?'':'s'}</span></h3>
-        <p class="truncate text-xs text-gray-500 dark:text-gray-400">by ${esc(b.author||'—')}${basis?' · Basis '+basis:''}</p>
-        <p class="mt-0.5 line-clamp-1 text-sm text-gray-600 dark:text-gray-300">${esc(b.description||'')}</p>
-      </div>
-    </div>`;
-};
+}
 
 function renderGrid(){
   if(state.view==='packagelists') return renderPackageLists();
   const grid = document.getElementById('grid');
-  grid.className = gridCls();
+  grid.className = gridClass();
   document.getElementById('count').innerHTML = `<b class="text-gray-900 dark:text-white">${ALL.length}</b> package${ALL.length===1?'':'s'}`;
-  if(!ALL.length){ grid.innerHTML = emptyState('No packages found','Try a different search or filter.'); return; }
-  grid.innerHTML = ALL.map(p => state.layout==='list' ? pkgRow(p) : pkgCard(p)).join('');
+  if(!ALL.length){ grid.innerHTML = `<div class="col-span-full py-20 text-center text-gray-500 dark:text-gray-400"><p class="text-lg font-semibold text-gray-900 dark:text-white">No packages found</p><p class="mt-1">Try a different search or filter.</p></div>`; return; }
+  grid.innerHTML = ALL.map(state.layout==='list' ? pkgRow : pkgCard).join('');
   grid.querySelectorAll('[data-id]').forEach(c=>c.onclick=()=>openDetail(c.dataset.id));
 }
 
@@ -462,7 +438,7 @@ function installMethods(p){
     <div class="${method}">
       <h5 class="mb-2 flex items-center gap-2 font-semibold"><span class="${num}">1</span> In the Basis Package Manager</h5>
       <p class="mb-2 text-sm text-gray-600 dark:text-gray-300">Open <b>Packages → Add from Git URL</b> and paste:</p>
-      <div class="${code}"><pre class="${pre}">${esc(p.gitUrl||p.repoUrl||'')}</pre><button class="${cbtn} copy" data-copy="${esc(p.gitUrl||p.repoUrl||'')}">Copy</button></div>
+      <div class="${code}"><pre class="${pre}">${esc(p.repoUrl||p.gitUrl||'')}</pre><button class="${cbtn} copy" data-copy="${esc(p.repoUrl||p.gitUrl||'')}">Copy</button></div>
     </div>
     <div class="${method}">
       <h5 class="mb-2 flex items-center gap-2 font-semibold"><span class="${num}">2</span> Or add to Packages/manifest.json</h5>
@@ -496,11 +472,12 @@ function openDetail(id){
         ${p.server?`<span title="Installing it also adds its server code to the Basis Server build">Includes <b class="text-gray-900 dark:text-white">Basis Server</b> code</span>`:''}
         ${p.updated?`<span>Updated <b class="text-gray-900 dark:text-white">${esc(p.updated)}</b></span>`:''}
       </div>
-      ${p.dependencies?`<div><p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">Dependencies</p><div class="flex flex-wrap gap-1.5">${Object.entries(p.dependencies).map(([k,v])=>`<span class="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600 dark:bg-white/5 dark:text-gray-300">${esc(k)} ${esc(v)}</span>`).join('')}</div></div>`:''}
+      ${releasesBlock(p)}
+      <div id="depSlot" data-for="${esc(p.id)}"></div>
       <div>
-        <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">How to install</p>
+        <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">How to install</p>
         <a href="basispm://install?id=${encodeURIComponent(p.id)}&name=${encodeURIComponent(p.name)}&git=${encodeURIComponent(p.gitUrl||'')}&repo=${encodeURIComponent(p.repoUrl||'')}"
-           class="mb-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand to-purple-600 px-5 py-4 text-base font-semibold text-white shadow hover:shadow-lg"
+           class="deeplink mb-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand to-purple-600 px-5 py-4 text-base font-semibold text-white shadow hover:shadow-lg"
            title="Opens the Basis Package Manager app and adds this package to your active project. Requires the app installed.">
           <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
           Install in the Basis Package Manager
@@ -518,14 +495,85 @@ function openDetail(id){
   </div>`;
   m.classList.remove('hidden');
   m.querySelectorAll('.copy').forEach(b=>b.onclick=e=>{e.stopPropagation();copy(b.dataset.copy,b);});
+  m.querySelectorAll('.deeplink').forEach(a=>a.addEventListener('click', onDeepLinkClick));
+  renderDeps(p);
+}
+
+function releasesBlock(p){
+  const list = Array.isArray(p.versions) ? p.versions.filter(v => v && v.version && v.ref) : [];
+  if(list.length < 2) return '';
+  const shown = list.slice(0, 8);
+  const row = v => {
+    const needs = [];
+    if(v.unity) needs.push(`Unity ${esc(v.unity)}${v.unityRelease ? '.' + esc(v.unityRelease) : ''} or newer`);
+    if(v.basis && v.basis.from) needs.push(`Basis from ${esc(v.basis.from)}`);
+    if(v.basis && v.basis.before) needs.push(`Basis before ${esc(v.basis.before)}`);
+    return `<div class="flex items-center justify-between gap-3 rounded-xl border border-gray-200 px-3 py-2 text-sm dark:border-white/10"><span class="font-medium">v${esc(v.version)}</span><span class="truncate text-xs text-gray-500 dark:text-gray-400">${needs.join(' · ')}</span></div>`;
+  };
+  return `<div><p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Releases</p><div class="space-y-1.5">${shown.map(row).join('')}</div>${list.length > shown.length ? `<p class="mt-2 text-xs text-gray-400">${list.length - shown.length} older release${list.length - shown.length === 1 ? '' : 's'} in the app's version picker.</p>` : ''}</div>`;
+}
+
+// Dependencies aren't in the catalog — they live in each package's package.json. Fetch it once
+// the modal is open and fill in the slot. The isConnected guard means a slow fetch from a package
+// you've since closed (or swapped for another) can't paint into the wrong modal.
+async function renderDeps(p){
+  const slot = document.getElementById('depSlot');
+  if(!slot) return;
+  const paint = deps => {
+    if(!slot.isConnected) return;
+    const entries = deps ? Object.entries(deps) : [];
+    slot.innerHTML = entries.length
+      ? `<div><p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Dependencies</p><div class="flex flex-wrap gap-1.5">${entries.map(([k,v])=>`<span class="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600 dark:bg-white/5 dark:text-gray-300">${esc(k)} ${esc(v)}</span>`).join('')}</div></div>`
+      : '';
+  };
+  // Already recorded in the catalog? Use that and skip the network.
+  if(p.dependencies && Object.keys(p.dependencies).length){ paint(p.dependencies); return; }
+  slot.innerHTML = `<p class="text-xs text-gray-400">Loading dependencies…</p>`;
+  let pj = null;
+  try{ pj = await fetchPackageJson(p.repoUrl, p.gitUrl); }catch{}
+  paint(pj && pj.dependencies);
+}
+
+function packageListCard(b){
+  const n = (b.packages||[]).length;
+  const basis = b.basisBranch ? `${esc(b.basisBranch)}${b.basisCommit?'@'+esc(b.basisCommit):''}` : '';
+  return `
+    <div data-packagelist="${esc(b.id)}" class="group flex cursor-pointer flex-col rounded-2xl border border-gray-200 bg-white/70 p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand/20 dark:border-white/10 dark:bg-white/5">
+      <div class="flex items-start gap-3">
+        <div class="inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 text-xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${imgOrIcon({image:b.image,icon:b.icon||'🧩'})}</div>
+        <div class="min-w-0">
+          <h3 class="flex flex-wrap items-center gap-2 font-semibold">${esc(b.name)}
+            <span class="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand ring-1 ring-brand/30">${n} pkg${n===1?'':'s'}</span></h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">by ${esc(b.author||'—')}${basis?' · Basis '+basis:''}</p>
+        </div>
+      </div>
+      <p class="mt-3 line-clamp-2 text-sm text-gray-600 dark:text-gray-300">${esc(b.description||'')}</p>
+      <div class="mt-3 flex flex-wrap gap-1.5">${(b.tags||[]).slice(0,4).map(t=>`<span class="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600 dark:bg-white/5 dark:text-gray-300">${esc(t)}</span>`).join('')}</div>
+    </div>`;
+}
+function packageListRow(b){
+  const n = (b.packages||[]).length;
+  const basis = b.basisBranch ? `${esc(b.basisBranch)}${b.basisCommit?'@'+esc(b.basisCommit):''}` : '';
+  return `
+    <div data-packagelist="${esc(b.id)}" class="group flex cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-white/70 p-4 shadow-sm transition hover:shadow-lg hover:shadow-brand/20 dark:border-white/10 dark:bg-white/5">
+      <div class="inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100 text-xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${imgOrIcon({image:b.image,icon:b.icon||'🧩'})}</div>
+      <div class="min-w-0 flex-1">
+        <h3 class="flex flex-wrap items-center gap-2 font-semibold">
+          <span class="truncate">${esc(b.name)}</span>
+          <span class="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand ring-1 ring-brand/30">${n} pkg${n===1?'':'s'}</span>
+          <span class="text-xs font-normal text-gray-500 dark:text-gray-400">by ${esc(b.author||'—')}${basis?' · Basis '+basis:''}</span>
+        </h3>
+        <p class="mt-0.5 truncate text-sm text-gray-600 dark:text-gray-300">${esc(b.description||'')}</p>
+      </div>
+    </div>`;
 }
 
 function renderPackageLists(){
   const grid = document.getElementById('grid');
-  grid.className = gridCls();
+  grid.className = gridClass();
   document.getElementById('count').innerHTML = `<b class="text-gray-900 dark:text-white">${ALL.length}</b> package list${ALL.length===1?'':'s'}`;
-  if(!ALL.length){ grid.innerHTML = emptyState('No package lists yet','Build one from the Basis Package Manager and submit it.'); return; }
-  grid.innerHTML = ALL.map(b => state.layout==='list' ? packageListRow(b) : packageListCard(b)).join('');
+  if(!ALL.length){ grid.innerHTML = `<div class="col-span-full py-20 text-center text-gray-500 dark:text-gray-400"><p class="text-lg font-semibold text-gray-900 dark:text-white">No package lists yet</p><p class="mt-1">Build one from the Basis Package Manager and submit it.</p></div>`; return; }
+  grid.innerHTML = ALL.map(state.layout==='list' ? packageListRow : packageListCard).join('');
   grid.querySelectorAll('[data-packagelist]').forEach(c=>c.onclick=()=>openPackageList(c.dataset.packagelist));
 }
 
@@ -536,6 +584,11 @@ function openPackageList(id){
   const deep = `basispm://packagelist?id=${encodeURIComponent(b.id)}`;
   const manifest = JSON.stringify(Object.fromEntries((b.packages||[]).filter(p=>p.gitUrl||p.version).map(p=>[p.id, p.gitUrl||p.version])), null, 2);
   const basis = b.basisBranch ? `${esc(b.basisBranch)}${b.basisCommit?'@'+esc(b.basisCommit):''}` : 'unknown';
+  // "Clone a fresh Basis" step (shown when the toggle is on): clone the branch this package list was built
+  // against, and pin the exact commit when the package list records one. Clones into a folder named "Basis".
+  const branch = b.basisBranch ? esc(b.basisBranch) : '';
+  const cloneCmd = (b.basisBranch ? `git clone --branch ${b.basisBranch} ${BASIS_REPO}` : `git clone ${BASIS_REPO}`)
+    + (b.basisCommit ? `\ngit -C Basis checkout ${b.basisCommit}` : '');
   m.innerHTML = `<div class="w-full max-w-2xl max-h-[85vh] overflow-auto rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-basisbg" onclick="event.stopPropagation()">
     <div class="flex items-start gap-4 border-b border-gray-200 p-6 dark:border-white/10">
       <div class="inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 text-3xl ring-1 ring-gray-200 dark:bg-white/5 dark:ring-white/10">${imgOrIcon({image:b.image,icon:b.icon||'🧩'})}</div>
@@ -548,26 +601,65 @@ function openPackageList(id){
     <div class="space-y-5 p-6">
       <p class="text-gray-600 dark:text-gray-300">${esc(b.description||'')}</p>
       <div>
-        <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">${n} package${n===1?'':'s'}</p>
+        <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">${n} package${n===1?'':'s'}</p>
         <div class="space-y-1.5">${(b.packages||[]).map(p=>`<div class="flex items-center justify-between gap-3 rounded-xl border border-gray-200 px-3 py-2 text-sm dark:border-white/10"><span class="font-medium">${esc(p.name||p.id)}</span><span class="truncate text-xs text-gray-400">${esc(p.id)}</span></div>`).join('')}</div>
       </div>
       <div>
-        <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Install this package list</p>
-        <a href="${esc(deep)}" class="mb-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand to-purple-600 px-5 py-4 text-base font-semibold text-white shadow hover:shadow-lg"
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Install this package list</p>
+          <button id="cloneToggle" type="button" role="switch" aria-checked="true"
+            title="On: clone a fresh Basis first. Off: add these packages to a project you already have."
+            class="inline-flex items-center gap-2 text-xs font-medium text-gray-600 dark:text-gray-300">
+            <span>Clone a fresh Basis</span>
+            <span data-track class="relative inline-flex h-5 w-9 shrink-0 rounded-full bg-brand transition">
+              <span data-thumb class="absolute left-0 top-0.5 h-4 w-4 translate-x-4 rounded-full bg-white shadow transition"></span>
+            </span>
+          </button>
+        </div>
+        <div id="cloneStep" class="mb-3">
+          <p class="mb-2 text-sm text-gray-600 dark:text-gray-300">Clone a fresh Basis${branch?` (<b class="text-gray-900 dark:text-white">${branch}</b>)`:''} and open it in Unity, then install:</p>
+          <div class="relative"><pre class="whitespace-pre-wrap break-all rounded-xl border border-gray-200 bg-gray-50 p-3 pr-16 font-mono text-xs text-gray-800 dark:border-white/10 dark:bg-black/30 dark:text-gray-200">${esc(cloneCmd)}</pre><button class="copy absolute right-2 top-2 rounded-lg border border-gray-200 px-2 py-1 text-xs hover:border-brand hover:text-brand dark:border-white/10" data-copy="${esc(cloneCmd)}">Copy</button></div>
+        </div>
+        <a href="${esc(deep)}" class="deeplink mb-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand to-purple-600 px-5 py-4 text-base font-semibold text-white shadow hover:shadow-lg"
            title="Opens the Basis Package Manager and adds every package to a project you pick.">
           <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
           Install package list in the app
         </a>
-        <p class="text-center text-xs text-gray-400">Adds all ${n} package${n===1?'':'s'} to a project you choose. Don't have it? <a href="https://github.com/${REPO}/releases/latest" target="_blank" class="text-brand hover:underline">Get the Package Manager</a>.</p>
+        <p id="bundleHint" class="text-center text-xs text-gray-400"></p>
       </div>
       <div>
-        <div class="mb-2 flex items-center justify-between"><span class="text-xs font-semibold uppercase tracking-wide text-gray-400">Or add to Packages/manifest.json</span><button class="copy rounded-lg border border-gray-200 px-2 py-1 text-xs hover:border-brand hover:text-brand dark:border-white/10" data-copy="${esc(manifest)}">Copy</button></div>
+        <div class="mb-2 flex items-center justify-between"><span class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Or add to Packages/manifest.json</span><button class="copy rounded-lg border border-gray-200 px-2 py-1 text-xs hover:border-brand hover:text-brand dark:border-white/10" data-copy="${esc(manifest)}">Copy</button></div>
         <pre class="overflow-x-auto whitespace-pre-wrap break-all rounded-xl border border-gray-200 bg-gray-50 p-3 font-mono text-xs text-gray-800 dark:border-white/10 dark:bg-black/30 dark:text-gray-200">${esc(manifest)}</pre>
       </div>
     </div>
   </div>`;
   m.classList.remove('hidden');
   m.querySelectorAll('.copy').forEach(btn=>btn.onclick=e=>{e.stopPropagation();copy(btn.dataset.copy,btn);});
+  m.querySelectorAll('.deeplink').forEach(a=>a.addEventListener('click', onDeepLinkClick));
+
+  // Clone-a-fresh-Basis toggle. On → show the git-clone step and frame the button as the "then install"
+  // second step; off → hide it and just add the packages to a project you already have. The deep link is
+  // identical either way (the app always asks which project), so this only changes what the page tells you
+  // to do first. The choice is remembered across package lists via localStorage.
+  const tgl = document.getElementById('cloneToggle');
+  const step = document.getElementById('cloneStep');
+  const hint = document.getElementById('bundleHint');
+  const track = tgl.querySelector('[data-track]');
+  const thumb = tgl.querySelector('[data-thumb]');
+  const getApp = `No app yet? <a href="https://github.com/${REPO}/releases/latest" target="_blank" onclick="return onGetAppClick(event)" class="text-brand hover:underline">Get it</a>.`;
+  const applyClone = on => {
+    tgl.setAttribute('aria-checked', on);
+    track.className = `relative inline-flex h-5 w-9 shrink-0 rounded-full transition ${on?'bg-brand':'bg-gray-300 dark:bg-white/20'}`;
+    thumb.className = `absolute left-0 top-0.5 h-4 w-4 rounded-full bg-white shadow transition ${on?'translate-x-4':'translate-x-0.5'}`;
+    step.classList.toggle('hidden', !on);
+    hint.innerHTML = on
+      ? `Then adds all ${n} package${n===1?'':'s'} to the Basis you just cloned — pick it in the app. ${getApp}`
+      : `Adds all ${n} package${n===1?'':'s'} to a project you already have. ${getApp}`;
+  };
+  let cloneOn = true;
+  try{ cloneOn = localStorage.getItem('basis:bundleClone') !== '0'; }catch{}
+  applyClone(cloneOn);
+  tgl.onclick = () => { cloneOn = tgl.getAttribute('aria-checked') !== 'true'; try{ localStorage.setItem('basis:bundleClone', cloneOn?'1':'0'); }catch{} applyClone(cloneOn); };
 }
 
 const SUB_field = 'block text-sm text-gray-600 dark:text-gray-300 mb-3';
@@ -675,17 +767,19 @@ function submitStep2(){
       <button type="button" id="s_back" class="rounded-2xl border border-gray-200 px-4 py-2.5 text-sm font-semibold hover:border-brand hover:text-brand dark:border-white/10 dark:text-gray-200">← Back</button>
       <button type="submit" class="flex-1 rounded-2xl bg-gradient-to-r from-brand to-purple-600 px-4 py-2.5 text-sm font-semibold text-white shadow hover:shadow-lg">Submit package</button>
     </div>
+    <p class="mt-3 text-center text-xs text-gray-500 dark:text-gray-400">Submitting opens GitHub with your package's registry file filled in. Commit it to open a pull request; GitHub makes a fork for you when you need one. Rather not? <button type="button" id="s_issue" class="text-brand hover:underline">Open an issue instead</button>.</p>
   </form>`;
   const f = document.getElementById('submitForm');
   f.onsubmit = submitPackage;
   document.getElementById('s_back').onclick = submitStep1;
+  document.getElementById('s_issue').onclick = submitAsIssue;
   const imgPrev = document.getElementById('imgPreview'), imgHint = document.getElementById('imgHint');
   const updImg = () => {
     const raw = f.elements.image.value.trim();
     const url = resolveImageUrl(raw, f.elements.repoUrl.value, f.elements.gitUrl.value);
     if(raw && !url){ imgHint.innerHTML = '<span class="text-brand">Point to a PNG/WebP/JPG/GIF hosted in your own repo.</span>'; imgPrev.textContent = p.icon||'📦'; return; }
     imgHint.textContent = url || '';
-    imgPrev.innerHTML = url ? `<img src="${esc(url)}" alt="" referrerpolicy="no-referrer" class="h-full w-full object-cover" onerror="this.parentElement.textContent='⚠️'">` : esc(p.icon||'📦');
+    imgPrev.innerHTML = url ? `<img src="${esc(url)}" alt="" referrerpolicy="no-referrer" class="h-full w-full object-cover" onerror="this.parentElement.textContent='⚠️'">` : (p.icon||'📦');
   };
   const upd = () => {
     const s = deriveSource(f.elements.repoUrl.value, f.elements.gitUrl.value);
@@ -696,45 +790,214 @@ function submitStep2(){
   f.elements.gitUrl.oninput = upd; f.elements.repoUrl.oninput = upd; f.elements.image.oninput = updImg;
 }
 
-function submitPackage(e){
-  e.preventDefault();
-  const f = e.target; const g = n => (f.elements[n]?.value||'').trim();
+const SEED_FOLDER = 'src/BasisPM.Server/seed/packages';
+
+function submissionPackage(f){
+  const g = n => (f.elements[n]?.value||'').trim();
   const pkg = {
     id:g('id'), name:g('name'), description:g('description'),
     author:g('author')||'Community', category:g('category')||'Misc',
     tags: g('tags') ? g('tags').split(',').map(t=>t.trim()).filter(Boolean) : [],
-    source:deriveSource(g('repoUrl'), g('gitUrl')), gitUrl:g('gitUrl')||null, repoUrl:g('repoUrl')||null,
+    gitUrl:g('gitUrl')||null, repoUrl:g('repoUrl')||null,
+    unity:g('unity')||null, basisVersion:g('basisVersion')||null, license:g('license')||null, version:g('version')||'1.0.0',
     image:resolveImageUrl(g('image'), g('repoUrl'), g('gitUrl'))||null,
-    unity:g('unity')||null, version:g('version')||'1.0.0',
-    basisVersion:g('basisVersion')||null, license:g('license')||null, discord:g('discord')||null, donate:g('donate')||null, link:g('link')||null,
+    discord:g('discord')||null, donate:g('donate')||null, link:g('link')||null,
     server:f.elements.server?.checked||undefined
   };
   const deps = submitState.pkg && submitState.pkg.dependencies;
   if(deps && Object.keys(deps).length) pkg.dependencies = deps;
-  if(!pkg.id||!pkg.name){ toast('Package id and name are required','err'); return; }
-  if(!pkg.gitUrl){ toast('A Git URL (GitHub or GitLab) is required','err'); return; }
-  const body = "### Package submission\n\nAdd this entry to `src/BasisPM.Server/seed/packages.json`:\n\n```json\n" + JSON.stringify(pkg,null,2) + "\n```\n";
+  if(!pkg.id||!pkg.name){ toast('Package id and name are required','err'); return null; }
+  if(!/^[a-z0-9][a-z0-9_-]*(\.[a-z0-9_-]+)+$/.test(pkg.id)){ toast('The package id has to be lowercase, like com.you.mypackage','err'); return null; }
+  if(!pkg.gitUrl){ toast('A Git URL (GitHub or GitLab) is required','err'); return null; }
+  return Object.fromEntries(Object.entries(pkg).filter(([,v]) => v !== null && v !== undefined && !(Array.isArray(v) && !v.length)));
+}
+
+function submitPackage(e){
+  e.preventDefault();
+  const pkg = submissionPackage(e.target);
+  if(!pkg) return;
+  const url = `https://github.com/${REPO}/new/main?filename=` + encodeURIComponent(`${SEED_FOLDER}/${pkg.id}.json`) + `&value=` + encodeURIComponent(JSON.stringify(pkg,null,2) + "\n");
+  window.open(url,'_blank','noopener');
+  closeModals();
+  toast('Opening GitHub to propose your package as a pull request…','ok');
+}
+
+function submitAsIssue(){
+  const pkg = submissionPackage(document.getElementById('submitForm'));
+  if(!pkg) return;
+  const body = "### Package submission\n\nAdd this file as `" + SEED_FOLDER + "/" + pkg.id + ".json`:\n\n```json\n" + JSON.stringify(pkg,null,2) + "\n```\n";
   const url = `https://github.com/${REPO}/issues/new?labels=package-submission&title=` + encodeURIComponent(`Add package: ${pkg.name}`) + `&body=` + encodeURIComponent(body);
   window.open(url,'_blank','noopener');
   closeModals();
   toast('Opening a GitHub issue to submit…','ok');
 }
 
-function closeModals(){ document.getElementById('modal').classList.add('hidden'); document.getElementById('submitModal').classList.add('hidden'); }
+// ---- basispm:// deep links, with a "you don't have the app yet" fallback ----
+// The Install buttons hand off to the Basis Package Manager desktop app. If it
+// isn't installed the click just does nothing, which reads as broken. So we fire
+// the deep link, then watch for the tab losing focus/visibility — that only
+// happens when the app actually takes over. If it never does within ~1.5s, we
+// assume the app is missing and surface the download page instead.
+const APP_DOWNLOAD_URL = `https://github.com/${REPO}/releases/latest`;
+const DOWNLOAD_BASE = `https://github.com/${REPO}/releases/latest/download/`;
+const DOWNLOADS = [
+  { id:'win-x64',     os:'Windows', cpu:'x64',           file:'BasisPackageManager-win-Setup.exe' },
+  { id:'win-arm64',   os:'Windows', cpu:'ARM64',         file:'BasisPackageManager-win-arm64-Setup.exe' },
+  { id:'osx-arm64',   os:'macOS',   cpu:'Apple Silicon', file:'BasisPackageManager-osx-Setup.pkg' },
+  { id:'osx-x64',     os:'macOS',   cpu:'Intel',         file:'BasisPackageManager-osx-x64-Setup.pkg' },
+  { id:'linux-x64',   os:'Linux',   cpu:'x64',           file:'BasisPackageManager.AppImage' },
+  { id:'linux-arm64', os:'Linux',   cpu:'ARM64',         file:'BasisPackageManager-linux-arm64.AppImage' },
+];
+let lastDeepLink = null;
+
+function detectOs(){
+  const ua = navigator.userAgent || '';
+  const platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '';
+  if(/Android|iPhone|iPad|iPod/i.test(ua) || (/Mac/i.test(platform) && navigator.maxTouchPoints > 1)) return null;
+  if(/Win/i.test(platform) || /Windows/i.test(ua)) return 'win';
+  if(/Mac/i.test(platform) || /Macintosh/i.test(ua)) return 'osx';
+  if(/Linux|X11|CrOS/i.test(`${platform} ${ua}`)) return 'linux';
+  return null;
+}
+
+function macCpuFromGpu(){
+  try {
+    const gl = document.createElement('canvas').getContext('webgl');
+    const info = gl && gl.getExtension('WEBGL_debug_renderer_info');
+    const renderer = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+    if(/Intel|AMD|Radeon|NVIDIA/i.test(renderer)) return 'x64';
+    if(/Apple M\d/i.test(renderer)) return 'arm64';
+  } catch {}
+  return null;
+}
+
+async function detectCpu(os){
+  const hints = navigator.userAgentData;
+  if(hints && hints.getHighEntropyValues){
+    try {
+      const { architecture } = await hints.getHighEntropyValues(['architecture']);
+      if(architecture === 'arm') return { cpu:'arm64', sure:true };
+      if(architecture === 'x86') return { cpu:'x64', sure:true };
+    } catch {}
+  }
+  if(/aarch64|arm64/i.test(navigator.userAgent || '')) return { cpu:'arm64', sure:true };
+  if(os === 'osx'){ const gpu = macCpuFromGpu(); return { cpu: gpu || 'arm64', sure: !!gpu }; }
+  return { cpu:'x64', sure:false };
+}
+
+async function detectDownload(){
+  const os = detectOs();
+  if(!os) return null;
+  const { cpu, sure } = await detectCpu(os);
+  const download = DOWNLOADS.find(d => d.id === `${os}-${cpu}`);
+  return download ? { download, sure } : null;
+}
+const downloadReady = detectDownload().catch(() => null);
+
+function onGetAppClick(e){
+  if(e.button!==0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return true;
+  e.preventDefault();
+  openGetApp(false);
+  return false;
+}
+
+function onDeepLinkClick(e){
+  // Leave modified/middle clicks to the browser; only hijack a plain left click.
+  if(e.button!==0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  launchApp(e.currentTarget.getAttribute('href'));
+}
+
+function launchApp(deep){
+  lastDeepLink = deep;
+  let settled = false;
+  const detach = () => {
+    window.removeEventListener('blur', onLeave);
+    window.removeEventListener('pagehide', onLeave);
+    document.removeEventListener('visibilitychange', onVis);
+    clearTimeout(timer);
+  };
+  // Tab lost focus / went to the background → the app opened. Nothing more to do.
+  const onLeave = () => { if(settled) return; settled = true; detach(); };
+  const onVis = () => { if(document.hidden) onLeave(); };
+  window.addEventListener('blur', onLeave);
+  window.addEventListener('pagehide', onLeave);
+  document.addEventListener('visibilitychange', onVis);
+
+  window.location.href = deep;   // hand off to the protocol handler
+
+  const timer = setTimeout(() => {
+    if(settled) return; settled = true; detach();
+    // Still here, focused and visible: the handler almost certainly isn't installed.
+    if(!document.hidden && document.hasFocus()) openGetApp();
+  }, 1500);
+}
+
+async function openGetApp(afterDeepLink = true){
+  const found = await downloadReady;
+  const d = found && found.download;
+  const m = document.getElementById('getAppModal');
+  const intro = afterDeepLink
+    ? 'Nothing opened? That button hands off to the Basis Package Manager desktop app — and it doesn\'t look installed yet. Grab it below, then click Install again.'
+    : 'The desktop app clones Basis for you and installs these packages into your projects.';
+  const arrow = '<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>';
+  const bigButton = 'flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-brand to-purple-600 px-5 py-4 text-base font-semibold text-white shadow hover:shadow-lg';
+  const primary = d
+    ? `<a href="${esc(DOWNLOAD_BASE + d.file)}" class="${bigButton}">${arrow}Download for ${esc(d.os)} (${esc(d.cpu)})</a>`
+    : `<a href="${esc(APP_DOWNLOAD_URL)}" target="_blank" rel="noopener noreferrer" class="${bigButton}">${arrow}See all downloads</a>`;
+  const note = !d
+    ? 'The Package Manager runs on Windows, macOS and Linux computers. Pick yours below.'
+    : d.os === 'Linux' ? `After it downloads, run <code class="rounded bg-gray-100 px-1 dark:bg-white/10">chmod +x ${esc(d.file)}</code>, then open it.`
+    : d.os === 'macOS' && !found.sure ? 'Not sure which Mac you have? Apple menu, About This Mac: a Chip means Apple Silicon, a Processor means Intel.'
+    : '';
+  const others = DOWNLOADS.filter(x => x !== d).map(x =>
+    `<a href="${esc(DOWNLOAD_BASE + x.file)}" class="flex items-center justify-between gap-2 rounded-xl border border-gray-200 px-3 py-2 text-sm hover:border-brand hover:text-brand dark:border-white/10">
+      <span class="font-semibold">${esc(x.os)}</span><span class="text-xs text-gray-500 dark:text-gray-400">${esc(x.cpu)}</span>
+    </a>`).join('');
+  m.innerHTML = `<div class="w-full max-w-md rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-basisbg" onclick="event.stopPropagation()">
+    <div class="flex items-start gap-4 border-b border-gray-200 p-6 dark:border-white/10">
+      <div class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand/10 text-2xl">📦</div>
+      <div class="min-w-0 flex-1">
+        <h2 class="text-lg font-bold">Get the Basis Package Manager</h2>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${intro}</p>
+      </div>
+      <button onclick="closeGetApp()" class="text-2xl leading-none text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">&times;</button>
+    </div>
+    <div class="space-y-4 p-6">
+      ${primary}
+      ${note ? `<p class="text-sm text-gray-500 dark:text-gray-400">${note}</p>` : ''}
+      <div>
+        <p class="mb-2 text-xs font-bold uppercase tracking-wider text-gray-400">${d ? 'Other platforms' : 'Downloads'}</p>
+        <div class="grid grid-cols-2 gap-2">${others}</div>
+        <a href="${esc(APP_DOWNLOAD_URL)}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-block text-xs text-brand hover:underline">All files on GitHub, including portable builds</a>
+      </div>
+      ${afterDeepLink ? `<button onclick="retryDeepLink()" class="w-full rounded-2xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 hover:border-brand hover:text-brand dark:border-white/10 dark:text-gray-300">
+        Already installed it? Try opening again
+      </button>` : ''}
+    </div>
+  </div>`;
+  m.classList.remove('hidden');
+}
+function closeGetApp(){ document.getElementById('getAppModal').classList.add('hidden'); }
+function retryDeepLink(){ closeGetApp(); if(lastDeepLink) launchApp(lastDeepLink); }
+
+function closeModals(){ document.getElementById('modal').classList.add('hidden'); document.getElementById('submitModal').classList.add('hidden'); closeGetApp(); }
 document.getElementById('modal').onclick = closeModals;
 document.getElementById('submitModal').onclick = closeModals;
+document.getElementById('getAppModal').onclick = closeGetApp;
+document.getElementById('getAppBtn').addEventListener('click', onGetAppClick);
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModals(); });
 document.getElementById('submitBtn').onclick = openSubmit;
 document.getElementById('tabPackages').onclick = ()=>switchView('packages');
 document.getElementById('tabPackageLists').onclick = ()=>switchView('packagelists');
-document.getElementById('layoutGrid').onclick = ()=>setLayout('grid');
-document.getElementById('layoutList').onclick = ()=>setLayout('list');
+document.getElementById('viewGrid').onclick = ()=>setLayout('grid');
+document.getElementById('viewList').onclick = ()=>setLayout('list');
 
 let searchTimer;
 document.getElementById('search').oninput = e=>{ clearTimeout(searchTimer); state.search=e.target.value; searchTimer=setTimeout(load,160); };
 document.getElementById('sort').onchange = e=>{ state.sort=e.target.value; load(); };
 
-(async function init(){ tabStyle(); layoutStyle(); await fetchAll(); buildFilters(); load(); if(location.hash==='#packagelists'||location.hash==='#bundles') switchView('packagelists'); })();
+(async function init(){ try{ if(localStorage.getItem('basis:pkgLayout')==='list') state.layout='list'; }catch{} tabStyle(); viewStyle(); await fetchAll(); buildFilters(); load(); if(location.hash==='#packagelists'||location.hash==='#bundles') switchView('packagelists'); })();
 window.addEventListener('hashchange', ()=>switchView((location.hash==='#packagelists'||location.hash==='#bundles')?'packagelists':'packages'));
 </script>
 

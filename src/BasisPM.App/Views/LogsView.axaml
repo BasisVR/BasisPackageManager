@@ -16,13 +16,13 @@
                                Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Top">
-                    <Button Classes="iconBtn" Click="OnCopy" ToolTip.Tip="{loc:Tr logs.button.copy}">
+                    <Button Classes="iconBtn" Click="OnCopy" ToolTip.Tip="{loc:Tr logs.tooltip.copy}">
                         <PathIcon Width="16" Height="16" Data="{StaticResource IconCopy}"/>
                     </Button>
-                    <Button Classes="iconBtn" Command="{Binding OpenFolderCommand}" ToolTip.Tip="{loc:Tr logs.button.openFolder}">
+                    <Button Classes="iconBtn" Command="{Binding OpenFolderCommand}" ToolTip.Tip="{loc:Tr logs.tooltip.openFolder}">
                         <PathIcon Width="16" Height="16" Data="{StaticResource IconFolderOpen}"/>
                     </Button>
-                    <Button Classes="iconBtn" Command="{Binding ClearCommand}" ToolTip.Tip="{loc:Tr logs.button.clear}">
+                    <Button Classes="iconBtn" Command="{Binding ClearCommand}" ToolTip.Tip="{loc:Tr logs.tooltip.clear}">
                         <PathIcon Width="16" Height="16" Data="{StaticResource IconDelete}"/>
                     </Button>
                 </StackPanel>

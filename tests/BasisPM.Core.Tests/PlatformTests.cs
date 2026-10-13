@@ -123,4 +123,43 @@ public sealed class PlatformTests
         Assert.Null(ExecutableFinder.SelectFromPath("git", "", new[] { "" }, _ => true));
         Assert.Null(ExecutableFinder.SelectFromPath("git", string.Join(Path.PathSeparator, "/a", "/b"), new[] { "" }, _ => false));
     }
+
+    [Fact]
+    public void FileReveal_selects_the_file_in_Explorer_on_Windows()
+    {
+        var spec = Assert.Single(FileReveal.Specs(OSPlatform.Windows, @"C:\Users\me\Smith, J\BasisBackups\Basis-backup-20261014-120000.zip"));
+        Assert.Equal("explorer.exe", spec.FileName);
+        Assert.True(spec.UseShellExecute);
+        Assert.Empty(spec.Arguments);
+        var psi = spec.ToStartInfo();
+        Assert.Equal(@"/select,""C:\Users\me\Smith, J\BasisBackups\Basis-backup-20261014-120000.zip""", psi.Arguments);
+        Assert.Empty(psi.ArgumentList);
+    }
+
+    [Fact]
+    public void FileReveal_reveals_in_Finder_on_macOS()
+    {
+        var spec = Assert.Single(FileReveal.Specs(OSPlatform.OSX, "/Users/me/Basis Backups/Basis-backup.zip"));
+        Assert.Equal("open", spec.FileName);
+        Assert.Equal(new[] { "-R", "/Users/me/Basis Backups/Basis-backup.zip" }, spec.Arguments);
+        Assert.False(spec.UseShellExecute);
+    }
+
+    [Fact]
+    public void FileReveal_asks_the_file_manager_over_DBus_on_Linux_with_an_escaped_uri()
+    {
+        const string uri = "file:///home/me/Smith%2C%20J/gr%C3%BC%C3%9Fe%27.zip";
+        var specs = FileReveal.Specs(OSPlatform.Linux, "/home/me/Smith, J/grüße'.zip");
+        Assert.Equal(new[] { "dbus-send", "gdbus" }, specs.Select(s => s.FileName));
+        Assert.All(specs, s => Assert.False(s.UseShellExecute));
+        Assert.Equal(new[] { "--session", "--print-reply", "--dest=org.freedesktop.FileManager1", "--type=method_call", "/org/freedesktop/FileManager1", "org.freedesktop.FileManager1.ShowItems", "array:string:" + uri, "string:" }, specs[0].Arguments);
+        Assert.Equal(new[] { "call", "--session", "--dest", "org.freedesktop.FileManager1", "--object-path", "/org/freedesktop/FileManager1", "--method", "org.freedesktop.FileManager1.ShowItems", $"['{uri}']", "''" }, specs[1].Arguments);
+    }
+
+    [Fact]
+    public async Task FileReveal_is_false_when_neither_the_file_nor_its_folder_exists()
+    {
+        var missing = Path.Combine(Path.GetTempPath(), "basispm-" + Guid.NewGuid().ToString("N"), "backup.zip");
+        Assert.False(await FileReveal.RevealAsync(missing));
+    }
 }

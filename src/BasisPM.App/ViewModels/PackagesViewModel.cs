@@ -201,6 +201,7 @@ public sealed partial class PackagesViewModel : ObservableObject
             if (!SetField(ref _selectedPackage, value)) return;
             OnPropertyChanged(nameof(ShowDetail));
             if (value is not null) _ = CheckPrRepoAsync(value);
+            if (value is not null) _ = CheckPublishAsync(value);
         }
     }
     public bool ShowDetail => _selectedPackage is not null;
@@ -267,7 +268,7 @@ public sealed partial class PackagesViewModel : ObservableObject
         SubmitPrCommand = new RelayCommand<PackageRow>(SubmitPrAsync);
         OpenFolderCommand = new RelayCommand<PackageRow>(OpenMountFolder);
         ReviewDriftCommand = new RelayCommand<PackageRow>(ReviewDriftAsync);
-        InstallGitCommand = new RelayCommand(() => ExternalLink.Open("https://git-scm.com/downloads"));
+        InstallGitCommand = new RelayCommand(() => ExternalLink.Open(GitService.InstallPage(Platform.Current)));
     }
 
     private static List<SortOption> BuildSortOptions() => new()
@@ -413,6 +414,7 @@ public sealed partial class PackagesViewModel : ObservableObject
             _catalog = merged;
             BuildFacets();
             Refilter();
+            _ = LoadAdvisoriesAsync(official);
         }
         catch (Exception ex)
         {
@@ -425,6 +427,7 @@ public sealed partial class PackagesViewModel : ObservableObject
     private async Task RefreshAsync()
     {
         _prRepoExists.Clear();
+        ForgetUpdateChecks();
         await ReloadCatalogAsync();
         if (_install is not null && _install.HasUnityProject)
         {
@@ -496,11 +499,15 @@ public sealed partial class PackagesViewModel : ObservableObject
         foreach (var row in Available)
         {
             row.HasDrift = _drift.ContainsKey(row.Name);
+            ApplyRowAdvisory(row);
+            row.ApiUpgrade = row.IsMounted ? _apiUpgrades.GetValueOrDefault(row.Name) : null;
             if (row.IsMounted) row.MountedEditsSummary = _mountEditSummaries.GetValueOrDefault(row.Name);
         }
         // Re-apply queued/installing state so a rebuild mid-install keeps the row indicators.
         ApplyInstallQueueState();
         ApplyBasisDevState();
+        ApplyCheckState();
+        ApplyUpdateState();
 
         // Keep an open detail panel pointed at the refreshed row so its state stays current.
         if (_selectedPackage is not null)
@@ -651,7 +658,7 @@ public sealed partial class PackagesViewModel : ObservableObject
         _mounts.Clear();
         _embeddedPackages.Clear();
         _shadowedMounts.Clear();
-        if (_install is null || !_install.HasUnityProject) { BuildFacets(); Refilter(); OnPropertyChanged(nameof(GitMissing)); OnPropertyChanged(nameof(CanUpdateAll)); return; }
+        if (_install is null || !_install.HasUnityProject) { RecomputeInstalledAdvisories(); BuildFacets(); Refilter(); OnPropertyChanged(nameof(GitMissing)); OnPropertyChanged(nameof(CanUpdateAll)); return; }
 
         // Packages mounted for editing are present as a local folder, not the registry git URL: a
         // mount clones into .basisdev/<id> and rewrites the manifest line to a "file:" dep (older
@@ -671,6 +678,7 @@ public sealed partial class PackagesViewModel : ObservableObject
         foreach (var id in _mountEditSummaries.Keys.Where(id => !_mountedIds.Contains(id)).ToList())
             _mountEditSummaries.Remove(id);
 
+        RecomputeInstalledAdvisories();
         BuildFacets();
         Refilter();
         OnPropertyChanged(nameof(GitMissing));
@@ -678,6 +686,8 @@ public sealed partial class PackagesViewModel : ObservableObject
         StartEditScan();
         _ = ScanBasisDependenciesAsync();
         _ = ScanBasisDevAsync();
+        _ = RefreshCheckInfoAsync(_install);
+        _ = CheckUpdatesAsync();
     }
 
     /// <summary>Vendor/owner from a reverse-DNS package id: com.unity.2d.sprite → "Unity".</summary>
@@ -701,7 +711,8 @@ public sealed partial class PackagesViewModel : ObservableObject
         foreach (var (name, ver) in result.Resolved)
         {
             if (target.Manifest.Dependencies.ContainsKey(name) || IsPackagePresentInSource(target, name)) continue;
-            target.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
+            if (AdvisoryService.Match(_advisories, name, ver.Url, null, unknownCommitMatches: false) is { Blocks: true }) continue;
+            target.Manifest.Dependencies[name] = PackageTrust.PinnedUrl(ver) ?? ver.Version;
             added++;
         }
         return added;
@@ -789,30 +800,40 @@ public sealed partial class PackagesViewModel : ObservableObject
     // so the source lives in the project instead of being fetched read-only into Library/PackageCache.
     // Falls back to a plain git-URL manifest dependency when git isn't available or the clone can't run,
     // so install still works without git. Returns whether the package was cloned/mounted and the git URL it ended up on.
-    private async Task<(bool Mounted, string Url)> CloneInstallAsync(BasisInstall target, string packageId, string gitUrl, bool orDefaultBranch = false)
+    private async Task<(bool Mounted, string Url)> CloneInstallAsync(BasisInstall target, string packageId, string gitUrl, bool orDefaultBranch = false,
+        Func<PackageReview, Task<bool>>? review = null, bool reviewRequired = false)
     {
         // Updating / re-versioning a package that's already mounted: drop the existing working clone so
-        // the fresh clone can take its place (SwapBackAsync deletes the folder and its mount record). If
+        // the fresh clone can take its place (UnmountAsync deletes the folder and its mount record). If
         // the folder can't be deleted — usually because Unity has it open — abort with that message
         // rather than cloning over a half-removed mount.
+        if (_gitService.IsAvailable && WorkingCloneMount(target, packageId) is not null)
+        {
+            var (updated, updatedUrl) = await TryUpdateInPlaceAsync(target, packageId, gitUrl, orDefaultBranch, review);
+            if (updated) return (true, updatedUrl);
+            if (WorkingCloneMount(target, packageId) is not null && !await ConfirmDiscardEditsAsync(target, packageId, packageId)) throw new ReviewDeclinedException();
+        }
         if (WorkingCloneMount(target, packageId) is not null)
         {
-            var swap = await _mountService.SwapBackAsync(target, packageId);
+            var swap = await _mountService.UnmountAsync(target, packageId, restoreManifest: true, restoreLine: gitUrl);
             if (!swap.Ok) throw new InvalidOperationException(swap.Error ?? L.Tr("develop.status.swapBackFailed"));
         }
 
         if (_gitService.IsAvailable && UpmGitUrl.Parse(gitUrl) is not null)
         {
             var result = await _mountService.MountAsync(target, packageId, gitUrl,
-                line => Avalonia.Threading.Dispatcher.UIThread.Post(() => ReportCloneProgress(line)), orDefaultBranch: orDefaultBranch);
+                line => Avalonia.Threading.Dispatcher.UIThread.Post(() => ReportCloneProgress(line)), orDefaultBranch: orDefaultBranch, review: review);
             if (result.Ok)
             {
                 _mountEditedIds.Remove(packageId);
                 _mountEditSummaries.Remove(packageId);
                 return (true, result.ManifestValue ?? gitUrl);
             }
+            if (result.Declined) throw new ReviewDeclinedException();
             if (result.NotAPackage) throw new NotAPackageException(result.Error ?? "");
+            if (reviewRequired) throw new InvalidOperationException(result.Error ?? L.Tr("develop.status.mountFailed"));
         }
+        else if (reviewRequired && !await ConfirmUncheckedAsync(packageId)) throw new ReviewDeclinedException();
         await ReloadManifestAsync(target);
         target.Manifest.Dependencies[packageId] = gitUrl;
         await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
@@ -869,34 +890,9 @@ public sealed partial class PackagesViewModel : ObservableObject
         return Task.CompletedTask;
     }
 
-    // Catalog-backed packages already in the project (installed or mounted) that a bulk update can
-    // safely re-pin to their latest release; clones with local edits are skipped, never discarded.
-    private List<CatalogPackageVersion> UpdatableEntries()
-    {
-        if (_install is null || !_install.HasUnityProject) return new List<CatalogPackageVersion>();
-        var latest = _catalogService.AllLatest(_catalog).ToDictionary(v => v.Name, StringComparer.OrdinalIgnoreCase);
-        return _install.Manifest.Dependencies
-            .Where(kv => kv.Value?.StartsWith("file:", StringComparison.OrdinalIgnoreCase) != true)
-            .Select(kv => kv.Key)
-            .Union(_mountedIds, StringComparer.OrdinalIgnoreCase)
-            .Where(id => !_mountEditedIds.Contains(id) && latest.TryGetValue(id, out var entry) && !IsBuiltIn(id, entry.Source))
-            .Select(id => latest[id])
-            .ToList();
-    }
+    public bool CanUpdateAll => HasPackageUpdates;
 
-    public bool CanUpdateAll => UpdatableEntries().Count > 0;
-
-    /// <summary>Queues every catalog package in the project for an update to its latest release; clones with local edits are skipped.</summary>
-    private void UpdateAll()
-    {
-        var entries = UpdatableEntries();
-        if (entries.Count == 0) return;
-        var skipped = _mountEditedIds.Count(id => _catalog.Packages.ContainsKey(id));
-        foreach (var entry in entries) EnqueueInstall(entry);
-        SetStatus(skipped > 0
-            ? L.Tr("packages.status.updateAllQueuedSkipped", entries.Count, skipped)
-            : L.Tr("packages.status.updateAllQueued", entries.Count), StatusKind.Info);
-    }
+    private void UpdateAll() => UpdateAllAvailable();
 
     // Installs queued packages one at a time. Runs on the UI thread (started fire-and-forget from
     // EnqueueInstall); each item is dequeued, installed, then removed so the per-row + global indicators
@@ -926,6 +922,7 @@ public sealed partial class PackagesViewModel : ObservableObject
                         InstallProgressDetail = L.Tr("shell.work.waiting", running);
                         SetStatus(InstallProgressDetail, StatusKind.Info, target.DisplayName);
                     });
+                    NoteInstalled(target, entry);
                 }
                 catch (Exception ex)
                 {
@@ -950,6 +947,7 @@ public sealed partial class PackagesViewModel : ObservableObject
             InstallProject = "";
             InstallQueueRemaining = 0;
             ApplyInstallQueueState();
+            StartVerifyingInstalls();
         }
     }
 
@@ -1005,7 +1003,7 @@ public sealed partial class PackagesViewModel : ObservableObject
     private async Task InstallCuratedAsync(BasisInstall target, CatalogPackageVersion entry)
     {
         if (target is null || !target.HasUnityProject) return;
-        if (!await ConfirmDiscardEditsAsync(target, entry.Name, entry.DisplayName)) return;
+        if (RefuseAdvised(target, entry.Name, entry.Url, entry.DisplayName)) return;
 
         IsBusy = true;
         try
@@ -1030,16 +1028,17 @@ public sealed partial class PackagesViewModel : ObservableObject
                 return;
             }
 
+            if (result.Resolved.Values.FirstOrDefault(v => !string.Equals(v.Name, entry.Name, StringComparison.OrdinalIgnoreCase) && RefuseAdvised(target, v.Name, v.Url, v.DisplayName)) is not null) return;
             // Add every registry dependency (but NOT the requested package itself — it's cloned below);
             // anything not in the catalog (e.g. com.unity.*) is left for Unity to resolve at import.
             foreach (var (name, ver) in result.Resolved)
                 if (!string.Equals(name, entry.Name, StringComparison.OrdinalIgnoreCase) && !target.Manifest.Dependencies.ContainsKey(name) && !IsPackagePresentInSource(target, name))
-                    target.Manifest.Dependencies[name] = ver.Url ?? ver.Version;
+                    target.Manifest.Dependencies[name] = PackageTrust.PinnedUrl(ver) ?? ver.Version;
             await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
             // Install the requested package by cloning its repo into .basisdev/ (an editable mount),
             // pinned to its latest published release. Its registry deps stay as manifest git URLs.
-            var latest = mainVer?.Url is { } mainUrl ? await ResolveLatestReleaseUrlAsync(mainUrl) : null;
+            var latest = mainVer?.Url is { } mainUrl ? await ResolveInstallUrlAsync(target, entry, mainUrl) : null;
             var url = latest ?? mainVer?.Url ?? entry.Url;
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -1050,12 +1049,20 @@ public sealed partial class PackagesViewModel : ObservableObject
             }
             else
             {
-                var (mounted, installedUrl) = await CloneInstallAsync(target, entry.Name, url, orDefaultBranch: latest is not null);
+                var origin = OriginOf(entry);
+                var (mounted, installedUrl) = await CloneInstallAsync(target, entry.Name, url, orDefaultBranch: latest is not null,
+                    review: ReviewGate(target, origin, mainVer ?? entry), reviewRequired: origin != InstallOrigin.Registry);
                 var message = installedUrl != url
                     ? L.Tr("packages.status.installedDefaultBranch", entry.DisplayName, UpmGitUrl.Parse(url)?.Ref ?? "", target.DisplayName)
                     : L.Tr(mounted ? "packages.status.installedCloned" : "packages.status.installed", entry.DisplayName, target.DisplayName);
                 ReportWithServerSide(message, entry, target, await SyncServerSideAsync(target, entry, installedUrl), () => RetryInstall(entry, target));
+                _ = OfferDependenciesAsync(target, entry.Name);
             }
+            RefreshInstalled();
+        }
+        catch (ReviewDeclinedException)
+        {
+            SetStatus(L.Tr("packages.status.reviewDeclined", entry.DisplayName), StatusKind.Info, target.DisplayName, key: QueueKey(target, entry.Name));
             RefreshInstalled();
         }
         catch (Exception ex)
@@ -1065,15 +1072,6 @@ public sealed partial class PackagesViewModel : ObservableObject
                 ex is NotAPackageException ? null : () => RetryInstall(entry, target), QueueKey(target, entry.Name));
         }
         finally { IsBusy = false; }
-    }
-
-    /// <summary>Latest published stable release URL (…git#tag) for a catalog git url, or null to leave it as-is.</summary>
-    private async Task<string?> ResolveLatestReleaseUrlAsync(string gitUrl)
-    {
-        var loc = UpmGitUrl.Parse(gitUrl);
-        if (loc is null || loc.Ref is not null) return null;   // unparseable, or the url already pins a ref
-        var versions = await _versionService.GetVersionsAsync(gitUrl, null);
-        return versions.LatestStable?.Ref is { } tag ? loc.ToManifestUrl(tag, loc.Path) : null;
     }
 
     /// <summary>Opens the version picker for a package and installs the chosen release/tag/branch.</summary>
@@ -1121,7 +1119,7 @@ public sealed partial class PackagesViewModel : ObservableObject
             IsBusy = true;
             try
             {
-                if (!await ConfirmDiscardEditsAsync(target, entry.Name, entry.DisplayName)) return;
+                if (RefuseAdvised(target, entry.Name, entry.Url, entry.DisplayName)) return;
 
                 var loc = UpmGitUrl.Parse(entry.Url);
                 if (loc is null) { SetStatus(L.Tr("packages.status.gitUrlParseFailed"), StatusKind.Error, target.DisplayName); return; }
@@ -1133,9 +1131,16 @@ public sealed partial class PackagesViewModel : ObservableObject
                 await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
                 // Clone the chosen release into .basisdev/ as an editable mount (falls back to a git-URL dep without git).
-                var (_, installedUrl) = await CloneInstallAsync(target, entry.Name, versionUrl);
+                var origin = OriginOf(entry);
+                var (_, installedUrl) = await CloneInstallAsync(target, entry.Name, versionUrl, review: ReviewGate(target, origin, entry), reviewRequired: origin != InstallOrigin.Registry);
                 ReportWithServerSide(L.Tr("packages.status.installedVersion", entry.DisplayName, chosen.Ref ?? L.Tr("packages.status.defaultBranch"), target.DisplayName),
                     entry, target, await SyncServerSideAsync(target, entry, installedUrl), () => InstallVersionAsync(target, entry, chosen));
+                RefreshInstalled();
+                _ = OfferDependenciesAsync(target, entry.Name);
+            }
+            catch (ReviewDeclinedException)
+            {
+                SetStatus(L.Tr("packages.status.reviewDeclined", entry.DisplayName), StatusKind.Info, target.DisplayName, key: key);
                 RefreshInstalled();
             }
             catch (Exception ex)
@@ -1162,27 +1167,15 @@ public sealed partial class PackagesViewModel : ObservableObject
             {
                 var wasMounted = WorkingCloneMount(target, name) is not null;
                 var mountedRoot = MountedPackageRoot(target, name);
+                if (!await ConfirmDependentsAsync(target, name, displayName)) return;
                 if (wasMounted && !await ConfirmDiscardEditsAsync(target, name, displayName)) return;
 
-                // A mounted package lives as a working clone (no plain manifest line for a root mount), so delete
-                // the clone first; SwapBackAsync restores a git-URL line, which the Remove below then clears. If
-                // the clone can't be deleted (e.g. Unity has it open), surface that and stop.
-                if (wasMounted)
-                {
-                    var swap = await _mountService.SwapBackAsync(target, name);
-                    if (!swap.Ok) { SetStatus(swap.Error ?? L.Tr("develop.status.swapBackFailed"), StatusKind.Error, target.DisplayName, Retry, key); return; }
-                }
-                await ReloadManifestAsync(target);
-                var hadDep = target.Manifest.Dependencies.Remove(name);
-
-                if (wasMounted || hadDep)
-                {
-                    await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
-                    var serverProblem = await RemoveServerSideAsync(target, name, mountedRoot);
-                    if (serverProblem is null) SetStatus(L.Tr("packages.status.removed", displayName), StatusKind.Success, target.DisplayName, key: key);
-                    else SetStatus(L.Tr("packages.status.serverRemoveFailed", serverProblem), StatusKind.Error, target.DisplayName, Retry, key);
-                    RefreshInstalled();
-                }
+                var removed = await _mountService.RemoveAsync(target, name);
+                if (!removed.Ok) { SetStatus(removed.Error ?? L.Tr("develop.status.swapBackFailed"), StatusKind.Error, target.DisplayName, Retry, key); return; }
+                var serverProblem = await RemoveServerSideAsync(target, name, mountedRoot);
+                if (serverProblem is null) SetStatus(L.Tr("packages.status.removed", displayName), StatusKind.Success, target.DisplayName, key: key);
+                else SetStatus(L.Tr("packages.status.serverRemoveFailed", serverProblem), StatusKind.Error, target.DisplayName, Retry, key);
+                RefreshInstalled();
             }
             catch (Exception ex)
             {
@@ -1231,16 +1224,18 @@ public sealed partial class PackagesViewModel : ObservableObject
             }
 
             var manifestUrl = GitHubService.BuildManifestUrl(loc);
-            await ProjectWorkAsync(target, L.Tr("packages.status.addingFromGitHub", pkg.Name), async () =>
+            var listed = CatalogEntryFor(pkg.Name) is { Url.Length: > 0 } candidate && AdvisoryService.SameRepository(candidate.Url, manifestUrl) ? candidate : null;
+            var label = string.IsNullOrWhiteSpace(pkg.DisplayName) ? pkg.Name : pkg.DisplayName;
+            await PackageWorkAsync(target, pkg.Name, L.Tr("packages.status.addingFromGitHub", pkg.Name), async () =>
             {
+                var existed = target.Manifest.Dependencies.ContainsKey(pkg.Name) || WorkingCloneMount(target, pkg.Name) is not null;
+                if (!await InstallFromUrlNowAsync(target, pkg.Name, label, manifestUrl, listed is null ? InstallOrigin.GitUrl : OriginOf(listed), listed)) return;
                 await ReloadManifestAsync(target);
-                var existed = target.Manifest.Dependencies.ContainsKey(pkg.Name);
-                target.Manifest.Dependencies[pkg.Name] = manifestUrl;
                 // Pull in the package's registry dependencies too (Unity resolves com.unity.* itself).
                 var deps = pkg.Dependencies is { Count: > 0 }
                     ? AddCatalogDependencies(target, pkg.Dependencies.Select(d => (d.Key, SemVer.TryParse(d.Value, out _) ? ">=" + d.Value.Trim() : d.Value)))
                     : 0;
-                await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
+                if (deps > 0) await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
 
                 var depNote = deps > 0 ? L.Tr("packages.status.depNote", deps, deps == 1 ? "" : "s") : "";
                 SetStatus(L.Tr("packages.status.addedFromGitHub", existed ? L.Tr("packages.status.updated") : L.Tr("packages.status.added"), pkg.Name, depNote),
@@ -1260,7 +1255,22 @@ public sealed partial class PackagesViewModel : ObservableObject
     /// <summary>Adds a git (UPM) package to the active install's manifest — used by the website "Install in app" deep link.</summary>
     public async Task AddGitPackageAsync(string? id, string? name, string? gitUrl, string? repoUrl)
     {
-        if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(gitUrl))
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            SetStatus(L.Tr("packages.status.installLinkMissing"), StatusKind.Error);
+            return;
+        }
+        if (_install is null || !_install.HasUnityProject)
+        {
+            SetStatus(L.Tr("packages.status.openInstallFirst", name ?? id), StatusKind.Error);
+            return;
+        }
+        if (CatalogEntryFor(id) is { } listed)
+        {
+            Enqueue(listed, _install);
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(gitUrl))
         {
             SetStatus(L.Tr("packages.status.installLinkMissing"), StatusKind.Error);
             return;
@@ -1270,37 +1280,8 @@ public sealed partial class PackagesViewModel : ObservableObject
             SetStatus(L.Tr("packages.status.refusedUnsafeUrl", name ?? id), StatusKind.Error);
             return;
         }
-        if (_install is null || !_install.HasUnityProject)
-        {
-            SetStatus(L.Tr("packages.status.openInstallFirst", name ?? id), StatusKind.Error);
-            return;
-        }
-        await AddGitPackageAsync(_install, id, name ?? id, gitUrl.Trim());
+        await InstallFromUrlAsync(_install, id.Trim(), string.IsNullOrWhiteSpace(name) ? id.Trim() : name.Trim(), gitUrl.Trim(), InstallOrigin.Link, claimedName: name);
     }
-
-    private Task AddGitPackageAsync(BasisInstall target, string id, string label, string gitUrl) =>
-        PackageWorkAsync(target, id, L.Tr("packages.status.installingNow", label), async () =>
-        {
-            var key = QueueKey(target, id);
-            try
-            {
-                await ReloadManifestAsync(target);
-                var existed = target.Manifest.Dependencies.ContainsKey(id);
-                target.Manifest.Dependencies[id] = gitUrl;
-                // If the package is in the registry, add its Basis-ecosystem dependencies too.
-                var deps = AddCatalogDependencies(target, new[] { (id, "*") });
-                await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
-                var depNote = deps > 0 ? L.Tr("packages.status.depNote", deps, deps == 1 ? "" : "s") : "";
-                SetStatus(L.Tr("packages.status.addedDeepLink", existed ? L.Tr("packages.status.updated") : L.Tr("packages.status.added"), label, depNote, target.Name),
-                    StatusKind.Success, target.DisplayName, key: key);
-                RefreshInstalled();
-            }
-            catch (Exception ex)
-            {
-                DiagnosticLog.Write("Installing a package from a deep link", ex);
-                SetStatus(L.Tr("packages.status.deepLinkFailed", ex.Message), StatusKind.Error, target.DisplayName, () => AddGitPackageAsync(target, id, label, gitUrl), key);
-            }
-        });
 
     // ===== Mount workflow (absorbed from the former Develop tab) =====
 
@@ -1491,6 +1472,7 @@ public sealed partial class PackagesViewModel : ObservableObject
             var install = _install;
             var edited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var summaries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var upgrades = new Dictionary<string, ApiUpgradeRecord?>(StringComparer.OrdinalIgnoreCase);
             foreach (var rec in _mounts.Values.ToList())
             {
                 try
@@ -1505,7 +1487,8 @@ public sealed partial class PackagesViewModel : ObservableObject
                         }
                         continue;
                     }
-                    var changes = await _gitService.GetChangesAsync(rec.FolderPath);
+                    var changes = ApiUpgradeService.WithoutUpgrades(rec.FolderPath, await _gitService.GetChangesAsync(rec.FolderPath));
+                    upgrades[rec.PackageId] = ApiUpgradeService.Current(rec.FolderPath);
                     if (changes.Count > 0)
                     {
                         edited.Add(rec.PackageId);
@@ -1521,6 +1504,7 @@ public sealed partial class PackagesViewModel : ObservableObject
                 foreach (var id in edited) _mountEditedIds.Add(id);
                 _mountEditSummaries.Clear();
                 foreach (var (id, s) in summaries) _mountEditSummaries[id] = s;
+                SetApiUpgrades(upgrades);
                 foreach (var r in Available)
                     if (r.IsMounted)
                     {
@@ -1763,15 +1747,19 @@ public sealed partial class PackagesViewModel : ObservableObject
         {
             await ReloadManifestAsync(target);
             var skipped = 0;
+            var unlisted = new List<PackageListEntry>();
             foreach (var p in packageList.Packages)
             {
                 if (string.IsNullOrWhiteSpace(p.Id)) continue;
                 if (IsPackagePresentInSource(target, p.Id) || (ReferenceEquals(target, _install) && IsIncluded(p.Id))) continue; // already bundled or mounted in the project
-                if (!string.IsNullOrWhiteSpace(p.GitUrl))
+                var listed = CatalogEntryFor(p.Id);
+                if (listed is null && !string.IsNullOrWhiteSpace(p.GitUrl))
                 {
-                    if (!GitUrlPolicy.IsSafeDependencyUrl(p.GitUrl)) { skipped++; continue; }  // never write an unsafe transport to the manifest
-                    target.Manifest.Dependencies[p.Id] = p.GitUrl!.Trim();
+                    if (!GitUrlPolicy.IsSafeDependencyUrl(p.GitUrl) || !BasisDevStore.IsValidId(p.Id)) skipped++;
+                    else unlisted.Add(p);
+                    continue;
                 }
+                if (listed is not null && RefuseAdvised(target, p.Id, listed.Url, listed.DisplayName)) { skipped++; continue; }
                 // Resolve the package + its registry dependencies from the catalog…
                 AddCatalogDependencies(target, new[] { (p.Id, string.IsNullOrWhiteSpace(p.Version) ? "*" : p.Version!) });
                 // …otherwise fall back to the declared version so Unity's registry can resolve it.
@@ -1779,6 +1767,9 @@ public sealed partial class PackagesViewModel : ObservableObject
                     target.Manifest.Dependencies[p.Id] = p.Version!.Trim();
             }
             await UnityProjectService.SaveManifestAsync(target.UnityProjectPath, target.Manifest);
+            foreach (var p in unlisted)
+                if (!await InstallFromUrlNowAsync(target, p.Id, string.IsNullOrWhiteSpace(p.Name) ? p.Id : p.Name, p.GitUrl!, InstallOrigin.PackageList, claimedName: p.Name))
+                    skipped++;
             var skipNote = skipped > 0 ? L.Tr("packages.status.skipNote", skipped) : "";
             _shell.ClearFailure(key);
             SetStatus(L.Tr("packages.status.addedPackageList", packageList.Name, packageList.Packages.Count, skipNote, target.DisplayName),
@@ -1922,7 +1913,7 @@ public sealed partial class PackageRow : ObservableObject
         : InstallPending ? L.Tr("packages.button.queued")
         : L.Tr("packages.button.install");
 
-    public bool CanUpdate => !IsReadOnly && (IsInstalled || IsMounted);
+    public bool CanUpdate => !IsReadOnly && (IsInstalled || IsMounted) && UpdateAvailable;
     public bool CanRemove => !IsReadOnly && (IsInstalled || IsMounted);
     // Installed straight from git (there's a URL to clone) and not already mounted → can be mounted for editing.
     public bool CanMountToEdit => !IsReadOnly && IsInstalled && !IsMounted && InstalledVersion is not null && UpmGitUrl.Parse(InstalledVersion) is not null;
@@ -1930,7 +1921,7 @@ public sealed partial class PackageRow : ObservableObject
     public string MountedLabel => L.Tr("packages.state.mounted");
     // The inline mounted pill: "Locally mounted", or "Local edits" once the working clone is dirty.
     public string MountedStateLabel => MountedHasEdits ? L.Tr("packages.state.mountedEdited") : L.Tr("packages.state.mounted");
-    public string MountedHint => string.IsNullOrEmpty(MountedEditsSummary) ? L.Tr("packages.mounted.hint") : MountedEditsSummary;
+    public string MountedHint => string.IsNullOrEmpty(MountedEditsSummary) ? L.Tr("packages.mounted.hint") : L.Tr("packages.tooltip.mountedEdits", MountedEditsSummary);
     public string ButtonLabel => IsInstalled ? L.Tr("packages.button.update") : L.Tr("packages.button.install");
     public string Author => Entry.Author?.Name ?? "";
     public bool HasAuthor => !string.IsNullOrWhiteSpace(Entry.Author?.Name);
@@ -1958,6 +1949,7 @@ public sealed partial class PackageRow : ObservableObject
     public string DependencySummary => string.Join("      ·      ", DependencyList);
     public string? Link => Entry.Link;
     public bool HasLink => !string.IsNullOrWhiteSpace(Entry.Link);
+    public string LinkTooltip => L.Tr("packages.tooltip.website", Entry.Link ?? "");
 }
 
 /// <summary>One Source/Category filter chip: a label, a live count, and whether it's the active pick.</summary>

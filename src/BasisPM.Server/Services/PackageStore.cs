@@ -20,7 +20,7 @@ public sealed class PackageStore
     private readonly List<RegistryPackage> _packages;
     private readonly HashSet<string> _seedIds;
 
-    // Canonical package data lives in seed/packages.json (committed, PR-editable).
+    // Canonical package data lives in seed/packages/<id>.json (committed, PR-editable).
     // Runtime submissions on a live server are written to dataDir/registry.json on top of the seed.
     public PackageStore(string dataDir, string? seedPath = null)
     {
@@ -38,22 +38,62 @@ public sealed class PackageStore
                 _packages.Add(p);
     }
 
+    public const string SeedPackagesFolder = "packages";
+    public const string LegacySeedFile = "packages.json";
+
     public static List<RegistryPackage> LoadSeed(string? seedPath)
     {
-        if (!string.IsNullOrEmpty(seedPath) && File.Exists(seedPath))
+        var packages = new List<RegistryPackage>();
+        if (string.IsNullOrEmpty(seedPath)) return packages;
+        var isFolder = Directory.Exists(seedPath);
+        var folder = isFolder ? seedPath : Path.GetDirectoryName(seedPath);
+        var legacy = isFolder ? Path.Combine(seedPath, LegacySeedFile) : seedPath;
+        var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (!string.IsNullOrEmpty(folder))
+            foreach (var file in SeedFiles(folder))
+                if (ReadSeedFile(file) is { } package && ids.Add(package.Id)) packages.Add(package);
+        if (File.Exists(legacy))
         {
             try
             {
-                var list = Read(seedPath);
-                if (list is { Count: > 0 })
-                {
-                    foreach (var p in list) p.Source = DeriveSource(p.RepoUrl, p.GitUrl);
-                    return list;
-                }
+                foreach (var package in Read(legacy) ?? new List<RegistryPackage>())
+                    if (package is not null && !string.IsNullOrWhiteSpace(package.Id) && ids.Add(package.Id)) packages.Add(package);
             }
-            catch (Exception ex) { DiagnosticLog.Write($"Loading package registry seed from {seedPath}", ex); }
+            catch (Exception ex) { DiagnosticLog.Write($"Loading package registry seed from {legacy}", ex); }
         }
-        return new List<RegistryPackage>();
+        foreach (var p in packages) p.Source = DeriveSource(p.RepoUrl, p.GitUrl);
+        return packages;
+    }
+
+    public static IReadOnlyList<string> SeedFiles(string seedFolder)
+    {
+        var dir = Path.Combine(seedFolder, SeedPackagesFolder);
+        if (!Directory.Exists(dir)) return Array.Empty<string>();
+        try { return Directory.EnumerateFiles(dir, "*.json").OrderBy(f => Path.GetFileName(f), StringComparer.OrdinalIgnoreCase).ToList(); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            DiagnosticLog.Write($"Listing the package registry seed in {dir}", ex);
+            return Array.Empty<string>();
+        }
+    }
+
+    public static RegistryPackage? ReadSeedFile(string file)
+    {
+        try
+        {
+            var package = JsonSerializer.Deserialize<RegistryPackage>(File.ReadAllText(file), FileOpts);
+            if (package is null) return null;
+            var name = Path.GetFileNameWithoutExtension(file);
+            if (string.IsNullOrWhiteSpace(package.Id)) package.Id = name;
+            if (string.Equals(package.Id, name, StringComparison.OrdinalIgnoreCase)) return package;
+            DiagnosticLog.Write($"Loading package registry seed {file}", new InvalidDataException($"It describes {package.Id}; the file has to be named {package.Id}.json."));
+            return null;
+        }
+        catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException)
+        {
+            DiagnosticLog.Write($"Loading package registry seed {file}", ex);
+            return null;
+        }
     }
 
     /// <summary>Official = hosted under github.com/BasisVR; anything else is community.</summary>
@@ -229,37 +269,98 @@ public sealed class PackageStore
         var catalog = new Catalog { Name = "Basis Package Registry", Url = "" };
         foreach (var p in packages.Where(p => !string.IsNullOrWhiteSpace(p.GitUrl)))
         {
-            catalog.Packages[p.Id] = new CatalogPackage
+            var versions = new Dictionary<string, CatalogPackageVersion>();
+            var known = OrderedVersions(p);
+            if (known.Count == 0) versions[p.Version] = LatestVersion(p, null);
+            else
             {
-                Versions = new Dictionary<string, CatalogPackageVersion>
-                {
-                    [p.Version] = new CatalogPackageVersion
-                    {
-                        Name = p.Id,
-                        DisplayName = p.Name,
-                        Version = p.Version,
-                        Description = p.Description,
-                        Unity = p.Unity,
-                        License = p.License,
-                        Url = p.GitUrl,
-                        Dependencies = p.Dependencies,
-                        Author = new CatalogAuthor { Name = p.Author, Url = p.AuthorUrl },
-                        Image = p.Image,
-                        Icon = p.Icon,
-                        Link = p.Link,
-                        // Filter/sort metadata for the desktop client (mirrors the website's browser).
-                        Category = p.Category,
-                        Source = p.Source,
-                        Tags = p.Tags,
-                        Stars = p.Stars,
-                        Forks = p.Forks,
-                        Updated = p.Updated,
-                        Server = p.Server,
-                    },
-                },
-            };
+                versions[known[0].Key] = LatestVersion(p, known[0].Version);
+                foreach (var (key, version) in known.Skip(1)) versions[key] = OlderVersion(p, key, version);
+            }
+            if (!string.IsNullOrWhiteSpace(p.ReviewedCommit))
+            {
+                var reviewed = versions.Values.FirstOrDefault(v => string.Equals(v.Commit, p.ReviewedCommit.Trim(), StringComparison.OrdinalIgnoreCase))
+                    ?? versions[known.Count == 0 ? p.Version : known[0].Key];
+                reviewed.ReviewedCommit = p.ReviewedCommit.Trim();
+            }
+            catalog.Packages[p.Id] = new CatalogPackage { Versions = versions };
         }
         return catalog;
+    }
+
+    private static List<(string Key, RegistryVersion Version)> OrderedVersions(RegistryPackage p) =>
+        (p.Versions ?? new List<RegistryVersion>())
+            .Where(v => v is not null && SemVer.TryParse(v.Version, out _))
+            .Select(v => (Parsed: SemVer.Parse(v.Version), Version: v))
+            .GroupBy(v => v.Parsed.ToString())
+            .Select(g => g.First())
+            .OrderByDescending(v => v.Parsed)
+            .Select(v => (v.Parsed.ToString(), v.Version))
+            .ToList();
+
+    private static CatalogPackageVersion LatestVersion(RegistryPackage p, RegistryVersion? v) => new()
+    {
+        Name = p.Id,
+        DisplayName = p.Name,
+        Version = v is null ? p.Version : SemVer.Parse(v.Version).ToString(),
+        Description = p.Description,
+        Unity = v?.Unity ?? p.Unity,
+        UnityRelease = v?.UnityRelease,
+        Basis = v?.Basis,
+        License = p.License ?? v?.License,
+        Url = p.GitUrl,
+        Ref = v?.Ref,
+        Commit = v?.Commit,
+        Dependencies = MergeDependencies(v?.Dependencies, p.Dependencies),
+        GitDependencies = v?.GitDependencies is { Count: > 0 } git ? git : null,
+        Author = new CatalogAuthor { Name = p.Author, Url = p.AuthorUrl },
+        Image = p.Image,
+        Icon = p.Icon,
+        Link = p.Link,
+        // Filter/sort metadata for the desktop client (mirrors the website's browser).
+        Category = p.Category,
+        Source = p.Source,
+        Tags = p.Tags,
+        Stars = p.Stars,
+        Forks = p.Forks,
+        Updated = p.Updated,
+        Server = p.Server,
+    };
+
+    private static CatalogPackageVersion OlderVersion(RegistryPackage p, string key, RegistryVersion v) => new()
+    {
+        Name = p.Id,
+        DisplayName = string.IsNullOrWhiteSpace(v.DisplayName) ? p.Name : v.DisplayName,
+        Version = key,
+        Description = string.IsNullOrWhiteSpace(v.Description) ? p.Description : v.Description,
+        Unity = v.Unity,
+        UnityRelease = v.UnityRelease,
+        Basis = v.Basis,
+        License = v.License ?? p.License,
+        Url = PinnedUrl(p.GitUrl!, v.Ref),
+        Ref = v.Ref,
+        Commit = v.Commit,
+        Dependencies = v.Dependencies is { Count: > 0 } dependencies ? dependencies : null,
+        GitDependencies = v.GitDependencies is { Count: > 0 } git ? git : null,
+        Author = new CatalogAuthor { Name = p.Author, Url = p.AuthorUrl },
+        Source = p.Source,
+        Server = p.Server,
+    };
+
+    public static string PinnedUrl(string gitUrl, string? gitRef) =>
+        !string.IsNullOrWhiteSpace(gitRef) && GitUrlPolicy.IsSafeRef(gitRef) && UpmGitUrl.Parse(gitUrl) is { Ref: null } parsed ? parsed.ToManifestUrl(gitRef.Trim(), parsed.Path) : gitUrl;
+
+    private static Dictionary<string, string>? MergeDependencies(Dictionary<string, string>? fromPackage, Dictionary<string, string>? fromSeed)
+    {
+        var merged = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var (id, range) in fromPackage ?? new Dictionary<string, string>()) merged[id] = range;
+        foreach (var (id, range) in fromSeed ?? new Dictionary<string, string>())
+        {
+            var existing = merged.Keys.FirstOrDefault(k => string.Equals(k, id, StringComparison.OrdinalIgnoreCase));
+            if (existing is not null) merged.Remove(existing);
+            merged[id] = range;
+        }
+        return merged.Count == 0 ? null : merged;
     }
 
     private static readonly string[] ImageExts = { ".png", ".webp", ".jpg", ".jpeg", ".gif" };
@@ -295,13 +396,13 @@ public sealed class PackageStore
     }
 
     // Package ids only (e.g. com.foo.bar) — blocks path traversal when building the icon filename.
-    private static bool IsSafeId(string id) =>
+    public static bool IsSafeId(string id) =>
         !string.IsNullOrEmpty(id) && id.All(c => char.IsLetterOrDigit(c) || c is '.' or '_' or '-');
 
     // True only for a raw *image file* that lives in the package's OWN repo — i.e. the image's
     // host + owner/repo (from a raw GitHub/GitLab URL, per the page CSP) matches the package's
     // git/repo URL. Rejects arbitrary remotes, other repos, and non-image files.
-    private static bool IsOwnRepoImage(RegistryPackage p)
+    public static bool IsOwnRepoImage(RegistryPackage p)
     {
         var url = p.Image;
         if (string.IsNullOrWhiteSpace(url)) return false;

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -11,7 +12,11 @@ public sealed class BasisServerService
 {
     public const string SteamAppId = "3157090";
     public const string MissingProjectMessage = "The Basis server project was not found in this checkout.";
+    public const string FirstAdminVariable = "BasisFirstAdmin";
     private static readonly HttpClient HealthClient = new();
+    private readonly Func<BasisServerPaths, ProcessStartInfo>? _consoleStart;
+
+    public BasisServerService(Func<BasisServerPaths, ProcessStartInfo>? consoleStart = null) => _consoleStart = consoleStart;
 
     public BasisServerPaths GetPaths(string repoRoot)
     {
@@ -185,6 +190,58 @@ public sealed class BasisServerService
         }) ?? throw new InvalidOperationException("Could not start the Basis server.");
     }
 
+    public async Task<Process> StartInWindowAsync(string repoRoot, CancellationToken cancellationToken = default)
+    {
+        if (OperatingSystem.IsWindows()) return Start(repoRoot);
+        var paths = GetPaths(repoRoot);
+        if (!File.Exists(paths.ExecutablePath)) throw new FileNotFoundException("Build the Basis server first.", paths.ExecutablePath);
+        Directory.CreateDirectory(paths.RuntimeDirectory);
+        return await TerminalLauncher.StartAsync(paths.RuntimeDirectory, paths.ExecutablePath, cancellationToken, RuntimeEnvironment()).ConfigureAwait(false);
+    }
+
+    public static string? DotNetRoot(string? dotnet, Func<string, bool> directoryExists)
+    {
+        var slash = dotnet?.LastIndexOfAny(new[] { '/', '\\' }) ?? -1;
+        var folder = slash > 0 ? dotnet![..slash] : null;
+        return folder is not null && directoryExists(Path.Combine(folder, "host", "fxr")) ? folder : null;
+    }
+
+    public static IReadOnlyDictionary<string, string> RuntimeEnvironment()
+    {
+        var environment = new Dictionary<string, string>();
+        if (OperatingSystem.IsWindows() || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_ROOT"))) return environment;
+        try
+        {
+            if (ExecutableFinder.Locate("dotnet") is { } dotnet && DotNetRoot(new FileInfo(dotnet).ResolveLinkTarget(returnFinalTarget: true)?.FullName ?? dotnet, Directory.Exists) is { } folder)
+                environment["DOTNET_ROOT"] = folder;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write("Finding the .NET folder for the Basis server", ex); }
+        return environment;
+    }
+
+    public ServerConsoleSession StartConsole(string repoRoot, Action<ServerConsoleLine> onLine, IReadOnlyDictionary<string, string>? environment = null)
+    {
+        var paths = GetPaths(repoRoot);
+        if (_consoleStart is null && !File.Exists(paths.ExecutablePath)) throw new FileNotFoundException("Build the Basis server first.", paths.ExecutablePath);
+        Directory.CreateDirectory(paths.RuntimeDirectory);
+        var (startInfo, encoding) = _consoleStart is { } custom ? (custom(paths), null) : ServerConsoleSession.ForExecutable(paths.ExecutablePath, paths.RuntimeDirectory);
+        foreach (var (name, value) in RuntimeEnvironment().Concat(environment ?? new Dictionary<string, string>())) startInfo.Environment[name] = value;
+        return ServerConsoleSession.Start(startInfo, onLine, encoding);
+    }
+
+    public bool IsFirstRun(string repoRoot) => !File.Exists(GetPaths(repoRoot).ConfigFile);
+
+    public bool CanStartConsole(string repoRoot) => _consoleStart is not null || File.Exists(GetPaths(repoRoot).ExecutablePath);
+
+    public bool AcceptsConsoleInput(string repoRoot) =>
+        !string.Equals(TryLoadConfigRoot(repoRoot)?.Element("EnableConsole")?.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase);
+
+    public static IReadOnlyDictionary<string, string> FirstRunEnvironment(string? admins)
+    {
+        var list = string.Join(",", (admins ?? "").Split(new[] { ',', ';', ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
+        return list.Length == 0 ? new Dictionary<string, string>() : new Dictionary<string, string> { [FirstAdminVariable] = list };
+    }
+
     public IReadOnlyList<ServerConfigField> LoadConfig(string repoRoot)
     {
         var file = GetPaths(repoRoot).ConfigFile;
@@ -271,17 +328,20 @@ public sealed class BasisServerService
         return Process.Start(psi) is not null;
     }
 
-    public static string? FindSteamExecutable()
+    public static string? FindSteamExecutable() =>
+        SteamCandidates(Platform.Current, Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)).FirstOrDefault(File.Exists)
+        ?? ExecutableFinder.Locate("steam");
+
+    public static IReadOnlyList<string> SteamCandidates(OSPlatform os, string home, string programFilesX86, string programFiles)
     {
-        var candidates = new List<string>();
-        if (OperatingSystem.IsWindows())
+        if (os == OSPlatform.Windows) return new[] { Path.Combine(programFilesX86, "Steam", "steam.exe"), Path.Combine(programFiles, "Steam", "steam.exe") };
+        if (os == OSPlatform.OSX)
+            return new[] { home + "/Library/Application Support/Steam/Steam.AppBundle/Steam/Contents/MacOS/steam_osx", "/Applications/Steam.app/Contents/MacOS/steam_osx", home + "/Applications/Steam.app/Contents/MacOS/steam_osx" };
+        return new[]
         {
-            candidates.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Steam", "steam.exe"));
-            candidates.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Steam", "steam.exe"));
-        }
-        else if (OperatingSystem.IsMacOS()) candidates.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Library/Application Support/Steam/Steam.AppBundle/Steam/Contents/MacOS/steam_osx"));
-        else candidates.AddRange(new[] { "/usr/bin/steam", "/usr/local/bin/steam" });
-        return candidates.FirstOrDefault(File.Exists) ?? ExecutableFinder.Locate("steam");
+            "/usr/bin/steam", "/usr/local/bin/steam", "/usr/games/steam", "/snap/bin/steam",
+            "/var/lib/flatpak/exports/bin/com.valvesoftware.Steam", home + "/.local/share/flatpak/exports/bin/com.valvesoftware.Steam",
+        };
     }
 
     public static string BuildConnection(string host, ushort port, string? password)

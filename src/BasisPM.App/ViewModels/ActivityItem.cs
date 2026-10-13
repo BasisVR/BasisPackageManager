@@ -38,7 +38,7 @@ public sealed class ActivityItem : ObservableObject
     }
 }
 
-public sealed record BlockerItem(string? Project, string Text, string? ActionLabel = null, RelayCommand? Action = null, RelayCommand? Dismiss = null)
+public sealed record BlockerItem(string? Project, string Text, string? ActionLabel = null, RelayCommand? Action = null, RelayCommand? Dismiss = null, string? ActionTip = null)
 {
     public bool HasProject => !string.IsNullOrWhiteSpace(Project);
     public bool HasAction => Action is not null && !string.IsNullOrWhiteSpace(ActionLabel);

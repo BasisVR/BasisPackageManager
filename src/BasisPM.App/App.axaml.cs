@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Data;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using BasisPM.App.Localization;
@@ -13,7 +15,11 @@ namespace BasisPM.App;
 
 public partial class App : Application
 {
-    public override void Initialize() => AvaloniaXamlLoader.Load(this);
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+        ExpanderToolTip.Register();
+    }
 
     public override void OnFrameworkInitializationCompleted()
     {
@@ -46,10 +52,37 @@ public partial class App : Application
                 Bring(window);
                 vm.HandleDeepLink(uri);
             });
+            if (OperatingSystem.IsMacOS()) SetUpMac(vm, window);
 
             _ = vm.InitializeAsync();
         }
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private void SetUpMac(MainWindowViewModel vm, Window window)
+    {
+        var menu = new NativeMenu();
+        menu.Add(MenuItem("shell.macMenu.about", null, vm, window));
+        menu.Add(new NativeMenuItemSeparator());
+        menu.Add(MenuItem("shell.macMenu.settings", new KeyGesture(Key.OemComma, KeyModifiers.Meta), vm, window));
+        NativeMenu.SetMenu(this, menu);
+        if (TryGetFeature(typeof(IActivatableLifetime)) is IActivatableLifetime activatable)
+            activatable.Activated += (_, e) =>
+            {
+                if (e is ProtocolActivatedEventArgs { Uri: { } uri } && DeepLink.IsDeepLink(uri.OriginalString)) DeepLinkDispatcher.Deliver(uri.OriginalString);
+            };
+    }
+
+    private static NativeMenuItem MenuItem(string key, KeyGesture? gesture, MainWindowViewModel vm, Window window)
+    {
+        var item = new NativeMenuItem { Gesture = gesture };
+        item.Bind(NativeMenuItem.HeaderProperty, (IBinding)new TrExtension(key).ProvideValue(null!));
+        item.Click += (_, _) =>
+        {
+            Bring(window);
+            vm.NavigateTo("settings");
+        };
+        return item;
     }
 
     private static void Bring(Window window)

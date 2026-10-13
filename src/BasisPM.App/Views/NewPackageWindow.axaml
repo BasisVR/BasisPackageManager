@@ -1,0 +1,135 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BasisPM.App.ViewModels"
+        xmlns:loc="using:BasisPM.App.Localization"
+        x:Class="BasisPM.App.Views.NewPackageWindow"
+        x:DataType="vm:NewPackageViewModel"
+        Title="{loc:Tr dialog.newPackage.title}"
+        Width="640" Height="780" MinWidth="560" MinHeight="560"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <Grid RowDefinitions="Auto,*,Auto" Margin="26,24">
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,14">
+            <TextBlock Text="{loc:Tr dialog.newPackage.heading}" Classes="h3"/>
+            <TextBlock Text="{Binding Subtitle}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="12" Margin="0,0,10,0" IsEnabled="{Binding IsIdle}">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="{loc:Tr dialog.newPackage.nameLabel}" Classes="muted" FontSize="11"/>
+                    <TextBox x:Name="NameBox" Text="{Binding DisplayName}" Watermark="{loc:Tr dialog.newPackage.nameWatermark}"
+                             ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.name}"/>
+                </StackPanel>
+                <StackPanel Spacing="4">
+                    <TextBlock Text="{loc:Tr dialog.newPackage.idLabel}" Classes="muted" FontSize="11"/>
+                    <TextBox Text="{Binding Id}" FontFamily="{StaticResource MonoFontFamily}" ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.id}"/>
+                    <TextBlock Text="{Binding FolderPreview}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                </StackPanel>
+                <StackPanel Spacing="4">
+                    <TextBlock Text="{loc:Tr dialog.newPackage.descriptionLabel}" Classes="muted" FontSize="11"/>
+                    <TextBox Text="{Binding Description}" AcceptsReturn="True" TextWrapping="Wrap" Height="58"
+                             ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.description}"/>
+                </StackPanel>
+                <Grid ColumnDefinitions="*,14,200">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{loc:Tr dialog.newPackage.authorLabel}" Classes="muted" FontSize="11"/>
+                        <TextBox Text="{Binding Author}" ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.author}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="4">
+                        <TextBlock Text="{loc:Tr dialog.newPackage.licenseLabel}" Classes="muted" FontSize="11"/>
+                        <ComboBox ItemsSource="{Binding Licenses}" SelectedItem="{Binding SelectedLicense}" HorizontalAlignment="Stretch"
+                                  ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.license}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:LicenseOption">
+                                    <TextBlock Text="{Binding Label}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding UnityText}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding BasisText}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <TextBlock Text="{loc:Tr dialog.newPackage.partsLabel}" Classes="muted" FontSize="11" Margin="0,4,0,0"/>
+                <Border Classes="card" Padding="14,10">
+                    <StackPanel Spacing="8">
+                        <CheckBox IsChecked="{Binding Runtime}" ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.runtime}">
+                            <StackPanel Spacing="1">
+                                <TextBlock Text="{loc:Tr dialog.newPackage.runtime}" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding AssemblyPreview}" Classes="dim" FontSize="11"/>
+                            </StackPanel>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding Editor}" ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.editor}">
+                            <TextBlock Text="{loc:Tr dialog.newPackage.editor}" FontWeight="SemiBold"/>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding Server}" IsVisible="{Binding ServerAvailable}" ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.server}">
+                            <TextBlock Text="{loc:Tr dialog.newPackage.server}" FontWeight="SemiBold"/>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding Samples}" ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.samples}">
+                            <TextBlock Text="{loc:Tr dialog.newPackage.samples}" FontWeight="SemiBold"/>
+                        </CheckBox>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Spacing="6" IsVisible="{Binding HasAssemblies}">
+                    <TextBlock Text="{loc:Tr dialog.newPackage.referencesLabel}" Classes="muted" FontSize="11"/>
+                    <Border Classes="card" Padding="0" ClipToBounds="True" MaxHeight="200">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding Assemblies}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:AssemblyPick">
+                                        <Border Padding="14,6" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                                            <CheckBox IsChecked="{Binding IsSelected}" ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.reference}">
+                                                <StackPanel Spacing="-1">
+                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Detail}" Classes="dim" FontSize="10"/>
+                                                </StackPanel>
+                                            </CheckBox>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Border>
+                </StackPanel>
+
+                <Border Classes="card" Padding="14,10">
+                    <StackPanel Spacing="8">
+                        <CheckBox IsChecked="{Binding CreateRepository}" ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.github}">
+                            <StackPanel Spacing="1">
+                                <TextBlock Text="{loc:Tr dialog.newPackage.github}" FontWeight="SemiBold"/>
+                                <TextBlock Text="{loc:Tr dialog.newPackage.githubHint}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </CheckBox>
+                        <CheckBox IsChecked="{Binding PrivateRepository}" IsVisible="{Binding CreateRepository}" Margin="28,0,0,0"
+                                  ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.private}">
+                            <TextBlock Text="{loc:Tr dialog.newPackage.private}"/>
+                        </CheckBox>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Spacing="10" Margin="0,14,0,0">
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsSigningIn}" Height="4" CornerRadius="2"/>
+            <TextBlock Text="{Binding ErrorText}" IsVisible="{Binding HasError}" Foreground="{StaticResource BasisDangerBrush}" FontSize="12" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                <Button Click="OnCancel" ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.cancel}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr dialog.newPackage.cancel}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Classes="primary" Click="OnCreate" IsEnabled="{Binding IsIdle}" ToolTip.Tip="{loc:Tr dialog.newPackage.tooltip.create}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr dialog.newPackage.create}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

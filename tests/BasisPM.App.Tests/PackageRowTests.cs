@@ -159,9 +159,45 @@ public sealed class PackageRowTests
         var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), installedVersion: null, isMounted: true);
         Assert.True(row.HasGit);
         Assert.True(row.CanChooseVersion);
-        Assert.True(row.CanUpdate);
+        Assert.False(row.CanUpdate);
         Assert.True(row.CanRemove);
         Assert.False(row.IsAvailableToInstall);
+
+        row.SetUpdate(new PackageUpdateInfo("com.basis.sdk", "https://github.com/x/x.git", null, PackageUpdateKind.Release, "v1.0.0", null, "v1.1.0", null, true));
+
+        Assert.True(row.CanUpdate);
+        Assert.True(row.UpdateAvailable);
+        Assert.Equal("v1.1.0", row.UpdateTargetLabel);
+        Assert.Contains("v1.1.0", row.UpdateButtonLabel);
+    }
+
+    [AvaloniaFact]
+    public void A_check_that_finds_nothing_newer_hides_update_and_explains_a_skipped_release()
+    {
+        var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), installedVersion: null, isMounted: true);
+
+        row.SetUpdate(new PackageUpdateInfo("com.basis.sdk", "https://github.com/x/x.git", null, PackageUpdateKind.Release, "v1.0.0", null, "v1.0.0", null, false)
+        {
+            SkippedRef = "v2.0.0",
+            SkippedProblem = new BasisPM.Core.Services.CompatibilityResult(BasisPM.Core.Services.CompatibilityProblem.NeedsNewerUnity, "6000.2"),
+        });
+
+        Assert.False(row.CanUpdate);
+        Assert.True(row.HasCompatibilityNote);
+        Assert.Contains("v2.0.0", row.CompatibilityNote);
+        Assert.Contains("6000.2", row.CompatibilityNote);
+    }
+
+    [AvaloniaFact]
+    public void Built_in_rows_never_offer_updates_or_dependency_installs()
+    {
+        var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), installedVersion: null, isEmbedded: true, isIncluded: true);
+
+        row.SetUpdate(new PackageUpdateInfo("com.basis.sdk", "https://github.com/x/x.git", null, PackageUpdateKind.Release, "v1.0.0", null, "v1.1.0", null, true));
+        row.SetDependencyGaps(new[] { new BasisPM.Core.Services.PackageDependency("com.x", "1.0.0", BasisPM.Core.Services.PackageDependencyKind.Unity, BasisPM.Core.Services.DependencyState.Missing) });
+
+        Assert.False(row.UpdateAvailable);
+        Assert.False(row.HasDependencyGaps);
     }
 
     // A not-installed row can only be installed — not updated or removed.
@@ -193,7 +229,7 @@ public sealed class PackageRowTests
         var row = new PackageRow(Entry(url: "https://github.com/x/x.git"), installedVersion: "https://github.com/x/x.git#v1.2.0");
         Assert.Equal("v1.2.0", row.InstalledLabel);
         Assert.True(row.HasInstalledVersion);
-        Assert.Equal("Installed v1.2.0", row.InstalledVersionText);
+        Assert.Equal("Installed in this project: v1.2.0.", row.InstalledVersionText);
     }
 
     [AvaloniaFact]

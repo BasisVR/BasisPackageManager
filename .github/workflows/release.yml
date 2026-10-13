@@ -268,7 +268,7 @@ jobs:
             if [ "$RID" = "$LEGACY_RID" ]; then CHANNEL="${RID%%-*}"; else CHANNEL="$RID"; fi
             vpk pack -u BasisPackageManager -v "$VERSION" -p "publish/$RID" -e BasisPM.App \
               --runtime "$RID" --channel "$CHANNEL" -o "releases/$RID" \
-              --packTitle "Basis Package Manager"
+              --packTitle "Basis Package Manager" --icon build/linux/BasisPM.png --categories Development
           done
 
       - name: Pack (macOS)
@@ -285,11 +285,15 @@ jobs:
                   --notaryProfile velopack-notary \
                   --signEntitlements build/entitlements.plist)
           fi
+          SHORT_VERSION="${VERSION%%[-+]*}"
+          sed -e "s/__VERSION__/$VERSION/g" -e "s/__SHORT_VERSION__/$SHORT_VERSION/g" build/macos/Info.plist > "$RUNNER_TEMP/Info.plist"
+          plutil -lint "$RUNNER_TEMP/Info.plist"
           for RID in $TARGETS; do
             if [ "$RID" = "$LEGACY_RID" ]; then CHANNEL="${RID%%-*}"; else CHANNEL="$RID"; fi
             vpk pack -u BasisPackageManager -v "$VERSION" -p "publish/$RID" -e BasisPM.App \
               --runtime "$RID" --channel "$CHANNEL" -o "releases/$RID" \
-              --packTitle "Basis Package Manager" "${SIGN[@]}"
+              --packTitle "Basis Package Manager" --plist "$RUNNER_TEMP/Info.plist" \
+              --icon build/macos/BasisPM.icns "${SIGN[@]}"
           done
 
       - name: Upload to GitHub Release

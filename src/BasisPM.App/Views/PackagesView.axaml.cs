@@ -41,13 +41,14 @@ public partial class PackagesView : UserControl
         var panel = new StackPanel { Spacing = 2 };
         var flyout = new Flyout();
 
-        panel.Children.Add(MenuButton(L.Tr("packages.button.update"), false, flyout, () => vm.InstallCommand.Execute(row.Entry)));
+        if (row.UpdateAvailable)
+            panel.Children.Add(MenuButton(row.UpdateButtonLabel, row.UpdateTooltip, false, flyout, () => vm.UpdatePackageCommand.Execute(row)));
         if (row.HasGit)
-            panel.Children.Add(MenuButton(L.Tr("packages.button.chooseVersion"), false, flyout, () => vm.ChooseVersionCommand.Execute(row.Entry)));
+            panel.Children.Add(MenuButton(L.Tr("packages.button.chooseVersion"), L.Tr("packages.tooltip.chooseVersion"), false, flyout, () => vm.ChooseVersionCommand.Execute(row.Entry)));
         // A git package installed but not yet mounted can be mounted for editing straight from here.
-        if (row.CanMountToEdit)
-            panel.Children.Add(MenuButton(L.Tr("develop.button.mountToEdit"), false, flyout, () => vm.MountCommand.Execute(row)));
-        panel.Children.Add(MenuButton(L.Tr("packages.button.remove"), true, flyout, () => vm.RemoveCommand.Execute(row.Entry)));
+        if (row.CanMountToEdit && AdvancedToggle.IsChecked == true)
+            panel.Children.Add(MenuButton(L.Tr("develop.button.mountToEdit"), L.Tr("develop.tooltip.mountToEdit"), false, flyout, () => vm.MountCommand.Execute(row)));
+        panel.Children.Add(MenuButton(L.Tr("packages.button.remove"), L.Tr("packages.tooltip.remove"), true, flyout, () => vm.RemoveCommand.Execute(row.Entry)));
 
         // The Fluent FlyoutPresenter fill is translucent, so draw the menu's own opaque, themed
         // panel here; the presenter is left chrome-less (see BasisTheme.axaml FlyoutPresenter style).
@@ -72,9 +73,10 @@ public partial class PackagesView : UserControl
             ? b
             : new SolidColorBrush(Color.Parse(fallbackHex));
 
-    private static Button MenuButton(string text, bool destructive, Flyout flyout, Action action)
+    private static Button MenuButton(string text, string tip, bool destructive, Flyout flyout, Action action)
     {
         var btn = new Button { Content = text };
+        ToolTip.SetTip(btn, tip);
         btn.Classes.Add("menuItem");
         if (destructive) btn.Classes.Add("destructive");
         btn.Click += (_, _) => { flyout.Hide(); action(); };

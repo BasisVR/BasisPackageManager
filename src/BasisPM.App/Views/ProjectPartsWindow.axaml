@@ -30,14 +30,15 @@
                         <Border Padding="14,10" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
                             <StackPanel Spacing="6">
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <CheckBox IsChecked="{Binding IsIncluded}" IsEnabled="{Binding CanToggle}">
+                                    <CheckBox IsChecked="{Binding IsIncluded}" IsEnabled="{Binding CanToggle}" ToolTip.Tip="{loc:Tr dialog.parts.tooltip.part}">
                                         <StackPanel Spacing="2">
                                             <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
                                             <TextBlock Text="{Binding Location}" Classes="dim" FontSize="11" IsVisible="{Binding ShowsLocation}"/>
                                             <TextBlock Text="{Binding Description}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                                         </StackPanel>
                                     </CheckBox>
-                                    <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Top" Margin="12,2,0,0" IsVisible="{Binding ShowsStatus}">
+                                    <Border Grid.Column="1" Classes="versionPill" VerticalAlignment="Top" Margin="12,2,0,0" IsVisible="{Binding ShowsStatus}"
+                                            ToolTip.Tip="{loc:Tr dialog.parts.tooltip.status}">
                                         <TextBlock Text="{Binding StatusText}" FontSize="11" Classes="muted"/>
                                     </Border>
                                 </Grid>
@@ -51,7 +52,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Border>
-        <CheckBox IsChecked="{Binding DeleteIgnored}" IsVisible="{Binding ShowDeleteIgnored}">
+        <CheckBox IsChecked="{Binding DeleteIgnored}" IsVisible="{Binding ShowDeleteIgnored}" ToolTip.Tip="{loc:Tr dialog.parts.tooltip.deleteIgnored}">
             <TextBlock Text="{Binding DeleteIgnoredText}" FontSize="12" TextWrapping="Wrap"/>
         </CheckBox>
         <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">

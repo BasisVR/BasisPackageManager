@@ -8,14 +8,16 @@ namespace BasisPM.App;
 internal static class Program
 {
     [STAThread]
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
         InvariantGlobalization.EnableIfIcuMissing();
+        if (OperatingSystem.IsLinux() && CommandLineTool.IsCliInvocation(Environment.GetEnvironmentVariable("ARGV0"), Environment.GetEnvironmentVariable("APPIMAGE")) && CommandLineTool.RunBundled(args) is { } exitCode) return exitCode;
         // Must run first: services Velopack's install/update/uninstall hooks. No-op from source.
         VelopackApp.Build().Run();
 
         try { Environment.CurrentDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); }
         catch (Exception ex) { DiagnosticLog.Write("Moving the working directory out of the install folder", ex); }
+        ToolSearchPath.Apply();
 
         var uri = args.FirstOrDefault(DeepLink.IsDeepLink);
 
@@ -25,7 +27,7 @@ internal static class Program
             if (!SingleInstance.TryBecomePrimary())
             {
                 SingleInstance.ForwardToPrimary(uri ?? DeepLink.ActivateUri);
-                return;
+                return 0;
             }
         }
         catch (Exception ex) { DiagnosticLog.Write("Establishing the primary application instance", ex); /* continue as a normal launch */ }
@@ -38,15 +40,16 @@ internal static class Program
             var packaged = false;
             try { packaged = new UpdateService().IsSupported; } catch (Exception ex) { DiagnosticLog.Write("Detecting installed update support", ex); }
             DeepLink.RegisterProtocolIfPackaged(packaged);
+            if (packaged) DesktopIntegration.RefreshApplicationsMenu();
         }
         catch (Exception ex) { DiagnosticLog.Write("Registering the basispm protocol handler", ex); }
 
-        DeepLinkDispatcher.Pending = uri;
-        try { SingleInstance.StartServer(DeepLinkDispatcher.Raise); } catch (Exception ex) { DiagnosticLog.Write("Starting the deep-link listener", ex); }
+        DeepLinkDispatcher.Deliver(uri);
+        try { SingleInstance.StartServer(DeepLinkDispatcher.Deliver); } catch (Exception ex) { DiagnosticLog.Write("Starting the deep-link listener", ex); }
 
         try
         {
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {

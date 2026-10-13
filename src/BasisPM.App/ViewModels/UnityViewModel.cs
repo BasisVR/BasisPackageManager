@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
@@ -10,11 +11,6 @@ namespace BasisPM.App.ViewModels;
 
 public sealed class UnityViewModel : ObservableObject
 {
-    private static readonly string[] DefaultModuleOptions =
-    {
-        "windows-il2cpp", "android", "linux-il2cpp", "linux-mono", "mac-il2cpp", "documentation",
-    };
-
     private readonly UnityHubService _hubService;
     private readonly UnityReleaseService _releaseService;
     private readonly UserSettingsService _settingsService;
@@ -45,7 +41,7 @@ public sealed class UnityViewModel : ObservableObject
     public UnityReleaseRow? SelectedRelease
     {
         get => _selectedRelease;
-        set => SetField(ref _selectedRelease, value);
+        set { if (SetField(ref _selectedRelease, value)) RefreshModuleOptions(); }
     }
 
     public string StreamFilter
@@ -96,6 +92,7 @@ public sealed class UnityViewModel : ObservableObject
                 OnPropertyChanged(nameof(HasSelectedEditor));
                 OnPropertyChanged(nameof(SelectedEditorIsManual));
                 OnPropertyChanged(nameof(SelectedEditorIsHub));
+                RefreshEditorModuleOptions();
             }
         }
     }
@@ -138,11 +135,8 @@ public sealed class UnityViewModel : ObservableObject
         InstallModulesCommand = new RelayCommand(InstallSelectedEditorModulesAsync);
         AddEditorCommand = new RelayCommand(AddEditorFromFolderAsync);
         RemoveEditorCommand = new RelayCommand<InstalledEditor>(RemoveManualAsync);
-        foreach (var m in DefaultModuleOptions)
-        {
-            ModuleOptions.Add(new ModuleOption(m, false));
-            EditorModuleOptions.Add(new ModuleOption(m, false));
-        }
+        RefreshModuleOptions();
+        RefreshEditorModuleOptions();
         InstalledEditors.CollectionChanged += (_, _) =>
         {
             _editorsListed = true;
@@ -191,6 +185,7 @@ public sealed class UnityViewModel : ObservableObject
             var fetched = await _releaseService.FetchAllAsync("6000");
             _allReleases.Clear();
             _allReleases.AddRange(fetched);
+            RefreshEditorModuleOptions();
             ApplyFilter();
             TrySelectRequired();
             SelectedRelease ??= AvailableReleases.FirstOrDefault(r => !r.IsInstalled && r.Release.Recommended)
@@ -279,13 +274,13 @@ public sealed class UnityViewModel : ObservableObject
             return;
         }
 
-        await InstallModulesAsync(editor.Version, modules);
+        await InstallModulesAsync(editor.Version, modules, editor.Architecture);
     }
 
-    private async Task InstallModulesAsync(string version, IReadOnlyList<string> modules)
+    private async Task InstallModulesAsync(string version, IReadOnlyList<string> modules, string? architecture)
     {
         var key = "unitymodules|" + version;
-        Task Retry() => InstallModulesAsync(version, modules);
+        Task Retry() => InstallModulesAsync(version, modules, architecture);
         IsBusy = true;
         Guid activity = default;
         try
@@ -294,7 +289,7 @@ public sealed class UnityViewModel : ObservableObject
             _shell.SetStatus(installingText);
             activity = _shell.BeginActivity(installingText);
             var settings = await _settingsService.LoadAsync();
-            var code = await _hubService.InstallModulesAsync(version, modules, settings.UnityHubPath);
+            var code = await _hubService.InstallModulesAsync(version, modules, settings.UnityHubPath, architecture: architecture);
             if (code == 0)
             {
                 _shell.SetStatus(L.Tr("unity.status.modulesInstalled", version), StatusKind.Success, null, key: key);
@@ -314,6 +309,27 @@ public sealed class UnityViewModel : ObservableObject
             IsBusy = false;
             if (activity != default) _shell.EndActivity(activity);
         }
+    }
+
+    private void RefreshModuleOptions()
+    {
+        var offered = _selectedRelease?.Release is { } release ? UnityBuildModules.OfferedFor(release, Platform.Current, RuntimeInformation.OSArchitecture) : UnityBuildModules.Fallback(Platform.Current, null);
+        SetOptions(ModuleOptions, offered, UnityBuildModules.Preselected(Platform.Current, offered));
+    }
+
+    private void RefreshEditorModuleOptions()
+    {
+        var version = _selectedEditor?.Version;
+        var release = version is null ? null : _allReleases.FirstOrDefault(r => string.Equals(r.Version, version, StringComparison.OrdinalIgnoreCase));
+        SetOptions(EditorModuleOptions, release is null ? UnityBuildModules.Fallback(Platform.Current, version) : UnityBuildModules.OfferedFor(release, Platform.Current, RuntimeInformation.OSArchitecture), Array.Empty<string>());
+    }
+
+    private static void SetOptions(ObservableCollection<ModuleOption> options, IReadOnlyList<string> offered, IReadOnlyList<string> ticked)
+    {
+        if (offered.SequenceEqual(options.Select(o => o.Name))) return;
+        var previous = options.ToDictionary(o => o.Name, o => o.Selected, StringComparer.Ordinal);
+        options.Clear();
+        foreach (var id in offered) options.Add(new ModuleOption(id, previous.TryGetValue(id, out var selected) ? selected : ticked.Contains(id)));
     }
 
     // Fold the user's hand-added editors into the list, skipping any the Hub already reports

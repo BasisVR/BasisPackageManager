@@ -108,6 +108,7 @@ public sealed class MainWindowViewModel : ObservableObject
         // The mount / contribute / cache-drift workflow (formerly the Develop tab) now lives on the Packages page.
         PackagesVM = new PackagesViewModel(_settingsService, _catalogService, _projectService, _mountRegistry,
             mountService, contributeService, cacheDriftService, _ghAuth, _ghApi, _gitService, _basisUpdates, this);
+        PackagesVM.UseAdvisories(new AdvisoryService());
         ServerVM = new ServerViewModel(new BasisServerService(), new ServerPackageService(_gitService), _catalogService, _settingsService, new VersionService(_ghApi, _gitService), new BasisPartsService(_gitService), this);
         UnityVM = new UnityViewModel(_hubService, _releaseService, _settingsService, this);
         LogsVM = new LogsViewModel(_log);
@@ -278,16 +279,16 @@ public sealed class MainWindowViewModel : ObservableObject
                 {
                     NavigateTo("installs");
                     InstallsVM.UpdateBasisCommand.Execute(row);
-                })));
+                }), ActionTip: L.Tr(row.BranchSwitchInProgress ? "settings.tooltip.blockerContinueSwitch" : "settings.tooltip.blockerContinueUpdate")));
         if (!_gitService.IsAvailable)
             Blockers.Add(new BlockerItem(null, L.Tr("settings.activity.blocker.git"), L.Tr("settings.activity.blocker.getGit"),
-                new RelayCommand(() => ExternalLink.Open("https://git-scm.com/downloads"))));
+                new RelayCommand(() => ExternalLink.Open(GitService.InstallPage(Platform.Current))), ActionTip: L.Tr("settings.tooltip.blockerGetGit")));
         if (ServerVM.NeedsDotNet10Sdk)
             Blockers.Add(new BlockerItem(ActiveInstall?.DisplayName, L.Tr("settings.activity.blocker.dotnet"), L.Tr("settings.activity.blocker.getDotNet"),
-                ServerVM.OpenDotNetDownloadCommand));
+                ServerVM.OpenDotNetDownloadCommand, ActionTip: L.Tr("settings.tooltip.blockerGetDotNet")));
         foreach (var failure in Enumerable.Reverse(_failures))
             Blockers.Add(new BlockerItem(failure.Project, failure.Message, L.Tr("shell.status.retry"), new RelayCommand(() => Retry(failure)),
-                new RelayCommand(() => DismissFailure(failure))));
+                new RelayCommand(() => DismissFailure(failure)), L.Tr("shell.status.retryTooltip")));
         OnPropertyChanged(nameof(HasBlockers));
     }
 
@@ -473,14 +474,15 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        var settings = await _settingsService.LoadAsync();
-        await ApplySettingsAsync(settings);
-
-        // Handle a launch-time deep link now (active install + packages are ready) — don't wait on the slower Unity refresh.
-        if (DeepLinkDispatcher.Pending is { } pending)
+        try
         {
-            DeepLinkDispatcher.Pending = null;
-            HandleDeepLink(pending);
+            var settings = await _settingsService.LoadAsync();
+            await ApplySettingsAsync(settings);
+        }
+        finally
+        {
+            // Handle a launch-time deep link now (active install + packages are ready) — don't wait on the slower Unity refresh.
+            foreach (var pending in DeepLinkDispatcher.TakePending()) HandleDeepLink(pending);
         }
 
         await UnityVM.RefreshAsync();
@@ -553,7 +555,8 @@ public sealed class MainWindowViewModel : ObservableObject
     /// <summary>On the first run of an installed build, offer to add a desktop shortcut (asked once).</summary>
     private async Task MaybePromptDesktopShortcutAsync()
     {
-        if (!_updateService.IsSupported || !OperatingSystem.IsWindows()) return;
+        var menu = DesktopIntegration.AppImagePath is not null;
+        if (!_updateService.IsSupported || !OperatingSystem.IsWindows() && !menu) return;
         try
         {
             var settings = await _settingsService.LoadAsync();
@@ -561,17 +564,18 @@ public sealed class MainWindowViewModel : ObservableObject
             settings.AskedDesktopShortcut = true;
             await _settingsService.SaveAsync(settings); // ask once, even if they decline
 
-            var yes = await Dialogs.ConfirmAsync(L.Tr("shell.desktopShortcut.dialogTitle"),
-                L.Tr("shell.desktopShortcut.dialogMessage"));
+            var yes = await Dialogs.ConfirmAsync(L.Tr(menu ? "shell.appMenu.dialogTitle" : "shell.desktopShortcut.dialogTitle"),
+                L.Tr(menu ? "shell.appMenu.dialogMessage" : "shell.desktopShortcut.dialogMessage"));
             if (!yes) return;
 
-            _updateService.CreateDesktopShortcut();
-            SetStatus(L.Tr("shell.status.desktopShortcutCreated"), StatusKind.Success);
+            if (menu) DesktopIntegration.AddToApplicationsMenu();
+            else _updateService.CreateDesktopShortcut();
+            SetStatus(L.Tr(menu ? "shell.status.appMenuAdded" : "shell.status.desktopShortcutCreated"), StatusKind.Success);
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write("Creating the desktop shortcut", ex);
-            SetStatus(L.Tr("shell.status.desktopShortcutFailed", ex.Message), StatusKind.Error);
+            SetStatus(L.Tr(menu ? "shell.status.appMenuFailed" : "shell.status.desktopShortcutFailed", ex.Message), StatusKind.Error);
         }
     }
 
@@ -627,8 +631,8 @@ public sealed class MainWindowViewModel : ObservableObject
         if (!DeepLink.TryParseInstall(uri, out var req)) return;
         NavigateTo("packages");
 
-        var label = req.Name ?? req.Id ?? L.Tr("shell.deeplink.thePackage");
-        if (string.IsNullOrWhiteSpace(req.Git))
+        var label = string.IsNullOrWhiteSpace(req.Id) ? L.Tr("shell.deeplink.thePackage") : PackagesVM.DeepLinkLabel(req.Id, req.Name);
+        if (string.IsNullOrWhiteSpace(req.Git) && PackagesVM.CatalogEntryFor(req.Id) is null)
         {
             SetStatus(L.Tr("shell.status.installLinkMissingGit", label), StatusKind.Error);
             return;

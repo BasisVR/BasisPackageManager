@@ -69,7 +69,7 @@ public sealed partial class BasisDevServiceTests
         Assert.DoesNotContain(".basisdev", status);
         Assert.Contains("Proj/Packages/basispackages.json", status);
 
-        var removed = await p.Mounts.SwapBackAsync(p.Install, "com.root");
+        var removed = await p.Mounts.UnmountAsync(p.Install, "com.root", restoreManifest: true);
 
         Assert.True(removed.Ok, removed.Error);
         Assert.False(Directory.Exists(clone));
@@ -309,6 +309,55 @@ public sealed partial class BasisDevServiceTests
 
         Assert.True(File.Exists(t.Combine("Proj/Packages/com.x/package.json")));
         Assert.Equal("https://github.com/o/r.git", (await new UnityProjectService().LoadAsync(install.UnityProjectPath)).Manifest.Dependencies["com.x"]);
+    }
+
+    [GitFact]
+    public async Task Remove_takes_a_new_package_with_no_original_url_out_of_everywhere()
+    {
+        using var p = new Project();
+        var created = await new PackageScaffoldService(p.Git, new UnityProjectService(), p.Mounts).CreateAsync(p.Install, new PackageScaffoldRequest { Id = "com.studio.seats", DisplayName = "Seats" });
+        Assert.True(created.Ok, created.Message);
+        File.WriteAllText(p.Combine("Packages/packages-lock.json"),
+            "{\n  \"dependencies\": {\n    \"com.studio.seats\": {\n      \"version\": \"file:../.basisdev/com.studio.seats\",\n      \"depth\": 0,\n      \"source\": \"local\",\n      \"dependencies\": {}\n    },\n    \"com.unity.ugui\": {\n      \"version\": \"2.0.0\",\n      \"depth\": 0,\n      \"source\": \"builtin\",\n      \"dependencies\": {}\n    }\n  }\n}\n");
+
+        var removed = await p.Mounts.RemoveAsync(p.Install, "com.studio.seats");
+
+        Assert.True(removed.Ok, removed.Error);
+        Assert.False(Directory.Exists(p.Combine(".basisdev/com.studio.seats")));
+        Assert.False(p.Manifest().ContainsKey("com.studio.seats"));
+        Assert.Null(p.Mounts.FindMount(p.Unity, "com.studio.seats"));
+        Assert.Null(BasisDevStore.Read(p.Unity, "com.studio.seats"));
+        Assert.Null(BasisPackagesStore.Find(p.Unity, "com.studio.seats"));
+        var lockFile = File.ReadAllText(p.Combine("Packages/packages-lock.json"));
+        Assert.DoesNotContain("com.studio.seats", lockFile);
+        Assert.Contains("\"com.unity.ugui\"", lockFile);
+        Assert.EndsWith("}\n", lockFile);
+    }
+
+    [GitFact]
+    public async Task Remove_drops_a_package_that_is_only_listed_for_the_team()
+    {
+        using var p = new Project("{ \"com.team.tool\": \"https://github.com/team/tool.git#v1\" }");
+        BasisPackagesStore.Set(p.Unity, "com.team.tool", new BasisPackageEntry { Url = "https://github.com/team/tool.git", Ref = "v1", Version = "1.0.0" });
+
+        var removed = await p.Mounts.RemoveAsync(p.Install, "com.team.tool");
+
+        Assert.True(removed.Ok, removed.Error);
+        Assert.False(p.Manifest().ContainsKey("com.team.tool"));
+        Assert.Null(BasisPackagesStore.Find(p.Unity, "com.team.tool"));
+    }
+
+    [GitFact]
+    public async Task Remove_deletes_a_clone_the_app_lost_track_of()
+    {
+        using var p = new Project("{ \"com.orphan\": \"file:../.basisdev/com.orphan\" }");
+        var clone = p.MakeClone(".basisdev/com.orphan", "com.orphan", null, origin: null);
+
+        var removed = await p.Mounts.RemoveAsync(p.Install, "com.orphan");
+
+        Assert.True(removed.Ok, removed.Error);
+        Assert.False(Directory.Exists(clone));
+        Assert.False(p.Manifest().ContainsKey("com.orphan"));
     }
 
     private static (BasisDevService Service, BasisInstall Install, string Dll) FakeClone(TempDir t)

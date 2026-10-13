@@ -92,10 +92,18 @@ public sealed class BasisDevItem
         BasisDevIssueKind.StaleRecord => L.Tr("basisdev.issue.staleRecord.description", Clone ?? ""),
         BasisDevIssueKind.Unlisted => L.Tr("basisdev.issue.unlisted.description", Clone ?? ""),
         BasisDevIssueKind.InPackages => L.Tr("basisdev.issue.inPackages.description", Clone ?? "", MoveTarget),
+        BasisDevIssueKind.VersionMismatch => L.Tr("basisdev.issue.versionMismatch.description", Describe(Package.Listed?.Url, Package.Listed?.Ref, Package.Listed?.Commit), Describe(Package.Sidecar?.Upstream.Url, Package.Sidecar?.Upstream.Ref, Package.Sidecar?.Upstream.Commit)),
         _ => L.Tr("basisdev.issue.unrecorded.description", Clone ?? ""),
     };
 
     private string MoveTarget => BasisDevStore.FolderName + "/" + Id;
+
+    private static string Describe(string? url, string? gitRef, string? commit)
+    {
+        var slug = UpmGitUrl.Parse(url)?.Slug ?? url ?? "";
+        var at = gitRef is { Length: > 0 } named ? named : Short(commit);
+        return gitRef is { Length: > 0 } && commit is { Length: > 0 } ? $"{slug} {at} ({Short(commit)})" : $"{slug} {at}".Trim();
+    }
 
     private static string IssueLabelKey(BasisDevIssueKind issue) => issue switch
     {
@@ -104,6 +112,7 @@ public sealed class BasisDevItem
         BasisDevIssueKind.StaleRecord => "basisdev.issue.staleRecord",
         BasisDevIssueKind.Unlisted => "basisdev.issue.unlisted",
         BasisDevIssueKind.InPackages => "basisdev.issue.inPackages",
+        BasisDevIssueKind.VersionMismatch => "basisdev.issue.versionMismatch",
         _ => "basisdev.issue.unrecorded",
     };
 
@@ -117,6 +126,7 @@ public sealed class BasisDevItem
         BasisDevAction.Release => "basisdev.action.release",
         BasisDevAction.Restore => "basisdev.action.restore",
         BasisDevAction.Move => "basisdev.action.move",
+        BasisDevAction.Switch => "basisdev.action.switch",
         _ => "basisdev.action.reclone",
     };
 
@@ -130,7 +140,8 @@ public sealed class BasisDevItem
         BasisDevAction.Ignore => L.Tr(_basisRepo ? "basisdev.tooltip.ignoreBasis" : "basisdev.tooltip.ignore", Clone ?? "", Id),
         BasisDevAction.Unignore => L.Tr("basisdev.tooltip.unignore", Clone ?? "", Id),
         BasisDevAction.Move => L.Tr("basisdev.tooltip.move", Clone ?? "", MoveTarget),
-        _ => L.Tr("basisdev.tooltip.reclone", Package.Upstream?.Url ?? "", Clone ?? ""),
+        BasisDevAction.Switch => L.Tr("basisdev.tooltip.switch", Describe(Package.Listed?.Url, Package.Listed?.Ref, Package.Listed?.Commit)),
+        _ => L.Tr("basisdev.tooltip.reclone", Package.Upstream?.Url is { Length: > 0 } url ? url : UpmGitUrl.Parse(Package.OriginalManifestValue)?.CloneUrl ?? "", Clone ?? ""),
     };
 
     private static string Relative(string project, string folder) =>

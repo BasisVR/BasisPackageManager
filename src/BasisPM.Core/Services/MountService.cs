@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using BasisPM.Core.Models;
 
 namespace BasisPM.Core.Services;
@@ -6,6 +8,7 @@ public sealed record MountResult(bool Ok, string? FolderPath, string? Error)
 {
     public string? ManifestValue { get; init; }
     public bool NotAPackage { get; init; }
+    public bool Declined { get; init; }
     public static MountResult Success(string folderPath, string? manifestValue = null) => new(true, folderPath, null) { ManifestValue = manifestValue };
     public static MountResult Fail(string error) => new(false, null, error);
 }
@@ -54,8 +57,8 @@ public sealed class MountService
     public async Task<bool> HasLocalWorkAsync(string folder, CancellationToken ct = default)
     {
         if (!IsWorkingClone(folder)) return false;
-        var status = await _git.GetStatusAsync(folder, ct).ConfigureAwait(false);
-        return status.ChangeCount > 0 || await _git.HasUnpublishedWorkAsync(folder, ct).ConfigureAwait(false);
+        var changes = ApiUpgradeService.WithoutUpgrades(folder, await _git.GetChangesAsync(folder, ct).ConfigureAwait(false));
+        return changes.Count > 0 || await _git.HasUnpublishedWorkAsync(folder, ct).ConfigureAwait(false);
     }
 
     public async Task RecordAsync(BasisInstall install, string packageId, string folder, string originalManifestValue, string? mountedManifestValue)
@@ -93,7 +96,7 @@ public sealed class MountService
         catch (Exception ex) { DiagnosticLog.Write($"Listing {packageId} in {BasisPackagesStore.FileName}", ex); }
     }
 
-    public async Task<MountResult> MountAsync(BasisInstall install, string packageId, string manifestGitValue, Action<string>? onProgress = null, CancellationToken ct = default, bool orDefaultBranch = false)
+    public async Task<MountResult> MountAsync(BasisInstall install, string packageId, string manifestGitValue, Action<string>? onProgress = null, CancellationToken ct = default, bool orDefaultBranch = false, Func<PackageReview, Task<bool>>? review = null)
     {
         var parsed = UpmGitUrl.Parse(manifestGitValue);
         if (parsed is null) return MountResult.Fail("Couldn't parse this package's git URL.");
@@ -122,6 +125,22 @@ public sealed class MountService
         {
             TryForceDelete(folder);
             return MountResult.Fail(NotAPackageMessage(parsed, orDefaultBranch)) with { NotAPackage = true };
+        }
+
+        if (review is not null)
+        {
+            bool approved;
+            try
+            {
+                var commit = await _git.ResolveCommitAsync(folder, "HEAD", ct).ConfigureAwait(false);
+                approved = await review(new PackageReview(packageId, folder, packageRoot, UpmGitUrl.Parse(mountedValue) ?? parsed, commit) { Package = PackageJsonFile.Read(packageRoot) }).ConfigureAwait(false);
+            }
+            catch { TryForceDelete(folder); throw; }
+            if (!approved)
+            {
+                TryForceDelete(folder);
+                return MountResult.Fail($"{packageId} wasn't installed.") with { Declined = true };
+            }
         }
 
         var mountedLine = BasisDevStore.ManifestLine(install.UnityProjectPath, packageRoot);
@@ -165,9 +184,6 @@ public sealed class MountService
         return $"{parsed.Slug} has no {where} at {at}, so Unity can't load it as a package.";
     }
 
-    public Task<MountResult> SwapBackAsync(BasisInstall install, string packageId, CancellationToken ct = default) =>
-        UnmountAsync(install, packageId, restoreManifest: true, ct: ct);
-
     public async Task<MountResult> UnmountAsync(BasisInstall install, string packageId, bool restoreManifest, string? folder = null, string? restoreLine = null, CancellationToken ct = default)
     {
         var record = FindMount(install.UnityProjectPath, packageId);
@@ -207,6 +223,46 @@ public sealed class MountService
         return MountResult.Success(dest);
     }
 
+    public async Task<MountResult> RemoveAsync(BasisInstall install, string packageId, CancellationToken ct = default)
+    {
+        var project = install.UnityProjectPath;
+        var folder = FindMount(project, packageId)?.FolderPath;
+        if (folder is null && IsWorkingClone(BasisDevStore.CloneFolder(project, packageId))) folder = BasisDevStore.CloneFolder(project, packageId);
+        if (folder is not null && Directory.Exists(folder))
+        {
+            var unmounted = await UnmountAsync(install, packageId, restoreManifest: false, folder, ct: ct).ConfigureAwait(false);
+            if (!unmounted.Ok) return unmounted;
+        }
+        var info = await _projects.LoadAsync(project, ct).ConfigureAwait(false);
+        if (info.Manifest.Dependencies.Keys.FirstOrDefault(k => string.Equals(k, packageId, StringComparison.OrdinalIgnoreCase)) is { } key)
+        {
+            info.Manifest.Dependencies.Remove(key);
+            await UnityProjectService.SaveManifestAsync(project, info.Manifest, ct).ConfigureAwait(false);
+        }
+        install.Manifest = info.Manifest;
+        Forget(install, packageId, folder);
+        ForgetLocked(project, packageId);
+        return MountResult.Success(folder ?? BasisDevStore.CloneFolder(project, packageId));
+    }
+
+    private static void ForgetLocked(string unityProjectPath, string packageId)
+    {
+        var path = Path.Combine(unityProjectPath, "Packages", "packages-lock.json");
+        try
+        {
+            if (!File.Exists(path)) return;
+            var text = File.ReadAllText(path);
+            if (JsonNode.Parse(text) is not JsonObject root || root["dependencies"] is not JsonObject locked) return;
+            if (locked.Select(p => p.Key).FirstOrDefault(k => string.Equals(k, packageId, StringComparison.OrdinalIgnoreCase)) is not { } key) return;
+            locked.Remove(key);
+            var options = new JsonSerializerOptions(LockJson) { NewLine = text.Contains("\r\n", StringComparison.Ordinal) ? "\r\n" : "\n" };
+            File.WriteAllText(path, root.ToJsonString(options) + (text.EndsWith('\n') ? options.NewLine : ""));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException) { DiagnosticLog.Write($"Removing {packageId} from {path}", ex); }
+    }
+
+    private static readonly JsonSerializerOptions LockJson = new() { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+
     public void Forget(BasisInstall install, string packageId, string? folder)
     {
         _registry.Remove(install.UnityProjectPath, packageId);
@@ -226,6 +282,21 @@ public sealed class MountService
         return UnityProjectService.IsOpenInUnity(unityProjectPath)
             ? $"Unity is using {name}. Close Unity, then try again."
             : $"{name} is in use by another program, usually Unity. Close it, then try again.";
+    }
+
+    public static string? WriteBlocker(string unityProjectPath, string folder, IEnumerable<string> relativePaths)
+    {
+        if (!OperatingSystem.IsWindows() || !Directory.Exists(folder)) return null;
+        foreach (var relative in relativePaths)
+        {
+            var path = Path.Combine(folder, relative.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(path) || !IsInUse(path)) continue;
+            var name = Path.GetFileName(path);
+            return UnityProjectService.IsOpenInUnity(unityProjectPath)
+                ? $"Unity is using {name}. Close Unity, then try again."
+                : $"{name} is in use by another program, usually Unity. Close it, then try again.";
+        }
+        return null;
     }
 
     private static bool IsInUse(string file)

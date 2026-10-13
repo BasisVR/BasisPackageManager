@@ -21,6 +21,11 @@ internal sealed partial class ConsoleApplication
 
         var verb = options[0].ToLowerInvariant();
         BasisDevResult result = null!;
+        if (verb == "share")
+        {
+            await SharePackageAsync(install, options);
+            return;
+        }
         if (verb == "reconcile")
         {
             Expect(options, 1, 1, "");
@@ -39,16 +44,19 @@ internal sealed partial class ConsoleApplication
                 "ignore" => BasisDevAction.Ignore,
                 "unignore" => BasisDevAction.Unignore,
                 "move" => BasisDevAction.Move,
+                "switch" => BasisDevAction.Switch,
                 _ => throw new UsageException($"'basisdev {options[0]}' isn't something basisdev can do." + (Suggest(options[0], BasisDevVerbs) is { Count: > 0 } s ? $" Did you mean '{s[0]}'?" : "")),
             };
             Expect(options, 2, 2, "a package id");
-            await RunOperationAsync(async ct => result = await _basisDev.ApplyAsync(install, options[1], action, force, Out.Progress, ct), $"Working on {options[1]}" + Out.Ellipsis);
+            _basisDev.ApproveUpdate = action == BasisDevAction.Switch ? ListedReview(await LoadCatalogAsync(), false) : null;
+            try { await RunOperationAsync(async ct => result = await _basisDev.ApplyAsync(install, options[1], action, force, Out.Progress, ct), $"Working on {options[1]}" + Out.Ellipsis); }
+            finally { _basisDev.ApproveUpdate = null; }
         }
         if (!result.Ok) throw new InvalidOperationException(result.NeedsForce ? result.Message + " Add --force to do that." : result.Message);
         Out.Success(result.Message);
     }
 
-    private static readonly string[] BasisDevVerbs = { "reconcile", "record", "forget", "use", "release", "restore", "reclone", "ignore", "unignore", "move" };
+    private static readonly string[] BasisDevVerbs = { "reconcile", "record", "forget", "use", "release", "restore", "reclone", "ignore", "unignore", "move", "switch", "share" };
 
     private void PrintBasisDev(BasisInstall install, BasisDevReport report, bool all)
     {

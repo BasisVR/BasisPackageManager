@@ -148,19 +148,28 @@
                         <Border Classes="brandBadge" Padding="7,1" MinWidth="18"
                                 HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0"
                                 IsHitTestVisible="False"
-                                IsVisible="{Binding HasBasisUpdates}"
-                                ToolTip.Tip="{loc:Tr shell.basisUpdate.badgeTooltip}">
+                                IsVisible="{Binding HasBasisUpdates}">
                             <TextBlock Text="{Binding BasisUpdateCount}"
                                        FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"
                                        HorizontalAlignment="Center"/>
                         </Border>
                     </Grid>
-                    <Button Classes="nav" Classes.active="{Binding IsPackages}" Tag="packages" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.packages}">
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <PathIcon Width="18" Height="18" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
-                            <TextBlock Text="{loc:Tr nav.packages}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
+                    <Grid>
+                        <Button Classes="nav" Classes.active="{Binding IsPackages}" Tag="packages" Click="OnNavClick" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr nav.tooltip.packages}">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <PathIcon Width="18" Height="18" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr nav.packages}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Border Classes="brandBadge" Padding="7,1" MinWidth="18"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding PackagesVM.HasPackageUpdates}">
+                            <TextBlock Text="{Binding PackagesVM.PackageUpdateCountText}"
+                                       FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                    </Grid>
                     <Grid>
                         <Button Classes="nav" Classes.active="{Binding IsCommunity}" Tag="community" Click="OnNavClick" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr nav.tooltip.community}">
                             <StackPanel Orientation="Horizontal" Spacing="12">
@@ -300,9 +309,10 @@
                     <Border Classes="reveal" IsVisible="{Binding IsActivityVisible}"
                             Padding="16,13" CornerRadius="12"
                             Background="{StaticResource BasisSurfaceBrush}"
-                            BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                            BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1"
+                            ToolTip.Tip="{loc:Tr shell.tooltip.activityCard}">
                         <StackPanel Spacing="9">
-                            <Border Classes="versionPill" HorizontalAlignment="Left" IsVisible="{Binding CurrentActivity.HasProject}">
+                            <Border Classes="versionPill" HorizontalAlignment="Left" IsVisible="{Binding CurrentActivity.HasProject}" ToolTip.Tip="{loc:Tr shell.tooltip.activityProject}">
                                 <TextBlock Text="{Binding CurrentActivity.Project}" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
                             </Border>
                             <StackPanel Orientation="Horizontal" Spacing="9">
@@ -329,9 +339,10 @@
                     <Border Classes="reveal" IsVisible="{Binding PackagesVM.IsInstalling}"
                             Padding="16,13" CornerRadius="12"
                             Background="{StaticResource BasisSurfaceBrush}"
-                            BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                            BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1"
+                            ToolTip.Tip="{loc:Tr shell.tooltip.installCard}">
                         <StackPanel Spacing="9">
-                            <Border Classes="versionPill" HorizontalAlignment="Left" IsVisible="{Binding PackagesVM.HasInstallProject}">
+                            <Border Classes="versionPill" HorizontalAlignment="Left" IsVisible="{Binding PackagesVM.HasInstallProject}" ToolTip.Tip="{loc:Tr shell.tooltip.installProject}">
                                 <TextBlock Text="{Binding PackagesVM.InstallProject}" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
                             </Border>
                             <StackPanel Orientation="Horizontal" Spacing="9">

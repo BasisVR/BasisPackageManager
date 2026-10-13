@@ -17,6 +17,7 @@ public sealed class ServerViewModel : ObservableObject
     private readonly VersionService _versions;
     private readonly BasisPartsService _parts;
     private readonly MainWindowViewModel _shell;
+    private static readonly TimeSpan StopGrace = TimeSpan.FromSeconds(15);
     private Catalog? _catalog;
     private bool _isServerLeftOut;
     private string _serverPackageSource = "";
@@ -24,7 +25,12 @@ public sealed class ServerViewModel : ObservableObject
     private bool _canManageServerPackages;
     private BasisInstall? _install;
     private string? _configRoot;
-    private Process? _serverProcess;
+    private ServerConsoleSession? _session;
+    private Process? _windowProcess;
+    private BasisInstall? _runningInstall;
+    private bool _isStopping;
+    private bool _isFirstRun;
+    private string _firstRunAdmin = "";
     private bool _isBusy;
     private string _host = "127.0.0.1";
     private string _port = "4296";
@@ -75,11 +81,23 @@ public sealed class ServerViewModel : ObservableObject
         private set { if (SetField(ref _serverPackagesNotice, value)) OnPropertyChanged(nameof(HasServerPackagesNotice)); }
     }
     public bool HasServerPackagesNotice => !string.IsNullOrEmpty(_serverPackagesNotice);
-    public bool IsServerLeftOut { get => _isServerLeftOut; private set => SetField(ref _isServerLeftOut, value); }
+    public bool IsServerLeftOut { get => _isServerLeftOut; private set { if (SetField(ref _isServerLeftOut, value)) RefreshFirstRun(); } }
+
+    public ServerConsoleViewModel ServerConsole { get; } = new();
+    public bool IsServerRunning => _session is { HasExited: false } || _windowProcess is { HasExited: false };
+    public bool CanRunServer => !IsServerRunning && !_isStopping;
+    public bool CanStopServer => IsServerRunning && !_isStopping;
+    public string RunningProjectName => _runningInstall?.DisplayName ?? "";
+    public bool IsFirstRun { get => _isFirstRun; private set => SetField(ref _isFirstRun, value); }
+    public string FirstRunAdmin { get => _firstRunAdmin; set => SetField(ref _firstRunAdmin, value); }
+    private static readonly Lazy<bool> OwnWindowAvailable = new(TerminalLauncher.IsAvailable);
+    public bool CanRunInOwnWindow => OwnWindowAvailable.Value;
 
     public RelayCommand BuildCommand { get; }
     public RelayCommand RunCommand { get; }
     public RelayCommand StopCommand { get; }
+    public RelayCommand RestartCommand { get; }
+    public RelayCommand RunInOwnWindowCommand { get; }
     public RelayCommand LaunchClientCommand { get; }
     public RelayCommand RefreshCommand { get; }
     public RelayCommand SaveConfigCommand { get; }
@@ -115,6 +133,9 @@ public sealed class ServerViewModel : ObservableObject
         BuildCommand = new RelayCommand(BuildAsync);
         RunCommand = new RelayCommand(RunAsync);
         StopCommand = new RelayCommand(StopAsync);
+        RestartCommand = new RelayCommand(RestartAsync);
+        RunInOwnWindowCommand = new RelayCommand(RunInOwnWindowAsync);
+        ServerConsole.CommandEntered += OnConsoleCommand;
         LaunchClientCommand = new RelayCommand(LaunchClientAsync);
         RefreshCommand = new RelayCommand(RefreshAsync);
         SaveConfigCommand = new RelayCommand(SaveConfigAsync);
@@ -132,6 +153,7 @@ public sealed class ServerViewModel : ObservableObject
         OnPropertyChanged(nameof(ProjectName));
         OnPropertyChanged(nameof(RuntimeDirectory));
         OnPropertyChanged(nameof(NeedsDotNet10Sdk));
+        RefreshFirstRun();
         _ = RefreshAsync();
         _ = RefreshBuildRequirementsAsync();
     }
@@ -143,6 +165,7 @@ public sealed class ServerViewModel : ObservableObject
         OnPropertyChanged(nameof(ProjectName));
         OnPropertyChanged(nameof(RuntimeDirectory));
         OnPropertyChanged(nameof(NeedsDotNet10Sdk));
+        RefreshFirstRun();
         _ = RefreshAsync();
     }
 
@@ -170,6 +193,7 @@ public sealed class ServerViewModel : ObservableObject
         }
         catch (Exception ex) { DiagnosticLog.Write("Loading the Basis server configuration", ex); SetStatus($"Could not load server configuration: {ex.Message}", StatusKind.Error); }
         RaiseCollections();
+        RefreshFirstRun();
         await RefreshServerPackagesAsync();
     }
 
@@ -432,26 +456,72 @@ public sealed class ServerViewModel : ObservableObject
     private async Task RunAsync()
     {
         if (_install is null) { MissingInstall(); return; }
-        try
-        {
-            if (_serverProcess is { HasExited: false }) { SetStatus("The Basis server is already running."); return; }
-            StartServer(_install);
-            SetStatus("Basis server started in its console. Complete the setup wizard there on first run.", StatusKind.Success);
-        }
-        catch (Exception ex) { DiagnosticLog.Write("Starting the Basis server", ex); SetStatus($"Could not start server: {ex.Message}", StatusKind.Error); }
+        if (IsServerRunning) { SetStatus(L.Tr("server.console.status.alreadyRunning", RunningProjectName)); return; }
+        TryStartServer(_install);
         await Task.CompletedTask;
+    }
+
+    private async Task RunInOwnWindowAsync()
+    {
+        if (_install is null) { MissingInstall(); return; }
+        if (IsServerRunning) { SetStatus(L.Tr("server.console.status.alreadyRunning", RunningProjectName)); return; }
+        try { await StartInOwnWindowAsync(_install); }
+        catch (Exception ex) { DiagnosticLog.Write("Starting the Basis server in its own window", ex); SetStatus(L.Tr("server.console.startFailed", ex.Message), StatusKind.Error); }
     }
 
     private async Task StopAsync()
     {
+        if (!IsServerRunning) { SetStatus(L.Tr("server.console.status.notRunning")); return; }
+        await StopServerAsync();
+        SetStatus(L.Tr("server.console.stopped"), StatusKind.Success, _runningInstall);
+    }
+
+    private async Task RestartAsync()
+    {
+        if (_runningInstall is not { } install || !IsServerRunning) return;
+        var ownWindow = _windowProcess is { HasExited: false };
+        ServerConsole.Notice(L.Tr("server.console.notice.restarting"));
+        await StopServerAsync();
+        if (ownWindow)
+        {
+            try { await StartInOwnWindowAsync(install); }
+            catch (Exception ex) { DiagnosticLog.Write("Restarting the Basis server in its own window", ex); SetStatus(L.Tr("server.console.startFailed", ex.Message), StatusKind.Error, install); }
+        }
+        else TryStartServer(install);
+    }
+
+    public async Task StopServerAsync()
+    {
+        if (_isStopping) return;
+        _isStopping = true;
+        ServerConsole.Status = L.Tr("server.console.status.stopping");
+        RaiseRunState();
         try
         {
-            if (_serverProcess is null || _serverProcess.HasExited) { SetStatus("No server started by this app is running."); return; }
-            _serverProcess.Kill(true);
-            await _serverProcess.WaitForExitAsync();
-            SetStatus("Basis server stopped.", StatusKind.Success);
+            if (_session is { HasExited: false } session)
+            {
+                ServerConsole.Notice(L.Tr("server.console.notice.stopping"));
+                var quit = ServerConsole.AcceptsInput ? ServerConsoleSession.ShutdownCommand : null;
+                await session.StopAsync(quit, StopGrace);
+            }
+            if (_windowProcess is { HasExited: false } window)
+            {
+                try
+                {
+                    if (!TerminalLauncher.Interrupt(window)) window.Kill(true);
+                    using var wait = new CancellationTokenSource(StopGrace);
+                    try { await window.WaitForExitAsync(wait.Token); }
+                    catch (OperationCanceledException) { window.Kill(true); await window.WaitForExitAsync(); }
+                }
+                catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception) { DiagnosticLog.Write("Stopping the Basis server window", ex); }
+            }
         }
-        catch (Exception ex) { DiagnosticLog.Write("Stopping the Basis server", ex); SetStatus($"Could not stop server: {ex.Message}", StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Stopping the Basis server", ex); SetStatus(L.Tr("server.console.stopFailed", ex.Message), StatusKind.Error); }
+        finally
+        {
+            _isStopping = false;
+            RaiseRunState();
+        }
     }
 
     private async Task LaunchClientAsync()
@@ -462,7 +532,7 @@ public sealed class ServerViewModel : ObservableObject
         // SetPort is a UDP listener, so a TCP probe always says "not listening" even when the
         // server is ready. Local launches use the server's configured HTTP health endpoint.
         var reachable = !local || await _service.IsReadyAsync(_install.RepoRoot, TimeSpan.FromMilliseconds(750));
-        var trackedRunning = _serverProcess is { HasExited: false };
+        var trackedRunning = IsServerRunning;
 
         if (local && !reachable && !trackedRunning)
         {
@@ -474,25 +544,20 @@ public sealed class ServerViewModel : ObservableObject
             if (await Dialogs.ConfirmAsync("Start Basis server?", message))
             {
                 if (!built && !await BuildServerAsync(_install)) return;
-                try
-                {
-                    StartServer(_install);
-                    trackedRunning = true;
-                    SetStatus("Server started. Waiting for it to accept connections…");
-                }
-                catch (Exception ex) { DiagnosticLog.Write("Starting the Basis server before connecting", ex); SetStatus($"Could not start server: {ex.Message}", StatusKind.Error); return; }
+                if (!TryStartServer(_install)) return;
+                trackedRunning = true;
+                SetStatus(L.Tr("server.console.waitingForReady"));
             }
         }
 
         if (local && trackedRunning && !reachable)
         {
-            var serverProcess = _serverProcess!;
-            reachable = await WaitForServerAsync(_install.RepoRoot, serverProcess, TimeSpan.FromMinutes(10));
+            reachable = await WaitForServerAsync(_install.RepoRoot, () => !IsServerRunning, TimeSpan.FromMinutes(10));
             if (!reachable)
             {
-                SetStatus(serverProcess.HasExited
-                    ? $"The server exited before becoming ready (exit code {serverProcess.ExitCode})."
-                    : "The server did not become ready. Check its console and health-endpoint configuration.", StatusKind.Error);
+                SetStatus(IsServerRunning
+                    ? L.Tr("server.console.notReady")
+                    : L.Tr("server.console.exitedBeforeReady", LastExitCodeText()), StatusKind.Error);
                 return;
             }
         }
@@ -552,17 +617,159 @@ public sealed class ServerViewModel : ObservableObject
         ExternalLink.OpenFolder(RuntimeDirectory);
     }
 
-    private void StartServer(BasisInstall install)
+    private bool TryStartServer(BasisInstall install)
     {
-        _serverProcess = _service.Start(install.RepoRoot);
-        _ = RefreshAfterServerStartAsync(install.RepoRoot, _serverProcess);
+        try
+        {
+            StartServer(install);
+            SetStatus(L.Tr("server.console.started"), StatusKind.Success, install);
+            return true;
+        }
+        catch (FileNotFoundException ex)
+        {
+            DiagnosticLog.Write("Starting the Basis server", ex);
+            SetStatus(L.Tr("server.console.startFailed", ex.Message), StatusKind.Error, install);
+            return false;
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write("Starting the Basis server", ex);
+            ServerConsole.Notice(L.Tr("server.console.notice.startFailed", ex.Message), ServerConsoleLevel.Error);
+            SetStatus(L.Tr("server.console.startFailed", ex.Message), StatusKind.Error, install);
+            return false;
+        }
     }
 
-    private async Task RefreshAfterServerStartAsync(string repoRoot, Process process)
+    private void StartServer(BasisInstall install)
+    {
+        if (!_service.CanStartConsole(install.RepoRoot)) throw new FileNotFoundException(L.Tr("server.console.notBuilt"), _service.GetPaths(install.RepoRoot).ExecutablePath);
+        var firstRun = _service.IsFirstRun(install.RepoRoot);
+        var environment = firstRun ? BasisServerService.FirstRunEnvironment(FirstRunAdmin) : null;
+        ServerConsole.AcceptsInput = _service.AcceptsConsoleInput(install.RepoRoot);
+        ServerConsole.ExternalWindow = false;
+        ServerConsole.Notice(L.Tr("server.console.notice.starting", install.DisplayName));
+        if (firstRun)
+        {
+            ServerConsole.Notice(L.Tr("server.console.notice.firstRun"));
+            if (environment is { Count: > 0 }) ServerConsole.Notice(L.Tr("server.console.notice.firstAdmin", environment[BasisServerService.FirstAdminVariable]));
+        }
+        var session = _service.StartConsole(install.RepoRoot, ServerConsole.Append, environment);
+        _session = session;
+        _windowProcess = null;
+        _runningInstall = install;
+        if (firstRun) FirstRunAdmin = "";
+        ServerConsole.Status = L.Tr("server.console.status.running", install.DisplayName, session.Started.ToString("HH:mm"));
+        RaiseRunState();
+        _ = WatchSessionAsync(session, install);
+        _ = RefreshAfterServerStartAsync(install.RepoRoot, () => session.HasExited);
+    }
+
+    private async Task StartInOwnWindowAsync(BasisInstall install)
+    {
+        if (!OperatingSystem.IsWindows()) ServerConsole.Notice(L.Tr("server.console.notice.starting", install.DisplayName));
+        var process = await _service.StartInWindowAsync(install.RepoRoot);
+        _windowProcess = process;
+        _session = null;
+        _runningInstall = install;
+        ServerConsole.ExternalWindow = true;
+        ServerConsole.Notice(L.Tr("server.console.notice.ownWindow", install.DisplayName));
+        ServerConsole.Status = L.Tr("server.console.status.ownWindow", install.DisplayName);
+        RaiseRunState();
+        SetStatus(L.Tr("server.console.startedOwnWindow"), StatusKind.Success, install);
+        _ = WatchWindowAsync(process, install);
+        _ = RefreshAfterServerStartAsync(install.RepoRoot, () => process.HasExited);
+    }
+
+    private async Task WatchSessionAsync(ServerConsoleSession session, BasisInstall install)
+    {
+        var code = await session.Exited;
+        await OnUiThreadAsync(() =>
+        {
+            var failed = !session.StopRequested && code != 0;
+            ServerConsole.Notice(ExitNotice(code, session.StopRequested), failed ? ServerConsoleLevel.Error : ServerConsoleLevel.Notice);
+            if (ReferenceEquals(_session, session)) ServerConsole.Status = failed ? L.Tr("server.console.status.exited", code) : L.Tr("server.console.status.stopped");
+            RaiseRunState();
+            if (failed) SetStatus(ExitNotice(code, false), StatusKind.Error, install);
+        });
+        if (Platform.PathsEqual(_install?.RepoRoot, install.RepoRoot)) await RefreshAsync();
+    }
+
+    private async Task WatchWindowAsync(Process process, BasisInstall install)
+    {
+        try { await process.WaitForExitAsync(); }
+        catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception) { DiagnosticLog.Write("Waiting for the Basis server window", ex); }
+        await OnUiThreadAsync(() =>
+        {
+            ServerConsole.Notice(L.Tr("server.console.notice.windowClosed"));
+            if (ReferenceEquals(_windowProcess, process))
+            {
+                ServerConsole.Status = L.Tr("server.console.status.stopped");
+                ServerConsole.ExternalWindow = false;
+            }
+            RaiseRunState();
+        });
+        if (Platform.PathsEqual(_install?.RepoRoot, install.RepoRoot)) await RefreshAsync();
+    }
+
+    private static Task OnUiThreadAsync(Action action)
+    {
+        if (!Dispatcher.UIThread.CheckAccess()) return Dispatcher.UIThread.InvokeAsync(action).GetTask();
+        action();
+        return Task.CompletedTask;
+    }
+
+    private void OnConsoleCommand(string text)
+    {
+        var command = text.Trim();
+        if (string.Equals(command, "/clear", StringComparison.OrdinalIgnoreCase))
+        {
+            ServerConsole.Clear();
+            return;
+        }
+        ServerConsole.Append(new ServerConsoleLine(DateTimeOffset.Now, ServerConsoleLevel.Input, command));
+        if (command.Equals("/restart", StringComparison.OrdinalIgnoreCase) || command.StartsWith("/restart ", StringComparison.OrdinalIgnoreCase))
+        {
+            _ = RestartAsync();
+            return;
+        }
+        if (_session is not { HasExited: false } session || !session.SendLine(command))
+            ServerConsole.Notice(L.Tr("server.console.notice.sendFailed"), ServerConsoleLevel.Error);
+    }
+
+    public static string ExitNotice(int code, bool stopRequested) => stopRequested || code == 0
+        ? L.Tr("server.console.notice.stopped")
+        : code switch
+        {
+            69 => L.Tr("server.console.notice.exitUnavailable", code),
+            70 => L.Tr("server.console.notice.exitCrashed", code),
+            78 => L.Tr("server.console.notice.exitConfig", code),
+            _ => L.Tr("server.console.notice.exited", code),
+        };
+
+    private string LastExitCodeText() => _session?.ExitCode is { } code ? code.ToString(System.Globalization.CultureInfo.InvariantCulture) : "?";
+
+    private void RaiseRunState()
+    {
+        ServerConsole.IsRunning = IsServerRunning;
+        OnPropertyChanged(nameof(IsServerRunning));
+        OnPropertyChanged(nameof(CanRunServer));
+        OnPropertyChanged(nameof(CanStopServer));
+        OnPropertyChanged(nameof(RunningProjectName));
+        RefreshFirstRun();
+    }
+
+    private void RefreshFirstRun()
+    {
+        var install = _install;
+        try { IsFirstRun = install is not null && !IsServerLeftOut && !IsServerRunning && _service.HasServerProject(install.RepoRoot) && _service.IsFirstRun(install.RepoRoot); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write("Checking whether the Basis server has run before", ex); IsFirstRun = false; }
+    }
+
+    private async Task RefreshAfterServerStartAsync(string repoRoot, Func<bool> exited)
     {
         await RefreshAsync();
         var configFile = _service.GetPaths(repoRoot).ConfigFile;
-        for (var attempt = 0; attempt < 120 && !process.HasExited; attempt++)
+        for (var attempt = 0; attempt < 120 && !exited(); attempt++)
         {
             if (File.Exists(configFile))
             {
@@ -573,10 +780,10 @@ public sealed class ServerViewModel : ObservableObject
         }
     }
 
-    private async Task<bool> WaitForServerAsync(string repoRoot, Process process, TimeSpan timeout)
+    private async Task<bool> WaitForServerAsync(string repoRoot, Func<bool> exited, TimeSpan timeout)
     {
         var until = DateTime.UtcNow + timeout;
-        while (DateTime.UtcNow < until && !process.HasExited)
+        while (DateTime.UtcNow < until && !exited())
         {
             if (await _service.IsReadyAsync(repoRoot, TimeSpan.FromSeconds(1))) return true;
             await Task.Delay(500);

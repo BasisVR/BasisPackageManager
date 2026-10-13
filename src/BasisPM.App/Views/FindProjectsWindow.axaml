@@ -60,7 +60,8 @@
                             <DataTemplate x:DataType="vm:FoundProjectRow">
                                 <Border Padding="14,10" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
                                     <Grid ColumnDefinitions="*,Auto">
-                                        <CheckBox IsChecked="{Binding IsSelected}" IsEnabled="{Binding CanSelect}">
+                                        <CheckBox IsChecked="{Binding IsSelected}" IsEnabled="{Binding CanSelect}"
+                                                  ToolTip.Tip="{loc:Tr dialog.findProjects.tooltip.project}">
                                             <StackPanel Spacing="1">
                                                 <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
                                                 <TextBlock Text="{Binding Location}" Classes="dim" FontSize="11"
@@ -69,7 +70,7 @@
                                             </StackPanel>
                                         </CheckBox>
                                         <Border Grid.Column="1" Classes="versionPill" Margin="12,0,0,0" VerticalAlignment="Center"
-                                                IsVisible="{Binding AlreadyAdded}">
+                                                IsVisible="{Binding AlreadyAdded}" ToolTip.Tip="{loc:Tr dialog.findProjects.tooltip.alreadyAdded}">
                                             <TextBlock Text="{loc:Tr dialog.findProjects.alreadyAdded}" FontSize="11" Classes="muted"/>
                                         </Border>
                                     </Grid>

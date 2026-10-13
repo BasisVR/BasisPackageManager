@@ -13,7 +13,7 @@
             <TextBlock Text="{loc:Tr dialog.installPicker.subtitle}" Classes="dim" FontSize="12"/>
         </StackPanel>
         <Border Grid.Row="1" Classes="card" Padding="4">
-            <ListBox x:Name="List" Background="Transparent">
+            <ListBox x:Name="List" Background="Transparent" ToolTip.Tip="{loc:Tr dialog.installPicker.tooltip.list}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="models:BasisInstall">
                         <StackPanel Spacing="2" Margin="10,10">

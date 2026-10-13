@@ -18,6 +18,7 @@ public sealed class RegistryPackage
     // UPM git dependency URL — works for both GitHub and GitLab.
     [JsonPropertyName("gitUrl")] public string? GitUrl { get; set; }
     [JsonPropertyName("repoUrl")] public string? RepoUrl { get; set; }
+    [JsonPropertyName("reviewedCommit"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? ReviewedCommit { get; set; }
 
     [JsonPropertyName("unity")] public string? Unity { get; set; }
     // The Basis version this package was built/tested against (free-form: branch, tag or version — e.g. "main" or "1.2.0").
@@ -40,6 +41,22 @@ public sealed class RegistryPackage
     // Optional author-provided link (homepage / showcase / docs / video), shown on the package's page.
     [JsonPropertyName("link")] public string? Link { get; set; }
     [JsonPropertyName("server"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] public bool Server { get; set; }
+    [JsonPropertyName("versions"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public List<RegistryVersion>? Versions { get; set; }
+}
+
+public sealed class RegistryVersion
+{
+    [JsonPropertyName("version")] public string Version { get; set; } = "";
+    [JsonPropertyName("ref"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Ref { get; set; }
+    [JsonPropertyName("commit"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Commit { get; set; }
+    [JsonPropertyName("displayName"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? DisplayName { get; set; }
+    [JsonPropertyName("description"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Description { get; set; }
+    [JsonPropertyName("unity"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Unity { get; set; }
+    [JsonPropertyName("unityRelease"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? UnityRelease { get; set; }
+    [JsonPropertyName("basis"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull), JsonConverter(typeof(BasisPM.Core.Models.BasisCompatibilityConverter))] public BasisPM.Core.Models.BasisCompatibility? Basis { get; set; }
+    [JsonPropertyName("license"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? License { get; set; }
+    [JsonPropertyName("dependencies"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public Dictionary<string, string>? Dependencies { get; set; }
+    [JsonPropertyName("gitDependencies"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public Dictionary<string, string>? GitDependencies { get; set; }
 }
 
 public sealed class RegistrySubmission

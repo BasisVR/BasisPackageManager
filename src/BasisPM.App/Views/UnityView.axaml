@@ -20,9 +20,17 @@
                         <TextBlock Text="{loc:Tr unity.header.subtitle}"
                                    Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                     </StackPanel>
-                    <Button Grid.Column="1" Classes="iconBtn" Command="{Binding RefreshCommand}" ToolTip.Tip="{loc:Tr unity.button.refresh}">
-                        <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
-                    </Button>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Top">
+                        <Button Classes="iconBtn" Command="{Binding RefreshCommand}" ToolTip.Tip="{loc:Tr unity.tooltip.refresh}">
+                            <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
+                        </Button>
+                        <ToggleButton Name="AdvancedToggle" Classes="advanced" views:SectionState.Key="unity.advanced" ToolTip.Tip="{loc:Tr unity.tooltip.advanced}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconCode}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr shell.button.advanced}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </ToggleButton>
+                    </StackPanel>
                 </Grid>
             </Border>
 
@@ -44,7 +52,7 @@
                 </Grid>
             </Border>
 
-            <Expander views:SectionState.Key="unity.installedEditors" IsExpanded="True" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="unity.installedEditors" IsExpanded="True" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr unity.tooltip.installedEditorsSection}">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr unity.section.installedEditors}" Classes="h3"/>
                 </Expander.Header>
@@ -66,11 +74,11 @@
                     </ComboBox>
                     <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center" IsVisible="{Binding HasSelectedEditor}">
                         <TextBlock Grid.Column="0" Text="{Binding SelectedEditor.Path}" Classes="dim" FontSize="11"
-                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,12,0"/>
+                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,12,0" ToolTip.Tip="{Binding SelectedEditor.Path}"/>
                         <Button Grid.Column="1" Classes="iconBtn"
                                 IsVisible="{Binding SelectedEditorIsManual}"
                                 Command="{Binding RemoveEditorCommand}" CommandParameter="{Binding SelectedEditor}"
-                                ToolTip.Tip="{loc:Tr unity.button.removeEditor}">
+                                ToolTip.Tip="{loc:Tr unity.tooltip.removeEditor}">
                             <PathIcon Width="16" Height="16" Data="{StaticResource IconClose}"/>
                         </Button>
                     </Grid>
@@ -97,8 +105,9 @@
                     </StackPanel>
                     <TextBlock Text="{loc:Tr unity.editors.none}" Classes="muted" FontSize="12"
                                IsVisible="{Binding !HasInstalledEditors}"/>
-                    <TextBlock Text="{loc:Tr unity.editors.addHint}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
-                    <Button Classes="secondary" Command="{Binding AddEditorCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr unity.tooltip.addFromFolder}">
+                    <TextBlock Text="{loc:Tr unity.editors.addHint}" Classes="dim" FontSize="11" TextWrapping="Wrap" IsVisible="{Binding #AdvancedToggle.IsChecked}"/>
+                    <Button Classes="secondary" Command="{Binding AddEditorCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr unity.tooltip.addFromFolder}"
+                            IsVisible="{Binding #AdvancedToggle.IsChecked}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
                             <TextBlock Text="{loc:Tr unity.button.addFromFolder}" VerticalAlignment="Center"/>
@@ -107,7 +116,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander views:SectionState.Key="unity.installNew" IsExpanded="False" HorizontalAlignment="Stretch">
+            <Expander views:SectionState.Key="unity.installNew" IsExpanded="False" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr unity.tooltip.installNewSection}">
                 <Expander.Header>
                     <TextBlock Text="{loc:Tr unity.section.installNew}" Classes="h3"/>
                 </Expander.Header>
@@ -116,7 +125,7 @@
                         <TextBlock Grid.Column="0" Classes="muted" FontSize="12" TextWrapping="Wrap"
                                    VerticalAlignment="Center" Text="{loc:Tr unity.install.hint}"/>
                         <Button Grid.Column="1" Classes="iconBtn" VerticalAlignment="Top" Margin="12,0,0,0"
-                                Command="{Binding ReloadReleasesCommand}" ToolTip.Tip="{loc:Tr unity.button.reloadList}">
+                                Command="{Binding ReloadReleasesCommand}" ToolTip.Tip="{loc:Tr unity.tooltip.reloadReleases}">
                             <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
                         </Button>
                     </Grid>
@@ -157,7 +166,13 @@
                         </StackPanel>
                     </Grid>
 
-                    <StackPanel Spacing="4" IsVisible="{Binding SelectedRelease, Converter={x:Static vm:Converters.NotNull}}">
+                    <StackPanel Spacing="4">
+                        <StackPanel.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="SelectedRelease" Converter="{x:Static vm:Converters.NotNull}"/>
+                                <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
+                            </MultiBinding>
+                        </StackPanel.IsVisible>
                         <TextBlock Text="{loc:Tr unity.label.changeset}" Classes="muted" FontSize="11"/>
                         <TextBlock Text="{Binding SelectedRelease.Release.ShortRevision}" Classes="dim" FontSize="12"/>
                     </StackPanel>

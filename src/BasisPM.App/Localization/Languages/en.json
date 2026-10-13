@@ -7,10 +7,6 @@
       "value": "General"
     },
     {
-      "key": "packages.detail.close",
-      "value": "Close"
-    },
-    {
       "key": "packages.badge.included",
       "value": "Included with Basis"
     },
@@ -107,6 +103,18 @@
       "value": "Desktop shortcut"
     },
     {
+      "key": "shell.fileManager.windows",
+      "value": "File Explorer"
+    },
+    {
+      "key": "shell.fileManager.macos",
+      "value": "Finder"
+    },
+    {
+      "key": "shell.fileManager.linux",
+      "value": "your file manager"
+    },
+    {
       "key": "shell.footer.license",
       "value": "MIT licensed"
     },
@@ -140,7 +148,7 @@
     },
     {
       "key": "shell.status.copyTooltip",
-      "value": "Copy status message to clipboard"
+      "value": "Copy this message to the clipboard, for example to paste into a bug report or a question on Discord."
     },
     {
       "key": "shell.status.retry",
@@ -148,7 +156,7 @@
     },
     {
       "key": "shell.status.retryTooltip",
-      "value": "Run the task that failed again"
+      "value": "Run the task that failed again, for example after you fix what the message describes."
     },
     {
       "key": "shell.status.retrying",
@@ -161,6 +169,30 @@
     {
       "key": "shell.status.desktopShortcutFailed",
       "value": "Couldn't create the desktop shortcut: {0}"
+    },
+    {
+      "key": "shell.appMenu.dialogTitle",
+      "value": "Applications menu"
+    },
+    {
+      "key": "shell.appMenu.dialogMessage",
+      "value": "Add Basis Package Manager to your applications menu, so you can open it from your launcher like your other apps?"
+    },
+    {
+      "key": "shell.status.appMenuAdded",
+      "value": "Added Basis Package Manager to your applications menu."
+    },
+    {
+      "key": "shell.status.appMenuFailed",
+      "value": "Couldn't add Basis Package Manager to your applications menu: {0}"
+    },
+    {
+      "key": "shell.macMenu.about",
+      "value": "About Basis Package Manager"
+    },
+    {
+      "key": "shell.macMenu.settings",
+      "value": "Settings…"
     },
     {
       "key": "shell.status.downloadingUpdate",
@@ -184,7 +216,7 @@
     },
     {
       "key": "shell.status.okTooltip",
-      "value": "Dismiss this message"
+      "value": "Dismiss this message. For a failed task, this also removes it from Needs attention in Settings, so Try again is no longer offered for it."
     },
     {
       "key": "shell.status.openIssue",
@@ -192,7 +224,7 @@
     },
     {
       "key": "shell.status.openIssueTooltip",
-      "value": "Open a pre-filled GitHub issue with this error and your last actions"
+      "value": "Open a new GitHub issue in your browser, filled in with this error, your recent actions, the app version and your operating system. Nothing is posted until you review it and submit it."
     },
     {
       "key": "shell.status.openUnityFailed",
@@ -248,7 +280,7 @@
     },
     {
       "key": "shell.update.laterTooltip",
-      "value": "Dismiss until next launch"
+      "value": "Hide this banner for now. It comes back at the next automatic check (at startup and every two hours) or when you check for updates in Settings."
     },
     {
       "key": "shell.update.now",
@@ -256,7 +288,7 @@
     },
     {
       "key": "shell.update.nowTooltip",
-      "value": "Download the update and restart"
+      "value": "Download the new version from GitHub and restart the app on it. Let running tasks finish first, because the app closes to apply the update."
     },
     {
       "key": "shell.basisUpdate.bannerOne",
@@ -300,19 +332,15 @@
     },
     {
       "key": "shell.basisUpdate.reviewTooltip",
-      "value": "Open the Basis update"
+      "value": "Go to Projects and open this project's Basis update, where you see the incoming changes before anything is applied, or finish a paused update or branch switch. With several projects listed, this only opens Projects."
     },
     {
       "key": "shell.basisUpdate.laterTooltip",
-      "value": "Hide until Basis changes again"
-    },
-    {
-      "key": "shell.basisUpdate.badgeTooltip",
-      "value": "Projects with a Basis update"
+      "value": "Hide this banner until Basis gets new commits. The update stays available on the Projects tab, and a paused update or branch switch brings the banner back."
     },
     {
       "key": "shell.version.tooltip",
-      "value": "Installed version — check for updates in Settings"
+      "value": "The version of Basis Package Manager you are running. The app looks for a newer release at startup and every two hours and shows a banner when one is out. To check right away, use Check for updates under About in Settings."
     },
     {
       "key": "shell.window.title",
@@ -340,7 +368,27 @@
     },
     {
       "key": "installs.tooltip.changeBranch",
-      "value": "Switch to another branch of your project, or move it onto another Basis branch. Your changes come along."
+      "value": "Switch this project to another of its own git branches, or move it onto a different Basis branch. Your uncommitted edits come along, and you can back up first. Close Unity before switching."
+    },
+    {
+      "key": "installs.tooltip.sync",
+      "value": "Pull your team's new commits from this project's own remote (fast-forward only), then clone or move the packages Packages/basispackages.json lists so they match. Your edits are never overwritten."
+    },
+    {
+      "key": "installs.button.sync",
+      "value": "Pull and sync ({0})"
+    },
+    {
+      "key": "installs.status.syncing",
+      "value": "Syncing {0}…"
+    },
+    {
+      "key": "installs.status.synced",
+      "value": "Synced {0}. {1}"
+    },
+    {
+      "key": "installs.status.syncFailed",
+      "value": "Couldn't sync {0}: {1}"
     },
     {
       "key": "installs.action.changeBranch",
@@ -416,15 +464,15 @@
     },
     {
       "key": "installs.tooltip.updateBasis",
-      "value": "Bring the latest Basis from BasisVR/Basis into this project, whatever git remote it uses. Your own remotes are not touched."
+      "value": "Check github.com/BasisVR/Basis for new commits on the Basis branch this project follows, then review what would change before anything happens. Your changes are kept and your own git remotes are not touched. Close Unity before updating."
     },
     {
       "key": "installs.tooltip.finishUpdate",
-      "value": "A Basis update is waiting for your decisions"
+      "value": "This project's Basis update is paused until you decide which version to keep for files that you and Basis both changed. Click Finish update to decide each one, or undo the update."
     },
     {
       "key": "installs.tooltip.finishSwitch",
-      "value": "A branch switch is waiting for your decisions"
+      "value": "This project's branch switch is paused until you decide which version to keep for files where your edits overlap the new branch. Click Finish switch to decide each one, or undo the switch."
     },
     {
       "key": "installs.basis.checking",
@@ -460,7 +508,7 @@
     },
     {
       "key": "installs.basis.tooltip",
-      "value": "Compared with Basis {0} on github.com/BasisVR/Basis"
+      "value": "This project is compared with Basis {0} on github.com/BasisVR/Basis, the branch it follows. Refresh the list to check again."
     },
     {
       "key": "installs.status.checkingBasis",
@@ -820,7 +868,7 @@
     },
     {
       "key": "dialog.basisUpdate.tooltip.changeBranch",
-      "value": "Follow a different Basis branch, such as a long-term-support branch"
+      "value": "Pick another BasisVR/Basis branch to follow, such as a long-term-support branch. This window then shows what moving to it would change. Your project isn't touched until you confirm."
     },
     {
       "key": "dialog.basisUpdate.pickBranchTitle",
@@ -960,7 +1008,7 @@
     },
     {
       "key": "dialog.basisUpdate.tooltip.backup",
-      "value": "Creates a zip in a BasisBackups folder next to the project before anything changes"
+      "value": "When ticked, the project's Assets, Packages, ProjectSettings and UserSettings folders are zipped into a BasisBackups folder next to the project folder before anything changes. Unity's Library cache is left out. If the backup fails, the update doesn't start."
     },
     {
       "key": "dialog.basisUpdate.cancel",
@@ -980,11 +1028,11 @@
     },
     {
       "key": "dialog.basisUpdate.tooltip.cancel",
-      "value": "Close without changing anything"
+      "value": "Close this window without changing your project. A branch picked with Change is not kept."
     },
     {
       "key": "dialog.basisUpdate.tooltip.primary",
-      "value": "Continue with the update"
+      "value": "Bring these Basis changes into the project as described above. Your uncommitted edits to files Basis also changes are set aside and put back afterwards. If you and Basis changed the same lines, a window opens so you can choose. Close Unity first."
     },
     {
       "key": "dialog.conflicts.title",
@@ -1124,63 +1172,63 @@
     },
     {
       "key": "dialog.conflicts.tooltip.keepMine",
-      "value": "Keep your version of this file"
+      "value": "Keep your version of this whole file and drop the incoming changes to it. If you deleted the file, it stays deleted."
     },
     {
       "key": "dialog.conflicts.tooltip.useBasis",
-      "value": "Take the new Basis version of this file"
+      "value": "Take the Basis version of this whole file. Your changes to it are dropped, and if Basis deleted the file, it's deleted here too."
     },
     {
       "key": "dialog.conflicts.tooltip.keepAllMine",
-      "value": "Keep your version of every file in the list"
+      "value": "Keep your version of every file still listed and drop the incoming changes to them. Files you deleted stay deleted. Close Unity first."
     },
     {
       "key": "dialog.conflicts.tooltip.useAllBasis",
-      "value": "Take the Basis version of every file in the list"
+      "value": "Take the Basis version of every file still listed. Your changes to those files are dropped, and files Basis deleted are deleted. Close Unity first."
     },
     {
       "key": "dialog.conflicts.tooltip.useBranch",
-      "value": "Take the version of this file from {0}"
+      "value": "Take the version of this whole file from {0}. Your uncommitted edits to it are dropped, and if {0} deleted the file, it's deleted here too."
     },
     {
       "key": "dialog.conflicts.tooltip.useAllBranch",
-      "value": "Take the version from {0} for every file in the list"
+      "value": "Take the version from {0} of every file still listed. Your uncommitted edits to those files are dropped, and files deleted on {0} are deleted. Close Unity first."
     },
     {
       "key": "dialog.conflicts.tooltip.open",
-      "value": "Open the file to combine the changes by hand"
+      "value": "Open this file in its default app to combine the two versions by hand. Remove the conflict markers (<<<<<<<, ======= and >>>>>>>), save, then mark it done."
     },
     {
       "key": "dialog.conflicts.tooltip.openFolder",
-      "value": "Show the file's folder"
+      "value": "Open the folder that holds this file in your file manager."
     },
     {
       "key": "dialog.conflicts.tooltip.markDone",
-      "value": "Mark this file done after editing it"
+      "value": "Mark this file as decided after combining the versions by hand. It's refused while conflict markers remain in the file. If you deleted the file, it's recorded as deleted."
     },
     {
       "key": "dialog.conflicts.tooltip.refresh",
-      "value": "Check the files again"
+      "value": "Read the conflicted files from git again, for example after you resolved some in another tool. Files that are no longer in conflict leave the list."
     },
     {
       "key": "dialog.conflicts.tooltip.abort",
-      "value": "Put the project back exactly as it was before the update"
+      "value": "Cancel the whole update and put the project back exactly as it was before it started, including your uncommitted edits. Choices made here are lost. Close Unity first; you're asked to confirm before anything changes."
     },
     {
       "key": "dialog.conflicts.tooltip.abortSwitch",
-      "value": "Go back to the branch you were on, with your edits exactly as they were"
+      "value": "Cancel the switch and go back to the branch you were on, with your uncommitted edits exactly as they were. Choices made here are lost. Close Unity first; you're asked to confirm before anything changes."
     },
     {
       "key": "dialog.conflicts.tooltip.later",
-      "value": "Close and come back to this later"
+      "value": "Close this window and keep your choices so far. The project stays paused until you continue with Finish update or Finish switch on its row in Projects."
     },
     {
       "key": "dialog.conflicts.tooltip.finish",
-      "value": "Record the update once every file is decided"
+      "value": "Wrap up the update: commit it to your branch if that hasn't happened yet, then put your set-aside edits back. Edits that overlap the update come back here to decide. Available once every file is decided. Close Unity first."
     },
     {
       "key": "dialog.conflicts.tooltip.finishSwitch",
-      "value": "Finish once every file is decided"
+      "value": "Wrap up the switch. The files you decided stay as uncommitted edits on the new branch, and the project is no longer waiting on this switch. Available once every file is decided. Close Unity first."
     },
     {
       "key": "installs.button.addExisting",
@@ -1193,6 +1241,10 @@
     {
       "key": "installs.button.backup",
       "value": "Backup"
+    },
+    {
+      "key": "installs.button.storage",
+      "value": "Storage"
     },
     {
       "key": "installs.button.changes",
@@ -1213,14 +1265,6 @@
     {
       "key": "installs.button.packages",
       "value": "Packages"
-    },
-    {
-      "key": "installs.button.refresh",
-      "value": "Refresh"
-    },
-    {
-      "key": "installs.button.remove",
-      "value": "Remove"
     },
     {
       "key": "installs.button.updateCore",
@@ -1371,6 +1415,10 @@
       "value": "Backup failed: {0}"
     },
     {
+      "key": "installs.status.showBackupFailed",
+      "value": "Couldn't show {0} in {1}."
+    },
+    {
       "key": "installs.status.folderMissing",
       "value": "Folder no longer exists: {0}"
     },
@@ -1436,7 +1484,11 @@
     },
     {
       "key": "installs.tooltip.backup",
-      "value": "Zip Assets, Packages and ProjectSettings (not the Library cache)"
+      "value": "Zip this project's Assets, Packages, ProjectSettings and UserSettings folders into a BasisBackups folder next to the project's folder. The Library cache is skipped because Unity rebuilds it. Nothing in the project changes."
+    },
+    {
+      "key": "installs.tooltip.storage",
+      "value": "See how much disk space this project uses and free some by cleaning Unity's caches or unused clones."
     },
     {
       "key": "packages.badge.basisRegistry",
@@ -1468,11 +1520,11 @@
     },
     {
       "key": "packages.mounted.hint",
-      "value": "Cloned into Packages/ for editing — it uses the local folder, not the registry git URL. Open the folder, submit a PR, or Swap back to restore the git version."
+      "value": "This package loads from an editable git clone in the project's .basisdev folder, so you can change its files in Unity. Click the package to open its details and actions."
     },
     {
       "key": "packages.version.installed",
-      "value": "Installed {0}"
+      "value": "Installed in this project: {0}."
     },
     {
       "key": "packages.version.defaultBranch",
@@ -1499,12 +1551,12 @@
       "value": "Create package list"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "Grid view"
+      "key": "packages.button.licenses",
+      "value": "Licenses"
     },
     {
-      "key": "packages.button.installPackageListFile",
-      "value": "Install package list from file…"
+      "key": "packages.button.gridView",
+      "value": "Grid view"
     },
     {
       "key": "packages.button.install",
@@ -1536,7 +1588,7 @@
     },
     {
       "key": "packages.tooltip.showInstalled",
-      "value": "Switch between all packages and just the ones installed in this project"
+      "value": "Switch between every package in the registry and only the packages in this project."
     },
     {
       "key": "packages.installed.empty",
@@ -1545,10 +1597,6 @@
     {
       "key": "packages.button.manage",
       "value": "Manage"
-    },
-    {
-      "key": "packages.button.refresh",
-      "value": "Refresh"
     },
     {
       "key": "packages.button.remove",
@@ -1623,10 +1671,6 @@
       "value": "Search packages, authors, tags…"
     },
     {
-      "key": "packages.filter.sortBy",
-      "value": "Sort"
-    },
-    {
       "key": "packages.source.all",
       "value": "All"
     },
@@ -1685,10 +1729,6 @@
     {
       "key": "packages.hero.title",
       "value": "Packages"
-    },
-    {
-      "key": "packages.label.license",
-      "value": "License"
     },
     {
       "key": "packages.label.project",
@@ -1888,19 +1928,15 @@
     },
     {
       "key": "packages.tooltip.chooseVersion",
-      "value": "Pick a specific release, beta, or the default branch"
-    },
-    {
-      "key": "packages.tooltip.filterByOwner",
-      "value": "Filter installed packages by owner (from the package id)"
+      "value": "Pick a release, tag or the default branch of this package's repository and switch to it. An existing clone in the project's .basisdev folder is moved to that version in place, keeping your edits when they don't clash; otherwise the package is cloned there. A version the Basis registry hasn't checked is shown for review before Unity loads it."
     },
     {
       "key": "packages.tooltip.toggleLayout",
-      "value": "Switch between list and grid layout"
+      "value": "Switch between a list of rows and a grid of cards. Your choice is remembered."
     },
     {
       "key": "packages.tooltip.viewDetails",
-      "value": "Click for details"
+      "value": "Click to open this package's details, with its full description, dependencies, source and every action you can take on it."
     },
     {
       "key": "unity.button.addFromFolder",
@@ -1909,18 +1945,6 @@
     {
       "key": "unity.button.install",
       "value": "Install via Unity Hub"
-    },
-    {
-      "key": "unity.button.refresh",
-      "value": "Refresh"
-    },
-    {
-      "key": "unity.button.reloadList",
-      "value": "Reload list"
-    },
-    {
-      "key": "unity.button.removeEditor",
-      "value": "Remove from list"
     },
     {
       "key": "unity.editors.addHint",
@@ -2403,10 +2427,6 @@
       "value": "Add package catalogs from other sources. These are UNOFFICIAL — not reviewed or vetted by BasisVR — so install from them at your own risk. Official Basis packages always take priority over an unofficial one with the same id."
     },
     {
-      "key": "settings.extraCatalogs.remove",
-      "value": "Remove this catalog"
-    },
-    {
       "key": "settings.extraCatalogs.title",
       "value": "Additional Catalogs (Unofficial)"
     },
@@ -2429,6 +2449,38 @@
     {
       "key": "settings.detected.settingsFile",
       "value": "Settings file"
+    },
+    {
+      "key": "settings.detected.cli",
+      "value": "Command-line tool (basispm)"
+    },
+    {
+      "key": "settings.cli.notInstalled",
+      "value": "Not on your PATH yet."
+    },
+    {
+      "key": "settings.cli.install",
+      "value": "Add basispm to PATH"
+    },
+    {
+      "key": "settings.tooltip.cliInstall",
+      "value": "Adds a basispm link to a folder on your PATH, so you can run the console version of this app from any terminal. The link keeps working after the app updates itself."
+    },
+    {
+      "key": "settings.cli.status.added",
+      "value": "Added basispm to {0}. Open a new terminal to use it."
+    },
+    {
+      "key": "settings.cli.status.addedNotOnPath",
+      "value": "Added basispm to {0}, which isn't on your PATH yet. Add {0} to your PATH, then open a new terminal."
+    },
+    {
+      "key": "settings.cli.status.addedCheckPath",
+      "value": "Added basispm to {0}. If a new terminal can't find it, add {0} to your PATH."
+    },
+    {
+      "key": "settings.cli.status.failed",
+      "value": "Couldn't add basispm to your PATH: {0}"
     },
     {
       "key": "settings.detected.title",
@@ -2459,20 +2511,8 @@
       "value": "Language"
     },
     {
-      "key": "settings.logs.clear",
-      "value": "Clear"
-    },
-    {
-      "key": "settings.logs.copy",
-      "value": "Copy"
-    },
-    {
       "key": "settings.logs.description",
       "value": "What the app did this session — personal paths, usernames and IPs are redacted. Attach these when reporting a problem."
-    },
-    {
-      "key": "settings.logs.openFolder",
-      "value": "Open folder"
     },
     {
       "key": "settings.logs.title",
@@ -2511,6 +2551,54 @@
       "value": "Couldn't reset: {0}"
     },
     {
+      "key": "settings.cloneCache.title",
+      "value": "Download cache"
+    },
+    {
+      "key": "settings.cloneCache.description",
+      "value": "Repositories you download are kept here, so cloning Basis or a package again only downloads what changed. Every clone gets its own full copy, so deleting the cache never breaks a project."
+    },
+    {
+      "key": "settings.cloneCache.toggle",
+      "value": "Keep a shared copy of downloaded repositories"
+    },
+    {
+      "key": "settings.cloneCache.size",
+      "value": "The cache holds {0}."
+    },
+    {
+      "key": "settings.cloneCache.empty",
+      "value": "The cache is empty."
+    },
+    {
+      "key": "settings.cloneCache.clear",
+      "value": "Clear cache"
+    },
+    {
+      "key": "settings.cloneCache.saveFailed",
+      "value": "Couldn't save the download cache setting: {0}"
+    },
+    {
+      "key": "settings.cloneCache.confirmTitle",
+      "value": "Clear the download cache?"
+    },
+    {
+      "key": "settings.cloneCache.confirmBody",
+      "value": "This deletes {0} of cached repositories. Your projects keep working; the next clone of each repository downloads it in full again."
+    },
+    {
+      "key": "settings.cloneCache.cleared",
+      "value": "Cleared the download cache and freed {0}."
+    },
+    {
+      "key": "settings.cloneCache.clearedSome",
+      "value": "Freed {0}. Repositories left because a clone is using them: {1}."
+    },
+    {
+      "key": "settings.cloneCache.clearFailed",
+      "value": "Couldn't clear the download cache: {0}"
+    },
+    {
       "key": "settings.toggle.localChanges",
       "value": "Show the Local Changes tab"
     },
@@ -2524,7 +2612,7 @@
     },
     {
       "key": "settings.toggle.prerelease.tip",
-      "value": "Get early builds as soon as they're published — frequent and sometimes unstable. Off = stable releases only. Applies on Save."
+      "value": "Also offer prerelease versions of this app when it checks for updates. They arrive sooner but can be unstable or broken. When off, only stable releases are offered. Takes effect when you click Save."
     },
     {
       "key": "settings.toggle.autoCheckBasis",
@@ -2532,7 +2620,7 @@
     },
     {
       "key": "settings.toggle.autoCheckBasis.tip",
-      "value": "Checks BasisVR/Basis when the app starts and every two hours, and tells you when a project can be updated"
+      "value": "Check your projects for new Basis updates when the app starts and every two hours, and show a banner at the top of the window when one is available. Needs Git and a network connection. Takes effect when you click Save."
     },
     {
       "key": "settings.unityHub.description",
@@ -2667,18 +2755,6 @@
       "value": "Source & issues"
     },
     {
-      "key": "logs.button.clear",
-      "value": "Clear"
-    },
-    {
-      "key": "logs.button.copy",
-      "value": "Copy"
-    },
-    {
-      "key": "logs.button.openFolder",
-      "value": "Open folder"
-    },
-    {
       "key": "logs.hero.subtitle",
       "value": "What the app did this session — personal paths, usernames and IPs are redacted. Attach these when reporting a problem."
     },
@@ -2689,10 +2765,6 @@
     {
       "key": "logs.hero.title",
       "value": "Activity log"
-    },
-    {
-      "key": "announcements.button.refresh",
-      "value": "Refresh"
     },
     {
       "key": "announcements.card.learnMore",
@@ -2789,6 +2861,22 @@
     {
       "key": "dialog.backup.title",
       "value": "Back up your project?"
+    },
+    {
+      "key": "dialog.backupDone.title",
+      "value": "Backup complete"
+    },
+    {
+      "key": "dialog.backupDone.body",
+      "value": "{0} was backed up ({1}) to:"
+    },
+    {
+      "key": "dialog.backupDone.question",
+      "value": "Show it in {0}?"
+    },
+    {
+      "key": "dialog.backupDone.show",
+      "value": "Show in {0}"
     },
     {
       "key": "dialog.confirm.no",
@@ -2927,6 +3015,126 @@
       "value": "Submit a pull request"
     },
     {
+      "key": "dialog.packageUpdate.title",
+      "value": "Update {0}"
+    },
+    {
+      "key": "dialog.packageUpdate.subtitle",
+      "value": "From {0} to {1}"
+    },
+    {
+      "key": "dialog.packageUpdate.localWork",
+      "value": "Your edits and commits in this package are kept. If they clash with the new version, nothing is changed and you can choose what to do."
+    },
+    {
+      "key": "dialog.packageUpdate.loading",
+      "value": "Loading the changes…"
+    },
+    {
+      "key": "dialog.packageUpdate.nothing",
+      "value": "No release notes or commits are available for this update."
+    },
+    {
+      "key": "dialog.packageUpdate.releases",
+      "value": "Release notes"
+    },
+    {
+      "key": "dialog.packageUpdate.commits",
+      "value": "Commits"
+    },
+    {
+      "key": "dialog.packageUpdate.moreCommits",
+      "value": "Only the newest 200 commits are shown."
+    },
+    {
+      "key": "dialog.packageUpdate.compare",
+      "value": "See the full comparison on GitHub"
+    },
+    {
+      "key": "dialog.packageUpdate.tooltip.compare",
+      "value": "Open the comparison between the two versions on GitHub in your browser."
+    },
+    {
+      "key": "dialog.packageUpdate.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key": "dialog.packageUpdate.tooltip.cancel",
+      "value": "Close this window without changing the package."
+    },
+    {
+      "key": "dialog.packageUpdate.update",
+      "value": "Update"
+    },
+    {
+      "key": "dialog.packageUpdate.tooltip.update",
+      "value": "Update the package in place, keeping your edits when they don't clash."
+    },
+    {
+      "key": "dialog.packageUpdate.loadFailed",
+      "value": "Couldn't load the changes: {0}"
+    },
+    {
+      "key": "dialog.share.title",
+      "value": "Share {0} with your team"
+    },
+    {
+      "key": "dialog.share.body",
+      "value": "Your edits are pushed to your fork of {0} (or to {0} itself if you can push there), and Packages/basispackages.json is pointed at that branch."
+    },
+    {
+      "key": "dialog.share.branch",
+      "value": "Branch"
+    },
+    {
+      "key": "dialog.share.tooltip.branch",
+      "value": "The branch your edits are pushed to. Teammates' clones follow this branch."
+    },
+    {
+      "key": "dialog.share.message",
+      "value": "Describe your changes"
+    },
+    {
+      "key": "dialog.share.messageWatermark",
+      "value": "What did you change?"
+    },
+    {
+      "key": "dialog.share.tooltip.message",
+      "value": "The commit message for your edits that aren't committed yet."
+    },
+    {
+      "key": "dialog.share.note",
+      "value": "Commit Packages/basispackages.json afterwards so teammates get the change."
+    },
+    {
+      "key": "dialog.share.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key": "dialog.share.tooltip.cancel",
+      "value": "Close this window without sharing anything."
+    },
+    {
+      "key": "dialog.share.share",
+      "value": "Share"
+    },
+    {
+      "key": "dialog.share.tooltip.share",
+      "value": "Sign in to GitHub if needed, commit your edits and push them."
+    },
+    {
+      "key": "dialog.share.needBranch",
+      "value": "Enter a branch name."
+    },
+    {
+      "key": "dialog.share.needMessage",
+      "value": "Describe your changes so they can be committed."
+    },
+    {
+      "key": "dialog.share.failed",
+      "value": "Couldn't sign in: {0}"
+    },
+    {
       "key": "dialog.submitPr.titleLabel",
       "value": "Title"
     },
@@ -2956,23 +3164,23 @@
     },
     {
       "key": "dialog.submitPr.kind.added",
-      "value": "New file"
+      "value": "Added: a new file that the package's repository doesn't have yet."
     },
     {
       "key": "dialog.submitPr.kind.deleted",
-      "value": "Deleted"
+      "value": "Deleted: you removed this file, so the pull request proposes removing it from the package."
     },
     {
       "key": "dialog.submitPr.kind.modified",
-      "value": "Changed"
+      "value": "Changed: this file differs from the last commit in the package's clone."
     },
     {
       "key": "dialog.submitPr.kind.renamed",
-      "value": "Renamed"
+      "value": "Renamed: this file was moved or renamed."
     },
     {
       "key": "dialog.submitPr.kind.conflicted",
-      "value": "Has merge conflicts"
+      "value": "Conflicted: this file has unresolved merge conflicts. Resolve them in the clone before opening the pull request."
     },
     {
       "key": "dialog.submitPr.signingIn",
@@ -3025,10 +3233,6 @@
     {
       "key": "community.button.joinDiscord",
       "value": "Join the Discord"
-    },
-    {
-      "key": "community.button.refresh",
-      "value": "Refresh"
     },
     {
       "key": "community.announcements.heading",
@@ -3139,10 +3343,6 @@
       "value": "Read the full funding page"
     },
     {
-      "key": "packages.button.installPackageList",
-      "value": "Install a package list from the registry"
-    },
-    {
       "key": "packages.button.packageLists",
       "value": "Package lists"
     },
@@ -3175,356 +3375,532 @@
       "value": "{0} packages"
     },
     {
-      "key": "packages.filter.source",
-      "value": "Filter by source"
-    },
-    {
-      "key": "packages.filter.category",
-      "value": "Filter by category"
-    },
-    {
       "key": "packages.button.updateAll",
       "value": "Update all"
     },
     {
+      "key": "packages.button.updateAllCount",
+      "value": "Update all ({0})"
+    },
+    {
       "key": "packages.tooltip.updateAll",
-      "value": "Update every package in this project to its latest release (packages with local edits are skipped)"
+      "value": "Update every package in this project that has a newer version. Each clone is moved in place, so edits are kept; a package whose edits clash with its update is left as it is and reported. Packages that come with Basis are left alone."
     },
     {
       "key": "packages.status.updateAllQueued",
       "value": "Updating {0} package(s)…"
     },
     {
-      "key": "packages.status.updateAllQueuedSkipped",
-      "value": "Updating {0} package(s); skipped {1} with local edits."
+      "key": "packages.status.updating",
+      "value": "Updating {0}…"
+    },
+    {
+      "key": "packages.status.updatedTo",
+      "value": "Updated {0} to {1}."
+    },
+    {
+      "key": "packages.status.updatedKept",
+      "value": "Updated {0} to {1} and kept your changes."
+    },
+    {
+      "key": "packages.status.updatedFresh",
+      "value": "Replaced {0} with a clean copy of {1}."
+    },
+    {
+      "key": "packages.status.updateConflict",
+      "value": "{0} wasn't updated: your edits clash with the new version in {1} file(s). Update it on its own to choose what to do."
+    },
+    {
+      "key": "packages.status.updateFailed",
+      "value": "Couldn't update {0}: {1}"
+    },
+    {
+      "key": "packages.status.installedOlderCompatible",
+      "value": "Installing {0} {1}, the newest release that works with this project. {2} {3}."
+    },
+    {
+      "key": "packages.status.dependencyUnknown",
+      "value": "{0} needs {1}, which isn't in the package registry. Add it from a git URL."
+    },
+    {
+      "key": "packages.status.shareUnavailable",
+      "value": "Can't share {0}: {1}"
+    },
+    {
+      "key": "packages.status.sharing",
+      "value": "Sharing {0}…"
+    },
+    {
+      "key": "packages.status.shared",
+      "value": "Shared your version of {0} on branch {1} ({2}). Commit Packages/basispackages.json; teammates get it the next time they sync."
+    },
+    {
+      "key": "packages.status.shareFailed",
+      "value": "Couldn't share {0}: {1}"
+    },
+    {
+      "key": "packages.dialog.updateConflictTitle",
+      "value": "Your edits clash with the update"
+    },
+    {
+      "key": "packages.dialog.updateConflictBody",
+      "value": "Your edits to {0} change the same lines as {1} ({2}). Replace your copy with a clean {1}? Your edits will be lost."
+    },
+    {
+      "key": "packages.dialog.incompatibleTitle",
+      "value": "This release may not work with your project"
+    },
+    {
+      "key": "packages.dialog.incompatibleBody",
+      "value": "{0} {1} {2}, and no older release fits this project. Install it anyway?"
+    },
+    {
+      "key": "packages.dialog.dependenciesTitle",
+      "value": "Install what this package needs?"
+    },
+    {
+      "key": "packages.dialog.dependenciesBody",
+      "value": "{0} needs these packages, which aren't in the project yet:\n\n{1}\n\nInstall them now?"
+    },
+    {
+      "key": "packages.dialog.dependentsTitle",
+      "value": "Remove {0}?"
+    },
+    {
+      "key": "packages.dialog.dependentsBody",
+      "value": "These packages need {0} and will probably stop compiling without it:\n\n{1}\n\nRemove it anyway?"
+    },
+    {
+      "key": "packages.compat.needsUnity",
+      "value": "needs Unity {0} or newer"
+    },
+    {
+      "key": "packages.compat.needsNewerBasis",
+      "value": "needs Basis from {0} or newer"
+    },
+    {
+      "key": "packages.compat.needsOlderBasis",
+      "value": "only works with Basis from before {0}"
+    },
+    {
+      "key": "packages.compat.needsChannel",
+      "value": "needs the Basis {0} branch"
+    },
+    {
+      "key": "packages.compat.badge",
+      "value": "Check compatibility"
+    },
+    {
+      "key": "packages.compat.tooltip",
+      "value": "Its newest release {0}. Installing picks the newest release that works with this project instead, and asks first when none does."
+    },
+    {
+      "key": "packages.dependencies.fromRegistry",
+      "value": "{0} (from the Basis registry)"
+    },
+    {
+      "key": "packages.dependencies.fromGit",
+      "value": "{0} (from {1})"
+    },
+    {
+      "key": "packages.dependencies.missingBadge",
+      "value": "Missing dependencies ({0})"
+    },
+    {
+      "key": "packages.dependencies.missing",
+      "value": "This package needs packages that aren't in the project: {0}."
+    },
+    {
+      "key": "packages.update.badge",
+      "value": "{0} available"
+    },
+    {
+      "key": "packages.update.badgeCommits",
+      "value": "New commits"
+    },
+    {
+      "key": "packages.update.skipped",
+      "value": "{0} is also out, but it {1}."
+    },
+    {
+      "key": "packages.button.updateTo",
+      "value": "Update to {0}"
+    },
+    {
+      "key": "packages.button.installMissing",
+      "value": "Install missing"
+    },
+    {
+      "key": "packages.button.share",
+      "value": "Share with team"
     },
     {
       "key": "announcements.tooltip.openLink",
-      "value": "Open this announcement's link in your browser"
+      "value": "Open the page this announcement links to in your web browser."
     },
     {
       "key": "develop.tooltip.mountToEdit",
-      "value": "Clone this package's source into Packages/ so you can edit it"
+      "value": "Clone this package's git repository into the project's .basisdev folder and point Packages/manifest.json at the clone, so you can edit its source in Unity and submit pull requests. Git must be installed."
     },
     {
       "key": "develop.tooltip.submitPr",
-      "value": "Turn your local edits into a pull request on GitHub"
+      "value": "Send your edits in this package's clone to its GitHub repository as a pull request. A window shows the changed files and asks for a title, then the edits are committed to a new branch and pushed (to your fork if you cannot push to the original). You need to be signed in to GitHub."
     },
     {
       "key": "dialog.alias.tooltip.cancel",
-      "value": "Close without renaming"
+      "value": "Skip naming. The project is still added and shows its folder name; you can rename it later by clicking its name."
     },
     {
       "key": "dialog.alias.tooltip.input",
-      "value": "The name this project shows in the app"
+      "value": "The name this project shows across the app. The folder on disk keeps its own name. Leave this empty to use the folder name."
     },
     {
       "key": "dialog.alias.tooltip.save",
-      "value": "Save this display name"
+      "value": "Use this name for the project. You can change it later by clicking the project's name on the Projects tab."
     },
     {
       "key": "dialog.backup.tooltip.backupContinue",
-      "value": "Create a backup copy first, then continue"
+      "value": "Zip this project's Assets, Packages, ProjectSettings and UserSettings folders into a BasisBackups folder next to the project's folder, then go ahead with the change."
     },
     {
       "key": "dialog.backup.tooltip.cancel",
-      "value": "Do nothing and go back"
+      "value": "Stop here. Nothing is backed up and the change doesn't happen."
     },
     {
       "key": "dialog.backup.tooltip.continueWithout",
-      "value": "Continue without creating a backup"
+      "value": "Go ahead with the change without making a backup first."
+    },
+    {
+      "key": "dialog.backupDone.tooltip.show",
+      "value": "Opens the folder that holds this backup."
     },
     {
       "key": "dialog.branchPicker.tooltip.cancel",
-      "value": "Keep the current branch"
+      "value": "Close without picking a branch. Nothing changes."
     },
     {
       "key": "dialog.branchPicker.tooltip.switch",
-      "value": "Switch to the selected branch"
+      "value": "Go with the selected branch. For a Basis branch you see what would change before anything happens, and your uncommitted edits come along."
     },
     {
       "key": "dialog.confirm.tooltip.no",
-      "value": "Close without doing anything"
+      "value": "Answer no and skip what the message above asks about. Closing this window does the same."
     },
     {
       "key": "dialog.confirm.tooltip.yes",
-      "value": "Confirm and continue"
+      "value": "Answer yes and go ahead with what the message above describes."
     },
     {
       "key": "dialog.createPackageList.tooltip.cancel",
-      "value": "Close without creating a package list"
+      "value": "Close this window without saving or submitting anything."
     },
     {
       "key": "dialog.createPackageList.tooltip.create",
-      "value": "Open a pre-filled GitHub issue that submits this list to the registry"
+      "value": "Open a pre-filled GitHub issue in your browser that asks for this list to be added to the public registry. You need a GitHub account to submit it, and the list appears in the registry once a maintainer adds it."
     },
     {
       "key": "dialog.createPackageList.tooltip.description",
-      "value": "A short description of what this list is for"
+      "value": "Optional. A short note on what this list is for. It is saved with the list and shown under its name when people choose from the registry's package lists."
     },
     {
       "key": "dialog.createPackageList.tooltip.include",
-      "value": "Include this package in the list"
+      "value": "Include this package in the list. Clear the check to leave it out; at least one package must stay checked."
     },
     {
       "key": "dialog.createPackageList.tooltip.name",
-      "value": "The package list's display name"
+      "value": "The name people see for this package list. It is required and starts as the project's name. The suggested file name is based on it when you save."
     },
     {
       "key": "dialog.createPackageList.tooltip.saveLocal",
-      "value": "Save the list as a JSON file on this computer"
+      "value": "Choose where to save this list as a JSON file on this computer. Nothing is uploaded. Anyone you share the file with can install its packages from the Packages tab."
     },
     {
       "key": "dialog.installPicker.tooltip.addHere",
-      "value": "Add the package to the selected project"
+      "value": "Add to the selected project. The package, or every package in the list, goes into its Packages/manifest.json, the project becomes the active one, and Unity downloads them the next time it opens or refreshes the project."
     },
     {
       "key": "dialog.installPicker.tooltip.cancel",
-      "value": "Close without adding the package"
+      "value": "Close without adding anything. No project is changed."
     },
     {
       "key": "dialog.packageListPicker.tooltip.cancel",
-      "value": "Close without installing anything"
+      "value": "Close this window without adding any packages."
     },
     {
       "key": "dialog.packageListPicker.tooltip.install",
-      "value": "Install every package in the selected list"
+      "value": "Add the selected list's packages to a project. Next you choose which project, and the packages are written to its Packages/manifest.json."
     },
     {
       "key": "dialog.remove.tooltip.cancel",
-      "value": "Keep the project and close"
+      "value": "Keep this project in your list and close. Nothing is removed or deleted."
     },
     {
       "key": "dialog.remove.tooltip.deleteFromDisk",
-      "value": "Permanently delete the folder shown above"
+      "value": "Permanently delete the whole project folder shown above, including its git history and any work not pushed or backed up elsewhere. You are asked to confirm once more. This can't be undone. Close Unity before deleting."
     },
     {
       "key": "dialog.remove.tooltip.removeFromList",
-      "value": "Forget this project in the app — files on disk are kept"
+      "value": "Take this project off your list. Its folder and files stay on disk, and you can add it back later with Add existing."
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
-      "value": "Close without signing in"
+      "value": "Close without signing in. Nothing is sent, and you can try again later."
     },
     {
       "key": "dialog.signIn.tooltip.signIn",
-      "value": "Use this token and continue"
+      "value": "Use this token to sign in to GitHub and carry on with the pull request. If GitHub doesn't accept it, nothing is sent."
     },
     {
       "key": "dialog.signIn.tooltip.token",
-      "value": "A GitHub personal access token — used only to open pull requests"
+      "value": "Paste a GitHub personal access token with the repo scope. It's kept in memory only until you close the app and is used for pull requests."
     },
     {
       "key": "dialog.submitPr.tooltip.branch",
-      "value": "The branch name your changes will be pushed to"
+      "value": "The branch your changes are committed to in the package's clone and pushed to GitHub. If the clone is already on this branch from an earlier pull request, the new changes are added to it and that pull request is updated."
     },
     {
       "key": "dialog.submitPr.tooltip.cancel",
-      "value": "Close without opening a pull request"
+      "value": "Close without opening a pull request. Your edits stay in the package's clone as they are."
     },
     {
       "key": "dialog.submitPr.tooltip.description",
-      "value": "Explain what you changed and why"
+      "value": "Optional. Explain what you changed and why. It's shown on the pull request."
     },
     {
       "key": "dialog.submitPr.tooltip.openPr",
-      "value": "Push the branch and open the pull request on GitHub"
+      "value": "Sign in to GitHub if needed, then switch the package's clone to the new branch, commit every change listed here, push it (to your fork if you can't push to the package's repository) and open the pull request in your browser. The clone stays on that branch. Progress shows in the main window. A title is required."
     },
     {
       "key": "dialog.submitPr.tooltip.title",
-      "value": "A short title for the pull request"
+      "value": "A short title for the pull request, also used as its commit message. Required."
     },
     {
       "key": "dialog.versionPicker.tooltip.cancel",
-      "value": "Close without changing version"
+      "value": "Close this window without installing anything. The project stays as it is."
     },
     {
       "key": "dialog.versionPicker.tooltip.install",
-      "value": "Install the selected version"
+      "value": "Switch to the selected version. An existing clone in the project's .basisdev folder is moved to it in place, keeping your edits when they don't clash; otherwise the package is cloned at that version. A version the Basis registry hasn't checked is shown for review before Unity loads it."
     },
     {
       "key": "dialog.versionPicker.tooltip.showPrereleases",
-      "value": "Also list beta and prerelease versions"
+      "value": "Also list prereleases, such as betas and release candidates, which may be unstable. This is turned on for you when the package has no stable release."
     },
     {
       "key": "docs.tooltip.basisGithub",
-      "value": "Open the Basis repository on GitHub"
+      "value": "Open the BasisVR/Basis repository on GitHub in your web browser to read the code, report a bug or open a pull request."
     },
     {
       "key": "docs.tooltip.discord",
-      "value": "Join the Basis Discord in your browser"
+      "value": "Open the invite to the Basis Discord server in your web browser. It is the quickest place to get help from other creators and the maintainers."
     },
     {
       "key": "docs.tooltip.openDocs",
-      "value": "Open docs.basisvr.org in your browser"
+      "value": "Open the Basis documentation (docs.basisvr.org) in your web browser, with guides for getting started, avatars, worlds, networking and the SDK."
     },
     {
       "key": "docs.tooltip.packageManagerGithub",
-      "value": "Open this app's repository on GitHub"
+      "value": "Open the Basis Package Manager repository on GitHub in your web browser to read this app's code or report a bug in it."
     },
     {
       "key": "installs.tooltip.addExisting",
-      "value": "Register an existing BasisVR/Basis clone from disk"
+      "value": "Add a Basis project that is already on your computer by picking its folder, then give it a name. Its files are not copied or changed."
     },
     {
       "key": "installs.tooltip.rename",
-      "value": "Click to rename. Only the label here changes, not the folder; clear it to show the folder name again."
+      "value": "Click to rename this project. Only the name shown in the app changes, not its folder. Enter saves and Escape cancels. Clear the name to show the folder name again."
     },
     {
       "key": "installs.tooltip.updateAll",
-      "value": "Bring every project up to date with the Basis branch it follows. Your own changes are kept."
+      "value": "Bring every project up to date with the Basis branch it follows. You confirm the list first, and your own changes are kept. Projects that need a decision, such as conflicts or Unity being open, wait for their own Update Basis button."
     },
     {
       "key": "installs.tooltip.newProject",
-      "value": "Clone the complete BasisVR/Basis repository, including its Packages folders"
+      "value": "Download Basis from github.com/BasisVR/Basis (the developer branch) into an empty folder you pick, as a new project. You can leave out optional parts such as the Basis Server, then name it. It needs git and an internet connection."
     },
     {
       "key": "installs.tooltip.openInUnity",
-      "value": "Open this project in its Unity editor"
+      "value": "Open this project in the Unity editor version it uses. If that version isn't installed yet, Unity Hub opens so you can add it."
     },
     {
       "key": "installs.tooltip.packages",
-      "value": "Manage this project's packages on the Packages tab"
+      "value": "Make this the active project and open the Packages tab to manage its packages."
     },
     {
       "key": "nav.tooltip.community",
-      "value": "Announcements, documentation and ways to support Basis"
+      "value": "Go to the Community tab for Basis news, documentation links, help on Discord and ways to support the project. A number on this button counts announcements you have not seen yet. Opening Community marks them as read."
     },
     {
       "key": "nav.tooltip.installs",
-      "value": "Your Unity projects — create, open and manage them"
+      "value": "Go to your Basis projects, where you create or add a project, open it in Unity, update Basis, switch branches and make backups. A number on this button counts projects with a Basis update that is available or waiting for you to finish it."
     },
     {
       "key": "nav.tooltip.packages",
-      "value": "Browse the registry and manage the active project's packages"
+      "value": "Go to the package browser, where you find packages in the registry and install, update or remove them in a project. Package lists, packages from GitHub links and editing a package's source are here too."
     },
     {
       "key": "nav.tooltip.server",
-      "value": "Build, run and configure the Basis server"
+      "value": "Go to the Basis server of the selected project, where you build, run and stop it and edit its configuration, server packages and default content. Building needs the .NET 10 SDK."
     },
     {
       "key": "nav.tooltip.settings",
-      "value": "App settings, logs and version info"
+      "value": "Go to Settings to see running tasks and anything that needs your attention, change the language, package catalogs and Unity Hub path, check for app updates, read the activity log or reset the app."
     },
     {
       "key": "nav.tooltip.unity",
-      "value": "Find, add and install Unity editors"
+      "value": "Go to your Unity Editors, where you see which versions are installed and install the one your project needs through Unity Hub. You can also add an editor from a folder or add modules to an installed one."
     },
     {
       "key": "packages.tooltip.addFromGit",
-      "value": "Add the package at this git URL to the project"
+      "value": "Add the package at this GitHub address to the project. It goes into Packages/manifest.json as a git dependency that Unity downloads, together with the registry packages it depends on. It is not cloned for editing."
     },
     {
       "key": "packages.tooltip.createPackageList",
-      "value": "Bundle this project's packages into a shareable package list"
+      "value": "Make a package list from the packages you added to this project. You pick which to include, then save the list as a JSON file or open a pre-filled GitHub issue that submits it to the public registry."
+    },
+    {
+      "key": "packages.tooltip.licenses",
+      "value": "List the license of every package in this project and save third-party notices for your build."
     },
     {
       "key": "packages.tooltip.gitUrlInput",
-      "value": "A GitHub or GitLab git URL of a Unity (UPM) package"
+      "value": "A GitHub repository URL, or owner/repo, of a Unity package. Add ?path=Folder for a package in a subfolder, and #branch or #tag to pick a version."
     },
     {
       "key": "packages.tooltip.install",
-      "value": "Add this package to the selected project"
+      "value": "Add this package to the selected project. Its repository is cloned at the newest release that works with the project into its .basisdev folder, Packages/manifest.json points at the clone, and the registry packages it depends on are added too. Packages it needs that aren't in the project are offered afterwards. Without Git, Unity downloads it from its git URL instead. A package from a catalog you added, or a version the Basis registry hasn't checked, is shown for review before Unity loads it."
     },
     {
       "key": "packages.tooltip.installGit",
-      "value": "Open the git download page in your browser"
+      "value": "Open the Git download page in your browser. Git is needed to clone packages for editing and to submit pull requests. After installing it, use Refresh at the top of this page."
     },
     {
       "key": "packages.tooltip.manage",
-      "value": "Update, change version, mount or remove this package"
+      "value": "Open a menu to update this package, choose another version, mount it for editing or remove it. Options appear only when they apply."
     },
     {
       "key": "packages.tooltip.openFolder",
-      "value": "Reveal the package's working folder in your file manager"
+      "value": "Show this package's local folder in your file manager, so you can look at or edit its files."
     },
     {
       "key": "packages.tooltip.projectPicker",
-      "value": "The project the actions on this page apply to"
+      "value": "Choose the project this page works on. Installing, updating and removing packages change this project, and picking one here also makes it the active project in the rest of the app."
     },
     {
       "key": "packages.tooltip.remove",
-      "value": "Remove this package from the project"
+      "value": "Remove this package from the project: its line comes out of Packages/manifest.json and its clone in .basisdev, if any, is deleted. You are told first if other packages need it, and asked if the clone has local edits. Packages that were added along with it stay."
     },
     {
       "key": "packages.tooltip.reviewDrift",
-      "value": "Review accidental PackageCache edits and turn them into a PR"
+      "value": "This package's files were edited inside Library/PackageCache, where Unity keeps downloaded copies and replaces them when it updates packages. Review the edits and send them upstream as a GitHub pull request before they are lost. You need to be signed in to GitHub."
     },
     {
       "key": "packages.tooltip.search",
-      "value": "Search by name, id, description, author or tag"
+      "value": "Filter the list as you type. Matches package names, ids, descriptions, authors and tags."
     },
     {
       "key": "packages.tooltip.update",
-      "value": "Update this package to its latest release"
+      "value": "Update this package to the version shown. Its clone in the project's .basisdev folder is moved to the new version in place, so your edits and commits are kept; if they clash with the update, nothing changes and you choose what to do. You see the release notes and commits first. A version the Basis registry hasn't checked is shown for review before Unity loads it."
+    },
+    {
+      "key": "packages.tooltip.updateRelease",
+      "value": "{0} is installed and {1} is available. Click Update to see what changed before anything happens."
+    },
+    {
+      "key": "packages.tooltip.updateCommits",
+      "value": "New commits are on {0}. Click Update to see them and bring them into your copy; your edits are kept."
+    },
+    {
+      "key": "packages.tooltip.installMissing",
+      "value": "Install the packages this one needs that the project is missing. They are cloned into the project's .basisdev folder like any other install."
+    },
+    {
+      "key": "packages.tooltip.share",
+      "value": "Push your edits to your fork of this package (or a branch you can push to) and point Packages/basispackages.json at it, so teammates get your version when they sync."
     },
     {
       "key": "settings.tooltip.addCatalog",
-      "value": "Add this catalog to the list"
+      "value": "Add the address typed in the box to the list of extra catalogs. Click Save to load its packages into the Packages tab."
     },
     {
       "key": "settings.tooltip.catalogUrl",
-      "value": "The package registry this app reads — leave blank for the official basisvr.org registry"
+      "value": "The address of the package catalog listed on the Packages tab. Leave it blank to use the official Basis registry at basisvr.org; if it cannot be reached, a copy bundled with the app is used. Takes effect when you click Save."
     },
     {
       "key": "settings.tooltip.checkUpdates",
-      "value": "Check GitHub for a newer version of this app"
+      "value": "Check GitHub for a newer version of this app. If there is one, a banner appears at the top of the window; nothing is downloaded until you click Update now."
     },
     {
       "key": "settings.tooltip.extraCatalogUrl",
-      "value": "An extra catalog URL merged into the package list"
+      "value": "An unofficial catalog whose packages are added to the Packages tab and marked unofficial. An official package with the same id always wins. You can edit the address here; changes take effect when you click Save."
     },
     {
       "key": "settings.tooltip.language",
-      "value": "The app's display language"
+      "value": "Choose the language the app is shown in. It changes right away and is remembered for next time."
     },
     {
       "key": "settings.tooltip.reset",
-      "value": "Wipe all settings and return the app to a first-run state (files on disk are kept)"
+      "value": "Erase all of this app's settings and data, including your project list, catalog addresses, preferences and logs, after you confirm. Your Basis clones stay on disk, and you can add them again on the Projects tab. This cannot be undone."
+    },
+    {
+      "key": "settings.tooltip.cloneCacheSection",
+      "value": "Settings for the shared copy of downloaded repositories."
+    },
+    {
+      "key": "settings.tooltip.cloneCacheToggle",
+      "value": "Keep a shared copy of every repository you download, so new clones of Basis and packages are much faster."
+    },
+    {
+      "key": "settings.tooltip.cloneCacheFolder",
+      "value": "Open the folder that holds the download cache."
+    },
+    {
+      "key": "settings.tooltip.cloneCacheClear",
+      "value": "Delete the cached repositories. Your projects aren't affected."
     },
     {
       "key": "settings.tooltip.save",
-      "value": "Save and apply these settings"
+      "value": "Save the settings in this section and apply them: the package catalogs reload, and the Unity Hub path and update options take effect. The language is saved as soon as you pick it."
     },
     {
       "key": "settings.tooltip.unityHubPath",
-      "value": "Path to the Unity Hub executable — leave blank to auto-detect"
+      "value": "The full path to the Unity Hub program, for when the app cannot find it in its usual install location. Leave it blank to detect it automatically. Takes effect when you click Save."
     },
     {
       "key": "support.tooltip.fundingPage",
-      "value": "Open the Basis funding page in your browser"
+      "value": "Open the Basis funding page (basisvr.org/funding) in your web browser. It explains donations, company-sponsored features and how the money is spent."
     },
     {
       "key": "support.tooltip.openCollective",
-      "value": "Open the Basis OpenCollective page in your browser"
+      "value": "Open the Basis page on OpenCollective in your web browser, where you can donate once or monthly and see how the money is spent."
     },
     {
       "key": "unity.tooltip.addFromFolder",
-      "value": "Register a Unity editor already on disk — no Unity Hub needed"
+      "value": "Add a Unity editor that is already on this computer by choosing its version-named folder, or the Editor folder inside it. Useful without Unity Hub: the app can then open projects with that editor."
     },
     {
       "key": "unity.tooltip.editorPicker",
-      "value": "The installed Unity editors this app knows about"
+      "value": "The Unity editors found through Unity Hub, plus any you added from a folder (tagged manual). Pick one to see where it is installed; you can add modules to a Unity Hub editor or remove a manual one from the list."
     },
     {
       "key": "unity.tooltip.install",
-      "value": "Install the selected Unity version with the checked modules via Unity Hub"
+      "value": "Install the selected Unity release, plus the modules checked above, through Unity Hub. Needs Unity Hub and a network connection. The download is large; it is listed under Activity in Settings while it runs."
     },
     {
       "key": "unity.tooltip.installModules",
-      "value": "Add the checked modules to this editor via Unity Hub"
+      "value": "Add the checked modules to the selected editor through Unity Hub. Check at least one first. Needs a network connection; the install is listed under Activity in Settings while it runs."
     },
     {
       "key": "unity.tooltip.module",
-      "value": "Include this build-support module"
+      "value": "Include this Unity module. Platform modules (windows, android, linux, mac) add build support so Unity can build for that platform; documentation adds the offline Unity manual."
     },
     {
       "key": "unity.tooltip.releasePicker",
-      "value": "The Unity version to install"
+      "value": "The Unity 6 release to install, newest first. Versions you already have are greyed out. The version your active project needs is picked for you when it is listed and not installed yet."
     },
     {
       "key": "unity.tooltip.streamFilter",
-      "value": "Filter the version list by release stream"
+      "value": "Show only releases from one Unity release stream. LTS releases are supported the longest; BETA and ALPHA are early previews. All shows every Unity 6 release."
     },
     {
       "key": "server.packages.title",
@@ -3540,7 +3916,7 @@
     },
     {
       "key": "server.packages.restoreTip",
-      "value": "Download missing server packages and record their exact commits in packages-lock.props"
+      "value": "Download every server package that is missing from disk, at the commit recorded in packages-lock.props, then update that file to match what is on disk. Needs Git and a network connection when something is missing. Available when this project's Basis Server supports packages."
     },
     {
       "key": "server.packages.sourceWatermark",
@@ -3564,15 +3940,15 @@
     },
     {
       "key": "server.packages.updateTip",
-      "value": "Update to the newest commit of its branch or tag"
+      "value": "Fetch this package and move it to the newest commit of the branch it follows, then record that in packages-lock.props. A package pinned to a tag stays on that tag, and a linked one only records its folder's current commit. If it has local edits, you are asked first. Needs Git and a network connection. Rebuild the server afterwards."
     },
     {
       "key": "server.packages.openFolderTip",
-      "value": "Open the package folder"
+      "value": "Open the folder this package is built from in your file manager: its clone in Basis Server/Packages, its local folder, or the folder it is linked to. A package that is not downloaded yet has no folder until you restore."
     },
     {
       "key": "server.packages.removeTip",
-      "value": "Remove from the Basis Server"
+      "value": "Remove this package from the Basis Server: it is taken out of the server's manifest.json and packages-lock.props, and its clone in Basis Server/Packages is deleted. Local and linked folders are kept. If the clone has local edits, you are asked first. Rebuild the server afterwards."
     },
     {
       "key": "server.packages.noServer",
@@ -3655,12 +4031,232 @@
       "value": "Built from {0}"
     },
     {
+      "key": "server.runtime.intro",
+      "value": "The server is built into Basis Server/BasisServerConsole/bin/Release/net10.0 and runs inside the package manager. While it runs, its output and a command line appear below."
+    },
+    {
+      "key": "server.button.run",
+      "value": "Run server"
+    },
+    {
+      "key": "server.button.stop",
+      "value": "Stop server"
+    },
+    {
+      "key": "server.button.restart",
+      "value": "Restart server"
+    },
+    {
+      "key": "server.tooltip.run",
+      "value": "Starts the server inside the package manager. Its output and a command line appear below."
+    },
+    {
+      "key": "server.tooltip.stop",
+      "value": "Asks the server to shut down cleanly, and ends it if it hasn't stopped after 15 seconds."
+    },
+    {
+      "key": "server.tooltip.restart",
+      "value": "Stops the server and starts it again, which applies changes to its configuration."
+    },
+    {
+      "key": "server.firstRun.title",
+      "value": "First run"
+    },
+    {
+      "key": "server.firstRun.body",
+      "value": "This server hasn't been set up yet. Its setup wizard only works in a terminal, so here it starts with the default settings, which you can change under Server configuration once it has run."
+    },
+    {
+      "key": "server.firstRun.adminLabel",
+      "value": "Admin player UUID (optional)"
+    },
+    {
+      "key": "server.firstRun.adminHint",
+      "value": "Find it in the Basis client under Settings > Developer > Identity Key. You can also add an admin later in the console with /perm user group add <uuid> admin."
+    },
+    {
+      "key": "server.firstRun.ownWindow",
+      "value": "Use the setup wizard instead"
+    },
+    {
+      "key": "server.tooltip.firstRunAdmin",
+      "value": "Your Basis player UUID. The server adds it to its admin group on this first start, so you can moderate and configure it in game. Separate several with commas."
+    },
+    {
+      "key": "server.tooltip.ownWindow",
+      "value": "Starts the server in its own console window, where the setup wizard asks for its settings and an admin. Its output then stays in that window."
+    },
+    {
+      "key": "server.console.title",
+      "value": "Console"
+    },
+    {
+      "key": "server.console.send",
+      "value": "Send"
+    },
+    {
+      "key": "server.console.inputWatermark",
+      "value": "Type a command, for example /help"
+    },
+    {
+      "key": "server.console.inputOff",
+      "value": "Console input is turned off in config.xml (EnableConsole)"
+    },
+    {
+      "key": "server.console.inputOwnWindow",
+      "value": "This server runs in its own window. Type commands there."
+    },
+    {
+      "key": "server.tooltip.consoleCopy",
+      "value": "Copies everything in the console. To copy part of a line, select it and press Ctrl+C."
+    },
+    {
+      "key": "server.tooltip.consoleClear",
+      "value": "Clears the console. The server keeps running."
+    },
+    {
+      "key": "server.tooltip.consoleInput",
+      "value": "Type a server command and press Enter to send it. Up and Down bring back earlier commands. /restart restarts the server here, and /clear clears the console."
+    },
+    {
+      "key": "server.tooltip.consoleSend",
+      "value": "Sends the command to the server."
+    },
+    {
+      "key": "server.console.started",
+      "value": "Basis server started. Its output appears in the console on the Server tab."
+    },
+    {
+      "key": "server.console.startedOwnWindow",
+      "value": "Basis server started in its own window."
+    },
+    {
+      "key": "server.console.stopped",
+      "value": "Basis server stopped."
+    },
+    {
+      "key": "server.console.notBuilt",
+      "value": "The server hasn't been built yet. Use Build server first."
+    },
+    {
+      "key": "server.console.startFailed",
+      "value": "Could not start the Basis server: {0}"
+    },
+    {
+      "key": "server.console.stopFailed",
+      "value": "Could not stop the Basis server: {0}"
+    },
+    {
+      "key": "server.console.waitingForReady",
+      "value": "Server started. Waiting for it to accept connections…"
+    },
+    {
+      "key": "server.console.notReady",
+      "value": "The server did not become ready. Check its console and health-endpoint configuration."
+    },
+    {
+      "key": "server.console.exitedBeforeReady",
+      "value": "The server exited before becoming ready (exit code {0}). Its console shows why."
+    },
+    {
+      "key": "server.console.status.running",
+      "value": "{0} is running, started at {1}."
+    },
+    {
+      "key": "server.console.status.ownWindow",
+      "value": "{0} is running in its own window."
+    },
+    {
+      "key": "server.console.status.stopping",
+      "value": "Stopping the server…"
+    },
+    {
+      "key": "server.console.status.stopped",
+      "value": "Stopped."
+    },
+    {
+      "key": "server.console.status.exited",
+      "value": "Exited with code {0}."
+    },
+    {
+      "key": "server.console.status.alreadyRunning",
+      "value": "The Basis server for {0} is already running."
+    },
+    {
+      "key": "server.console.status.notRunning",
+      "value": "No server started by this app is running."
+    },
+    {
+      "key": "server.console.notice.starting",
+      "value": "Starting the Basis server for {0}…"
+    },
+    {
+      "key": "server.console.notice.firstRun",
+      "value": "First run: the setup wizard needs a terminal, so the server starts with its default settings. Change them under Server configuration, then restart the server."
+    },
+    {
+      "key": "server.console.notice.firstAdmin",
+      "value": "{0} will be added to the admin group."
+    },
+    {
+      "key": "server.console.notice.ownWindow",
+      "value": "Started the Basis server for {0} in its own window. Its output appears there."
+    },
+    {
+      "key": "server.console.notice.windowClosed",
+      "value": "The server's window closed."
+    },
+    {
+      "key": "server.console.notice.restarting",
+      "value": "Restarting the server…"
+    },
+    {
+      "key": "server.console.notice.stopping",
+      "value": "Asking the server to shut down…"
+    },
+    {
+      "key": "server.console.notice.stopped",
+      "value": "The server stopped."
+    },
+    {
+      "key": "server.console.notice.exited",
+      "value": "The server exited with code {0}."
+    },
+    {
+      "key": "server.console.notice.exitUnavailable",
+      "value": "The server stopped because a port it needs is already in use (exit code {0}). Another server may still be running."
+    },
+    {
+      "key": "server.console.notice.exitCrashed",
+      "value": "The server stopped after an unexpected error (exit code {0}). The lines above show what happened."
+    },
+    {
+      "key": "server.console.notice.exitConfig",
+      "value": "The server stopped because its config.xml could not be loaded (exit code {0})."
+    },
+    {
+      "key": "server.console.notice.startFailed",
+      "value": "Could not start the server: {0}"
+    },
+    {
+      "key": "server.console.notice.sendFailed",
+      "value": "The command wasn't sent because the server isn't reading input."
+    },
+    {
+      "key": "server.console.closeTitle",
+      "value": "Stop the Basis server?"
+    },
+    {
+      "key": "server.console.closeBody",
+      "value": "The Basis server for {0} runs inside the package manager, so closing the app stops it. Stop the server and close?"
+    },
+    {
       "key": "packages.badge.server",
       "value": "Server"
     },
     {
       "key": "packages.badge.serverTip",
-      "value": "Also installs into this project's Basis Server"
+      "value": "This package also adds code to the Basis Server. When the project's Basis Server supports packages, installing it adds it to the server's packages so the server build includes it, and removing it takes it out again."
     },
     {
       "key": "packages.status.serverInstalled",
@@ -3685,6 +4281,14 @@
     {
       "key": "basisdev.button.fixRecords",
       "value": "Fix records"
+    },
+    {
+      "key": "basisdev.button.restoreAll",
+      "value": "Restore all ({0})"
+    },
+    {
+      "key": "basisdev.tooltip.restoreAll",
+      "value": "Clone the packages listed in Packages/basispackages.json that are missing here, and move clones to the version listed there. Clones with your own edits only move when the edits carry over cleanly."
     },
     {
       "key": "basisdev.tooltip.fixRecords",
@@ -3852,7 +4456,7 @@
     },
     {
       "key": "basisdev.tooltip.move",
-      "value": "Move {0} to {1} and point manifest.json at it"
+      "value": "Move the clone from {0} to {1}, where this app keeps package clones, and point Packages/manifest.json at the new place. Close Unity first if it has the files open."
     },
     {
       "key": "basisdev.status.moved",
@@ -3896,39 +4500,39 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "Record the clone's origin, branch and commit in .basisdev/{0}.json and Packages/basispackages.json"
+      "value": "Record where this clone came from (origin, branch and commit) in .basisdev/{0}.json and, if Unity uses the clone, in Packages/basispackages.json, so other copies of the project can clone it again. Package files are not changed."
     },
     {
       "key": "basisdev.tooltip.forget",
-      "value": "Drop the stale mount record; {0} is left as it is"
+      "value": "Forget the old mount record for {0}, which is no longer a git clone. The folder itself is left as it is."
     },
     {
       "key": "basisdev.tooltip.ignoreBasis",
-      "value": "The Basis repo decides how {1} loads. Keep {0} without flagging it."
+      "value": "Keep the clone in {0} but stop flagging it, because the Basis repo decides how {1} loads. Nothing is deleted and manifest.json is not changed."
     },
     {
       "key": "basisdev.tooltip.ignore",
-      "value": "The project decides how {1} loads. Keep {0} without flagging it."
+      "value": "Keep the clone in {0} but stop flagging it, because the project decides how {1} loads. Nothing is deleted and manifest.json is not changed."
     },
     {
       "key": "basisdev.tooltip.unignore",
-      "value": "Flag {0} again while {1} doesn't load from it."
+      "value": "Flag the clone in {0} again while {1} does not load from it, so you can use or release it."
     },
     {
       "key": "basisdev.tooltip.useClone",
-      "value": "Point manifest.json at {0} so Unity loads the clone"
+      "value": "Point this package's line in Packages/manifest.json at the clone in {0}, so Unity loads your local copy. You are asked first if the current line is committed to the project's git repository."
     },
     {
       "key": "basisdev.tooltip.release",
-      "value": "Delete {0} and its sidecar; Unity keeps loading what it loads now"
+      "value": "Delete the clone in {0} and its record. Unity keeps loading this package from where it loads it now. If the clone has uncommitted or unpushed work, you are asked before it is deleted."
     },
     {
       "key": "basisdev.tooltip.restore",
-      "value": "Put this manifest line back: {0}"
+      "value": "Put the original line back in Packages/manifest.json and clear the missing clone's records, so Unity loads the package from its source again: {0}."
     },
     {
       "key": "basisdev.tooltip.reclone",
-      "value": "Clone {0} into {1} again"
+      "value": "Clone {0} into {1} again at the recorded branch, tag or commit, so Unity can load the package. Git and a network connection are needed."
     },
     {
       "key": "basisdev.confirm.localWorkTitle",
@@ -3983,6 +4587,38 @@
       "value": "Cloned {0} again from its recorded upstream."
     },
     {
+      "key": "basisdev.status.switched",
+      "value": "{0} now matches Packages/basispackages.json."
+    },
+    {
+      "key": "basisdev.status.restoringAll",
+      "value": "Restoring the listed packages…"
+    },
+    {
+      "key": "basisdev.status.restoredAll",
+      "value": "Restored the listed packages. {0}"
+    },
+    {
+      "key": "basisdev.status.restoreAllFailed",
+      "value": "Couldn't restore every listed package: {0}"
+    },
+    {
+      "key": "basisdev.issue.versionMismatch",
+      "value": "Different version"
+    },
+    {
+      "key": "basisdev.issue.versionMismatch.description",
+      "value": "Packages/basispackages.json lists {0}, but this clone is at {1}. A teammate probably changed it."
+    },
+    {
+      "key": "basisdev.action.switch",
+      "value": "Use the listed version"
+    },
+    {
+      "key": "basisdev.tooltip.switch",
+      "value": "Move the clone to {0}, the version in Packages/basispackages.json. Your edits are kept when they don't clash."
+    },
+    {
       "key": "basisdev.status.ignored",
       "value": "{0} won't be flagged any more; its clone is kept."
     },
@@ -3996,7 +4632,7 @@
     },
     {
       "key": "basisdev.tooltip.restoreRemove",
-      "value": "Remove the broken manifest line for {0}; where it came from wasn't recorded"
+      "value": "Remove the broken line for {0} from Packages/manifest.json. Its original source was not recorded, so Unity stops loading this package until you install it again."
     },
     {
       "key": "basisdev.confirm.committedTitle",
@@ -4068,19 +4704,19 @@
     },
     {
       "key": "basisChanges.tooltip.selectAll",
-      "value": "Select every change"
+      "value": "Tick every changed file in every group, including the ones that start unticked."
     },
     {
       "key": "basisChanges.tooltip.selectNone",
-      "value": "Clear the selection"
+      "value": "Untick every file, so you can pick only the ones you want to send."
     },
     {
       "key": "basisChanges.tooltip.group",
-      "value": "Include or leave out this whole group"
+      "value": "Tick to send every changed file in this group, or untick to leave them all out. A partly filled box means only some of its files are ticked."
     },
     {
       "key": "basisChanges.tooltip.file",
-      "value": "Include this file in the pull request"
+      "value": "Tick to send this file in the pull request. Its .meta file, and those of new folders it sits in, go with it automatically."
     },
     {
       "key": "basisChanges.withMeta",
@@ -4112,15 +4748,15 @@
     },
     {
       "key": "basisChanges.kind.added",
-      "value": "Added: Basis doesn't have this file"
+      "value": "Added: your project has this file and Basis doesn't. Sending it proposes adding it to Basis."
     },
     {
       "key": "basisChanges.kind.deleted",
-      "value": "Deleted: Basis has this file"
+      "value": "Deleted: Basis has this file and your project doesn't. Sending it proposes deleting it from Basis."
     },
     {
       "key": "basisChanges.kind.modified",
-      "value": "Changed from Basis"
+      "value": "Changed: your copy differs from the Basis version. Sending it proposes your version."
     },
     {
       "key": "basisChanges.diff.pick",
@@ -4144,7 +4780,7 @@
     },
     {
       "key": "basisChanges.tooltip.title",
-      "value": "The pull request's title, also used as the commit message."
+      "value": "The pull request's title on GitHub, also the first line of its commit message. Required."
     },
     {
       "key": "basisChanges.field.description",
@@ -4156,7 +4792,7 @@
     },
     {
       "key": "basisChanges.tooltip.description",
-      "value": "Shown on the pull request. The Basis version these changes are based on is added at the end."
+      "value": "Optional. Shown on the pull request and added to the commit message. The pull request also notes which Basis version these changes are based on."
     },
     {
       "key": "basisChanges.field.branch",
@@ -4164,7 +4800,7 @@
     },
     {
       "key": "basisChanges.tooltip.branch",
-      "value": "The branch the changes are pushed to. Use the branch of an earlier pull request from this project to update that pull request."
+      "value": "The branch your commit is pushed to, on BasisVR/Basis or on your fork if you can't push there. Reuse the branch of an earlier pull request from this project to update that pull request."
     },
     {
       "key": "basisChanges.field.target",
@@ -4172,7 +4808,7 @@
     },
     {
       "key": "basisChanges.tooltip.target",
-      "value": "The BasisVR/Basis branch the pull request asks to merge into."
+      "value": "The BasisVR/Basis branch the pull request asks to merge into. It starts on the branch this project is based on, or developer for a long-term-support project."
     },
     {
       "key": "basisChanges.selectedNone",
@@ -4192,7 +4828,7 @@
     },
     {
       "key": "basisChanges.tooltip.close",
-      "value": "Close this window. Nothing is sent."
+      "value": "Close this window. Nothing here changes your project's files or branches, and nothing is sent to GitHub until you use Open pull request."
     },
     {
       "key": "basisChanges.openPr",
@@ -4200,11 +4836,11 @@
     },
     {
       "key": "basisChanges.tooltip.openPr",
-      "value": "Build a commit with the selected files on top of the Basis version this project uses, push it, and open a pull request. Your project's branch, history and files stay as they are."
+      "value": "Build one commit from the ticked files on top of the Basis version this project is based on, push it to the branch you named (to your fork if you can't push to BasisVR/Basis), then open the pull request in your browser. Needs GitHub sign-in. Your project's own branch, history and files are not changed. Available once a file is ticked and the title and branch are filled in."
     },
     {
       "key": "basisChanges.tooltip.refresh",
-      "value": "Compare again"
+      "value": "Compare the project with Basis again, for example after you edited or committed files. Ticks go back to the suggested files; the title, branch and target are kept."
     },
     {
       "key": "basisChanges.viewPr",
@@ -4216,7 +4852,7 @@
     },
     {
       "key": "basisChanges.tooltip.openByHand",
-      "value": "The branch was pushed. This opens GitHub's compare page so you can finish the pull request there."
+      "value": "Open GitHub's compare page in your browser to finish the pull request by hand. Your branch was already pushed; only opening the pull request failed."
     },
     {
       "key": "basisChanges.defaultTitle",
@@ -4312,7 +4948,7 @@
     },
     {
       "key": "installs.tooltip.basisChanges",
-      "value": "See what this project changed compared with the Basis version it's based on, and send changes back to BasisVR/Basis as a pull request. The project's own git remote isn't used."
+      "value": "See what this project changed compared with the Basis version it's based on, and send the changes you pick to BasisVR/Basis as a pull request. Sending needs a GitHub sign-in; the project's own git remote isn't used."
     },
     {
       "key": "packages.button.sendToBasis",
@@ -4320,7 +4956,483 @@
     },
     {
       "key": "packages.tooltip.sendToBasis",
-      "value": "See this package's changes compared with Basis and send them to BasisVR/Basis as a pull request."
+      "value": "Open the Basis changes window with this package's changes selected. Review how it differs from Basis, then send the changes to BasisVR/Basis as a pull request. You need to be signed in to GitHub."
+    },
+    {
+      "key": "packages.button.newPackage",
+      "value": "New package"
+    },
+    {
+      "key": "packages.tooltip.newPackage",
+      "value": "Create a package of your own in this project's .basisdev folder, ready to edit in Unity and publish."
+    },
+    {
+      "key": "packages.button.publish",
+      "value": "Publish"
+    },
+    {
+      "key": "packages.tooltip.publish",
+      "value": "Release a new version of this package: set its version, add release notes, tag it and push it to GitHub."
+    },
+    {
+      "key": "dialog.newPackage.title",
+      "value": "New package"
+    },
+    {
+      "key": "dialog.newPackage.heading",
+      "value": "Create a package"
+    },
+    {
+      "key": "dialog.newPackage.subtitle",
+      "value": "It goes in the .basisdev folder of {0} as its own git repository, and Unity loads it from there."
+    },
+    {
+      "key": "dialog.newPackage.nameLabel",
+      "value": "Name"
+    },
+    {
+      "key": "dialog.newPackage.nameWatermark",
+      "value": "My Package"
+    },
+    {
+      "key": "dialog.newPackage.idLabel",
+      "value": "Package id"
+    },
+    {
+      "key": "dialog.newPackage.descriptionLabel",
+      "value": "Description"
+    },
+    {
+      "key": "dialog.newPackage.authorLabel",
+      "value": "Author"
+    },
+    {
+      "key": "dialog.newPackage.licenseLabel",
+      "value": "License"
+    },
+    {
+      "key": "dialog.newPackage.license.mit",
+      "value": "MIT"
+    },
+    {
+      "key": "dialog.newPackage.license.apache",
+      "value": "Apache 2.0"
+    },
+    {
+      "key": "dialog.newPackage.license.none",
+      "value": "No license file"
+    },
+    {
+      "key": "dialog.newPackage.folderPreview",
+      "value": "Created in {0}"
+    },
+    {
+      "key": "dialog.newPackage.assemblyPreview",
+      "value": "Assembly {0}"
+    },
+    {
+      "key": "dialog.newPackage.unity",
+      "value": "Needs Unity {0} or newer, like this project."
+    },
+    {
+      "key": "dialog.newPackage.unityUnknown",
+      "value": "This project's Unity version isn't known, so the package doesn't ask for one."
+    },
+    {
+      "key": "dialog.newPackage.basis",
+      "value": "Works with Basis from {0} on, the version this project is based on."
+    },
+    {
+      "key": "dialog.newPackage.basisUnknown",
+      "value": "This project's Basis version isn't known, so the package doesn't ask for one."
+    },
+    {
+      "key": "dialog.newPackage.partsLabel",
+      "value": "What goes in it"
+    },
+    {
+      "key": "dialog.newPackage.runtime",
+      "value": "Runtime code"
+    },
+    {
+      "key": "dialog.newPackage.editor",
+      "value": "Editor tools"
+    },
+    {
+      "key": "dialog.newPackage.server",
+      "value": "Basis Server code"
+    },
+    {
+      "key": "dialog.newPackage.samples",
+      "value": "Samples"
+    },
+    {
+      "key": "dialog.newPackage.referencesLabel",
+      "value": "Basis assemblies the code uses"
+    },
+    {
+      "key": "dialog.newPackage.github",
+      "value": "Put it on GitHub"
+    },
+    {
+      "key": "dialog.newPackage.githubHint",
+      "value": "Creates a repository under your GitHub account and pushes the package there, so it can be published and shared."
+    },
+    {
+      "key": "dialog.newPackage.private",
+      "value": "Private repository"
+    },
+    {
+      "key": "dialog.newPackage.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key": "dialog.newPackage.create",
+      "value": "Create"
+    },
+    {
+      "key": "dialog.newPackage.error.nameMissing",
+      "value": "Give the package a name."
+    },
+    {
+      "key": "dialog.newPackage.error.idMissing",
+      "value": "Give the package an id, such as com.yourname.yourpackage."
+    },
+    {
+      "key": "dialog.newPackage.error.idTooLong",
+      "value": "The package id is longer than 214 characters."
+    },
+    {
+      "key": "dialog.newPackage.error.idNoDot",
+      "value": "\"{0}\" needs at least one dot, such as com.yourname.{0}."
+    },
+    {
+      "key": "dialog.newPackage.error.idReserved",
+      "value": "Package ids that start with com.unity. belong to Unity."
+    },
+    {
+      "key": "dialog.newPackage.error.idCharacters",
+      "value": "\"{0}\" isn't a valid package id. Use lowercase letters, digits, dots, dashes and underscores, starting with a letter or digit."
+    },
+    {
+      "key": "dialog.newPackage.error.exists",
+      "value": "This project already has a package called {0}."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.name",
+      "value": "The name people see in Unity's Package Manager and in the Basis Package Manager."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.id",
+      "value": "The package's unique id in reverse domain form, such as com.yourname.yourpackage. Don't change it once others use the package."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.description",
+      "value": "One or two sentences about what the package does."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.author",
+      "value": "Your name or your studio's name, shown as the package's author and in the license."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.license",
+      "value": "The license others get the package under. MIT lets anyone use it as long as they keep the copyright notice."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.runtime",
+      "value": "Adds a Runtime folder with an assembly definition and a starter script, for code that runs in the app."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.editor",
+      "value": "Adds an Editor folder with an assembly definition that only builds in the Unity editor."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.server",
+      "value": "Adds a Server~ folder for code the Basis Server builds in. Unity doesn't load it."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.samples",
+      "value": "Adds a Samples~ folder that people can import from Unity's Package Manager window."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.reference",
+      "value": "Lets the package's code use this Basis assembly."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.github",
+      "value": "Creates a GitHub repository for the package and pushes it there, using your GitHub sign-in."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.private",
+      "value": "Only you and the people you invite can see a private repository."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.cancel",
+      "value": "Close without creating anything."
+    },
+    {
+      "key": "dialog.newPackage.tooltip.create",
+      "value": "Create the package and add it to this project."
+    },
+    {
+      "key": "dialog.publish.title",
+      "value": "Publish {0}"
+    },
+    {
+      "key": "dialog.publish.current",
+      "value": "Version {0} in package.json, last released as {1}."
+    },
+    {
+      "key": "dialog.publish.currentUntagged",
+      "value": "Version {0} in package.json, not released yet."
+    },
+    {
+      "key": "dialog.publish.branch",
+      "value": "Publishes branch {0} to {1}."
+    },
+    {
+      "key": "dialog.publish.versionLabel",
+      "value": "New version"
+    },
+    {
+      "key": "dialog.publish.patch",
+      "value": "Patch"
+    },
+    {
+      "key": "dialog.publish.minor",
+      "value": "Minor"
+    },
+    {
+      "key": "dialog.publish.major",
+      "value": "Major"
+    },
+    {
+      "key": "dialog.publish.tagPreview",
+      "value": "Tag: {0}"
+    },
+    {
+      "key": "dialog.publish.notesLabel",
+      "value": "Release notes"
+    },
+    {
+      "key": "dialog.publish.notesWatermark",
+      "value": "What changed in this version"
+    },
+    {
+      "key": "dialog.publish.release",
+      "value": "Create a GitHub release with these notes"
+    },
+    {
+      "key": "dialog.publish.changedFiles",
+      "value": "Files with uncommitted changes: {0}. They are committed as part of this release."
+    },
+    {
+      "key": "dialog.publish.detached",
+      "value": "The package is on a detached commit, so there is no branch to publish. Check out a branch in its folder first."
+    },
+    {
+      "key": "dialog.publish.repositoryHeading",
+      "value": "Put it on GitHub first"
+    },
+    {
+      "key": "dialog.publish.repositoryIntro",
+      "value": "This package has no remote repository yet. Publishing creates one under your GitHub account and pushes the package there."
+    },
+    {
+      "key": "dialog.publish.registry",
+      "value": "Submit it to the Basis registry"
+    },
+    {
+      "key": "dialog.publish.registryHint",
+      "value": "Opens a pull request that lists the package on basisvr.org/packages, so others can find and install it."
+    },
+    {
+      "key": "dialog.publish.categoryLabel",
+      "value": "Category"
+    },
+    {
+      "key": "dialog.publish.tagsLabel",
+      "value": "Search tags"
+    },
+    {
+      "key": "dialog.publish.tagsWatermark",
+      "value": "avatars, tools"
+    },
+    {
+      "key": "dialog.publish.checking",
+      "value": "Checking the package..."
+    },
+    {
+      "key": "dialog.publish.checksBlocked",
+      "value": "Problems to fix before publishing: {0}"
+    },
+    {
+      "key": "dialog.publish.checksWarnings",
+      "value": "Checks passed, with notes: {0}"
+    },
+    {
+      "key": "dialog.publish.checksPassed",
+      "value": "Checks passed."
+    },
+    {
+      "key": "dialog.publish.checkFailed",
+      "value": "The package couldn't be checked: {0}"
+    },
+    {
+      "key": "dialog.publish.commitsAll",
+      "value": "Commits in this package: {0}"
+    },
+    {
+      "key": "dialog.publish.commitsSince",
+      "value": "Commits since {1}: {0}"
+    },
+    {
+      "key": "dialog.publish.severity.error",
+      "value": "Problem"
+    },
+    {
+      "key": "dialog.publish.severity.warning",
+      "value": "Note"
+    },
+    {
+      "key": "dialog.publish.severity.info",
+      "value": "Info"
+    },
+    {
+      "key": "dialog.publish.error.version",
+      "value": "\"{0}\" isn't a version like 1.2.3."
+    },
+    {
+      "key": "dialog.publish.error.tagExists",
+      "value": "The tag {0} already exists. Pick a newer version."
+    },
+    {
+      "key": "dialog.publish.error.notNewer",
+      "value": "The version has to be newer than the last release, {0}."
+    },
+    {
+      "key": "dialog.publish.error.repositoryName",
+      "value": "Give the new repository a name."
+    },
+    {
+      "key": "dialog.publish.error.signIn",
+      "value": "Couldn't sign in to GitHub: {0}"
+    },
+    {
+      "key": "dialog.publish.hint",
+      "value": "Publishing commits the version and release notes, tags that commit and pushes both to GitHub. If you ask, it also creates a release and a registry pull request."
+    },
+    {
+      "key": "dialog.publish.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key": "dialog.publish.publish",
+      "value": "Publish"
+    },
+    {
+      "key": "dialog.publish.tooltip.version",
+      "value": "The version to release, in the form major.minor.patch, such as 1.2.0."
+    },
+    {
+      "key": "dialog.publish.tooltip.patch",
+      "value": "For small fixes: raises the last number."
+    },
+    {
+      "key": "dialog.publish.tooltip.minor",
+      "value": "For new features that don't break anything: raises the middle number."
+    },
+    {
+      "key": "dialog.publish.tooltip.major",
+      "value": "For changes that can break projects using the package: raises the first number."
+    },
+    {
+      "key": "dialog.publish.tooltip.notes",
+      "value": "Shown on the GitHub release and added to CHANGELOG.md."
+    },
+    {
+      "key": "dialog.publish.tooltip.release",
+      "value": "Also creates a GitHub release for the tag, with these notes."
+    },
+    {
+      "key": "dialog.publish.tooltip.repositoryName",
+      "value": "The name of the new GitHub repository."
+    },
+    {
+      "key": "dialog.publish.tooltip.registry",
+      "value": "After publishing, opens a pull request that lists the package in the Basis registry."
+    },
+    {
+      "key": "dialog.publish.tooltip.category",
+      "value": "The registry category the package is listed under."
+    },
+    {
+      "key": "dialog.publish.tooltip.tags",
+      "value": "Words people might search for, separated by commas."
+    },
+    {
+      "key": "dialog.publish.tooltip.cancel",
+      "value": "Close without publishing."
+    },
+    {
+      "key": "dialog.publish.tooltip.publish",
+      "value": "Commit, tag and push this version to GitHub."
+    },
+    {
+      "key": "authoring.status.creating",
+      "value": "Creating {0}..."
+    },
+    {
+      "key": "authoring.status.created",
+      "value": "Created {0} in {1}. Unity loads it from there; when it's ready, publish it from its details."
+    },
+    {
+      "key": "authoring.status.createFailed",
+      "value": "Couldn't create the package: {0}"
+    },
+    {
+      "key": "authoring.status.repoCreated",
+      "value": "Created {0} and put it on GitHub: {1}"
+    },
+    {
+      "key": "authoring.status.repoFailed",
+      "value": "Created {0}, but couldn't put it on GitHub: {1}"
+    },
+    {
+      "key": "authoring.status.publishing",
+      "value": "Publishing {0} {1}..."
+    },
+    {
+      "key": "authoring.status.published",
+      "value": "Published {0} {1}."
+    },
+    {
+      "key": "authoring.status.publishedNoRelease",
+      "value": "Published {0} {1}. {2}"
+    },
+    {
+      "key": "authoring.status.publishFailed",
+      "value": "Couldn't publish: {0}"
+    },
+    {
+      "key": "authoring.status.notAPackage",
+      "value": "{0} has no package.json in its clone, so it can't be published."
+    },
+    {
+      "key": "authoring.status.submitting",
+      "value": "Submitting {0} to the Basis registry..."
+    },
+    {
+      "key": "authoring.status.submitted",
+      "value": "Opened a pull request to add {0} to the Basis registry: {1}"
+    },
+    {
+      "key": "authoring.status.submitFailed",
+      "value": "Couldn't submit {0} to the registry: {1}"
+    },
+    {
+      "key": "authoring.status.noRepository",
+      "value": "it isn't on GitHub."
     },
     {
       "key": "basisChanges.churn",
@@ -4344,7 +5456,7 @@
     },
     {
       "key": "installs.tooltip.toggleLayout",
-      "value": "Switch between list and grid layout"
+      "value": "Switch between showing your projects as a list or as a grid of cards. The app remembers your choice."
     },
     {
       "key": "installs.button.findProjects",
@@ -4420,19 +5532,387 @@
     },
     {
       "key": "dialog.findProjects.tooltip.changeFolder",
-      "value": "Search a different folder"
+      "value": "Pick another folder and search it instead. The current results are cleared."
     },
     {
       "key": "dialog.findProjects.tooltip.stop",
-      "value": "Stop searching and keep the projects found so far"
+      "value": "Stop searching. The projects found so far stay in the list."
     },
     {
       "key": "dialog.findProjects.tooltip.add",
-      "value": "Add the ticked projects to your list"
+      "value": "Add the ticked projects to your list on the Projects tab. Their folders are not moved or changed. Available once at least one project is ticked."
     },
     {
       "key": "dialog.findProjects.tooltip.cancel",
-      "value": "Close without adding anything"
+      "value": "Close this window without adding any projects to your list."
+    },
+    {
+      "key": "dialog.storage.cloneLoose",
+      "value": "Not a git clone"
+    },
+    {
+      "key": "dialog.licenses.title",
+      "value": "Licenses"
+    },
+    {
+      "key": "dialog.licenses.heading",
+      "value": "Licenses of the packages in {0}"
+    },
+    {
+      "key": "dialog.licenses.intro",
+      "value": "Every package Unity loads in this project, with the license it ships under. Save the notices and include them with your build."
+    },
+    {
+      "key": "dialog.licenses.loading",
+      "value": "Reading the packages…"
+    },
+    {
+      "key": "dialog.licenses.summary",
+      "value": "Packages: {0}."
+    },
+    {
+      "key": "dialog.licenses.summaryMissing",
+      "value": "Without a license: {0}."
+    },
+    {
+      "key": "dialog.licenses.summaryCopyleft",
+      "value": "Copyleft: {0}."
+    },
+    {
+      "key": "dialog.licenses.loadFailed",
+      "value": "Couldn't read the packages: {0}"
+    },
+    {
+      "key": "dialog.licenses.copied",
+      "value": "Copied the notices to the clipboard."
+    },
+    {
+      "key": "dialog.licenses.copyFailed",
+      "value": "Couldn't copy the notices: {0}"
+    },
+    {
+      "key": "dialog.licenses.saved",
+      "value": "Saved the notices to {0}."
+    },
+    {
+      "key": "dialog.licenses.saveFailed",
+      "value": "Couldn't save the notices: {0}"
+    },
+    {
+      "key": "dialog.licenses.idVersion",
+      "value": "{0} · {1}"
+    },
+    {
+      "key": "dialog.licenses.detected",
+      "value": "{0} (from its license file)"
+    },
+    {
+      "key": "dialog.licenses.noLicense",
+      "value": "No license stated"
+    },
+    {
+      "key": "dialog.licenses.noFiles",
+      "value": "No license file was found in this package."
+    },
+    {
+      "key": "dialog.licenses.files",
+      "value": "License files: {0}"
+    },
+    {
+      "key": "dialog.licenses.missingTip",
+      "value": "This package states no license and has no license file. Ask its author before you ship it."
+    },
+    {
+      "key": "dialog.licenses.copyleftTip",
+      "value": "This package uses a copyleft license, which can oblige you to share your source code when you ship it. Check its terms."
+    },
+    {
+      "key": "dialog.licenses.includeUnity",
+      "value": "Include Unity's packages"
+    },
+    {
+      "key": "dialog.licenses.none",
+      "value": "This project has no packages to list."
+    },
+    {
+      "key": "dialog.licenses.copy",
+      "value": "Copy notices"
+    },
+    {
+      "key": "dialog.licenses.save",
+      "value": "Save notices…"
+    },
+    {
+      "key": "dialog.licenses.close",
+      "value": "Close"
+    },
+    {
+      "key": "dialog.licenses.picker",
+      "value": "Save third-party notices"
+    },
+    {
+      "key": "dialog.licenses.fileType",
+      "value": "Markdown notices"
+    },
+    {
+      "key": "dialog.licenses.tooltip.includeUnity",
+      "value": "Also list Unity's own com.unity packages, which Unity's license already covers."
+    },
+    {
+      "key": "dialog.licenses.tooltip.refresh",
+      "value": "Read the packages again."
+    },
+    {
+      "key": "dialog.licenses.tooltip.copy",
+      "value": "Copy the third-party notices, with every license text, as Markdown."
+    },
+    {
+      "key": "dialog.licenses.tooltip.save",
+      "value": "Save the third-party notices, with every license text, to a Markdown file you can ship with your build."
+    },
+    {
+      "key": "dialog.licenses.tooltip.close",
+      "value": "Close this window."
+    },
+    {
+      "key": "dialog.storage.title",
+      "value": "Storage: {0}"
+    },
+    {
+      "key": "dialog.storage.heading",
+      "value": "Disk space used by {0}"
+    },
+    {
+      "key": "dialog.storage.intro",
+      "value": "Unity's Library, Temp and Logs folders are rebuilt when needed, so you can delete them to free space. Development clones that Unity doesn't load can go too."
+    },
+    {
+      "key": "dialog.storage.measuring",
+      "value": "Measuring… {0} files, {1}"
+    },
+    {
+      "key": "dialog.storage.total",
+      "value": "{0} in {1} files"
+    },
+    {
+      "key": "dialog.storage.stopped",
+      "value": "Stopped. {0} in {1} files counted so far."
+    },
+    {
+      "key": "dialog.storage.stoppedEmpty",
+      "value": "Stopped before anything was measured."
+    },
+    {
+      "key": "dialog.storage.measureFailed",
+      "value": "Couldn't measure the project: {0}"
+    },
+    {
+      "key": "dialog.storage.library",
+      "value": "Library"
+    },
+    {
+      "key": "dialog.storage.libraryDetail",
+      "value": "Unity's cache. Unity rebuilds it the next time it opens the project."
+    },
+    {
+      "key": "dialog.storage.libraryDetailCache",
+      "value": "Unity's cache, including {0} of downloaded packages. Unity rebuilds it the next time it opens the project."
+    },
+    {
+      "key": "dialog.storage.temp",
+      "value": "Temp"
+    },
+    {
+      "key": "dialog.storage.tempDetail",
+      "value": "Unity's temporary files."
+    },
+    {
+      "key": "dialog.storage.logs",
+      "value": "Logs"
+    },
+    {
+      "key": "dialog.storage.logsDetail",
+      "value": "Editor and import logs."
+    },
+    {
+      "key": "dialog.storage.obj",
+      "value": "obj"
+    },
+    {
+      "key": "dialog.storage.objDetail",
+      "value": "Build output from your code editor."
+    },
+    {
+      "key": "dialog.storage.server",
+      "value": "Basis Server build"
+    },
+    {
+      "key": "dialog.storage.serverDetail",
+      "value": "The built server, including its runtime settings and content."
+    },
+    {
+      "key": "dialog.storage.clones",
+      "value": "Development clones"
+    },
+    {
+      "key": "dialog.storage.clonesDetail",
+      "value": "Clones in .basisdev: {0}."
+    },
+    {
+      "key": "dialog.storage.other",
+      "value": "Everything else"
+    },
+    {
+      "key": "dialog.storage.otherDetail",
+      "value": "Assets, packages, settings and git history."
+    },
+    {
+      "key": "dialog.storage.clean",
+      "value": "Clean"
+    },
+    {
+      "key": "dialog.storage.clear",
+      "value": "Clear"
+    },
+    {
+      "key": "dialog.storage.stop",
+      "value": "Stop"
+    },
+    {
+      "key": "dialog.storage.close",
+      "value": "Close"
+    },
+    {
+      "key": "dialog.storage.clonesHeading",
+      "value": "Development clones"
+    },
+    {
+      "key": "dialog.storage.clonesIntro",
+      "value": "Clones in .basisdev. A clone can be removed when Unity doesn't load it, it has no uncommitted or unpushed work, and it isn't listed in basispackages.json."
+    },
+    {
+      "key": "dialog.storage.cloneInUse",
+      "value": "Loaded by Unity"
+    },
+    {
+      "key": "dialog.storage.cloneUnused",
+      "value": "Not used by Unity"
+    },
+    {
+      "key": "dialog.storage.cloneListed",
+      "value": "Not used, but kept because basispackages.json lists it"
+    },
+    {
+      "key": "dialog.storage.cloneLocalWork",
+      "value": "Not used, but kept because it has uncommitted or unpushed work"
+    },
+    {
+      "key": "dialog.storage.removeClones",
+      "value": "Remove unused clones ({0})"
+    },
+    {
+      "key": "dialog.storage.confirmLibraryTitle",
+      "value": "Clean Library?"
+    },
+    {
+      "key": "dialog.storage.confirmLibraryBody",
+      "value": "This deletes {0} of Unity's cached data for {1}. Unity rebuilds it the next time it opens the project, which can take a long time. Your assets and settings aren't touched."
+    },
+    {
+      "key": "dialog.storage.confirmTempTitle",
+      "value": "Clear Temp?"
+    },
+    {
+      "key": "dialog.storage.confirmTempBody",
+      "value": "This deletes {0} of temporary files Unity made for {1}."
+    },
+    {
+      "key": "dialog.storage.confirmLogsTitle",
+      "value": "Clear the logs?"
+    },
+    {
+      "key": "dialog.storage.confirmLogsBody",
+      "value": "This deletes {0} of log files from {1}. Logs in use are left."
+    },
+    {
+      "key": "dialog.storage.confirmClonesTitle",
+      "value": "Remove unused clones?"
+    },
+    {
+      "key": "dialog.storage.confirmClonesBody",
+      "value": "This deletes the development clones that Unity doesn't load and that have no local work ({0}): {1}."
+    },
+    {
+      "key": "dialog.storage.cleaningLibrary",
+      "value": "Cleaning the Library of {0}"
+    },
+    {
+      "key": "dialog.storage.clearingTemp",
+      "value": "Clearing the Temp folder of {0}"
+    },
+    {
+      "key": "dialog.storage.clearingLogs",
+      "value": "Clearing the logs of {0}"
+    },
+    {
+      "key": "dialog.storage.removingClones",
+      "value": "Removing unused clones from {0}"
+    },
+    {
+      "key": "dialog.storage.closeUnity",
+      "value": "Unity has {0} open. Close Unity, then try again."
+    },
+    {
+      "key": "dialog.storage.failed",
+      "value": "That didn't work: {0}"
+    },
+    {
+      "key": "dialog.storage.freed",
+      "value": "Freed {0}."
+    },
+    {
+      "key": "dialog.storage.nothingToClean",
+      "value": "There was nothing to clean."
+    },
+    {
+      "key": "dialog.storage.partly",
+      "value": "Freed {0}. Files left because they are in use: {1}."
+    },
+    {
+      "key": "dialog.storage.clonesRemoved",
+      "value": "Clones removed: {0}. Freed {1}."
+    },
+    {
+      "key": "dialog.storage.clonesKept",
+      "value": "Couldn't remove: {0}"
+    },
+    {
+      "key": "dialog.storage.tooltip.cleanLibrary",
+      "value": "Delete Unity's Library folder for this project. Unity rebuilds it the next time it opens the project, which can take a long time."
+    },
+    {
+      "key": "dialog.storage.tooltip.clearTemp",
+      "value": "Delete Unity's temporary files for this project."
+    },
+    {
+      "key": "dialog.storage.tooltip.clearLogs",
+      "value": "Delete this project's log files. Logs in use are left."
+    },
+    {
+      "key": "dialog.storage.tooltip.removeClones",
+      "value": "Delete the development clones Unity doesn't load that have no local work."
+    },
+    {
+      "key": "dialog.storage.tooltip.stop",
+      "value": "Stop measuring."
+    },
+    {
+      "key": "dialog.storage.tooltip.refresh",
+      "value": "Measure the project again."
+    },
+    {
+      "key": "dialog.storage.tooltip.close",
+      "value": "Close this window."
     },
     {
       "key": "shell.activity.more",
@@ -4440,7 +5920,7 @@
     },
     {
       "key": "shell.activity.moreTooltip",
-      "value": "See everything that's running, and anything waiting on you, in Settings"
+      "value": "Open the Activity section in Settings, which lists every task that is running and anything that needs your attention."
     },
     {
       "key": "shell.work.waiting",
@@ -4448,7 +5928,7 @@
     },
     {
       "key": "shell.status.projectTooltip",
-      "value": "The project this message is about"
+      "value": "The project this message is about."
     },
     {
       "key": "settings.activity.title",
@@ -4512,7 +5992,7 @@
     },
     {
       "key": "installs.tooltip.parts",
-      "value": "Choose which parts of Basis this project keeps on disk, such as the Basis Server"
+      "value": "Choose which optional parts of Basis, such as the Basis Server, this project keeps in its folder. Git keeps the files of parts you leave out, so Basis updates still work and you can add them back later."
     },
     {
       "key": "installs.row.leftOut",
@@ -4652,11 +6132,11 @@
     },
     {
       "key": "dialog.cloneBasis.tooltip.cancel",
-      "value": "Close without cloning"
+      "value": "Close without cloning. Nothing is downloaded and the folder stays empty."
     },
     {
       "key": "dialog.cloneBasis.tooltip.clone",
-      "value": "Clone Basis into this folder with the parts you picked"
+      "value": "Download Basis from github.com/BasisVR/Basis (the developer branch) into this folder, leaving out the parts you unticked. It needs an internet connection and can take a while."
     },
     {
       "key": "dialog.parts.title",
@@ -4700,11 +6180,11 @@
     },
     {
       "key": "dialog.parts.tooltip.cancel",
-      "value": "Close without changing anything"
+      "value": "Close without changing which parts this project keeps."
     },
     {
       "key": "dialog.parts.tooltip.apply",
-      "value": "Add or remove the parts you changed"
+      "value": "Take the parts you unticked out of this project's folder and bring back the ones you ticked. Git keeps their files, so you can change this again later. Available once you change a tick."
     },
     {
       "key": "server.leftOut.title",
@@ -4720,7 +6200,1087 @@
     },
     {
       "key": "server.leftOut.addBackTip",
-      "value": "Check the Basis Server folder out again for this project"
+      "value": "Put the Basis Server folder back into this project's checkout. Git already has its files, so nothing is downloaded. Needs Git; you can also change this with Parts on the Projects tab."
+    },
+    {
+      "key": "server.hero.eyebrow",
+      "value": "BASIS SERVER"
+    },
+    {
+      "key": "server.hero.title",
+      "value": "Build, run and configure"
+    },
+    {
+      "key": "server.runtime.title",
+      "value": "Server runtime"
+    },
+    {
+      "key": "server.runtime.sdkTitle",
+      "value": "Build requirement: .NET 10 SDK"
+    },
+    {
+      "key": "server.runtime.sdkBody",
+      "value": "Install the SDK—not only the runtime. Visual Studio is not required."
+    },
+    {
+      "key": "server.runtime.downloadSdk",
+      "value": "Download .NET 10 SDK"
+    },
+    {
+      "key": "server.button.build",
+      "value": "Build server"
+    },
+    {
+      "key": "server.button.openRuntime",
+      "value": "Open runtime folder"
+    },
+    {
+      "key": "server.client.title",
+      "value": "Connect Steam client"
+    },
+    {
+      "key": "server.client.body",
+      "value": "Launches Basis Labs through Steam with the server connection argument."
+    },
+    {
+      "key": "server.client.host",
+      "value": "Host"
+    },
+    {
+      "key": "server.client.port",
+      "value": "Port"
+    },
+    {
+      "key": "server.client.password",
+      "value": "Password (optional)"
+    },
+    {
+      "key": "server.client.launch",
+      "value": "Launch and connect"
+    },
+    {
+      "key": "server.config.title",
+      "value": "Server configuration"
+    },
+    {
+      "key": "server.config.intro",
+      "value": "Run the server once to generate config.xml. Every setting in that file appears below."
+    },
+    {
+      "key": "server.config.none",
+      "value": "No configuration exists yet."
+    },
+    {
+      "key": "server.config.save",
+      "value": "Save configuration"
+    },
+    {
+      "key": "server.content.title",
+      "value": "Default content"
+    },
+    {
+      "key": "server.content.body",
+      "value": "Add an avatar, world or prop to the client library, or load it into the server on startup."
+    },
+    {
+      "key": "server.content.type",
+      "value": "Type"
+    },
+    {
+      "key": "server.content.url",
+      "value": "Content URL"
+    },
+    {
+      "key": "server.content.password",
+      "value": "Unlock password (optional)"
+    },
+    {
+      "key": "server.content.clientLibrary",
+      "value": "Default client library"
+    },
+    {
+      "key": "server.content.loadOnStartup",
+      "value": "Load on server startup"
+    },
+    {
+      "key": "server.content.add",
+      "value": "Add content"
+    },
+    {
+      "key": "dialog.basisUpdate.tooltip.incomingCommits",
+      "value": "Commits on this Basis branch that your project doesn't have yet. Updating brings in their changes. They're listed under What's new in Basis."
+    },
+    {
+      "key": "dialog.basisUpdate.tooltip.leavingCommits",
+      "value": "Basis commits on the branch this project follows now that the new branch doesn't have. Switching takes their changes out of the project. Your own commits and edits are kept."
+    },
+    {
+      "key": "dialog.basisUpdate.tooltip.yourCommits",
+      "value": "Commits on your project's branch that didn't come from Basis. The update keeps them."
+    },
+    {
+      "key": "dialog.basisUpdate.tooltip.uncommitted",
+      "value": "Files you've changed, added or deleted in the project but haven't committed to git. The update leaves them as they are. Any that Basis also changes are set aside first and merged back afterwards."
+    },
+    {
+      "key": "dialog.basisUpdate.tooltip.switchTo",
+      "value": "Move the project onto this Basis branch as described above. Your commits and uncommitted edits are kept; if they overlap the branch's changes, a window opens so you can choose. Later updates come from this branch. Close Unity first."
+    },
+    {
+      "key": "dialog.basisUpdate.tooltip.follow",
+      "value": "Make this the Basis branch the project follows, so later update checks use it. The choice is saved in the project's local git settings. No files change, since the project already matches this branch."
+    },
+    {
+      "key": "dialog.basisUpdate.tooltip.setUpGit",
+      "value": "Record the project in a new local git repository: one commit of its current files, leaving out Unity's Library cache and other generated folders. Then the Basis update is checked again. Nothing is uploaded."
+    },
+    {
+      "key": "basisChanges.tooltip.toggleGroup",
+      "value": "Show or hide the changed files in this group. A package marked not in Basis is one that Basis itself doesn't include."
+    },
+    {
+      "key": "basisChanges.tooltip.fileRow",
+      "value": "Show how {0} differs from Basis in the panel on the right."
+    },
+    {
+      "key": "basisChanges.tooltip.viewPr",
+      "value": "Open this pull request on GitHub in your web browser."
+    },
+    {
+      "key": "dialog.submitPr.tooltip.fileRow",
+      "value": "Show the changes to {0} in the panel on the right."
+    },
+    {
+      "key": "packages.tooltip.refresh",
+      "value": "Reload the package registry and re-read the selected project's packages, checking again for local edits, clone problems and whether Git is installed."
+    },
+    {
+      "key": "packages.tooltip.installPackageList",
+      "value": "Browse curated package lists from the package registry, then add every package in the one you pick to a project you choose. The packages are written into that project's Packages/manifest.json for Unity to download."
+    },
+    {
+      "key": "packages.tooltip.installPackageListFile",
+      "value": "Open a package list file (a JSON file saved with Create package list) and add its packages to a project you choose. They are written into that project's Packages/manifest.json."
+    },
+    {
+      "key": "packages.tooltip.basisRegistry",
+      "value": "Packages here come from the package registry set in Settings (the Basis registry at basisvr.org/packages by default) and any extra catalogs you added, plus any your project has that the registry does not list."
+    },
+    {
+      "key": "packages.tooltip.sourceFilter",
+      "value": "Show only packages from one source, such as Official or Community. Built-in lists the packages that come with Basis, which All leaves out. The number next to each option is how many packages it has."
+    },
+    {
+      "key": "packages.tooltip.categoryFilter",
+      "value": "Show only packages in one category. The number next to each option is how many packages it has within the chosen source."
+    },
+    {
+      "key": "packages.tooltip.sort",
+      "value": "Choose the order of the list. Popular ranks by GitHub stars, then forks; you can also sort by stars, forks, most recently updated, or name."
+    },
+    {
+      "key": "packages.tooltip.owner",
+      "value": "The owner, read from the second part of the package id (com.example.tool shows Example)."
+    },
+    {
+      "key": "packages.tooltip.unofficial",
+      "value": "This package comes from an extra catalog added in Settings, not the official Basis registry. BasisVR has not reviewed it, so check its source before you install it."
+    },
+    {
+      "key": "packages.tooltip.mounted",
+      "value": "This package loads from an editable git clone inside the project (in its .basisdev folder) instead of a copy Unity downloads. Updates and version changes move that clone in place and keep your edits; removing the package deletes it, and you are asked first if it has local edits."
+    },
+    {
+      "key": "packages.tooltip.mountedEdits",
+      "value": "This package's clone has edits that are not committed yet:\n{0}\nClick the package for its actions. Updates keep these edits; removing the package asks before deleting them."
+    },
+    {
+      "key": "packages.tooltip.included",
+      "value": "This package comes with Basis, so it is already part of the project. It changes when you update Basis, so Install, Update and Remove are not offered for it."
+    },
+    {
+      "key": "packages.tooltip.notInstalled",
+      "value": "This package is not in the selected project yet. Use Install to add it."
+    },
+    {
+      "key": "packages.tooltip.license",
+      "value": "The license this package is published under. It sets how you may use, change and share its code."
+    },
+    {
+      "key": "packages.tooltip.category",
+      "value": "The registry category this package is listed under. Pick it in the category filter to see similar packages."
+    },
+    {
+      "key": "packages.tooltip.stars",
+      "value": "How many people starred this package's repository on GitHub."
+    },
+    {
+      "key": "packages.tooltip.website",
+      "value": "Open this package's website in your browser ({0})."
+    },
+    {
+      "key": "packages.tooltip.closeDetail",
+      "value": "Close the package details and go back to the list. Clicking the dark area around the card also closes them."
+    },
+    {
+      "key": "packages.tooltip.registryVersion",
+      "value": "The newest version the package registry lists. A package the registry does not list shows the version from its own package.json, or local."
+    },
+    {
+      "key": "packages.tooltip.unityVersion",
+      "value": "The oldest Unity version this package says it supports."
+    },
+    {
+      "key": "packages.tooltip.dependencies",
+      "value": "Other packages this one needs. Installing it adds the ones the package registry lists, and offers any others its package.json names (dependencies, vpmDependencies or gitDependencies) that the project is missing. Unity fetches com.unity packages by itself."
+    },
+    {
+      "key": "packages.tooltip.gitUrl",
+      "value": "The git address this package installs from. A #tag or #branch at the end picks a version, and ?path= points at the package's folder inside the repository."
+    },
+    {
+      "key": "dialog.versionPicker.tooltip.list",
+      "value": "Pick the version to install: a published release, a git tag, or the default branch (the newest code, not released yet). Double-click a version to install it right away."
+    },
+    {
+      "key": "dialog.versionPicker.tooltip.beta",
+      "value": "A prerelease, published for testing before a stable release. It may have bugs."
+    },
+    {
+      "key": "dialog.installPicker.tooltip.list",
+      "value": "Pick the project to add to; only projects that contain a Unity project are listed. Double-click one to add there right away."
+    },
+    {
+      "key": "installs.tooltip.refresh",
+      "value": "Reload your projects from disk, then check each one for new Basis commits on github.com/BasisVR/Basis."
+    },
+    {
+      "key": "installs.tooltip.remove",
+      "value": "Remove this project from your list, or delete its folder from disk. You choose in the next step, and deleting can't be undone."
+    },
+    {
+      "key": "installs.tooltip.activeBadge",
+      "value": "The active project, which the Packages and Server tabs work on. To change it, press Packages on another project or pick one on the Packages tab."
+    },
+    {
+      "key": "installs.tooltip.unityVersion",
+      "value": "The Unity version this project is made with. Open in Unity starts that version; if it isn't installed, add it on the Unity Editors tab."
+    },
+    {
+      "key": "installs.tooltip.branch",
+      "value": "The git branch and commit this project's folder has checked out: {0}. Use Change branch to switch branches."
+    },
+    {
+      "key": "installs.tooltip.branchNoGit",
+      "value": "This project isn't tracked by git, so it has no branch yet. Update Basis offers to set up git for it, which updates need."
+    },
+    {
+      "key": "installs.tooltip.localChanges",
+      "value": "The number of files in this project with changes not committed to git yet (edited, added or deleted). Basis updates and branch switches keep these edits."
+    },
+    {
+      "key": "installs.tooltip.openFolder",
+      "value": "Open this project's folder in your file manager. Its path is shown under the project name."
+    },
+    {
+      "key": "installs.tooltip.basisUpdateAvailable",
+      "value": "Basis {0} on github.com/BasisVR/Basis has new commits this project doesn't have yet. Click Update Basis to review them before anything changes."
+    },
+    {
+      "key": "dialog.findProjects.tooltip.project",
+      "value": "Tick to add this project when you press Add selected. A project already in your list can't be ticked."
+    },
+    {
+      "key": "dialog.findProjects.tooltip.alreadyAdded",
+      "value": "This project is already in your list on the Projects tab, so it can't be added again."
+    },
+    {
+      "key": "dialog.parts.tooltip.part",
+      "value": "Tick to keep this part in the project's folder, or untick to take it out. Git keeps its files either way, so you can bring it back later. A part with uncommitted changes can't be taken out until you commit, move or discard them."
+    },
+    {
+      "key": "dialog.parts.tooltip.status",
+      "value": "Shows whether this part is in the project's folder now, or what Apply will do to it."
+    },
+    {
+      "key": "dialog.parts.tooltip.deleteIgnored",
+      "value": "When ticked, Apply also deletes the files git ignores inside the parts you leave out, such as build output and the server's config. Git can't bring these back. Untick to keep them on disk."
+    },
+    {
+      "key": "dialog.cloneBasis.tooltip.part",
+      "value": "Untick to leave this part out of the new project's folder. Git still downloads it, so Basis updates keep working, and Parts on the project can add it back later."
+    },
+    {
+      "key": "dialog.branchPicker.tooltip.list",
+      "value": "Click a branch to select it, then press Switch. Double-clicking a branch picks it right away."
+    },
+    {
+      "key": "dialog.branchPicker.tooltip.current",
+      "value": "The branch in use now: the one this project has checked out, or the Basis branch it follows."
+    },
+    {
+      "key": "server.tooltip.refresh",
+      "value": "Reload this page from disk: the settings in config.xml, the content files, the server packages, and whether the Basis Server folder is left out. Setting edits you have not saved are kept."
+    },
+    {
+      "key": "server.tooltip.runtimeSection",
+      "value": "Build this project's Basis server with the .NET 10 SDK, then run it, stop it, or open the folder it runs from."
+    },
+    {
+      "key": "server.tooltip.downloadDotNet",
+      "value": "Open Microsoft's .NET 10 download page in your browser. Install the SDK for your system (the runtime alone cannot build the server), then restart this app so it finds the SDK."
+    },
+    {
+      "key": "server.tooltip.build",
+      "value": "Compile this project's Basis server with the .NET 10 SDK into the runtime folder shown above. The result appears in the status bar. The first build downloads dependencies, so it needs a network connection. Rebuild after changing server packages."
+    },
+    {
+      "key": "server.tooltip.openRuntimeFolder",
+      "value": "Open the server's runtime folder in your file manager. It holds the built server, config/config.xml, and the files added under Default content. The folder is created if it does not exist yet."
+    },
+    {
+      "key": "server.tooltip.packagesSection",
+      "value": "Add, update and remove packages that are compiled into this project's Basis Server. They are listed in Basis Server/Packages/manifest.json, separate from the Unity project's packages, and take effect after you rebuild the server."
+    },
+    {
+      "key": "server.tooltip.packageSource",
+      "value": "The package to add. Type a package id from the Basis registry, a git URL (add ?path= for a subfolder and #ref for a branch, tag or commit), a file: path relative to Basis Server/Packages, or a full folder path on this computer."
+    },
+    {
+      "key": "server.tooltip.addPackage",
+      "value": "Add the package typed on the left to this project's Basis Server and record it in the server's manifest.json and packages-lock.props. Git sources are cloned into Basis Server/Packages (needs Git and a network connection); a registry id gets its newest stable release when it has one. Rebuild the server to include it."
+    },
+    {
+      "key": "server.tooltip.packageVersion",
+      "value": "The version this package declares in its package.json, or the one recorded in packages-lock.props while it is not downloaded."
+    },
+    {
+      "key": "server.tooltip.packageReady",
+      "value": "Ready: the package is on disk, valid and recorded in packages-lock.props, so the next server build includes it. Linked: the same, but the server builds it from a folder on this computer, shown below, instead of its own copy."
+    },
+    {
+      "key": "server.tooltip.packageAttention",
+      "value": "Something about this package needs attention. Not downloaded: click Restore or build the server. Changed: it has local edits, or packages-lock.props does not match its checkout yet (Restore records it). Missing or Invalid: its source, folder or package.json has a problem, explained below."
+    },
+    {
+      "key": "server.tooltip.installCatalogPackage",
+      "value": "Install this registry package into this project's Basis Server, at its newest stable release when it has one. It is cloned into Basis Server/Packages and recorded in the server's manifest.json. Needs Git and a network connection. Rebuild the server to include it."
+    },
+    {
+      "key": "server.tooltip.steamSection",
+      "value": "Join a server from the Steam version of Basis Labs, for example to test the server you run from this page."
+    },
+    {
+      "key": "server.tooltip.host",
+      "value": "The address of the server to join. For the server on this computer, use 127.0.0.1 or localhost; the app then checks that it is running and offers to start it before launching."
+    },
+    {
+      "key": "server.tooltip.port",
+      "value": "The server's game port, 4296 by default. The page fills it in from SetPort in this server's config.xml."
+    },
+    {
+      "key": "server.tooltip.connectionPassword",
+      "value": "The password of the server you join. Leave it empty when joining the server on this computer to use the password from its config.xml."
+    },
+    {
+      "key": "server.tooltip.launchClient",
+      "value": "Start Basis Labs through Steam and connect it to the host and port above. For a server on this computer, the app first makes sure it is running, offering to build and start it if needed, and waits until it is ready. Steam must be installed."
+    },
+    {
+      "key": "server.tooltip.configSection",
+      "value": "Every setting in this server's config.xml, which the server creates on its first run. Change values here, save them, then restart the server to use them."
+    },
+    {
+      "key": "server.tooltip.configValue",
+      "value": "The value of this setting in config.xml. Edits stay here until you click Save configuration, and the server uses them after it restarts."
+    },
+    {
+      "key": "server.tooltip.configSecretValue",
+      "value": "A secret value such as a password, token or key, hidden as you type. Edits stay here until you click Save configuration, and the server uses them after it restarts."
+    },
+    {
+      "key": "server.tooltip.saveConfig",
+      "value": "Write the values above into config.xml in the runtime folder. The server reads that file when it starts, so restart it to apply your changes."
+    },
+    {
+      "key": "server.tooltip.contentSection",
+      "value": "Content this server provides: add an avatar, world or prop to the library of everyone who joins, or have the server load it each time it starts. Each entry is saved as a small file in the runtime folder."
+    },
+    {
+      "key": "server.tooltip.contentType",
+      "value": "What kind of content the URL points to: an avatar, a world or scene, or a prop."
+    },
+    {
+      "key": "server.tooltip.contentUrl",
+      "value": "The web address of the content's .bee file. You need one to add content."
+    },
+    {
+      "key": "server.tooltip.contentPassword",
+      "value": "The password that unlocks this content's .bee file, if it has one. It is saved in plain text with the entry and sent to players so their game can open the content."
+    },
+    {
+      "key": "server.tooltip.defaultLibrary",
+      "value": "Offer this content in the library of everyone who joins this server, for as long as they stay connected. The entry is saved in the runtime folder's defaultlibrary folder."
+    },
+    {
+      "key": "server.tooltip.loadOnStartup",
+      "value": "Have the server load this content for everyone each time it starts. A prop appears at the world origin. The entry is saved in the runtime folder's initialresources folder."
+    },
+    {
+      "key": "server.tooltip.addContent",
+      "value": "Save this entry as a new file in the server's runtime folder, using the type, URL, password and option above. The server reads these files when it starts, so restart it to load the new entry. Needs a content URL."
+    },
+    {
+      "key": "server.tooltip.removeContent",
+      "value": "Delete this entry's file from the runtime folder right away, without asking. The server stops providing this content after its next restart."
+    },
+    {
+      "key": "settings.tooltip.activitySection",
+      "value": "Everything the app is working on right now, and anything waiting on you before it can continue, such as a paused update, a missing tool or a failed task you can retry."
+    },
+    {
+      "key": "settings.tooltip.taskProject",
+      "value": "The project this task is working on."
+    },
+    {
+      "key": "settings.tooltip.blockerProject",
+      "value": "The project that needs your attention."
+    },
+    {
+      "key": "settings.tooltip.dismissBlocker",
+      "value": "Remove this failure from the list without trying it again."
+    },
+    {
+      "key": "settings.tooltip.languageSection",
+      "value": "Pick the language for the app's menus, buttons and messages."
+    },
+    {
+      "key": "settings.tooltip.generalSection",
+      "value": "Where packages come from, where Unity Hub is, and how the app checks for updates. Changes here take effect when you click Save."
+    },
+    {
+      "key": "settings.tooltip.newCatalogUrl",
+      "value": "Type or paste the address of a catalog JSON file, then click Add. BasisVR does not review unofficial catalogs, so only add sources you trust."
+    },
+    {
+      "key": "settings.tooltip.removeCatalog",
+      "value": "Remove this catalog from the list. Its packages leave the Packages tab when you click Save; packages already installed in your projects stay."
+    },
+    {
+      "key": "settings.tooltip.detectedSection",
+      "value": "Where the app found Git and Unity Hub on this computer, and where your settings file is saved. Check here when a tool is not being found."
+    },
+    {
+      "key": "settings.tooltip.aboutSection",
+      "value": "Which version of Basis Package Manager you are running, and a way to check for a newer one."
+    },
+    {
+      "key": "settings.tooltip.appVersion",
+      "value": "The version of Basis Package Manager you are running. Include it when you report a problem."
+    },
+    {
+      "key": "settings.tooltip.logsSection",
+      "value": "A record of what the app did this session, with usernames, personal paths and IP addresses removed. Copy it into a bug report when something goes wrong."
+    },
+    {
+      "key": "settings.tooltip.licensesSection",
+      "value": "The open source projects this app is built with, and the license each one is shared under."
+    },
+    {
+      "key": "settings.tooltip.licenseMit",
+      "value": "Released under the MIT License, which lets anyone use, change and share it as long as the copyright and license notice are kept."
+    },
+    {
+      "key": "settings.tooltip.licenseOfl",
+      "value": "Released under the SIL Open Font License 1.1, which lets anyone use, change and share the font, including bundled with software, but not sell it on its own."
+    },
+    {
+      "key": "settings.tooltip.resetSection",
+      "value": "Erase this app's settings and data on this computer and start over as if it were newly installed. Your Basis clones and files on disk are kept."
+    },
+    {
+      "key": "logs.tooltip.copy",
+      "value": "Copy this session's activity log to the clipboard, ready to paste into a bug report. Usernames, personal paths and IP addresses are already removed."
+    },
+    {
+      "key": "logs.tooltip.openFolder",
+      "value": "Open the folder that holds the saved log files, one per session, in your file manager."
+    },
+    {
+      "key": "logs.tooltip.clear",
+      "value": "Clear the log shown here. The log files saved on disk are kept."
+    },
+    {
+      "key": "unity.tooltip.refresh",
+      "value": "Look for Unity Hub and your installed editors again, for example after you install or remove an editor outside this app."
+    },
+    {
+      "key": "unity.tooltip.removeEditor",
+      "value": "Remove this manually added editor from the list, so the app stops using it to open projects. Unity stays installed on disk, and you can add it back with Add from folder."
+    },
+    {
+      "key": "unity.tooltip.reloadReleases",
+      "value": "Download the list of Unity 6 releases from Unity again to pick up new ones. Needs a network connection."
+    },
+    {
+      "key": "unity.tooltip.installedEditorsSection",
+      "value": "The Unity editors on this computer that the app can open projects with. Add modules to Unity Hub editors here, or add an editor from a folder if you do not use Unity Hub."
+    },
+    {
+      "key": "unity.tooltip.installNewSection",
+      "value": "Pick a Unity 6 release and the modules you need, then install it through Unity Hub."
+    },
+    {
+      "key": "shell.tooltip.activityCard",
+      "value": "The most recent task that is still running, with its progress. This card stays on screen while you switch pages and goes away when every task has finished."
+    },
+    {
+      "key": "shell.tooltip.activityProject",
+      "value": "The project this task is working on."
+    },
+    {
+      "key": "shell.tooltip.installCard",
+      "value": "Packages being installed one at a time, with how many are still queued. This card stays on screen while you switch pages."
+    },
+    {
+      "key": "shell.tooltip.installProject",
+      "value": "The project this package is being installed into."
+    },
+    {
+      "key": "announcements.tooltip.refresh",
+      "value": "Reload the announcements from basisvr.org. If the site cannot be reached, the copy that came with the app is shown instead."
+    },
+    {
+      "key": "announcements.tooltip.level",
+      "value": "The kind of announcement: News for general news, Update for releases and changes, or Heads up for something that may need your attention."
+    },
+    {
+      "key": "announcements.tooltip.pinned",
+      "value": "The Basis team pinned this announcement, so it stays at the top of the list whatever its date."
+    },
+    {
+      "key": "dialog.packageListPicker.tooltip.list",
+      "value": "Package lists published in the package registry. Select one and choose Install, or double-click it. You then pick which project gets its packages."
+    },
+    {
+      "key": "settings.tooltip.blockerContinueUpdate",
+      "value": "Go to the Projects tab and reopen this paused Basis update. Decide the files that are left, then finish the update, or put the project back exactly as it was before it started."
+    },
+    {
+      "key": "settings.tooltip.blockerContinueSwitch",
+      "value": "Go to the Projects tab and reopen this paused branch switch. Decide the files that are left, then finish the switch, or go back to the branch you were on with your edits as they were."
+    },
+    {
+      "key": "settings.tooltip.blockerGetGit",
+      "value": "Open the Git download page in your browser. The app needs Git to create, update and switch projects and to install packages. Once Git is installed, this item goes away the next time you open Settings."
+    },
+    {
+      "key": "settings.tooltip.blockerGetDotNet",
+      "value": "Open Microsoft's .NET 10 download page in your browser. Install the SDK, not only the runtime, so the Basis server can be built, then restart this app so it finds the SDK."
+    },
+    {
+      "key": "review.title",
+      "value": "Check {0} before installing"
+    },
+    {
+      "key": "review.source",
+      "value": "Source"
+    },
+    {
+      "key": "review.version",
+      "value": "Version"
+    },
+    {
+      "key": "review.reason.unofficial",
+      "value": "This package comes from a catalog you added in Settings, not from the Basis registry. Nobody has checked it for you."
+    },
+    {
+      "key": "review.reason.gitUrl",
+      "value": "You're adding this package straight from its repository. It isn't in the Basis registry, so nobody has checked it for you."
+    },
+    {
+      "key": "review.reason.link",
+      "value": "A link asked to install this package. It isn't in the Basis registry, so nobody has checked it for you. Only continue if you trust where the link came from."
+    },
+    {
+      "key": "review.reason.packageList",
+      "value": "This package list includes a package that isn't in the Basis registry, so nobody has checked it for you."
+    },
+    {
+      "key": "review.reason.unreviewed",
+      "value": "The Basis registry checked a different version of this package ({0}). This version ({1}) hasn't been checked."
+    },
+    {
+      "key": "review.reason.compatibility",
+      "value": "Installing this package may cause problems in this project."
+    },
+    {
+      "key": "review.claimedName",
+      "value": "The link called it \"{0}\", but the package calls itself \"{1}\"."
+    },
+    {
+      "key": "review.idMismatch",
+      "value": "Its package.json names it {0}, but it would be installed as {1}."
+    },
+    {
+      "key": "review.safety.header",
+      "value": "What it can do"
+    },
+    {
+      "key": "review.safety.summary",
+      "value": "Checked {0} scripts and {1} compiled files."
+    },
+    {
+      "key": "review.safety.none",
+      "value": "Nothing stood out in its {0} files. That doesn't prove it's safe."
+    },
+    {
+      "key": "review.safety.incomplete",
+      "value": "It's too big to check every file."
+    },
+    {
+      "key": "review.more",
+      "value": "and {0} more"
+    },
+    {
+      "key": "review.compat.header",
+      "value": "Compatibility"
+    },
+    {
+      "key": "review.compat.error",
+      "value": "ERROR"
+    },
+    {
+      "key": "review.compat.warning",
+      "value": "WARNING"
+    },
+    {
+      "key": "review.compat.info",
+      "value": "NOTE"
+    },
+    {
+      "key": "review.advisory.pulled",
+      "value": "Pulled from the Basis registry"
+    },
+    {
+      "key": "review.advisory.warning",
+      "value": "Basis registry warning"
+    },
+    {
+      "key": "review.footer",
+      "value": "Unity runs a package's editor scripts as soon as it loads it, with the same access to your computer that you have. These checks look for common warning signs; they can't prove a package is safe. Only install packages from people you trust."
+    },
+    {
+      "key": "review.button.install",
+      "value": "Install"
+    },
+    {
+      "key": "review.button.installAnyway",
+      "value": "Install anyway"
+    },
+    {
+      "key": "review.button.cancel",
+      "value": "Don't install"
+    },
+    {
+      "key": "review.button.openFolder",
+      "value": "Look at the files"
+    },
+    {
+      "key": "review.tooltip.install",
+      "value": "Add the package to the project. Unity loads it the next time it refreshes the project."
+    },
+    {
+      "key": "review.tooltip.cancel",
+      "value": "Delete the downloaded copy. Nothing in your project changes."
+    },
+    {
+      "key": "review.tooltip.openFolder",
+      "value": "Open the downloaded copy in your file manager. Unity hasn't loaded it yet, so looking is safe."
+    },
+    {
+      "key": "review.tooltip.error",
+      "value": "A problem that will probably break the project if you install this package."
+    },
+    {
+      "key": "review.tooltip.warning",
+      "value": "A problem that may cause trouble in the project."
+    },
+    {
+      "key": "review.tooltip.info",
+      "value": "Something worth knowing before you install."
+    },
+    {
+      "key": "review.unchecked.title",
+      "value": "Install without checking?"
+    },
+    {
+      "key": "review.unchecked.body",
+      "value": "Git isn't installed, so {0} can't be downloaded and checked before Unity loads it. Unity will download and run it as it is. Install it anyway?"
+    },
+    {
+      "key": "review.cap.RunsInCompiler.title",
+      "value": "Runs code inside Unity's compiler"
+    },
+    {
+      "key": "review.cap.RunsInCompiler.why",
+      "value": "Compiler plugins run while Unity compiles scripts, before anything else and even when the scripts don't compile."
+    },
+    {
+      "key": "review.cap.StartsPrograms.title",
+      "value": "Starts other programs or commands"
+    },
+    {
+      "key": "review.cap.StartsPrograms.why",
+      "value": "A package that starts programs can do anything you can do on this computer."
+    },
+    {
+      "key": "review.cap.LoadsHiddenCode.title",
+      "value": "Loads code that isn't in its scripts"
+    },
+    {
+      "key": "review.cap.LoadsHiddenCode.why",
+      "value": "It can run code you can't read here, such as code it downloads, decodes or builds while running."
+    },
+    {
+      "key": "review.cap.ReadsLogins.title",
+      "value": "Looks for passwords, tokens or wallets"
+    },
+    {
+      "key": "review.cap.ReadsLogins.why",
+      "value": "It refers to places where browsers, Discord, Steam, SSH or crypto wallets keep saved logins. Unity packages almost never need this."
+    },
+    {
+      "key": "review.cap.SystemSettings.title",
+      "value": "Reads or changes the Windows registry"
+    },
+    {
+      "key": "review.cap.SystemSettings.why",
+      "value": "Apps, Basis included, keep settings and saved logins in the registry."
+    },
+    {
+      "key": "review.cap.Programs.title",
+      "value": "Contains programs or scripts"
+    },
+    {
+      "key": "review.cap.Programs.why",
+      "value": "Programs and shell scripts don't belong in a Unity package unless it says why. A program saved under another file type is a strong warning sign."
+    },
+    {
+      "key": "review.cap.NativeCode.title",
+      "value": "Uses native code"
+    },
+    {
+      "key": "review.cap.NativeCode.why",
+      "value": "Native plugins can't be checked here and have full access to your computer once Unity loads them."
+    },
+    {
+      "key": "review.cap.CompiledCode.title",
+      "value": "Contains compiled code"
+    },
+    {
+      "key": "review.cap.CompiledCode.why",
+      "value": "Compiled libraries can't be read like scripts, so you have to trust whoever built them."
+    },
+    {
+      "key": "review.cap.RunsAutomatically.title",
+      "value": "Runs code by itself"
+    },
+    {
+      "key": "review.cap.RunsAutomatically.why",
+      "value": "Some of its code runs when Unity loads the project, imports files, enters play mode or builds, without you clicking anything."
+    },
+    {
+      "key": "review.cap.Network.title",
+      "value": "Uses the internet"
+    },
+    {
+      "key": "review.cap.Network.why",
+      "value": "It can download or send data."
+    },
+    {
+      "key": "review.cap.AddsPackages.title",
+      "value": "Adds other packages"
+    },
+    {
+      "key": "review.cap.AddsPackages.why",
+      "value": "It can install more packages into your project, and those skip this check."
+    },
+    {
+      "key": "review.cap.EncodedData.title",
+      "value": "Contains large encoded data"
+    },
+    {
+      "key": "review.cap.EncodedData.why",
+      "value": "Usually an image or a font, but encoded data is also a common way to hide code."
+    },
+    {
+      "key": "advisory.badge.pulled",
+      "value": "PULLED"
+    },
+    {
+      "key": "advisory.badge.warning",
+      "value": "WARNING"
+    },
+    {
+      "key": "advisory.banner.title",
+      "value": "A package in this project was pulled from the Basis registry"
+    },
+    {
+      "key": "advisory.banner.warningTitle",
+      "value": "The Basis registry has a warning about a package in this project"
+    },
+    {
+      "key": "advisory.banner.titleMany",
+      "value": "{0} packages in this project have Basis registry warnings"
+    },
+    {
+      "key": "advisory.banner.body",
+      "value": "Remove it now. It may have run harmful code when Unity loaded it, so also scan your computer and change passwords you use on it."
+    },
+    {
+      "key": "advisory.banner.warningBody",
+      "value": "Read the warning and decide whether to keep it."
+    },
+    {
+      "key": "advisory.button.remove",
+      "value": "Remove"
+    },
+    {
+      "key": "advisory.tooltip.remove",
+      "value": "Remove this package from the project and delete its downloaded copy."
+    },
+    {
+      "key": "advisory.tooltip.pill",
+      "value": "The Basis registry pulled this package or warns about it. Open it for details."
+    },
+    {
+      "key": "advisory.status.blocked",
+      "value": "{0} was pulled from the Basis registry and can't be installed: {1}"
+    },
+    {
+      "key": "shell.deeplink.unlisted",
+      "value": "{0} (not in the Basis registry)"
+    },
+    {
+      "key": "packages.status.reviewDeclined",
+      "value": "{0} wasn't installed."
+    },
+    {
+      "key": "packages.status.embeddedConflict",
+      "value": "{0} is already part of this project, so it can't be installed from another source."
+    },
+    {
+      "key": "packages.dialog.replaceTitle",
+      "value": "Replace {0}?"
+    },
+    {
+      "key": "packages.dialog.replaceBody",
+      "value": "{0} is already in {1}'s manifest.json. Installing this replaces it with the new source."
+    },
+    {
+      "key": "advisory.status.found",
+      "value": "{0} in {1} was pulled from the Basis registry: {2}. Open Packages for that project to remove it."
+    },
+    {
+      "key": "packages.verify.activity",
+      "value": "Checking {0}"
+    },
+    {
+      "key": "packages.verify.activityAll",
+      "value": "Checking the packages in {0}"
+    },
+    {
+      "key": "packages.verify.waitingForUnity",
+      "value": "Unity has {0} open, so the check waits for Unity to recompile. Switch to Unity if nothing happens."
+    },
+    {
+      "key": "packages.verify.error",
+      "value": "The package check didn't finish: {0}"
+    },
+    {
+      "key": "packages.verify.failed",
+      "value": "{0} doesn't work in this project ({1} errors). First: {2}"
+    },
+    {
+      "key": "packages.verify.failedOne",
+      "value": "{0} doesn't work in this project: {1}"
+    },
+    {
+      "key": "packages.verify.failedAll",
+      "value": "{0} has {1} package errors. First: {2}"
+    },
+    {
+      "key": "packages.verify.failedAllOne",
+      "value": "{0} has a package error: {1}"
+    },
+    {
+      "key": "packages.verify.passed",
+      "value": "{0} works in {1}: no conflicts, and the project compiles."
+    },
+    {
+      "key": "packages.verify.passedAll",
+      "value": "Every package in {0} works: no conflicts, and the project compiles."
+    },
+    {
+      "key": "packages.verify.passedDespite",
+      "value": "{0} works in {1}: no conflicts, and its code compiles. Code in {2} doesn't compile: {3}"
+    },
+    {
+      "key": "packages.verify.blockedBy",
+      "value": "{0} couldn't be fully checked because code in {1} doesn't compile: {2}"
+    },
+    {
+      "key": "packages.verify.projectScripts",
+      "value": "the project's Assets folder"
+    },
+    {
+      "key": "packages.verify.noEditor",
+      "value": "No conflicts found. Unity {0} isn't installed, so the project wasn't compiled."
+    },
+    {
+      "key": "packages.verify.unityIdle",
+      "value": "Unity has {0} open but hasn't recompiled yet. Switch to Unity, then check again."
+    },
+    {
+      "key": "packages.verify.staticOnly",
+      "value": "No conflicts found in {0}."
+    },
+    {
+      "key": "packages.verify.notCompiled",
+      "value": "The project wasn't compiled: {0}"
+    },
+    {
+      "key": "packages.check.breaksHere",
+      "value": "Breaks this project"
+    },
+    {
+      "key": "packages.check.breaksOn",
+      "value": "Fails on Basis {0}"
+    },
+    {
+      "key": "packages.check.warnings",
+      "value": "{0} warnings"
+    },
+    {
+      "key": "packages.check.stale",
+      "value": "Check again"
+    },
+    {
+      "key": "packages.check.worksHere",
+      "value": "Works here"
+    },
+    {
+      "key": "packages.check.worksOn",
+      "value": "Works on Basis {0}"
+    },
+    {
+      "key": "packages.check.notCompiled",
+      "value": "Not compiled yet"
+    },
+    {
+      "key": "packages.check.tip.project",
+      "value": "Checked in this project on Basis {0} at {1}."
+    },
+    {
+      "key": "packages.check.tip.registry",
+      "value": "The Basis registry checked it on Basis {0} at {1}."
+    },
+    {
+      "key": "packages.check.tip.first",
+      "value": "First problem: {0}"
+    },
+    {
+      "key": "packages.check.tip.staleProject",
+      "value": "Basis or the package has changed since then, so check it again."
+    },
+    {
+      "key": "packages.check.tip.staleRegistry",
+      "value": "Basis has moved on since then."
+    },
+    {
+      "key": "packages.check.moreIssues",
+      "value": "{0} more problems are in the Unity log and the 'basispm verify' output."
+    },
+    {
+      "key": "packages.detail.checks",
+      "value": "Checks"
+    },
+    {
+      "key": "packages.button.verifyAll",
+      "value": "Check packages"
+    },
+    {
+      "key": "packages.tooltip.verifyAll",
+      "value": "Looks for conflicts between this project's packages, then compiles the project with Unity to make sure nothing is broken."
+    },
+    {
+      "key": "packages.button.checkAgain",
+      "value": "Check again"
+    },
+    {
+      "key": "packages.tooltip.checkAgain",
+      "value": "Looks for conflicts with this package, then compiles the project with Unity."
+    },
+    {
+      "key": "packages.button.openCheckLog",
+      "value": "Unity log"
+    },
+    {
+      "key": "packages.tooltip.openCheckLog",
+      "value": "Opens the log Unity wrote during the last check."
+    },
+    {
+      "key": "packages.tooltip.checkPill",
+      "value": "The result of the last check of this package."
+    },
+    {
+      "key": "settings.toggle.verifyAfterInstall",
+      "value": "Check packages after installing them or updating Basis"
+    },
+    {
+      "key": "settings.toggle.verifyAfterInstall.tip",
+      "value": "After an install or a Basis update, looks for conflicts and compiles the project with Unity, then tells you if anything broke."
+    },
+    {
+      "key": "packages.apiUpgrade.applied",
+      "value": "Applied automatic API upgrade."
+    },
+    {
+      "key": "packages.apiUpgrade.appliedFor",
+      "value": "Applied automatic API upgrade for Unity {0}."
+    },
+    {
+      "key": "packages.apiUpgrade.change",
+      "value": "{0} became {1} in {2}"
+    },
+    {
+      "key": "shell.button.advanced",
+      "value": "Advanced"
+    },
+    {
+      "key": "packages.button.packageListFromFile",
+      "value": "Install list from file"
+    },
+    {
+      "key": "packages.tooltip.advanced",
+      "value": "Show or hide the tools for package developers. When on, a second row adds New package, Create package list, Install list from file, Check packages and Licenses, the Add community package from GitHub box appears, and each package's details gain Mount to edit, Submit PR, Share with team, Publish, Send to Basis and its git source. Your choice is remembered."
+    },
+    {
+      "key": "installs.tooltip.advanced",
+      "value": "Show or hide the git tools on every project: the branch and commit, changed-files and left-out-parts pills, the git summary line, and the Change branch, Parts and Changes vs Basis buttons. Your choice is remembered."
+    },
+    {
+      "key": "server.tooltip.advanced",
+      "value": "Show or hide the Server packages section, where you add, update and remove packages that are compiled into this project's Basis server. Your choice is remembered."
+    },
+    {
+      "key": "unity.tooltip.advanced",
+      "value": "Show or hide the extra editor options: Add from folder, for a Unity editor you installed without Unity Hub, and the changeset of the release you pick. Your choice is remembered."
+    },
+    {
+      "key": "settings.tooltip.advanced",
+      "value": "Show or hide the settings for developers: the package catalog URL and additional catalogs, the Unity Hub override, prerelease updates, checking packages after installs, the download cache and the detected tooling. Your choice is remembered."
     }
   ]
 }

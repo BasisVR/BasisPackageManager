@@ -55,6 +55,7 @@ public sealed class BasisChangeFileItem : ObservableObject
     public IReadOnlyList<string> Paths { get; }
     public string DisplayPath { get; }
     public string FullPath => Change.ProjectPath;
+    public string RowTooltip => L.Tr("basisChanges.tooltip.fileRow", FullPath);
     public bool HasMeta => Meta is not null;
     public bool IsChurn { get; }
     public bool IsAdded => Change.Kind == BasisChangeKind.Added;

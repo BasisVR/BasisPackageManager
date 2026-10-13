@@ -1,0 +1,27 @@
+{
+  "id": "com.basis.steamlobby",
+  "name": "Basis Steam Lobby",
+  "description": "Steam lobbies for Basis, on top of the Basis Steam Transport package. Adds a Steam Lobbies menu panel: host a session and open a Steam lobby for it, browse friends' and public lobbies, invite friends, and join over the Steam relay with no port forwarding. Desktop only (Windows, Linux, macOS).",
+  "author": "dooly123",
+  "authorUrl": "https://github.com/dooly123",
+  "category": "Networking",
+  "tags": [
+    "steam",
+    "lobby",
+    "multiplayer",
+    "invites",
+    "friends",
+    "networking"
+  ],
+  "gitUrl": "https://github.com/dooly123/Basis-Steam-Lobby-Package.git",
+  "repoUrl": "https://github.com/dooly123/Basis-Steam-Lobby-Package",
+  "unity": "6000.7",
+  "basisVersion": "developer",
+  "license": "MIT",
+  "version": "0.1.0",
+  "icon": "🎮",
+  "dependencies": {
+    "com.basis.transport.steam": "0.1.0"
+  },
+  "discord": "https://discord.gg/v6ve6WT562"
+}

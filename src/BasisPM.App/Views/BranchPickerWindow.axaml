@@ -21,13 +21,15 @@
                             <TextBlock Text="{Binding Hint}" IsVisible="{Binding HasHint}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
                             <Border Classes="card" Padding="4">
                                 <ListBox ItemsSource="{Binding Items}" Background="Transparent"
-                                         ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                         ToolTip.Tip="{loc:Tr dialog.branchPicker.tooltip.list}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate x:DataType="vm:BranchChoice">
                                             <Grid ColumnDefinitions="*,Auto" Margin="10,8">
                                                 <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
                                                            ToolTip.Tip="{Binding Label}"/>
-                                                <Border Grid.Column="1" Classes="versionPill" IsVisible="{Binding IsCurrent}" Margin="8,0,0,0">
+                                                <Border Grid.Column="1" Classes="versionPill" IsVisible="{Binding IsCurrent}" Margin="8,0,0,0"
+                                                        ToolTip.Tip="{loc:Tr dialog.branchPicker.tooltip.current}">
                                                     <TextBlock Text="{loc:Tr dialog.branchPicker.current}" FontSize="11" Classes="muted"/>
                                                 </Border>
                                             </Grid>
