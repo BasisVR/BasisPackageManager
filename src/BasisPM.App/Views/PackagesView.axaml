@@ -126,6 +126,7 @@
                             </StackPanel>
                         </Button>
                         <Button Command="{Binding InstallPackageListFromRegistryCommand}" VerticalAlignment="Center"
+                                IsVisible="{Binding HasRegistryPackageLists}"
                                 ToolTip.Tip="{loc:Tr packages.button.installPackageList}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>

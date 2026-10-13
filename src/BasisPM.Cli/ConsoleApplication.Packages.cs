@@ -503,7 +503,7 @@ internal sealed partial class ConsoleApplication
         Expect(values, 0, 0, "");
         var settings = await _settings.LoadAsync();
         List<PackageList> lists = null!;
-        await RunOperationAsync(async ct => lists = await _packageLists.LoadAsync(settings.CatalogUrl, ct), "Loading package lists" + Out.Ellipsis);
+        await RunOperationAsync(async ct => lists = await _packageLists.TryLoadAsync(settings.CatalogUrl, ct) ?? throw new InvalidOperationException("Couldn't reach the package registry to load its package lists. Check your connection, then try again."), "Loading package lists" + Out.Ellipsis);
         if (Out.JsonMode)
         {
             Out.Json(lists.Select(l => new { id = l.Id, name = l.Name, description = l.Description, author = l.Author, basisBranch = l.BasisBranch, unity = l.Unity, packages = l.Packages.Select(p => p.Id) }));
@@ -534,7 +534,7 @@ internal sealed partial class ConsoleApplication
         {
             var settings = await _settings.LoadAsync();
             List<PackageList> lists = null!;
-            await RunOperationAsync(async ct => lists = await _packageLists.LoadAsync(settings.CatalogUrl, ct), "Loading package lists" + Out.Ellipsis);
+            await RunOperationAsync(async ct => lists = await _packageLists.TryLoadAsync(settings.CatalogUrl, ct) ?? throw new InvalidOperationException("Couldn't reach the package registry to load its package lists. Check your connection, then try again."), "Loading package lists" + Out.Ellipsis);
             list = lists.FirstOrDefault(x => x.Id.Equals(value, StringComparison.OrdinalIgnoreCase)) ?? throw new InvalidOperationException(
                 $"There's no package list '{value}'." + (Suggest(value, lists.Select(l => l.Id)) is { Count: > 0 } s ? $" Did you mean {JoinOr(s.Select(x => $"'{x}'"))}?" : $" '{Prefix}list-package-lists' shows them."));
         }

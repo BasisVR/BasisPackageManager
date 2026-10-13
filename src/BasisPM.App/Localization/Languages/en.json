@@ -3151,6 +3151,10 @@
       "value": "Couldn't load any package lists from the registry."
     },
     {
+      "key": "packages.status.packageListsEmpty",
+      "value": "The package registry doesn't have any package lists yet."
+    },
+    {
       "key": "dialog.packageListPicker.title",
       "value": "Install a package list"
     },

@@ -90,4 +90,15 @@ public sealed class PackageListServiceTests
         var svc = new PackageListService(StubHttpMessageHandler.AlwaysThrows());
         Assert.Empty(await svc.LoadAsync(null));
     }
+
+    [Fact]
+    public async Task TryLoadAsync_tells_an_unreachable_registry_apart_from_one_with_no_lists()
+    {
+        Assert.Null(await new PackageListService(StubHttpMessageHandler.AlwaysThrows()).TryLoadAsync(null));
+        Assert.Null(await new PackageListService(StubHttpMessageHandler.AlwaysStatus(System.Net.HttpStatusCode.NotFound)).TryLoadAsync(null));
+
+        var empty = await new PackageListService(StubHttpMessageHandler.Always("[]")).TryLoadAsync(null);
+        Assert.NotNull(empty);
+        Assert.Empty(empty);
+    }
 }

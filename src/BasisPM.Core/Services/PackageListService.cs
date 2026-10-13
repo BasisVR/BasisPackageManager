@@ -43,12 +43,15 @@ public sealed class PackageListService
         return new UriBuilder(uri) { Path = path[..(slash + 1)] + leafName }.Uri.AbsoluteUri;
     }
 
-    public async Task<List<PackageList>> LoadAsync(string? catalogUrl, CancellationToken ct = default)
+    public async Task<List<PackageList>> LoadAsync(string? catalogUrl, CancellationToken ct = default) =>
+        await TryLoadAsync(catalogUrl, ct).ConfigureAwait(false) ?? new List<PackageList>();
+
+    public async Task<List<PackageList>?> TryLoadAsync(string? catalogUrl, CancellationToken ct = default)
     {
         // Prefer the new feed; fall back to the legacy bundles.json for registries published before the rename.
         var list = await TryFetchAsync(PackageListsUrlFor(catalogUrl), ct).ConfigureAwait(false)
-                ?? await TryFetchAsync(LegacyPackageListsUrlFor(catalogUrl), ct).ConfigureAwait(false)
-                ?? new List<PackageList>();
+                ?? await TryFetchAsync(LegacyPackageListsUrlFor(catalogUrl), ct).ConfigureAwait(false);
+        if (list is null) return null;
         list.RemoveAll(l => l is null);
         foreach (var l in list)
         {

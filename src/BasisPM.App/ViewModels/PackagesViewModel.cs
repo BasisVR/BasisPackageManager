@@ -378,8 +378,18 @@ public sealed partial class PackagesViewModel : ObservableObject
     /// <summary>Reloads the official Basis catalog plus any configured unofficial extras, merged into
     /// one list. The official catalog always wins a package-id conflict; extras contribute only ids it
     /// doesn't already define, tracked in <see cref="_unofficialIds"/> so they can be badged.</summary>
+    private bool _hasRegistryPackageLists;
+    public bool HasRegistryPackageLists { get => _hasRegistryPackageLists; private set => SetField(ref _hasRegistryPackageLists, value); }
+
+    private async Task CheckRegistryPackageListsAsync()
+    {
+        var lists = await _packageListService.TryLoadAsync(_officialCatalogUrl);
+        HasRegistryPackageLists = lists is { Count: > 0 };
+    }
+
     private async Task ReloadCatalogAsync()
     {
+        _ = CheckRegistryPackageListsAsync();
         IsBusy = true;
         try
         {
@@ -1684,11 +1694,18 @@ public sealed partial class PackagesViewModel : ObservableObject
     /// <summary>Browses the registry's package lists and installs the chosen one into a project.</summary>
     private async Task InstallPackageListFromRegistryAsync()
     {
-        SetStatus(L.Tr("packages.status.loadingPackageLists"));
-        var lists = await _packageListService.LoadAsync(_officialCatalogUrl);
+        _shell.SetStatus(L.Tr("packages.status.loadingPackageLists"));
+        var lists = await _packageListService.TryLoadAsync(_officialCatalogUrl);
+        if (lists is null)
+        {
+            _shell.SetStatus(L.Tr("packages.status.noPackageLists"), StatusKind.Error, null, InstallPackageListFromRegistryAsync, "packagelists");
+            return;
+        }
+        _shell.ClearFailure("packagelists");
+        HasRegistryPackageLists = lists.Count > 0;
         if (lists.Count == 0)
         {
-            SetStatus(L.Tr("packages.status.noPackageLists"), StatusKind.Error);
+            _shell.SetStatus(L.Tr("packages.status.packageListsEmpty"), StatusKind.Info);
             return;
         }
 

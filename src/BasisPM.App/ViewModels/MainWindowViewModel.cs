@@ -644,7 +644,13 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         NavigateTo("packages");
         SetStatus(L.Tr("shell.status.loadingPackageList"));
-        var packageLists = await _packageListService.LoadAsync(_catalogUrl);
+        var packageLists = await _packageListService.TryLoadAsync(_catalogUrl);
+        if (packageLists is null)
+        {
+            SetStatus(L.Tr("packages.status.noPackageLists"), StatusKind.Error, null, () => HandlePackageListLinkAsync(packageListId), "packagelists");
+            return;
+        }
+        ClearFailure("packagelists");
         var packageList = packageLists.FirstOrDefault(pl => string.Equals(pl.Id, packageListId, StringComparison.OrdinalIgnoreCase));
         if (packageList is null)
         {
