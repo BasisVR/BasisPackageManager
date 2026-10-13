@@ -46,6 +46,9 @@ public sealed class MainWindowViewModel : ObservableObject
     private int _updateProgress;
 
     private string? _statusProject;
+    private Failure? _statusFailure;
+    private readonly List<Failure> _failures = new();
+    private const int MaxFailures = 10;
 
     private static readonly TimeSpan BasisUpdateCheckInterval = TimeSpan.FromHours(2);
     private readonly HashSet<string> _dismissedBasisUpdates = new(StringComparer.OrdinalIgnoreCase);
@@ -75,6 +78,8 @@ public sealed class MainWindowViewModel : ObservableObject
     public RelayCommand ReviewBasisUpdateCommand { get; }
     public RelayCommand DismissBasisUpdateCommand { get; }
     public RelayCommand ShowActivitiesCommand { get; }
+    public RelayCommand RetryStatusCommand { get; }
+    public ProjectWork Work { get; } = new();
 
     public MainWindowViewModel()
     {
@@ -120,6 +125,7 @@ public sealed class MainWindowViewModel : ObservableObject
         ReviewBasisUpdateCommand = new RelayCommand(ReviewBasisUpdate);
         DismissBasisUpdateCommand = new RelayCommand(DismissBasisUpdateAsync);
         ShowActivitiesCommand = new RelayCommand(ShowActivities);
+        RetryStatusCommand = new RelayCommand(() => Retry(_statusFailure));
         ServerVM.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(ServerViewModel.NeedsDotNet10Sdk)) RefreshBlockers(); };
         PackagesVM.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(PackagesViewModel.IsInstalling)) OnPropertyChanged(nameof(IsAnythingRunning)); };
         CrashReporter.BreadcrumbProvider = () => string.Join("\n", _breadcrumbs);
@@ -279,8 +285,60 @@ public sealed class MainWindowViewModel : ObservableObject
         if (ServerVM.NeedsDotNet10Sdk)
             Blockers.Add(new BlockerItem(ActiveInstall?.DisplayName, L.Tr("settings.activity.blocker.dotnet"), L.Tr("settings.activity.blocker.getDotNet"),
                 ServerVM.OpenDotNetDownloadCommand));
+        foreach (var failure in Enumerable.Reverse(_failures))
+            Blockers.Add(new BlockerItem(failure.Project, failure.Message, L.Tr("shell.status.retry"), new RelayCommand(() => Retry(failure)),
+                new RelayCommand(() => DismissFailure(failure))));
         OnPropertyChanged(nameof(HasBlockers));
     }
+
+    public bool CanRetryStatus => _statusFailure is not null;
+
+    public void ClearFailure(string key)
+    {
+        if (_failures.RemoveAll(f => f.Key == key) == 0) return;
+        if (_statusFailure is { } shown && shown.Key == key) SetStatusFailure(null);
+        RefreshBlockers();
+    }
+
+    private void RecordFailure(string key, string? project, string message, Func<Task> retry)
+    {
+        _failures.RemoveAll(f => f.Key == key);
+        var failure = new Failure(key, project, message, retry);
+        _failures.Add(failure);
+        if (_failures.Count > MaxFailures) _failures.RemoveAt(0);
+        SetStatusFailure(failure);
+        RefreshBlockers();
+    }
+
+    private void Retry(Failure? failure)
+    {
+        if (failure is null) return;
+        _failures.Remove(failure);
+        if (ReferenceEquals(_statusFailure, failure)) SetStatus(L.Tr("shell.status.retrying"), StatusKind.Info, failure.Project);
+        RefreshBlockers();
+        _ = RunRetryAsync(failure);
+    }
+
+    private static async Task RunRetryAsync(Failure failure)
+    {
+        try { await failure.Retry(); }
+        catch (Exception ex) { DiagnosticLog.Write($"Trying again: {failure.Message}", ex); }
+    }
+
+    private void DismissFailure(Failure failure)
+    {
+        _failures.Remove(failure);
+        if (ReferenceEquals(_statusFailure, failure)) SetStatusFailure(null);
+        RefreshBlockers();
+    }
+
+    private void SetStatusFailure(Failure? failure)
+    {
+        _statusFailure = failure;
+        OnPropertyChanged(nameof(CanRetryStatus));
+    }
+
+    private sealed record Failure(string Key, string? Project, string Message, Func<Task> Retry);
 
     public void ShowActivities()
     {
@@ -344,18 +402,32 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public bool HasStatusProject => !string.IsNullOrWhiteSpace(_statusProject);
 
-    public void SetStatus(string message, StatusKind kind = StatusKind.Info, string? project = null)
+    public void SetStatus(string message, StatusKind kind = StatusKind.Info, string? project = null, Func<Task>? retry = null, string? key = null)
     {
         StatusMessage = message;
         StatusKind = kind;
         StatusProject = string.IsNullOrWhiteSpace(project) ? null : project.Trim();
+        if (kind == StatusKind.Error && retry is not null) RecordFailure(key ?? $"{StatusProject}|{message}", StatusProject, message, retry);
+        else
+        {
+            SetStatusFailure(null);
+            if (kind == StatusKind.Success && key is not null) ClearFailure(key);
+        }
         if (IsProgressNoise(message)) return;
         var line = StatusProject is null ? message : $"[{StatusProject}] {message}";
         RecordBreadcrumb(line, kind);
         _log.Add(kind switch { StatusKind.Error => LogLevel.Error, StatusKind.Success => LogLevel.Success, _ => LogLevel.Info }, line);
     }
 
-    public void DismissStatus() => SetStatus("Ready", StatusKind.Info);
+    public void DismissStatus()
+    {
+        if (_statusFailure is { } shown)
+        {
+            _failures.Remove(shown);
+            RefreshBlockers();
+        }
+        SetStatus("Ready", StatusKind.Info);
+    }
 
     // A short trail of the meaningful things that happened, for the "Open an issue" bug report.
     private void RecordBreadcrumb(string message, StatusKind kind)
@@ -528,6 +600,8 @@ public sealed class MainWindowViewModel : ObservableObject
         // Reset the live, in-memory state to what a fresh launch would show.
         LogsVM.ClearCommand.Execute(null);
         _breadcrumbs.Clear();
+        _failures.Clear();
+        RefreshBlockers();
         Localizer.Instance.SetLanguage("en");
         BasisPM.App.Views.SectionState.Clear();
         CurrentPage = NavPage.Installs;
@@ -696,7 +770,7 @@ public sealed class MainWindowViewModel : ObservableObject
             else
                 SetStatus(L.Tr("shell.status.unityNotInstalled", install.UnityVersion), StatusKind.Error);
         }
-        catch (Exception ex) { DiagnosticLog.Write("Opening the Basis project in Unity", ex); SetStatus(L.Tr("shell.status.openUnityFailed", ex.Message), StatusKind.Error); }
+        catch (Exception ex) { DiagnosticLog.Write("Opening the Basis project in Unity", ex); SetStatus(L.Tr("shell.status.openUnityFailed", ex.Message), StatusKind.Error, install.DisplayName, () => OpenProjectInUnityAsync(install), "openunity|" + install.RepoRoot); }
     }
 
     public async Task CheckForUpdatesAsync(bool manual)
@@ -728,7 +802,7 @@ public sealed class MainWindowViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write("Checking for application updates", ex);
-            if (manual) SetStatus(L.Tr("shell.status.updateCheckFailed", ex.Message), StatusKind.Error);
+            if (manual) SetStatus(L.Tr("shell.status.updateCheckFailed", ex.Message), StatusKind.Error, null, () => CheckForUpdatesAsync(manual: true), "appupdate");
         }
     }
 
@@ -753,7 +827,7 @@ public sealed class MainWindowViewModel : ObservableObject
             DiagnosticLog.Write("Applying the application update", ex);
             CrashReporter.ArmSession();   // update aborted — still running, so re-arm crash detection
             IsUpdating = false;
-            SetStatus(L.Tr("shell.status.updateFailed", ex.Message), StatusKind.Error);
+            SetStatus(L.Tr("shell.status.updateFailed", ex.Message), StatusKind.Error, null, InstallUpdateAsync, "appupdate");
         }
     }
 

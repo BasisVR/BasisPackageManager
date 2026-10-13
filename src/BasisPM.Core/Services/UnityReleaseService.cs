@@ -19,7 +19,7 @@ public sealed class UnityReleaseService
 
     public UnityReleaseService(HttpClient? http = null)
     {
-        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+        _http = http ?? HttpRetryHandler.CreateClient(TimeSpan.FromSeconds(30));
     }
 
     public async Task<IReadOnlyList<UnityRelease>> FetchAllAsync(string majorVersion = "6000", CancellationToken ct = default)

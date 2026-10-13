@@ -71,14 +71,19 @@ Running from source (`dotnet run`) skips the in-app updater — update with `git
 - **Packages** — packages bundled in the Basis checkout are detected automatically; install
   additional official packages, or add any community UPM package from a
   **GitHub or GitLab** git URL. Discovery is powered by the registry (below).
-- **Development clones (`.basisdev`)**: every package the manager clones for editing gets a
-  sidecar file, `<Unity project>/.basisdev/<package-id>.json`, that records its upstream (git URL,
-  branch or tag, sub-folder and the commit it was cloned at) and the `manifest.json` line it
-  replaced. It lives next to the clones and is kept out of your repository's `git status`. The
-  Packages tab uses it to show where each package really loads from (a folder tracked in the Basis
-  repo, a `.basisdev` clone, git or the registry) and flags anything that doesn't line up: a clone
-  hidden by the Basis repo's own copy, a clone `manifest.json` no longer points at, a missing clone,
-  or a stale mount record, each with a fix. A clone you keep around on purpose while the Basis repo
+- **Development clones (`.basisdev`)**: every package the manager installs is cloned into
+  `<Unity project>/.basisdev/<package-id>` as an editable working copy, and `manifest.json` points at
+  it with a `file:` line. Each clone gets a sidecar file, `.basisdev/<package-id>.json`, that records
+  its upstream (git URL, branch or tag, sub-folder and the commit it was cloned at) and the
+  `manifest.json` line it replaced. `.basisdev` is kept out of your repository's `git status`, so the
+  same details (version, git URL, branch or tag, sub-folder and commit) are also listed in
+  `Packages/basispackages.json`, next to `manifest.json`, which you can commit: on a fresh checkout
+  the manager reads it and offers to clone each listed package again. The Packages tab shows where
+  each package really loads from (a folder tracked in the Basis repo, a `.basisdev` clone, git or
+  the registry) and flags anything that doesn't line up: a clone hidden by the Basis repo's own copy,
+  a clone `manifest.json` no longer points at, a missing clone, a clone missing from
+  `basispackages.json`, a clone an older version left in `Packages/` (**Move to .basisdev**), or a
+  stale mount record, each with a fix. A clone you keep around on purpose while the Basis repo
   handles the package itself can be marked **Handled by Basis repo**, which stops it being flagged
   (**Flag again** undoes it).
 - **Send changes to Basis**: **Changes vs Basis** on a project (or **Send to Basis** on a package
@@ -170,12 +175,14 @@ brings uncommitted edits along; if any overlap, settle them the same way and fin
 `basisdev` lists the development clones with their recorded upstream and anything that needs
 reconciling. When the Basis repo has its own copy of a cloned package, it compares the two: how
 many files differ and which upstream commit the Basis copy matches, if any. `basisdev reconcile`
-writes missing sidecars and forgets stale mount records without touching package files or
-`manifest.json`. `basisdev use <id>` points `manifest.json` back at a clone, `basisdev release <id>`
-deletes a clone (it refuses while the clone holds uncommitted or unpushed work unless you add
-`--force`), and `basisdev restore <id>` or `basisdev reclone <id>` repairs a clone that has gone
-missing. `basisdev ignore <id>` stops flagging a clone that isn't used because the Basis repo
-handles the package itself, and `basisdev unignore <id>` flags it again.
+writes missing sidecars and `Packages/basispackages.json` entries and forgets stale mount records
+without touching package files or `manifest.json`. `basisdev use <id>` points `manifest.json` back
+at a clone, `basisdev release <id>` deletes a clone (it refuses while the clone holds uncommitted or
+unpushed work unless you add `--force`), and `basisdev restore <id>` or `basisdev reclone <id>`
+repairs a clone that has gone missing, such as one listed in `basispackages.json` on a fresh
+checkout. `basisdev move <id>` moves a clone an older version made in `Packages/` into `.basisdev`.
+`basisdev ignore <id>` stops flagging a clone that isn't used because the Basis repo handles the
+package itself, and `basisdev unignore <id>` flags it again.
 
 `contribute` lists what the project changed compared with the Basis version it's based on.
 Pick changes with `--package <id>`, `--project-files`, `--repository-files`, `--path <path>`

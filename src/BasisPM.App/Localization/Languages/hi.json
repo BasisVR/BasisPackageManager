@@ -916,7 +916,7 @@
     },
     {
       "key": "develop.confirm.packageExists",
-      "value": "Packages/{0} पहले से मौजूद है और खाली नहीं है — यह कोई बचा हुआ माउंट या स्थानीय प्रति हो सकती है।\n\nक्या इसे एक ताज़ा क्लोन से बदलें? इसकी वर्तमान सामग्री हटा दी जाएगी।"
+      "value": ".basisdev/{0} पहले से मौजूद है और खाली नहीं है — यह कोई बचा हुआ माउंट या स्थानीय प्रति हो सकती है।\n\nक्या इसे एक ताज़ा क्लोन से बदलें? इसकी वर्तमान सामग्री हटा दी जाएगी।"
     },
     {
       "key": "develop.confirm.packageThereTitle",
@@ -964,7 +964,7 @@
     },
     {
       "key": "develop.status.clearFailed",
-      "value": "Packages/{0} साफ़ नहीं किया जा सका: {1}"
+      "value": ".basisdev/{0} साफ़ नहीं किया जा सका: {1}"
     },
     {
       "key": "develop.status.gitRequired",
@@ -980,7 +980,7 @@
     },
     {
       "key": "develop.status.mountCancelled",
-      "value": "माउंट रद्द किया गया — Packages/{0} यथावत छोड़ दिया गया।"
+      "value": "माउंट रद्द किया गया — .basisdev/{0} यथावत छोड़ दिया गया।"
     },
     {
       "key": "develop.status.mountError",
@@ -992,7 +992,7 @@
     },
     {
       "key": "develop.status.mounted",
-      "value": "{0} को Packages/ में माउंट किया गया — इसे Unity में संपादित करें, फिर PR सबमिट करें।"
+      "value": "{0} को .basisdev/ में माउंट किया गया — इसे Unity में संपादित करें, फिर PR सबमिट करें।"
     },
     {
       "key": "develop.status.mounting",

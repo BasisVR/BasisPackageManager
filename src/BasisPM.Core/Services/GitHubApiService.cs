@@ -15,7 +15,7 @@ public sealed class GitHubApiService
 
     public GitHubApiService(HttpClient? http = null)
     {
-        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+        _http = http ?? HttpRetryHandler.CreateClient(TimeSpan.FromSeconds(30));
         _http.BaseAddress ??= new Uri("https://api.github.com/");
         if (!_http.DefaultRequestHeaders.UserAgent.Any())
             _http.DefaultRequestHeaders.UserAgent.ParseAdd("BasisPackageManager/1.0");

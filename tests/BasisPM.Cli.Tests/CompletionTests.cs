@@ -44,6 +44,7 @@ public sealed class CompletionTests
         Assert.Contains("--project", Complete(cli, "--pro"));
         Assert.Equal(new[] { "--backup", "--branch" }, Complete(cli, "update-basis --b"));
         Assert.Contains("reconcile", Complete(cli, "basisdev "));
+        Assert.Contains("move", Complete(cli, "basisdev "));
         Assert.Equal(new[] { "mine", "basis", "theirs", "done" }.OrderBy(s => s), Complete(cli, "resolve some/file.cs "));
         Assert.Contains("--json", Complete(cli, "status --j"));
         Assert.DoesNotContain("--json", Complete(cli, "update-basis --j"));

@@ -266,24 +266,27 @@ public sealed class ServerViewModel : ObservableObject
         await InstallServerPackageAsync(install, await LatestReleaseAsync(url) ?? url, entry.Name, entry.DisplayName);
     }
 
-    private async Task<bool> InstallServerPackageAsync(BasisInstall install, string source, string? expectedId, string label)
-    {
-        IsBusy = true;
-        SetStatus(L.Tr("server.packages.installing", label), StatusKind.Info, install);
-        try
+    private Task<bool> InstallServerPackageAsync(BasisInstall install, string source, string? expectedId, string label) =>
+        Queued(install, L.Tr("server.packages.installing", label), async () =>
         {
-            var result = await _packages.InstallAsync(install.RepoRoot, source, expectedId, line => Dispatcher.UIThread.Post(() => SetStatus(line, StatusKind.Info, install)));
-            ReportPackageResult(result);
-            return result.Ok;
-        }
-        catch (Exception ex)
-        {
-            DiagnosticLog.Write("Installing a Basis server package", ex);
-            SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error);
-            return false;
-        }
-        finally { IsBusy = false; await RefreshServerPackagesAsync(); }
-    }
+            var key = "server|" + install.RepoRoot + "|" + (expectedId ?? source);
+            Task Retry() => InstallServerPackageAsync(install, source, expectedId, label);
+            IsBusy = true;
+            SetStatus(L.Tr("server.packages.installing", label), StatusKind.Info, install);
+            try
+            {
+                var result = await _packages.InstallAsync(install.RepoRoot, source, expectedId, line => Dispatcher.UIThread.Post(() => SetStatus(line, StatusKind.Info, install)));
+                ReportPackageResult(result, install, Retry, key);
+                return result.Ok;
+            }
+            catch (Exception ex)
+            {
+                DiagnosticLog.Write("Installing a Basis server package", ex);
+                _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error, install.DisplayName, Retry, key);
+                return false;
+            }
+            finally { IsBusy = false; await RefreshServerPackagesAsync(); }
+        });
 
     private async Task UpdateServerPackageAsync(ServerPackageRow? row)
     {
@@ -295,12 +298,20 @@ public sealed class ServerViewModel : ObservableObject
             if (!await Dialogs.ConfirmAsync(L.Tr("server.packages.discardTitle"), L.Tr("server.packages.discardUpdateBody", row.DisplayName))) return;
             discard = true;
         }
-        IsBusy = true;
-        SetStatus(L.Tr("server.packages.updating", row.DisplayName));
-        try { ReportPackageResult(await _packages.UpdateAsync(install.RepoRoot, row.Id, null, discard, line => Dispatcher.UIThread.Post(() => SetStatus(line, StatusKind.Info, install)))); }
-        catch (Exception ex) { DiagnosticLog.Write($"Updating Basis server package {row.Id}", ex); SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
-        finally { IsBusy = false; await RefreshServerPackagesAsync(); }
+        await UpdateServerPackageAsync(install, row.Id, row.DisplayName, discard);
     }
+
+    private Task UpdateServerPackageAsync(BasisInstall install, string id, string label, bool discard) =>
+        Queued(install, L.Tr("server.packages.updating", label), async () =>
+        {
+            var key = "server|" + install.RepoRoot + "|" + id;
+            Task Retry() => UpdateServerPackageAsync(install, id, label, discard);
+            IsBusy = true;
+            SetStatus(L.Tr("server.packages.updating", label), StatusKind.Info, install);
+            try { ReportPackageResult(await _packages.UpdateAsync(install.RepoRoot, id, null, discard, line => Dispatcher.UIThread.Post(() => SetStatus(line, StatusKind.Info, install))), install, Retry, key); }
+            catch (Exception ex) { DiagnosticLog.Write($"Updating Basis server package {id}", ex); _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error, install.DisplayName, Retry, key); }
+            finally { IsBusy = false; await RefreshServerPackagesAsync(); }
+        });
 
     private async Task RemoveServerPackageAsync(ServerPackageRow? row)
     {
@@ -312,22 +323,43 @@ public sealed class ServerViewModel : ObservableObject
             if (!await Dialogs.ConfirmAsync(L.Tr("server.packages.discardTitle"), L.Tr("server.packages.discardRemoveBody", row.DisplayName))) return;
             discard = true;
         }
-        IsBusy = true;
-        try { ReportPackageResult(await _packages.RemoveAsync(install.RepoRoot, row.Id, discard)); }
-        catch (Exception ex) { DiagnosticLog.Write($"Removing Basis server package {row.Id}", ex); SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
-        finally { IsBusy = false; await RefreshServerPackagesAsync(); }
+        await RemoveServerPackageAsync(install, row.Id, row.DisplayName, discard);
     }
+
+    private Task RemoveServerPackageAsync(BasisInstall install, string id, string label, bool discard) =>
+        Queued(install, L.Tr("packages.status.removing", label), async () =>
+        {
+            var key = "server|" + install.RepoRoot + "|" + id;
+            Task Retry() => RemoveServerPackageAsync(install, id, label, discard);
+            IsBusy = true;
+            try { ReportPackageResult(await _packages.RemoveAsync(install.RepoRoot, id, discard), install, Retry, key); }
+            catch (Exception ex) { DiagnosticLog.Write($"Removing Basis server package {id}", ex); _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error, install.DisplayName, Retry, key); }
+            finally { IsBusy = false; await RefreshServerPackagesAsync(); }
+        });
 
     private async Task RestoreServerPackagesAsync()
     {
         if (_install is null) { MissingInstall(); return; }
-        var install = _install;
-        IsBusy = true;
-        SetStatus(L.Tr("server.packages.restoring"));
-        try { ReportPackageResult(await _packages.RestoreAsync(install.RepoRoot, line => Dispatcher.UIThread.Post(() => SetStatus(line, StatusKind.Info, install)))); }
-        catch (Exception ex) { DiagnosticLog.Write("Restoring the Basis server packages", ex); SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error); }
-        finally { IsBusy = false; await RefreshServerPackagesAsync(); }
+        await RestoreServerPackagesAsync(_install);
     }
+
+    private Task RestoreServerPackagesAsync(BasisInstall install) =>
+        Queued(install, L.Tr("server.packages.restoring"), async () =>
+        {
+            var key = "server|" + install.RepoRoot;
+            Task Retry() => RestoreServerPackagesAsync(install);
+            IsBusy = true;
+            SetStatus(L.Tr("server.packages.restoring"), StatusKind.Info, install);
+            try { ReportPackageResult(await _packages.RestoreAsync(install.RepoRoot, line => Dispatcher.UIThread.Post(() => SetStatus(line, StatusKind.Info, install))), install, Retry, key); }
+            catch (Exception ex) { DiagnosticLog.Write("Restoring the Basis server packages", ex); _shell.SetStatus(L.Tr("server.packages.error", ex.Message), StatusKind.Error, install.DisplayName, Retry, key); }
+            finally { IsBusy = false; await RefreshServerPackagesAsync(); }
+        });
+
+    private Task Queued(BasisInstall install, string label, Func<Task> work) =>
+        _shell.Work.RunAsync(install.RepoRoot, label, work, running => SetStatus(L.Tr("shell.work.waiting", running), StatusKind.Info, install));
+
+    private Task<T> Queued<T>(BasisInstall install, string label, Func<Task<T>> work) =>
+        _shell.Work.RunAsync(install.RepoRoot, label, work, running => SetStatus(L.Tr("shell.work.waiting", running), StatusKind.Info, install));
 
     private void OpenServerPackageFolder(ServerPackageRow? row)
     {
@@ -351,8 +383,9 @@ public sealed class ServerViewModel : ObservableObject
         }
     }
 
-    private void ReportPackageResult(ServerPackageResult result) =>
-        SetStatus(result.Ok ? L.Tr("server.packages.rebuildHint", result.Message) : result.Message, result.Ok ? StatusKind.Success : StatusKind.Error);
+    private void ReportPackageResult(ServerPackageResult result, BasisInstall install, Func<Task> retry, string key) =>
+        _shell.SetStatus(result.Ok ? L.Tr("server.packages.rebuildHint", result.Message) : result.Message, result.Ok ? StatusKind.Success : StatusKind.Error,
+            install.DisplayName, result.Ok ? null : retry, key);
 
     private void RaiseServerPackages()
     {
@@ -378,17 +411,22 @@ public sealed class ServerViewModel : ObservableObject
             SetStatus("The .NET 10 SDK is required to compile the Basis server.", StatusKind.Error, install);
             return false;
         }
-        IsBusy = true;
-        SetStatus("Building the Basis server…", StatusKind.Info, install);
-        try
+        return await Queued(install, "Building the Basis server…", async () =>
         {
-            var result = await _service.BuildAsync(install.RepoRoot);
-            SetStatus(result.Success ? "Basis server build completed." : $"Server build failed: {LastUsefulLine(result.Output)}",
-                result.Success ? StatusKind.Success : StatusKind.Error, install);
-            return result.Success;
-        }
-        catch (Exception ex) { DiagnosticLog.Write("Building the Basis server", ex); SetStatus($"Server build failed: {ex.Message}", StatusKind.Error, install); return false; }
-        finally { IsBusy = false; await RefreshAsync(); }
+            var key = "serverbuild|" + install.RepoRoot;
+            Task Retry() => BuildServerAsync(install);
+            IsBusy = true;
+            SetStatus("Building the Basis server…", StatusKind.Info, install);
+            try
+            {
+                var result = await _service.BuildAsync(install.RepoRoot);
+                _shell.SetStatus(result.Success ? "Basis server build completed." : $"Server build failed: {LastUsefulLine(result.Output)}",
+                    result.Success ? StatusKind.Success : StatusKind.Error, install.DisplayName, result.Success ? null : Retry, key);
+                return result.Success;
+            }
+            catch (Exception ex) { DiagnosticLog.Write("Building the Basis server", ex); _shell.SetStatus($"Server build failed: {ex.Message}", StatusKind.Error, install.DisplayName, Retry, key); return false; }
+            finally { IsBusy = false; await RefreshAsync(); }
+        });
     }
 
     private async Task RunAsync()

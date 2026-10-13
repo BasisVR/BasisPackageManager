@@ -15,6 +15,7 @@ public sealed class BasisDevService
     private readonly UnityProjectService _projects;
     private readonly MountRegistry _registry;
     private readonly MountService _mounts;
+    private readonly ServerPackageService _serverPackages;
 
     public BasisDevService(GitService git, UnityProjectService projects, MountRegistry registry, MountService mounts)
     {
@@ -22,6 +23,7 @@ public sealed class BasisDevService
         _projects = projects;
         _registry = registry;
         _mounts = mounts;
+        _serverPackages = new ServerPackageService(git);
     }
 
     public BasisDevReport Scan(BasisInstall install) => Classify(install, install.Manifest.Dependencies, null);
@@ -59,7 +61,7 @@ public sealed class BasisDevService
         {
             return action switch
             {
-                BasisDevAction.Record => Record(install, package),
+                BasisDevAction.Record => await RecordAsync(install, package, ct).ConfigureAwait(false),
                 BasisDevAction.Prune => Prune(install, package),
                 BasisDevAction.UseClone => await UseCloneAsync(install, package, force, ct).ConfigureAwait(false),
                 BasisDevAction.Release => await ReleaseAsync(install, package, force, ct).ConfigureAwait(false),
@@ -67,6 +69,7 @@ public sealed class BasisDevService
                 BasisDevAction.Reclone => await RecloneAsync(install, package, onProgress, ct).ConfigureAwait(false),
                 BasisDevAction.Ignore => MarkHandledByProject(install, package, true),
                 BasisDevAction.Unignore => MarkHandledByProject(install, package, false),
+                BasisDevAction.Move => await MoveAsync(install, package, ct).ConfigureAwait(false),
                 _ => BasisDevResult.Fail($"{Describe(action)} isn't supported."),
             };
         }
@@ -87,8 +90,8 @@ public sealed class BasisDevService
             var record = package.Actions.Contains(BasisDevAction.Record);
             if (!record && !package.Actions.Contains(BasisDevAction.Prune)) continue;
             BasisDevResult result;
-            try { result = record ? Record(install, package) : Prune(install, package); }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
+            try { result = record ? await RecordAsync(install, package, ct).ConfigureAwait(false) : Prune(install, package); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or InvalidDataException)
             {
                 DiagnosticLog.Write($"Reconciling {package.Id}", ex);
                 result = BasisDevResult.Fail($"{package.Id}: {ex.Message}");
@@ -111,6 +114,7 @@ public sealed class BasisDevService
         BasisDevAction.Reclone => "Clone again",
         BasisDevAction.Ignore => "Ignore",
         BasisDevAction.Unignore => "Unignore",
+        BasisDevAction.Move => "Move to " + BasisDevStore.FolderName,
         _ => action.ToString(),
     };
 
@@ -121,6 +125,7 @@ public sealed class BasisDevService
         foreach (var package in _projects.ListEmbeddedPackages(project)) embedded.TryAdd(package.Id, package);
         var sidecars = new Dictionary<string, BasisDevSidecar>(StringComparer.OrdinalIgnoreCase);
         foreach (var sidecar in BasisDevStore.List(project)) sidecars.TryAdd(sidecar.Package, sidecar);
+        var listed = BasisPackagesStore.Read(project);
         var records = new Dictionary<string, MountRecord>(StringComparer.OrdinalIgnoreCase);
         foreach (var record in _registry.ForInstall(project)) records[record.PackageId] = record;
         var clones = BasisDevStore.ListClones(project);
@@ -129,6 +134,7 @@ public sealed class BasisDevService
         ids.UnionWith(manifest.Keys);
         ids.UnionWith(embedded.Keys);
         ids.UnionWith(sidecars.Keys);
+        ids.UnionWith(listed.Keys);
         ids.UnionWith(records.Keys);
         ids.UnionWith(clones.Keys);
 
@@ -138,15 +144,17 @@ public sealed class BasisDevService
             manifest.TryGetValue(id, out var value);
             embedded.TryGetValue(id, out var local);
             sidecars.TryGetValue(id, out var sidecar);
+            listed.TryGetValue(id, out var entry);
             records.TryGetValue(id, out var record);
             clones.TryGetValue(id, out var looseClone);
-            packages.Add(Classify(project, id, value, local, sidecar, record, looseClone, trackedFolders));
+            packages.Add(Classify(project, id, value, local, sidecar, entry, record, looseClone, trackedFolders));
         }
         return new BasisDevReport(project, packages);
     }
 
-    private static BasisDevPackage Classify(string project, string id, string? value, LocalPackage? local, BasisDevSidecar? sidecar, MountRecord? record, string? looseClone, IReadOnlySet<string>? trackedFolders)
+    private static BasisDevPackage Classify(string project, string id, string? value, LocalPackage? local, BasisDevSidecar? sidecar, BasisPackageEntry? entry, MountRecord? record, string? looseClone, IReadOnlySet<string>? trackedFolders)
     {
+        sidecar ??= entry is null ? null : BasisPackagesStore.SidecarFor(id, entry);
         var candidates = new[] { sidecar is null ? null : BasisDevStore.ResolveFolder(project, sidecar), record?.FolderPath, looseClone };
         var cloneFolder = candidates.FirstOrDefault(MountService.IsWorkingClone) ?? candidates.FirstOrDefault(c => c is not null);
         if (cloneFolder is null && local is not null && trackedFolders is not null && !trackedFolders.Contains(local.FolderName) && MountService.IsWorkingClone(local.FolderPath))
@@ -168,6 +176,8 @@ public sealed class BasisDevService
         {
             if (!cloneActive && sidecar?.HandledByProject != true) issues.Add(local is not null ? BasisDevIssueKind.Shadowed : BasisDevIssueKind.Detached);
             if (sidecar is null) issues.Add(BasisDevIssueKind.Unrecorded);
+            else if (entry is null && cloneActive && BasisDevStore.IsCloneFolder(project, cloneFolder)) issues.Add(BasisDevIssueKind.Unlisted);
+            if (embeddedIsClone && (sidecar is not null || record is not null)) issues.Add(BasisDevIssueKind.InPackages);
         }
         else if ((sidecar is not null || record is not null) && cloneFolder is not null)
         {
@@ -183,6 +193,7 @@ public sealed class BasisDevService
             EmbeddedFolder = local?.FolderPath,
             EmbeddedTracked = tracked,
             Sidecar = sidecar,
+            Listed = entry,
             RecordFolder = record?.FolderPath,
             RecordOriginal = string.IsNullOrWhiteSpace(record?.OriginalManifestValue) ? null : record.OriginalManifestValue,
             CloneFolder = cloneFolder,
@@ -202,14 +213,26 @@ public sealed class BasisDevService
         return UpmGitUrl.Parse(value) is not null ? PackageSourceKind.Git : PackageSourceKind.Registry;
     }
 
-    private BasisDevResult Record(BasisInstall install, BasisDevPackage package)
+    private async Task<BasisDevResult> RecordAsync(BasisInstall install, BasisDevPackage package, CancellationToken ct)
     {
-        if (package.Proposed is null) return BasisDevResult.Fail($"Couldn't work out where {package.Id} comes from, so it wasn't recorded.");
-        package.Proposed.Recorded = DateTimeOffset.UtcNow;
-        BasisDevStore.Write(install.UnityProjectPath, package.Proposed);
+        var sidecar = package.Sidecar ?? package.Proposed;
+        if (sidecar is null) return BasisDevResult.Fail($"Couldn't work out where {package.Id} comes from, so it wasn't recorded.");
+        if (package.Sidecar is null)
+        {
+            sidecar.Recorded = DateTimeOffset.UtcNow;
+            BasisDevStore.Write(install.UnityProjectPath, sidecar);
+        }
         ExcludeFromProject(install, package.CloneFolder);
-        var upstream = package.Proposed.Upstream;
-        return BasisDevResult.Success($"Recorded {package.Id}: {DescribeUpstream(upstream)}.");
+        var listed = package.Listed is null && package.CloneActive && await ListAsync(install, package.Id, package.CloneFolder, sidecar.Upstream, ct).ConfigureAwait(false);
+        return BasisDevResult.Success($"Recorded {package.Id}: {DescribeUpstream(sidecar.Upstream)}" + (listed ? $", listed in Packages/{BasisPackagesStore.FileName}." : "."));
+    }
+
+    private async Task<bool> ListAsync(BasisInstall install, string id, string? cloneFolder, BasisDevUpstream upstream, CancellationToken ct)
+    {
+        if (cloneFolder is null || !BasisDevStore.IsCloneFolder(install.UnityProjectPath, cloneFolder) || string.IsNullOrWhiteSpace(upstream.Url)) return false;
+        var listed = new BasisDevUpstream { Url = upstream.Url, Ref = upstream.Ref, Path = upstream.Path, Commit = upstream.Commit ?? await _git.ResolveCommitAsync(cloneFolder, "HEAD", ct).ConfigureAwait(false) };
+        BasisPackagesStore.Set(install.UnityProjectPath, id, BasisPackagesStore.EntryFor(listed, BasisDevStore.PackageRoot(cloneFolder, upstream.Path)));
+        return true;
     }
 
     private BasisDevResult MarkHandledByProject(BasisInstall install, BasisDevPackage package, bool handled)
@@ -224,6 +247,7 @@ public sealed class BasisDevService
         sidecar.HandledByProject = handled ? true : null;
         sidecar.Recorded ??= DateTimeOffset.UtcNow;
         BasisDevStore.Write(install.UnityProjectPath, sidecar);
+        if (handled && package.Listed is not null) BasisPackagesStore.Remove(install.UnityProjectPath, package.Id);
         ExcludeFromProject(install, package.CloneFolder);
         var folder = RelativeTo(install.UnityProjectPath, package.CloneFolder);
         return BasisDevResult.Success(handled
@@ -243,7 +267,7 @@ public sealed class BasisDevService
         if (package.EmbeddedFolder is not null) return BasisDevResult.Fail($"Packages/{Path.GetFileName(package.EmbeddedFolder)} takes precedence over the clone. Release one of them first.");
         if (!IsSafeCloneFolder(install.UnityProjectPath, package.CloneFolder)) return BasisDevResult.Fail($"{package.CloneFolder} is outside this project's Packages and {BasisDevStore.FolderName} folders.");
 
-        var line = "file:" + Path.GetRelativePath(Path.Combine(install.UnityProjectPath, "Packages"), package.PackageRoot).Replace('\\', '/');
+        var line = BasisDevStore.ManifestLine(install.UnityProjectPath, package.PackageRoot);
         var info = await _projects.LoadAsync(install.UnityProjectPath, ct).ConfigureAwait(false);
         info.Manifest.Dependencies.TryGetValue(package.Id, out var previous);
         if (!force && !string.IsNullOrWhiteSpace(previous) && string.Equals(previous, await CommittedLineAsync(install, package.Id, ct).ConfigureAwait(false), StringComparison.Ordinal))
@@ -266,7 +290,8 @@ public sealed class BasisDevService
         sidecar.Recorded = DateTimeOffset.UtcNow;
         BasisDevStore.Write(install.UnityProjectPath, sidecar);
         ExcludeFromProject(install, package.CloneFolder);
-        return BasisDevResult.Success($"{package.Id} now loads from {RelativeTo(install.UnityProjectPath, package.PackageRoot)}.");
+        var note = await TryListAsync(install, package.Id, package.CloneFolder, sidecar.Upstream, ct).ConfigureAwait(false);
+        return BasisDevResult.Success($"{package.Id} now loads from {RelativeTo(install.UnityProjectPath, package.PackageRoot)}.{note}");
     }
 
     private async Task<BasisDevResult> ReleaseAsync(BasisInstall install, BasisDevPackage package, bool force, CancellationToken ct)
@@ -345,7 +370,89 @@ public sealed class BasisDevService
         sidecar.Recorded = DateTimeOffset.UtcNow;
         BasisDevStore.Write(install.UnityProjectPath, sidecar);
         ExcludeFromProject(install, folder);
-        return BasisDevResult.Success($"Cloned {package.Id} again into {RelativeTo(install.UnityProjectPath, folder)}.");
+        var note = package.Listed is null && LocalTarget(install.UnityProjectPath, package.ManifestValue) is { } target && IsInside(target, folder)
+            ? await TryListAsync(install, package.Id, folder, sidecar.Upstream, ct).ConfigureAwait(false) : "";
+        return BasisDevResult.Success($"Cloned {package.Id} again into {RelativeTo(install.UnityProjectPath, folder)}.{note}");
+    }
+
+    private async Task<BasisDevResult> MoveAsync(BasisInstall install, BasisDevPackage package, CancellationToken ct)
+    {
+        var project = install.UnityProjectPath;
+        var from = package.CloneFolder;
+        if (!package.CloneExists || from is null || package.PackageRoot is null) return BasisDevResult.Fail($"{package.Id} has no clone to move.");
+        if (!IsSafeCloneFolder(project, from)) return BasisDevResult.Fail($"{from} is outside this project's Packages and {BasisDevStore.FolderName} folders, so it was left alone.");
+        if (!BasisDevStore.IsValidId(package.Id)) return BasisDevResult.Fail($"\"{package.Id}\" can't be used as a folder name.");
+        var to = BasisDevStore.CloneFolder(project, package.Id);
+        if (SamePath(from, to)) return BasisDevResult.Fail($"{package.Id} is already in {BasisDevStore.FolderName}.");
+        if (Directory.Exists(to) && Directory.EnumerateFileSystemEntries(to).Any()) return BasisDevResult.Fail($"{RelativeTo(project, to)} already exists. Move or delete it, then try again.");
+        if (await Task.Run(() => MountService.DeleteBlocker(project, from), ct).ConfigureAwait(false) is { } blocker)
+            return BasisDevResult.Fail($"Couldn't move {RelativeTo(project, from)}: {blocker}");
+
+        var line = BasisDevStore.ManifestLine(project, Path.GetFullPath(Path.Combine(to, Path.GetRelativePath(from, package.PackageRoot))));
+        var info = await _projects.LoadAsync(project, ct).ConfigureAwait(false);
+        info.Manifest.Dependencies.TryGetValue(package.Id, out var previous);
+        info.Manifest.Dependencies[package.Id] = line;
+        await UnityProjectService.SaveManifestAsync(project, info.Manifest, ct).ConfigureAwait(false);
+        try
+        {
+            if (Directory.Exists(to)) Directory.Delete(to);
+            Directory.CreateDirectory(BasisDevStore.Root(project));
+            Directory.Move(from, to);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            DiagnosticLog.Write($"Moving {from} to {to}", ex);
+            if (previous is null) info.Manifest.Dependencies.Remove(package.Id);
+            else info.Manifest.Dependencies[package.Id] = previous;
+            await UnityProjectService.SaveManifestAsync(project, info.Manifest, CancellationToken.None).ConfigureAwait(false);
+            var reason = OperatingSystem.IsWindows() && UnityProjectService.IsOpenInUnity(project) ? $"{ex.Message} Close Unity, then try again." : ex.Message;
+            return BasisDevResult.Fail($"Couldn't move {RelativeTo(project, from)} to {RelativeTo(project, to)}: {reason}");
+        }
+        install.Manifest = info.Manifest;
+
+        var sidecar = package.Sidecar ?? package.Proposed ?? new BasisDevSidecar { Package = package.Id, Tool = BasisDevStore.ToolName };
+        sidecar.Folder = BasisDevStore.RelativeFolder(project, to);
+        sidecar.Manifest.Original ??= package.RecordOriginal ?? (previous is { Length: > 0 } && LocalTarget(project, previous) is null ? previous : null);
+        sidecar.Manifest.Mounted = line;
+        sidecar.Recorded ??= DateTimeOffset.UtcNow;
+        if (string.IsNullOrWhiteSpace(sidecar.Upstream.Url) && UpmGitUrl.Parse(sidecar.Manifest.Original) is { } original)
+            sidecar.Upstream = new BasisDevUpstream { Url = original.CloneUrl, Ref = original.Ref, Path = original.Path };
+        BasisDevStore.Write(project, sidecar);
+        if (_registry.Find(project, package.Id) is { } record) _registry.Add(record with { FolderPath = to });
+        GitExclude.Remove(install.RepoRoot, from, _git.GetCommonGitDir);
+        ExcludeFromProject(install, to);
+        var notes = await TryListAsync(install, package.Id, to, sidecar.Upstream, ct).ConfigureAwait(false) + await RelinkServerAsync(install, package.Id, from, to, ct).ConfigureAwait(false);
+        return BasisDevResult.Success($"Moved {RelativeTo(project, from)} to {RelativeTo(project, to)}; manifest.json loads {package.Id} from {line}.{notes}");
+    }
+
+    private async Task<string> TryListAsync(BasisInstall install, string id, string folder, BasisDevUpstream upstream, CancellationToken ct)
+    {
+        try
+        {
+            await ListAsync(install, id, folder, upstream, ct).ConfigureAwait(false);
+            return "";
+        }
+        catch (Exception ex) when (ex is InvalidDataException or IOException or UnauthorizedAccessException or ArgumentException)
+        {
+            DiagnosticLog.Write($"Listing {id} in {BasisPackagesStore.FileName}", ex);
+            return $" It isn't listed in Packages/{BasisPackagesStore.FileName} yet: {ex.Message}";
+        }
+    }
+
+    private async Task<string> RelinkServerAsync(BasisInstall install, string id, string from, string to, CancellationToken ct)
+    {
+        try
+        {
+            if (!ServerPackageService.HasServer(install.RepoRoot) || !_serverPackages.LoadLinks(install.RepoRoot).TryGetValue(id, out var link) || !IsInside(link, from)) return "";
+            var moved = Path.GetFullPath(Path.Combine(to, Path.GetRelativePath(from, link)));
+            var result = await _serverPackages.LinkAsync(install.RepoRoot, id, moved, ct).ConfigureAwait(false);
+            return result.Ok ? $" The Basis Server builds it from {RelativeTo(install.UnityProjectPath, moved)} now." : $" The Basis Server still points at the old folder: {result.Message}";
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            DiagnosticLog.Write($"Relinking the Basis Server side of {id}", ex);
+            return $" The Basis Server still points at the old folder: {ex.Message}";
+        }
     }
 
     private async Task<BasisDevSidecar?> ProposeAsync(BasisInstall install, BasisDevPackage package, CancellationToken ct)

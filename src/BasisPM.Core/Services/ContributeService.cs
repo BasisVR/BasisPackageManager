@@ -45,17 +45,22 @@ public sealed class ContributeService
             return ContributeResult.Fail($"Couldn't look up {upstream.Owner}/{upstream.Repo} on GitHub. Check your connection and sign-in, then try again.");
         var baseBranch = repo.DefaultBranch is { Length: > 0 } db ? db : "main";
 
-        onProgress?.Invoke($"Creating branch {pr.Branch}…");
-        var branch = await _git.CheckoutNewBranchAsync(folderPath, pr.Branch, ct).ConfigureAwait(false);
-        if (!branch.Ok) return ContributeResult.Fail($"Couldn't create branch '{pr.Branch}': {branch.Output}");
+        var resuming = string.Equals(await _git.GetCurrentBranchAsync(folderPath, ct).ConfigureAwait(false), pr.Branch, StringComparison.Ordinal);
+        if (!resuming)
+        {
+            onProgress?.Invoke($"Creating branch {pr.Branch}…");
+            var branch = await _git.CheckoutNewBranchAsync(folderPath, pr.Branch, ct).ConfigureAwait(false);
+            if (!branch.Ok) return ContributeResult.Fail($"Couldn't create branch '{pr.Branch}': {branch.Output}");
+        }
 
         await _git.AddAllAsync(folderPath, ct).ConfigureAwait(false);
         onProgress?.Invoke("Committing…");
         var commit = await _git.CommitAsync(folderPath, pr.CommitMessage ?? pr.Title, user.Name ?? user.Login, user.NoReplyEmail, ct).ConfigureAwait(false);
-        if (!commit.Ok)
+        var nothingToCommit = !commit.Ok && commit.Output.Contains("nothing to commit", StringComparison.OrdinalIgnoreCase);
+        if (!commit.Ok && !(nothingToCommit && resuming))
         {
             // An empty commit means there was nothing to submit; pushing it would open a PR with no diff.
-            if (commit.Output.Contains("nothing to commit", StringComparison.OrdinalIgnoreCase))
+            if (nothingToCommit)
                 return ContributeResult.Fail("No changes to submit — edit the package in Unity first.");
             return ContributeResult.Fail($"Commit failed: {commit.Output}");
         }
@@ -88,6 +93,8 @@ public sealed class ContributeService
         onProgress?.Invoke("Opening the pull request…");
         try
         {
+            if (resuming && await _api.FindOpenPullRequestAsync(token, upstream.Owner, upstream.Repo, head, ct).ConfigureAwait(false) is { } open)
+                return ContributeResult.Success(open.HtmlUrl, forked);
             var result = await _api.CreatePullRequestAsync(token, upstream.Owner, upstream.Repo, pr.Title, head, baseBranch, pr.Body, ct).ConfigureAwait(false);
             return ContributeResult.Success(result.HtmlUrl, forked);
         }

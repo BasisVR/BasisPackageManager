@@ -916,7 +916,7 @@
     },
     {
       "key": "develop.confirm.packageExists",
-      "value": "Packages/{0} はすでに存在し、空ではありません — 残ったマウントかローカルコピーの可能性があります。\n\n新しいクローンで置き換えますか？現在の内容は削除されます。"
+      "value": ".basisdev/{0} はすでに存在し、空ではありません — 残ったマウントかローカルコピーの可能性があります。\n\n新しいクローンで置き換えますか？現在の内容は削除されます。"
     },
     {
       "key": "develop.confirm.packageThereTitle",
@@ -964,7 +964,7 @@
     },
     {
       "key": "develop.status.clearFailed",
-      "value": "Packages/{0} をクリアできませんでした: {1}"
+      "value": ".basisdev/{0} をクリアできませんでした: {1}"
     },
     {
       "key": "develop.status.gitRequired",
@@ -980,7 +980,7 @@
     },
     {
       "key": "develop.status.mountCancelled",
-      "value": "マウントをキャンセルしました — Packages/{0} はそのままです。"
+      "value": "マウントをキャンセルしました — .basisdev/{0} はそのままです。"
     },
     {
       "key": "develop.status.mountError",
@@ -992,7 +992,7 @@
     },
     {
       "key": "develop.status.mounted",
-      "value": "{0} を Packages/ にマウントしました — Unity で編集してから「PR を送信」してください。"
+      "value": "{0} を .basisdev/ にマウントしました — Unity で編集してから「PR を送信」してください。"
     },
     {
       "key": "develop.status.mounting",

@@ -20,7 +20,7 @@ public sealed class AnnouncementService
 
     public AnnouncementService(HttpClient? http = null)
     {
-        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+        _http = http ?? HttpRetryHandler.CreateClient(TimeSpan.FromSeconds(20));
     }
 
     /// <summary>Where announcements are posted — a hand-edited JSON file at the website root.</summary>

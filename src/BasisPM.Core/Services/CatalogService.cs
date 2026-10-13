@@ -15,7 +15,7 @@ public sealed class CatalogService
 
     public CatalogService(HttpClient? http = null)
     {
-        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+        _http = http ?? HttpRetryHandler.CreateClient(TimeSpan.FromSeconds(20));
     }
 
     /// <summary>The Basis package registry (basisvr.org/packages) — used when no catalog URL is configured.</summary>

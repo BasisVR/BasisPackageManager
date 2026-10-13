@@ -138,4 +138,59 @@ public sealed class BasisDevItemTests
         Assert.False(item.Choices[0].IsPrimary);
         Assert.Equal(".basisdev/dev.x (not used, handled by the project)", new BasisDevItem(Shadowed() with { Sidecar = sidecar, Issues = Array.Empty<BasisDevIssueKind>() }, Install(basisCheckout: false)).CloneText);
     }
+
+    [AvaloniaFact]
+    public void Clone_left_in_packages_offers_to_move_it_into_basisdev()
+    {
+        Localizer.Instance.SetLanguage("en");
+        var folder = Path.Combine(Project, "Packages", "com.x");
+        var package = new BasisDevPackage
+        {
+            Id = "com.x",
+            Source = PackageSourceKind.DevClone,
+            EmbeddedFolder = folder,
+            CloneFolder = folder,
+            CloneExists = true,
+            CloneActive = true,
+            PackageRoot = folder,
+            Sidecar = new BasisDevSidecar { Package = "com.x", Folder = "Packages/com.x", Upstream = new BasisDevUpstream { Url = "https://github.com/o/x.git" } },
+            Issues = new[] { BasisDevIssueKind.InPackages },
+        };
+
+        var item = new BasisDevItem(package, Install());
+
+        Assert.Equal("Clone in Packages", item.IssueLabel);
+        Assert.Equal("Packages/com.x is a clone inside the project's Packages folder. Package Manager clones belong in .basisdev/com.x.", item.IssueText);
+        var move = Assert.Single(item.Choices);
+        Assert.Equal(BasisDevAction.Move, move.Action);
+        Assert.Equal("Move to .basisdev", move.Label);
+        Assert.Equal("Move Packages/com.x to .basisdev/com.x and point manifest.json at it", move.Tooltip);
+        Assert.True(move.IsPrimary);
+        Assert.False(move.IsDestructive);
+    }
+
+    [AvaloniaFact]
+    public void Clone_missing_from_basispackages_offers_to_record_it()
+    {
+        Localizer.Instance.SetLanguage("en");
+        var folder = Path.Combine(Project, ".basisdev", "com.y");
+        var package = new BasisDevPackage
+        {
+            Id = "com.y",
+            Source = PackageSourceKind.DevClone,
+            ManifestValue = "file:../.basisdev/com.y",
+            CloneFolder = folder,
+            CloneExists = true,
+            CloneActive = true,
+            PackageRoot = folder,
+            Sidecar = new BasisDevSidecar { Package = "com.y", Folder = ".basisdev/com.y", Upstream = new BasisDevUpstream { Url = "https://github.com/o/y.git" } },
+            Issues = new[] { BasisDevIssueKind.Unlisted },
+        };
+
+        var item = new BasisDevItem(package, Install());
+
+        Assert.Equal("Not in basispackages.json", item.IssueLabel);
+        Assert.Equal("Unity loads .basisdev/com.y, but Packages/basispackages.json doesn't list it, so other copies of the project can't clone it again.", item.IssueText);
+        Assert.Equal("Record upstream", Assert.Single(item.Choices).Label);
+    }
 }

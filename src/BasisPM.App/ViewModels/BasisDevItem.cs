@@ -1,5 +1,6 @@
 using BasisPM.App.Localization;
 using BasisPM.Core.Models;
+using BasisPM.Core.Services;
 
 namespace BasisPM.App.ViewModels;
 
@@ -89,14 +90,20 @@ public sealed class BasisDevItem
             : L.Tr("basisdev.issue.unused.description", Id, Clone ?? ""),
         BasisDevIssueKind.Shadowed => L.Tr("basisdev.issue.shadowed.description", Folder ?? "", Clone ?? ""),
         BasisDevIssueKind.StaleRecord => L.Tr("basisdev.issue.staleRecord.description", Clone ?? ""),
+        BasisDevIssueKind.Unlisted => L.Tr("basisdev.issue.unlisted.description", Clone ?? ""),
+        BasisDevIssueKind.InPackages => L.Tr("basisdev.issue.inPackages.description", Clone ?? "", MoveTarget),
         _ => L.Tr("basisdev.issue.unrecorded.description", Clone ?? ""),
     };
+
+    private string MoveTarget => BasisDevStore.FolderName + "/" + Id;
 
     private static string IssueLabelKey(BasisDevIssueKind issue) => issue switch
     {
         BasisDevIssueKind.MissingClone => "basisdev.issue.missingClone",
         BasisDevIssueKind.Detached or BasisDevIssueKind.Shadowed => "basisdev.issue.notInUse",
         BasisDevIssueKind.StaleRecord => "basisdev.issue.staleRecord",
+        BasisDevIssueKind.Unlisted => "basisdev.issue.unlisted",
+        BasisDevIssueKind.InPackages => "basisdev.issue.inPackages",
         _ => "basisdev.issue.unrecorded",
     };
 
@@ -109,6 +116,7 @@ public sealed class BasisDevItem
         BasisDevAction.UseClone => "basisdev.action.useClone",
         BasisDevAction.Release => "basisdev.action.release",
         BasisDevAction.Restore => "basisdev.action.restore",
+        BasisDevAction.Move => "basisdev.action.move",
         _ => "basisdev.action.reclone",
     };
 
@@ -121,6 +129,7 @@ public sealed class BasisDevItem
         BasisDevAction.Restore => RestoreLine is { } line ? L.Tr("basisdev.tooltip.restore", line) : L.Tr("basisdev.tooltip.restoreRemove", Id),
         BasisDevAction.Ignore => L.Tr(_basisRepo ? "basisdev.tooltip.ignoreBasis" : "basisdev.tooltip.ignore", Clone ?? "", Id),
         BasisDevAction.Unignore => L.Tr("basisdev.tooltip.unignore", Clone ?? "", Id),
+        BasisDevAction.Move => L.Tr("basisdev.tooltip.move", Clone ?? "", MoveTarget),
         _ => L.Tr("basisdev.tooltip.reclone", Package.Upstream?.Url ?? "", Clone ?? ""),
     };
 

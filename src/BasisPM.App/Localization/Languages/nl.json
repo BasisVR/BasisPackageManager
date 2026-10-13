@@ -916,7 +916,7 @@
     },
     {
       "key": "develop.confirm.packageExists",
-      "value": "Packages/{0} bestaat al en is niet leeg — het kan een achtergebleven koppeling of een lokale kopie zijn.\n\nVervangen door een verse kloon? De huidige inhoud wordt verwijderd."
+      "value": ".basisdev/{0} bestaat al en is niet leeg — het kan een achtergebleven koppeling of een lokale kopie zijn.\n\nVervangen door een verse kloon? De huidige inhoud wordt verwijderd."
     },
     {
       "key": "develop.confirm.packageThereTitle",
@@ -964,7 +964,7 @@
     },
     {
       "key": "develop.status.clearFailed",
-      "value": "Kon Packages/{0} niet wissen: {1}"
+      "value": "Kon .basisdev/{0} niet wissen: {1}"
     },
     {
       "key": "develop.status.gitRequired",
@@ -980,7 +980,7 @@
     },
     {
       "key": "develop.status.mountCancelled",
-      "value": "Koppelen geannuleerd — Packages/{0} ongewijzigd gelaten."
+      "value": "Koppelen geannuleerd — .basisdev/{0} ongewijzigd gelaten."
     },
     {
       "key": "develop.status.mountError",
@@ -992,7 +992,7 @@
     },
     {
       "key": "develop.status.mounted",
-      "value": "{0} gekoppeld in Packages/ — bewerk het in Unity en dien daarna een PR in."
+      "value": "{0} gekoppeld in .basisdev/ — bewerk het in Unity en dien daarna een PR in."
     },
     {
       "key": "develop.status.mounting",

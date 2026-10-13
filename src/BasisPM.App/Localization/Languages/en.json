@@ -143,6 +143,18 @@
       "value": "Copy status message to clipboard"
     },
     {
+      "key": "shell.status.retry",
+      "value": "Try again"
+    },
+    {
+      "key": "shell.status.retryTooltip",
+      "value": "Run the task that failed again"
+    },
+    {
+      "key": "shell.status.retrying",
+      "value": "Trying again…"
+    },
+    {
       "key": "shell.status.desktopShortcutCreated",
       "value": "Desktop shortcut created."
     },
@@ -341,6 +353,10 @@
     {
       "key": "installs.status.branchListFailed",
       "value": "Couldn't list branches: {0}"
+    },
+    {
+      "key": "installs.status.fetchFailed",
+      "value": "Couldn't check {0}'s remote: {1}"
     },
     {
       "key": "installs.status.noBranches",
@@ -1691,12 +1707,20 @@
       "value": "Added package list “{0}” ({1} package(s)){2} → {3}."
     },
     {
+      "key": "packages.status.addingPackageList",
+      "value": "Adding package list {0}…"
+    },
+    {
       "key": "packages.status.addedDeepLink",
       "value": "{0} {1}{2} → {3}."
     },
     {
       "key": "packages.status.addedFromGitHub",
       "value": "{0} {1}{2} from GitHub."
+    },
+    {
+      "key": "packages.status.addingFromGitHub",
+      "value": "Adding {0}…"
     },
     {
       "key": "packages.status.packageListFileEmpty",
@@ -1763,6 +1787,10 @@
       "value": "Couldn't load the package catalog: {0}"
     },
     {
+      "key": "packages.status.catalogOffline",
+      "value": "Couldn't reach the package registry ({0}), so the built-in package list is shown."
+    },
+    {
       "key": "packages.status.installLinkMissing",
       "value": "Install link was missing the package id or git URL."
     },
@@ -1772,7 +1800,11 @@
     },
     {
       "key": "packages.status.installedCloned",
-      "value": "Installed {0} into {1} — cloned into Packages/ so you can edit it."
+      "value": "Installed {0} into {1}: cloned into .basisdev/ so you can edit it."
+    },
+    {
+      "key": "packages.status.installedDefaultBranch",
+      "value": "Installed {0} into {2} from its default branch: its newest release, {1}, has no package.json, so Unity couldn't load it."
     },
     {
       "key": "packages.status.installingNow",
@@ -1833,6 +1865,10 @@
     {
       "key": "packages.status.removed",
       "value": "Removed {0}."
+    },
+    {
+      "key": "packages.status.removing",
+      "value": "Removing {0}…"
     },
     {
       "key": "packages.status.skipNote",
@@ -2140,7 +2176,7 @@
     },
     {
       "key": "develop.confirm.packageExists",
-      "value": "Packages/{0} already exists and isn't empty — it may be a leftover mount or a local copy.\n\nReplace it with a fresh clone? Its current contents will be deleted."
+      "value": ".basisdev/{0} already exists and isn't empty. It may be a leftover clone or a local copy.\n\nReplace it with a fresh clone? Its current contents will be deleted."
     },
     {
       "key": "develop.confirm.packageThereTitle",
@@ -2188,7 +2224,7 @@
     },
     {
       "key": "develop.status.clearFailed",
-      "value": "Couldn't clear Packages/{0}: {1}"
+      "value": "Couldn't clear .basisdev/{0}: {1}"
     },
     {
       "key": "develop.status.gitRequired",
@@ -2204,7 +2240,7 @@
     },
     {
       "key": "develop.status.mountCancelled",
-      "value": "Mount cancelled — Packages/{0} left as-is."
+      "value": "Mount cancelled: .basisdev/{0} left as it is."
     },
     {
       "key": "develop.status.mountError",
@@ -2220,7 +2256,7 @@
     },
     {
       "key": "develop.status.mounted",
-      "value": "Mounted {0} into Packages/ — edit it in Unity, then Submit PR."
+      "value": "Mounted {0} into .basisdev/. Edit it in Unity, then Submit PR."
     },
     {
       "key": "develop.status.mounting",
@@ -3644,7 +3680,7 @@
     },
     {
       "key": "basisdev.tooltip.fixRecords",
-      "value": "Write the missing .basisdev sidecars and forget stale mount records. Package files and manifest.json don't change."
+      "value": "Write the missing .basisdev sidecars, list clones in use in Packages/basispackages.json and forget stale mount records. Package files and manifest.json don't change."
     },
     {
       "key": "basisdev.stale.summary",
@@ -3787,6 +3823,34 @@
       "value": "{0} has no .basisdev sidecar yet, so its upstream isn't recorded."
     },
     {
+      "key": "basisdev.issue.unlisted",
+      "value": "Not in basispackages.json"
+    },
+    {
+      "key": "basisdev.issue.unlisted.description",
+      "value": "Unity loads {0}, but Packages/basispackages.json doesn't list it, so other copies of the project can't clone it again."
+    },
+    {
+      "key": "basisdev.issue.inPackages",
+      "value": "Clone in Packages"
+    },
+    {
+      "key": "basisdev.issue.inPackages.description",
+      "value": "{0} is a clone inside the project's Packages folder. Package Manager clones belong in {1}."
+    },
+    {
+      "key": "basisdev.action.move",
+      "value": "Move to .basisdev"
+    },
+    {
+      "key": "basisdev.tooltip.move",
+      "value": "Move {0} to {1} and point manifest.json at it"
+    },
+    {
+      "key": "basisdev.status.moved",
+      "value": "Moved the clone of {0} into .basisdev."
+    },
+    {
       "key": "basisdev.action.record",
       "value": "Record upstream"
     },
@@ -3824,7 +3888,7 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "Write .basisdev/{0}.json with the clone's origin, branch and commit"
+      "value": "Record the clone's origin, branch and commit in .basisdev/{0}.json and Packages/basispackages.json"
     },
     {
       "key": "basisdev.tooltip.forget",
@@ -3888,7 +3952,7 @@
     },
     {
       "key": "basisdev.status.recorded",
-      "value": "Recorded the upstream of {0} in .basisdev."
+      "value": "Recorded the upstream of {0} in .basisdev and Packages/basispackages.json."
     },
     {
       "key": "basisdev.status.forgotten",
@@ -4369,6 +4433,10 @@
     {
       "key": "shell.activity.moreTooltip",
       "value": "See everything that's running, and anything waiting on you, in Settings"
+    },
+    {
+      "key": "shell.work.waiting",
+      "value": "Waiting for this to finish first: {0}"
     },
     {
       "key": "shell.status.projectTooltip",

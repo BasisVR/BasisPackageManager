@@ -916,7 +916,7 @@
     },
     {
       "key": "develop.confirm.packageExists",
-      "value": "Packages/{0} existe déjà et n'est pas vide — il peut s'agir d'un montage résiduel ou d'une copie locale.\n\nLe remplacer par un nouveau clone ? Son contenu actuel sera supprimé."
+      "value": ".basisdev/{0} existe déjà et n'est pas vide — il peut s'agir d'un montage résiduel ou d'une copie locale.\n\nLe remplacer par un nouveau clone ? Son contenu actuel sera supprimé."
     },
     {
       "key": "develop.confirm.packageThereTitle",
@@ -964,7 +964,7 @@
     },
     {
       "key": "develop.status.clearFailed",
-      "value": "Impossible de vider Packages/{0} : {1}"
+      "value": "Impossible de vider .basisdev/{0} : {1}"
     },
     {
       "key": "develop.status.gitRequired",
@@ -980,7 +980,7 @@
     },
     {
       "key": "develop.status.mountCancelled",
-      "value": "Montage annulé — Packages/{0} laissé tel quel."
+      "value": "Montage annulé — .basisdev/{0} laissé tel quel."
     },
     {
       "key": "develop.status.mountError",
@@ -992,7 +992,7 @@
     },
     {
       "key": "develop.status.mounted",
-      "value": "{0} monté dans Packages/ — modifiez-le dans Unity, puis Soumettre la PR."
+      "value": "{0} monté dans .basisdev/ — modifiez-le dans Unity, puis Soumettre la PR."
     },
     {
       "key": "develop.status.mounting",

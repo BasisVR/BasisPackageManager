@@ -15,7 +15,7 @@ public sealed class GitHubService
 
     public GitHubService(HttpClient? http = null)
     {
-        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+        _http = http ?? HttpRetryHandler.CreateClient(TimeSpan.FromSeconds(20));
         if (!_http.DefaultRequestHeaders.UserAgent.Any())
             _http.DefaultRequestHeaders.UserAgent.ParseAdd("BasisManifest/1.0");
     }

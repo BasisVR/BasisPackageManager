@@ -263,17 +263,19 @@ internal sealed partial class ConsoleApplication
         {
             Name = "basisdev", Group = DevGroup, Aliases = new[] { "dev-packages" },
             Summary = "Show and reconcile the development clones",
-            Usage = new[] { "basisdev [--all]", "basisdev reconcile", "basisdev record|forget|use|release|restore|reclone|ignore|unignore <package-id> [--force]" },
-            Details = "Lists the development clones with their recorded upstream and anything that needs reconciling (--all lists every package). When the Basis repo has its own copy "
-                + "of a cloned package, it compares the two. 'reconcile' records clones without a sidecar and forgets stale mount records. 'use' points manifest.json at a clone that "
-                + "isn't in use; 'release' deletes a clone (the project's own copy or manifest source stays); 'restore' and 'reclone' fix a missing clone; 'ignore' stops flagging a "
-                + "clone that isn't used because the project, such as the Basis repo, handles the package itself.",
+            Usage = new[] { "basisdev [--all]", "basisdev reconcile", "basisdev record|forget|use|release|restore|reclone|ignore|unignore|move <package-id> [--force]" },
+            Details = "Lists the development clones with their recorded upstream and anything that needs reconciling (--all lists every package). Installed packages are cloned into "
+                + ".basisdev and listed in Packages/basispackages.json, which the project can commit even when .basisdev is ignored. When the Basis repo has its own copy "
+                + "of a cloned package, it compares the two. 'reconcile' records clones without a sidecar or basispackages.json entry and forgets stale mount records. 'use' points manifest.json at a clone that "
+                + "isn't in use; 'release' deletes a clone (the project's own copy or manifest source stays); 'restore' and 'reclone' fix a missing clone, such as one listed in "
+                + "basispackages.json on a fresh checkout; 'ignore' stops flagging a clone that isn't used because the project, such as the Basis repo, handles the package itself; "
+                + "'move' moves an older clone from Packages into .basisdev.",
             Options = new[] { new CliOption("--all", "List every package, not only clones and problems"), new CliOption("--force", "Go ahead even when that discards local work") },
             Verbs = new()
             {
                 ["reconcile"] = Array.Empty<ArgKind>(), ["record"] = new[] { ArgKind.InstalledPackage }, ["forget"] = new[] { ArgKind.InstalledPackage }, ["use"] = new[] { ArgKind.InstalledPackage },
                 ["release"] = new[] { ArgKind.InstalledPackage }, ["restore"] = new[] { ArgKind.InstalledPackage }, ["reclone"] = new[] { ArgKind.InstalledPackage },
-                ["ignore"] = new[] { ArgKind.InstalledPackage }, ["unignore"] = new[] { ArgKind.InstalledPackage },
+                ["ignore"] = new[] { ArgKind.InstalledPackage }, ["unignore"] = new[] { ArgKind.InstalledPackage }, ["move"] = new[] { ArgKind.InstalledPackage },
             },
             Run = BasisDevAsync,
         },

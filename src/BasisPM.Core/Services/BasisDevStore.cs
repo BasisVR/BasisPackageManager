@@ -108,6 +108,16 @@ public static class BasisDevStore
 
     public static string? ResolveFolder(string unityProjectPath, BasisDevSidecar sidecar) => ResolveFolder(unityProjectPath, sidecar.Folder);
 
+    public static bool IsCloneFolder(string unityProjectPath, string? folder)
+    {
+        if (string.IsNullOrWhiteSpace(folder)) return false;
+        var parts = RelativeFolder(unityProjectPath, folder).Split('/');
+        return parts.Length == 2 && string.Equals(parts[0], FolderName, StringComparison.Ordinal) && IsValidId(parts[1]);
+    }
+
+    public static string ManifestLine(string unityProjectPath, string packageRoot) =>
+        "file:" + Path.GetRelativePath(Path.Combine(Path.GetFullPath(unityProjectPath), "Packages"), Path.GetFullPath(packageRoot)).Replace('\\', '/');
+
     public static string? PackageRoot(string cloneFolder, string? subPath)
     {
         if (!GitUrlPolicy.IsSafeSubPath(subPath)) return null;

@@ -16,7 +16,7 @@ public sealed class PackageListService
 
     public PackageListService(HttpClient? http = null)
     {
-        _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+        _http = http ?? HttpRetryHandler.CreateClient(TimeSpan.FromSeconds(20));
     }
 
     public const string DefaultPackageListsUrl = "https://basisvr.org/packages/packagelists.json";

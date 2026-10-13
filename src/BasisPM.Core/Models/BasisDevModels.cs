@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace BasisPM.Core.Models;
@@ -32,6 +33,25 @@ public sealed class BasisDevManifestLine
     public string? Mounted { get; set; }
 }
 
+public sealed class BasisPackagesFile
+{
+    public const int CurrentFormat = 1;
+
+    public int Format { get; set; } = CurrentFormat;
+    public Dictionary<string, BasisPackageEntry> Packages { get; set; } = new();
+    [JsonExtensionData] public Dictionary<string, JsonElement>? Extra { get; set; }
+}
+
+public sealed class BasisPackageEntry
+{
+    public string? Version { get; set; }
+    public string Url { get; set; } = "";
+    public string? Ref { get; set; }
+    public string? Path { get; set; }
+    public string? Commit { get; set; }
+    [JsonExtensionData] public Dictionary<string, JsonElement>? Extra { get; set; }
+}
+
 public enum PackageSourceKind
 {
     None,
@@ -51,6 +71,8 @@ public enum BasisDevIssueKind
     Shadowed,
     StaleRecord,
     Unrecorded,
+    Unlisted,
+    InPackages,
 }
 
 public enum BasisDevAction
@@ -63,6 +85,7 @@ public enum BasisDevAction
     Reclone,
     Ignore,
     Unignore,
+    Move,
 }
 
 public sealed record BasisDevComparison(bool Identical, int Added, int Removed, int Modified, string? MatchingCommit)
@@ -78,6 +101,7 @@ public sealed record BasisDevPackage
     public string? EmbeddedFolder { get; init; }
     public bool EmbeddedTracked { get; init; }
     public BasisDevSidecar? Sidecar { get; init; }
+    public BasisPackageEntry? Listed { get; init; }
     public BasisDevSidecar? Proposed { get; init; }
     public string? RecordFolder { get; init; }
     public string? RecordOriginal { get; init; }
@@ -123,6 +147,12 @@ public sealed record BasisDevPackage
                         break;
                     case BasisDevIssueKind.Unrecorded:
                         if (Proposed is not null) actions.Add(BasisDevAction.Record);
+                        break;
+                    case BasisDevIssueKind.Unlisted:
+                        actions.Add(BasisDevAction.Record);
+                        break;
+                    case BasisDevIssueKind.InPackages:
+                        actions.Add(BasisDevAction.Move);
                         break;
                 }
             }

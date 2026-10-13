@@ -200,7 +200,7 @@ public sealed class UnityViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write("Loading available Unity releases", ex);
-            _shell.SetStatus(L.Tr("unity.status.fetchReleasesFailed", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("unity.status.fetchReleasesFailed", ex.Message), StatusKind.Error, null, LoadReleasesAsync, "unityreleases");
         }
         finally { IsLoadingReleases = false; }
     }
@@ -234,27 +234,32 @@ public sealed class UnityViewModel : ObservableObject
             return;
         }
 
+        await InstallEditorAsync(SelectedRelease.Release, ModuleOptions.Where(m => m.Selected).Select(m => m.Name).ToList());
+    }
+
+    private async Task InstallEditorAsync(UnityRelease release, IReadOnlyList<string> modules)
+    {
+        var key = "unityeditor|" + release.Version;
+        Task Retry() => InstallEditorAsync(release, modules);
         IsBusy = true;
         Guid activity = default;
         try
         {
-            var release = SelectedRelease.Release;
-            var modules = ModuleOptions.Where(m => m.Selected).Select(m => m.Name).ToList();
             var installingText = L.Tr("unity.status.installing", release.Version);
             _shell.SetStatus(installingText);
             activity = _shell.BeginActivity(installingText);
             var settings = await _settingsService.LoadAsync();
             var code = await _hubService.InstallEditorAsync(release.Version, release.ShortRevision, modules, settings.UnityHubPath);
             if (code == 0)
-                _shell.SetStatus(L.Tr("unity.status.installKickedOff", release.Version), StatusKind.Success);
+                _shell.SetStatus(L.Tr("unity.status.installKickedOff", release.Version), StatusKind.Success, null, key: key);
             else
-                _shell.SetStatus(L.Tr("unity.status.installFailed", code), StatusKind.Error);
+                _shell.SetStatus(L.Tr("unity.status.installFailed", code), StatusKind.Error, null, Retry, key);
             await RefreshAsync();
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write("Installing the selected Unity editor", ex);
-            _shell.SetStatus(L.Tr("unity.status.installError", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("unity.status.installError", ex.Message), StatusKind.Error, null, Retry, key);
         }
         finally
         {
@@ -274,28 +279,35 @@ public sealed class UnityViewModel : ObservableObject
             return;
         }
 
+        await InstallModulesAsync(editor.Version, modules);
+    }
+
+    private async Task InstallModulesAsync(string version, IReadOnlyList<string> modules)
+    {
+        var key = "unitymodules|" + version;
+        Task Retry() => InstallModulesAsync(version, modules);
         IsBusy = true;
         Guid activity = default;
         try
         {
-            var installingText = L.Tr("unity.status.installingModules", editor.Version);
+            var installingText = L.Tr("unity.status.installingModules", version);
             _shell.SetStatus(installingText);
             activity = _shell.BeginActivity(installingText);
             var settings = await _settingsService.LoadAsync();
-            var code = await _hubService.InstallModulesAsync(editor.Version, modules, settings.UnityHubPath);
+            var code = await _hubService.InstallModulesAsync(version, modules, settings.UnityHubPath);
             if (code == 0)
             {
-                _shell.SetStatus(L.Tr("unity.status.modulesInstalled", editor.Version), StatusKind.Success);
+                _shell.SetStatus(L.Tr("unity.status.modulesInstalled", version), StatusKind.Success, null, key: key);
                 foreach (var m in EditorModuleOptions) m.Selected = false;
             }
             else
-                _shell.SetStatus(L.Tr("unity.status.modulesFailed", code), StatusKind.Error);
+                _shell.SetStatus(L.Tr("unity.status.modulesFailed", code), StatusKind.Error, null, Retry, key);
             await RefreshAsync();
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write("Installing Unity editor modules", ex);
-            _shell.SetStatus(L.Tr("unity.status.modulesError", ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("unity.status.modulesError", ex.Message), StatusKind.Error, null, Retry, key);
         }
         finally
         {

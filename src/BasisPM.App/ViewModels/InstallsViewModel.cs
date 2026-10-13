@@ -72,15 +72,15 @@ public sealed class InstallsViewModel : ObservableObject
         NewProjectCommand = new RelayCommand(NewProjectAsync);
         RefreshCommand = new RelayCommand(RefreshAsync);
         UpdateAllCommand = new RelayCommand(() => UpdateAllAsync(BasisPM.App.Services.Dialogs.ConfirmAsync));
-        ChangeBranchCommand = new RelayCommand<InstallRow>(ChangeBranchAsync);
-        UpdateBasisCommand = new RelayCommand<InstallRow>(r => UpdateBasisAsync(r, null));
-        CheckUpdatesCommand = new RelayCommand<InstallRow>(r => RefreshGitInfoAsync(r, fetch: true));
+        ChangeBranchCommand = new RelayCommand<InstallRow>(r => r is null ? Task.CompletedTask : ChangeBranchQueuedAsync(r));
+        UpdateBasisCommand = new RelayCommand<InstallRow>(r => r is null ? Task.CompletedTask : UpdateBasisQueuedAsync(r, null));
+        CheckUpdatesCommand = new RelayCommand<InstallRow>(r => r is null ? Task.CompletedTask : CheckRemoteQueuedAsync(r));
         OpenInUnityCommand = new RelayCommand<InstallRow>(OpenInUnity);
         OpenFolderCommand = new RelayCommand<InstallRow>(r => { if (r is not null) BasisPM.App.Services.ExternalLink.OpenFolder(r.RepoRoot); });
         ManagePackagesCommand = new RelayCommand<InstallRow>(r => Activate(r, "packages"));
         RemoveCommand = new RelayCommand<InstallRow>(RemoveAsync);
         SetActiveCommand = new RelayCommand<InstallRow>(r => Activate(r, null));
-        BackupCommand = new RelayCommand<InstallRow>(BackupAsync);
+        BackupCommand = new RelayCommand<InstallRow>(r => r is null ? Task.CompletedTask : BackupQueuedAsync(r));
         BasisChangesCommand = new RelayCommand<InstallRow>(r => r is null ? Task.CompletedTask : _shell.OpenBasisChangesAsync(r.Install));
         PartsCommand = new RelayCommand<InstallRow>(EditPartsAsync);
         ToggleLayoutCommand = new RelayCommand(() => IsGridView = !IsGridView);
@@ -196,18 +196,37 @@ public sealed class InstallsViewModel : ObservableObject
         row.IsActive = true;
     }
 
+    private Task Queued(InstallRow row, string label, Func<Task> work) =>
+        _shell.Work.RunAsync(row.RepoRoot, label, work, running => _shell.SetStatus(L.Tr("shell.work.waiting", running), StatusKind.Info, row.Name));
+
+    private Task UpdateBasisQueuedAsync(InstallRow row, string? basisBranch) =>
+        Queued(row, L.Tr("installs.status.updatingBasis", row.Name), () => UpdateBasisAsync(row, basisBranch));
+
+    private Task ChangeBranchQueuedAsync(InstallRow row) =>
+        Queued(row, L.Tr("installs.status.loadingBranches", row.Name), () => ChangeBranchAsync(row));
+
+    private Task CheckRemoteQueuedAsync(InstallRow row) =>
+        Queued(row, L.Tr("installs.git.checkingRemote"), () => RefreshGitInfoAsync(row, fetch: true));
+
+    private Task BackupQueuedAsync(InstallRow row) =>
+        Queued(row, L.Tr("installs.status.backingUp", row.Name), () => BackupAsync(row));
+
     private async Task RefreshGitInfoAsync(InstallRow? row, bool fetch)
     {
         if (row is null) return;
         if (!row.Install.IsGitRepo) { row.GitSummary = L.Tr("installs.git.notGitRepo"); return; }
         row.IsBusy = true;
         var activity = fetch ? _shell.BeginActivity(L.Tr("installs.git.checkingRemote"), row.Name) : Guid.Empty;
+        var fetchFailed = false;
         try
         {
             if (fetch)
             {
                 row.GitSummary = L.Tr("installs.git.checkingRemote");
-                await _git.FetchAsync(row.RepoRoot, line => ReportActivity(activity, line));
+                var fetched = await _git.FetchAsync(row.RepoRoot, line => ReportActivity(activity, line));
+                if (fetchFailed = !fetched.Ok)
+                    _shell.SetStatus(L.Tr("installs.status.fetchFailed", row.Name, Tail(fetched.Output)), StatusKind.Error, row.Name, () => CheckRemoteQueuedAsync(row), "fetch|" + row.RepoRoot);
+                else _shell.ClearFailure("fetch|" + row.RepoRoot);
             }
             var status = await _git.GetStatusAsync(row.RepoRoot);
             row.Branch = status.Branch;
@@ -216,7 +235,7 @@ public sealed class InstallsViewModel : ObservableObject
             row.ChangeCount = status.ChangeCount;
             row.CoreHasUpdate = status.Upstream.HasUpstream && status.Upstream.Behind > 0;
             row.LeftOutParts = await _parts.LeftOutAsync(row.RepoRoot, row.UnityProjectPath);
-            if (fetch)
+            if (fetch && !fetchFailed)
                 _shell.SetStatus(L.Tr("installs.status.rowSummary", row.Name, row.GitSummary), StatusKind.Info);
         }
         catch (Exception ex)
@@ -270,7 +289,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Loading branches for {row.RepoRoot}", ex);
-            _shell.SetStatus(L.Tr("installs.status.branchListFailed", ex.Message), StatusKind.Error, row.Name);
+            _shell.SetStatus(L.Tr("installs.status.branchListFailed", ex.Message), StatusKind.Error, row.Name, () => ChangeBranchQueuedAsync(row), "branch|" + row.RepoRoot);
             return;
         }
         finally
@@ -303,13 +322,15 @@ public sealed class InstallsViewModel : ObservableObject
 
     private async Task SwitchProjectBranchAsync(InstallRow row, ProjectBranch target)
     {
+        var key = "branch|" + row.RepoRoot;
+        Task Retry() => Queued(row, L.Tr("installs.status.switchingBranch", row.Name, target.Name), () => SwitchProjectBranchAsync(row, target));
         BranchSwitchPlan plan;
         row.IsBusy = true;
         try { plan = await _updates.PlanBranchSwitchAsync(row.RepoRoot, target); }
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Checking a switch to {target.Display} for {row.RepoRoot}", ex);
-            _shell.SetStatus(L.Tr("installs.status.switchBranchError", ex.Message), StatusKind.Error, row.Name);
+            _shell.SetStatus(L.Tr("installs.status.switchBranchError", ex.Message), StatusKind.Error, row.Name, Retry, key);
             return;
         }
         finally { row.IsBusy = false; }
@@ -318,17 +339,17 @@ public sealed class InstallsViewModel : ObservableObject
         if (plan.BlockingPaths.Count > 0)
         {
             _shell.SetStatus(L.Tr("installs.status.switchBranchFailed", row.Name,
-                BasisUpdateText.DescribeFailure(BasisUpdateFailure.IgnoredFilesInTheWay, string.Join('\n', plan.BlockingPaths))), StatusKind.Error);
+                BasisUpdateText.DescribeFailure(BasisUpdateFailure.IgnoredFilesInTheWay, string.Join('\n', plan.BlockingPaths))), StatusKind.Error, row.Name, Retry, key);
             return;
         }
         if (!plan.CanSwitch)
         {
-            _shell.SetStatus(L.Tr("installs.status.switchBranchFailed", row.Name, BasisUpdateText.DescribeSwitchBlock(plan)), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.switchBranchFailed", row.Name, BasisUpdateText.DescribeSwitchBlock(plan)), StatusKind.Error, row.Name, Retry, key);
             return;
         }
         if (OperatingSystem.IsWindows() && UnityProjectService.IsOpenInUnity(row.UnityProjectPath))
         {
-            _shell.SetStatus(L.Tr("installs.status.unityOpenSwitch", row.Name), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.unityOpenSwitch", row.Name), StatusKind.Error, row.Name, Retry, key);
             return;
         }
         if (plan.CollidingPaths.Count > 0 && !await BasisPM.App.Services.Dialogs.ConfirmAsync(
@@ -350,7 +371,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Switching branches for {row.RepoRoot}", ex);
-            _shell.SetStatus(L.Tr("installs.status.switchBranchError", ex.Message), StatusKind.Error, row.Name);
+            _shell.SetStatus(L.Tr("installs.status.switchBranchError", ex.Message), StatusKind.Error, row.Name, Retry, key);
             return;
         }
         finally
@@ -387,19 +408,21 @@ public sealed class InstallsViewModel : ObservableObject
         try
         {
             await _updates.GetBasisHeadsAsync(refresh: true);
-            foreach (var row in rows) await RefreshBasisStateAsync(row, allowFetch: true);
+            foreach (var row in rows)
+                if (!_shell.Work.IsBusy(row.RepoRoot)) await RefreshBasisStateAsync(row, allowFetch: true);
             if (manual)
             {
                 var available = rows.Count(r => r.BasisUpdateAvailable || r.BasisUpdateInProgress);
                 _shell.SetStatus(available == 0
                     ? L.Tr("installs.status.basisAllUpToDate")
                     : L.Tr("installs.status.basisChecked", available, rows.Count), StatusKind.Info);
+                _shell.ClearFailure("basischeck");
             }
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write("Checking projects for Basis updates", ex);
-            if (manual) _shell.SetStatus(L.Tr("installs.status.basisCheckFailed", ex.Message), StatusKind.Error);
+            if (manual) _shell.SetStatus(L.Tr("installs.status.basisCheckFailed", ex.Message), StatusKind.Error, null, () => CheckBasisUpdatesAsync(manual: true), "basischeck");
         }
         finally
         {
@@ -494,11 +517,11 @@ public sealed class InstallsViewModel : ObservableObject
         {
             foreach (var row in rows)
             {
-                if (row.IsBusy) { waiting.Add((row, L.Tr("installs.updateAll.reason.busy"))); continue; }
+                if (row.IsBusy || _shell.Work.IsBusy(row.RepoRoot)) { waiting.Add((row, L.Tr("installs.updateAll.reason.busy"))); continue; }
                 row.IsBusy = true;
                 try
                 {
-                    var plan = await _updates.PlanAsync(row.RepoRoot, null, line => ReportActivity(checking, line, row.Name));
+                    var plan = await _shell.Work.RunAsync(row.RepoRoot, L.Tr("installs.updateAll.checking"), () => _updates.PlanAsync(row.RepoRoot, null, line => ReportActivity(checking, line, row.Name)));
                     if (plan.Kind == BasisUpdateKind.UpToDate) continue;
                     if (WhyNotAutomatic(row, plan) is { } reason) waiting.Add((row, reason));
                     else ready.Add((row, plan));
@@ -545,7 +568,12 @@ public sealed class InstallsViewModel : ObservableObject
                 row.IsBusy = true;
                 _shell.SetStatus(L.Tr("installs.updateAll.updating", row.Name, i + 1, ready.Count), StatusKind.Info, row.Name);
                 BasisUpdateResult result;
-                try { result = await _updates.ApplyAsync(row.RepoRoot, plan, line => ReportActivity(applying, line, row.Name)); }
+                try
+                {
+                    result = await _shell.Work.RunAsync(row.RepoRoot, L.Tr("installs.updateAll.updating", row.Name, i + 1, ready.Count),
+                        () => _updates.ApplyAsync(row.RepoRoot, plan, line => ReportActivity(applying, line, row.Name)),
+                        running => _shell.SetStatus(L.Tr("shell.work.waiting", running), StatusKind.Info, row.Name));
+                }
                 catch (Exception ex)
                 {
                     DiagnosticLog.Write($"Updating {row.RepoRoot} to the latest Basis", ex);
@@ -626,7 +654,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Checking {row.RepoRoot} against the latest Basis", ex);
-            _shell.SetStatus(L.Tr("installs.status.basisUpdateFailed", row.Name, ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.basisUpdateFailed", row.Name, ex.Message), StatusKind.Error, row.Name, () => UpdateBasisQueuedAsync(row, basisBranch), "basis|" + row.RepoRoot);
             return null;
         }
         finally
@@ -641,7 +669,7 @@ public sealed class InstallsViewModel : ObservableObject
         var plan = review.Plan;
         if (OperatingSystem.IsWindows() && UnityProjectService.IsOpenInUnity(row.UnityProjectPath))
         {
-            _shell.SetStatus(L.Tr("installs.status.unityOpen", row.Name), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.unityOpen", row.Name), StatusKind.Error, row.Name, () => UpdateBasisQueuedAsync(row, plan.BasisBranch), "basis|" + row.RepoRoot);
             return;
         }
         if (review.Backup && !await BackupAsync(row)) return;
@@ -658,7 +686,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Updating {row.RepoRoot} to the latest Basis", ex);
-            _shell.SetStatus(L.Tr("installs.status.basisUpdateFailed", row.Name, ex.Message), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.basisUpdateFailed", row.Name, ex.Message), StatusKind.Error, row.Name, () => UpdateBasisQueuedAsync(row, plan.BasisBranch), "basis|" + row.RepoRoot);
             return;
         }
         finally
@@ -705,7 +733,7 @@ public sealed class InstallsViewModel : ObservableObject
                 _shell.SetStatus(switching ? L.Tr("installs.status.switchedBranch", row.Name, info.Branch)
                     : unityChanged ? L.Tr("installs.status.basisUpdatedUnity", row.Name, info.Branch, row.UnityVersion, unityBefore)
                     : info.IsBasisSwitch ? L.Tr("installs.status.basisSwitched", row.Name, info.FromBranch ?? "", info.Branch)
-                    : L.Tr("installs.status.basisUpdated", row.Name, info.Branch, ShortSha(result.NewHead)), StatusKind.Success);
+                    : L.Tr("installs.status.basisUpdated", row.Name, info.Branch, ShortSha(result.NewHead)), StatusKind.Success, row.Name, key: switching ? "branch|" + row.RepoRoot : "basis|" + row.RepoRoot);
                 break;
             case BasisUpdateResultKind.Aborted:
                 await ReloadRowAsync(row);
@@ -720,7 +748,8 @@ public sealed class InstallsViewModel : ObservableObject
             default:
                 _shell.SetStatus(switching
                     ? L.Tr("installs.status.switchBranchFailed", row.Name, BasisUpdateText.DescribeFailure(result.Failure, result.Detail))
-                    : L.Tr("installs.status.basisUpdateFailed", row.Name, BasisUpdateText.DescribeFailure(result.Failure, result.Detail)), StatusKind.Error);
+                    : L.Tr("installs.status.basisUpdateFailed", row.Name, BasisUpdateText.DescribeFailure(result.Failure, result.Detail)), StatusKind.Error, row.Name,
+                    switching ? () => ChangeBranchQueuedAsync(row) : () => UpdateBasisQueuedAsync(row, info.Branch), switching ? "branch|" + row.RepoRoot : "basis|" + row.RepoRoot);
                 break;
         }
         await RefreshBasisStateAsync(row, allowFetch: switching);
@@ -745,7 +774,8 @@ public sealed class InstallsViewModel : ObservableObject
         }
         if (!init.Ok)
         {
-            _shell.SetStatus(L.Tr("installs.status.gitSetupFailed", row.Name, BasisUpdateText.DescribeFailure(init.Failure, init.Detail)), StatusKind.Error);
+            _shell.SetStatus(L.Tr("installs.status.gitSetupFailed", row.Name, BasisUpdateText.DescribeFailure(init.Failure, init.Detail)), StatusKind.Error, row.Name,
+                () => Queued(row, L.Tr("installs.status.gitSetup", row.Name), () => SetUpGitAsync(row)), "gitsetup|" + row.RepoRoot);
             return;
         }
         _shell.SetStatus(DescribeGitSetup(row, init), init.LargeFiles.Count > 0 ? StatusKind.Info : StatusKind.Success);
@@ -793,13 +823,13 @@ public sealed class InstallsViewModel : ObservableObject
                     _shell.SetStatus(msg, StatusKind.Info, row.Name);
                     _shell.ReportActivity(activity, msg);
                 }));
-            _shell.SetStatus(L.Tr("installs.status.backedUp", row.Name, zip), StatusKind.Success);
+            _shell.SetStatus(L.Tr("installs.status.backedUp", row.Name, zip), StatusKind.Success, row.Name, key: "backup|" + row.RepoRoot);
             return true;
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Backing up Basis installation {row.RepoRoot}", ex);
-            _shell.SetStatus(L.Tr("installs.status.backupFailed", ex.Message), StatusKind.Error, row.Name);
+            _shell.SetStatus(L.Tr("installs.status.backupFailed", ex.Message), StatusKind.Error, row.Name, () => BackupQueuedAsync(row), "backup|" + row.RepoRoot);
             return false;
         }
         finally
@@ -926,9 +956,20 @@ public sealed class InstallsViewModel : ObservableObject
         }
         var leaveOut = await ChooseClonePartsAsync(picked);
         if (leaveOut is null) return;
+        await CloneNewProjectAsync(picked, leaveOut);
+    }
 
+    private async Task CloneNewProjectAsync(string picked, IReadOnlyList<BasisPart> leaveOut)
+    {
+        var key = "clone|" + picked;
+        Task Retry() => CloneNewProjectAsync(picked, leaveOut);
         try
         {
+            if (Directory.Exists(picked) && Directory.EnumerateFileSystemEntries(picked).Any())
+            {
+                _shell.SetStatus(L.Tr("installs.status.cloneFolderNotEmpty"), StatusKind.Error);
+                return;
+            }
             var cloningText = L.Tr("installs.status.cloningBasis");
             _shell.SetStatus(cloningText, StatusKind.Info, Path.GetFileName(picked));
             var activity = _shell.BeginActivity(cloningText, Path.GetFileName(picked));
@@ -948,9 +989,10 @@ public sealed class InstallsViewModel : ObservableObject
             }
             if (!result.Ok)
             {
-                _shell.SetStatus(L.Tr("installs.status.cloneFailed", Tail(result.Output)), StatusKind.Error, Path.GetFileName(picked));
+                _shell.SetStatus(L.Tr("installs.status.cloneFailed", Tail(result.Output)), StatusKind.Error, Path.GetFileName(picked), Retry, key);
                 return;
             }
+            _shell.ClearFailure(key);
 
             var install = await _installService.LoadAsync(picked);
             if (!install.IsBasisCheckout)
@@ -971,7 +1013,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write("Cloning a Basis installation", ex);
-            _shell.SetStatus(L.Tr("installs.status.cloneError", ex.Message), StatusKind.Error, Path.GetFileName(picked));
+            _shell.SetStatus(L.Tr("installs.status.cloneError", ex.Message), StatusKind.Error, Path.GetFileName(picked), Retry, key);
         }
     }
 
@@ -1011,9 +1053,15 @@ public sealed class InstallsViewModel : ObservableObject
         await SetPartsAsync(row, leftOut.Where(p => p != part).ToList(), deleteIgnored: false);
     }
 
-    public async Task<BasisPartsResult?> SetPartsAsync(InstallRow row, IReadOnlyCollection<BasisPart> leaveOut, bool deleteIgnored)
+    public Task<BasisPartsResult?> SetPartsAsync(InstallRow row, IReadOnlyCollection<BasisPart> leaveOut, bool deleteIgnored) =>
+        _shell.Work.RunAsync(row.RepoRoot, L.Tr("installs.status.changingParts", row.Name), () => SetPartsNowAsync(row, leaveOut, deleteIgnored),
+            running => _shell.SetStatus(L.Tr("shell.work.waiting", running), StatusKind.Info, row.Name));
+
+    private async Task<BasisPartsResult?> SetPartsNowAsync(InstallRow row, IReadOnlyCollection<BasisPart> leaveOut, bool deleteIgnored)
     {
         if (row.IsBusy) { _shell.SetStatus(L.Tr("installs.status.partsBusy", row.Name), StatusKind.Info, row.Name); return null; }
+        var key = "parts|" + row.RepoRoot;
+        Task Retry() => SetPartsAsync(row, leaveOut, deleteIgnored);
         row.IsBusy = true;
         var changing = L.Tr("installs.status.changingParts", row.Name);
         _shell.SetStatus(changing, StatusKind.Info, row.Name);
@@ -1023,7 +1071,7 @@ public sealed class InstallsViewModel : ObservableObject
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Changing the parts of {row.RepoRoot}", ex);
-            _shell.SetStatus(L.Tr("installs.status.partsFailed", row.Name, ex.Message), StatusKind.Error, row.Name);
+            _shell.SetStatus(L.Tr("installs.status.partsFailed", row.Name, ex.Message), StatusKind.Error, row.Name, Retry, key);
             return null;
         }
         finally
@@ -1031,7 +1079,9 @@ public sealed class InstallsViewModel : ObservableObject
             row.IsBusy = false;
             _shell.EndActivity(activity);
         }
-        _shell.SetStatus(PartsText.Describe(row.Name, result), !result.Ok ? StatusKind.Error : result.Kept.Count > 0 ? StatusKind.Info : StatusKind.Success, row.Name);
+        var kind = !result.Ok ? StatusKind.Error : result.Kept.Count > 0 ? StatusKind.Info : StatusKind.Success;
+        _shell.SetStatus(PartsText.Describe(row.Name, result), kind, row.Name, kind == StatusKind.Error ? Retry : null, key);
+        if (kind != StatusKind.Error) _shell.ClearFailure(key);
         await RefreshGitInfoAsync(row, fetch: false);
         if (result.Changed && row.IsActive) _shell.ServerVM.SetActiveInstall(row.Install);
         return result;
@@ -1063,9 +1113,18 @@ public sealed class InstallsViewModel : ObservableObject
                 L.Tr("installs.dialog.deleteConfirmTitle"),
                 L.Tr("installs.dialog.deleteConfirmBody", row.Name, row.RepoRoot));
             if (!confirmed) return;
+            await DeleteFromDiskAsync(row);
+            return;
+        }
+        await ForgetAsync(row, deleted: false);
+    }
 
+    private Task DeleteFromDiskAsync(InstallRow row) =>
+        Queued(row, L.Tr("installs.status.deleting", row.Name), async () =>
+        {
+            if (!Installs.Contains(row)) return;
             row.IsBusy = true;
-            _shell.SetStatus(L.Tr("installs.status.deleting", row.Name));
+            _shell.SetStatus(L.Tr("installs.status.deleting", row.Name), StatusKind.Info, row.Name);
             try
             {
                 await BasisInstallService.DeleteFolderAsync(row.RepoRoot);
@@ -1075,11 +1134,15 @@ public sealed class InstallsViewModel : ObservableObject
                 DiagnosticLog.Write($"Deleting Basis installation {row.RepoRoot}", ex);
                 row.IsBusy = false;
                 // Leave the row in place so the user can retry (e.g. after closing Unity, which locks files).
-                _shell.SetStatus(L.Tr("installs.status.deleteFailed", row.Name, ex.Message), StatusKind.Error);
+                _shell.SetStatus(L.Tr("installs.status.deleteFailed", row.Name, ex.Message), StatusKind.Error, row.Name, () => DeleteFromDiskAsync(row), "delete|" + row.RepoRoot);
                 return;
             }
-        }
+            _shell.ClearFailure("delete|" + row.RepoRoot);
+            await ForgetAsync(row, deleted: true);
+        });
 
+    private async Task ForgetAsync(InstallRow row, bool deleted)
+    {
         Installs.Remove(row);
         SyncPackageProjects();
         if (_activeRow == row)
@@ -1090,11 +1153,7 @@ public sealed class InstallsViewModel : ObservableObject
             else _shell.ClearActiveInstall();
         }
         await PersistAsync();
-        _shell.SetStatus(
-            choice == RemoveChoice.DeleteFromDisk
-                ? L.Tr("installs.status.deleted", row.Name)
-                : L.Tr("installs.status.removed", row.Name),
-            StatusKind.Info);
+        _shell.SetStatus(deleted ? L.Tr("installs.status.deleted", row.Name) : L.Tr("installs.status.removed", row.Name), StatusKind.Info);
     }
 
     private async Task PersistAsync()

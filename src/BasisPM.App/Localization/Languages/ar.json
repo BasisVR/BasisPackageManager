@@ -916,7 +916,7 @@
     },
     {
       "key": "develop.confirm.packageExists",
-      "value": "Packages/{0} موجود بالفعل وليس فارغًا — قد يكون تركيبًا متبقيًا أو نسخة محلية.\n\nهل تريد استبداله بنسخة مستنسخة جديدة؟ سيتم حذف محتوياته الحالية."
+      "value": ".basisdev/{0} موجود بالفعل وليس فارغًا — قد يكون تركيبًا متبقيًا أو نسخة محلية.\n\nهل تريد استبداله بنسخة مستنسخة جديدة؟ سيتم حذف محتوياته الحالية."
     },
     {
       "key": "develop.confirm.packageThereTitle",
@@ -964,7 +964,7 @@
     },
     {
       "key": "develop.status.clearFailed",
-      "value": "تعذّر مسح Packages/{0}: {1}"
+      "value": "تعذّر مسح .basisdev/{0}: {1}"
     },
     {
       "key": "develop.status.gitRequired",
@@ -980,7 +980,7 @@
     },
     {
       "key": "develop.status.mountCancelled",
-      "value": "تم إلغاء التركيب — تُرك Packages/{0} كما هو."
+      "value": "تم إلغاء التركيب — تُرك .basisdev/{0} كما هو."
     },
     {
       "key": "develop.status.mountError",
@@ -992,7 +992,7 @@
     },
     {
       "key": "develop.status.mounted",
-      "value": "تم تركيب {0} في Packages/ — حرّرها في Unity، ثم أرسِل طلب سحب."
+      "value": "تم تركيب {0} في .basisdev/ — حرّرها في Unity، ثم أرسِل طلب سحب."
     },
     {
       "key": "develop.status.mounting",

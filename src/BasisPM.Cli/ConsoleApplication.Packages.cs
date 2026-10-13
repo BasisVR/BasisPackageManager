@@ -237,7 +237,7 @@ internal sealed partial class ConsoleApplication
         if (resolution.Conflicts.Count > 0) throw new InvalidOperationException("Dependency conflict: " + string.Join("; ", resolution.Conflicts));
         if (!resolution.Resolved.TryGetValue(entry.Name, out var main) && string.IsNullOrWhiteSpace(entry.Url) && !SemVer.TryParse(entry.Version, out _))
             throw new InvalidOperationException($"{entry.DisplayName} has neither a version nor a repository to install from.");
-        var url = await InstallUrlAsync(entry, main, version, current);
+        var (url, latest) = await InstallUrlAsync(entry, main, version, current);
         var added = 0;
         foreach (var (name, resolved) in resolution.Resolved)
         {
@@ -256,7 +256,9 @@ internal sealed partial class ConsoleApplication
         }
         else
         {
-            var cloned = await CloneInstallAsync(install, entry.Name, url);
+            var (cloned, mountedUrl) = await CloneInstallAsync(install, entry.Name, url, latest);
+            if (mountedUrl != url) Out.Warning($"{UpmGitUrl.Parse(url)?.Ref} of {entry.DisplayName} isn't a Unity package (it has no package.json), so its default branch was installed instead.");
+            url = mountedUrl;
             var at = UpmGitUrl.Parse(url)?.Ref is { } gitRef ? $" {gitRef}" : " (default branch)";
             Out.Success(cloned
                 ? $"Installed {entry.DisplayName}{at}{dependencyNote} into {install.DisplayName} as an editable working copy."
@@ -267,7 +269,7 @@ internal sealed partial class ConsoleApplication
         return true;
     }
 
-    private async Task<string?> InstallUrlAsync(CatalogPackageVersion entry, CatalogPackageVersion? main, string? version, string? current)
+    private async Task<(string? Url, bool Latest)> InstallUrlAsync(CatalogPackageVersion entry, CatalogPackageVersion? main, string? version, string? current)
     {
         if (version is not null)
         {
@@ -275,17 +277,17 @@ internal sealed partial class ConsoleApplication
             var unpinned = location.ToManifestUrl(null, location.Path);
             return version.ToLowerInvariant() switch
             {
-                "latest" => await LatestReleaseUrlAsync(unpinned) ?? throw new InvalidOperationException($"Couldn't find a release of {entry.DisplayName}. Use --version default for its default branch, or name a tag."),
-                "default" or "head" => unpinned,
-                _ when GitUrlPolicy.IsSafeRef(version) => location.ToManifestUrl(version, location.Path),
+                "latest" => (await LatestReleaseUrlAsync(unpinned) ?? throw new InvalidOperationException($"Couldn't find a release of {entry.DisplayName}. Use --version default for its default branch, or name a tag."), true),
+                "default" or "head" => (unpinned, false),
+                _ when GitUrlPolicy.IsSafeRef(version) => (location.ToManifestUrl(version, location.Path), false),
                 _ => throw new UsageException($"'{version}' isn't a valid git ref."),
             };
         }
-        if (main?.Url is not { } mainUrl) return entry.Url;
-        if (await LatestReleaseUrlAsync(mainUrl) is { } latest) return latest;
+        if (main?.Url is not { } mainUrl) return (entry.Url, false);
+        if (await LatestReleaseUrlAsync(mainUrl) is { } latest) return (latest, true);
         if (UpmGitUrl.Parse(mainUrl)?.Ref is null && UpmGitUrl.Parse(current)?.Ref is { } pinned)
             throw new InvalidOperationException($"Couldn't find {entry.DisplayName}'s newest release, so it stays at {pinned}. Pass --version <ref> to pick one, or --version default for its default branch.");
-        return mainUrl;
+        return (mainUrl, false);
     }
 
     private async Task<bool> HasUnsavedWorkAsync(MountRecord mount, CancellationToken ct = default)
@@ -300,7 +302,7 @@ internal sealed partial class ConsoleApplication
 
     private static bool HasDependency(BasisInstall install, string id) => install.Manifest.Dependencies.Keys.Any(k => k.Equals(id, StringComparison.OrdinalIgnoreCase));
 
-    private async Task<bool> CloneInstallAsync(BasisInstall install, string packageId, string gitUrl)
+    private async Task<(bool Cloned, string Url)> CloneInstallAsync(BasisInstall install, string packageId, string gitUrl, bool orDefaultBranch)
     {
         if (WorkingCloneMount(install, packageId) is not null)
         {
@@ -310,14 +312,15 @@ internal sealed partial class ConsoleApplication
         if (_git.IsAvailable && UpmGitUrl.Parse(gitUrl) is not null)
         {
             MountResult result = null!;
-            await RunOperationAsync(async ct => result = await _mounts.MountAsync(install, packageId, gitUrl, Out.Progress, ct), $"Cloning {packageId}" + Out.Ellipsis);
-            if (result.Ok) return true;
+            await RunOperationAsync(async ct => result = await _mounts.MountAsync(install, packageId, gitUrl, Out.Progress, ct, orDefaultBranch), $"Cloning {packageId}" + Out.Ellipsis);
+            if (result.Ok) return (true, result.ManifestValue ?? gitUrl);
+            if (result.NotAPackage) throw new InvalidOperationException(result.Error);
             Out.Warning($"Couldn't clone {packageId} ({result.Error}), so it was added to manifest.json for Unity to download instead.");
         }
         await ReloadManifestAsync(install);
         install.Manifest.Dependencies[packageId] = gitUrl;
         await UnityProjectService.SaveManifestAsync(install.UnityProjectPath, install.Manifest);
-        return false;
+        return (false, gitUrl);
     }
 
     private async Task RemovePackageAsync(List<string> values)

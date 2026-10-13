@@ -916,7 +916,7 @@
     },
     {
       "key": "develop.confirm.packageExists",
-      "value": "Packages/{0} ya existe y no está vacío — puede ser un montaje sobrante o una copia local.\n\n¿Reemplazarlo por un clon nuevo? Se eliminará su contenido actual."
+      "value": ".basisdev/{0} ya existe y no está vacío — puede ser un montaje sobrante o una copia local.\n\n¿Reemplazarlo por un clon nuevo? Se eliminará su contenido actual."
     },
     {
       "key": "develop.confirm.packageThereTitle",
@@ -964,7 +964,7 @@
     },
     {
       "key": "develop.status.clearFailed",
-      "value": "No se pudo vaciar Packages/{0}: {1}"
+      "value": "No se pudo vaciar .basisdev/{0}: {1}"
     },
     {
       "key": "develop.status.gitRequired",
@@ -980,7 +980,7 @@
     },
     {
       "key": "develop.status.mountCancelled",
-      "value": "Montaje cancelado — Packages/{0} se dejó tal cual."
+      "value": "Montaje cancelado — .basisdev/{0} se dejó tal cual."
     },
     {
       "key": "develop.status.mountError",
@@ -992,7 +992,7 @@
     },
     {
       "key": "develop.status.mounted",
-      "value": "Se montó {0} en Packages/ — edítalo en Unity y luego Enviar PR."
+      "value": "Se montó {0} en .basisdev/ — edítalo en Unity y luego Enviar PR."
     },
     {
       "key": "develop.status.mounting",

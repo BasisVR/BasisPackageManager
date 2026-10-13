@@ -180,6 +180,6 @@ public sealed class BasisInstallService
             }
         }
 
-        dir.Delete(recursive: true);
+        FileRetry.Run(() => { if (Directory.Exists(full)) Directory.Delete(full, recursive: true); });
     }
 }

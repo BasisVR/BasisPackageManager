@@ -14,10 +14,17 @@ public sealed class GitService
         @"C:\Program Files (x86)\Git\cmd\git.exe",
     };
 
+    private static readonly IReadOnlyDictionary<string, string> NoOptionalLocks = new Dictionary<string, string> { ["GIT_OPTIONAL_LOCKS"] = "0" };
+
     private string? _cachedGit;
     private readonly bool _allowLocalRemotes;
+    private readonly GitRetryPolicy _retry;
 
-    public GitService(bool allowLocalRemotes = false) => _allowLocalRemotes = allowLocalRemotes;
+    public GitService(bool allowLocalRemotes = false, GitRetryPolicy? retry = null)
+    {
+        _allowLocalRemotes = allowLocalRemotes;
+        _retry = retry ?? GitRetryPolicy.Default;
+    }
 
     private string AllowedProtocols => _allowLocalRemotes ? GitUrlPolicy.AllowedGitProtocols + ":file" : GitUrlPolicy.AllowedGitProtocols;
 
@@ -139,7 +146,7 @@ public sealed class GitService
     /// <summary>Working-tree changes only (one <c>git status</c> call) — no branch/commit/upstream lookups.</summary>
     public async Task<IReadOnlyList<GitFileChange>> GetChangesAsync(string repoRoot, CancellationToken ct = default)
     {
-        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "status", "--porcelain=v1", "--untracked-files=all" }, null, ct).ConfigureAwait(false);
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "status", "--porcelain=v1", "--untracked-files=all" }, null, ct, null, NoOptionalLocks).ConfigureAwait(false);
         var changes = new List<GitFileChange>();
         if (code == 0)
         {
@@ -643,7 +650,7 @@ public sealed class GitService
 
     public async Task<IReadOnlyList<GitWorkingEntry>> GetWorkingEntriesAsync(string repoRoot, CancellationToken ct = default)
     {
-        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "status", "--porcelain=v1", "-z", "--untracked-files=all" }, null, ct).ConfigureAwait(false);
+        var (code, outText, _) = await RunGitAsync(repoRoot, new[] { "status", "--porcelain=v1", "-z", "--untracked-files=all" }, null, ct, null, NoOptionalLocks).ConfigureAwait(false);
         return code == 0 ? ParseWorkingEntries(outText) : new List<GitWorkingEntry>();
     }
 
@@ -654,7 +661,7 @@ public sealed class GitService
         if (includeIgnored) args.Add("--ignored");
         args.Add("--");
         args.Add(Literal(folder));
-        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct).ConfigureAwait(false);
+        var (code, outText, _) = await RunGitAsync(repoRoot, args, null, ct, null, NoOptionalLocks).ConfigureAwait(false);
         return code == 0 ? ParseWorkingEntries(outText) : null;
     }
 
@@ -1393,6 +1400,47 @@ public sealed class GitService
 
     private async Task<(int Code, string Stdout, string Stderr)> RunAsync(string exe, IEnumerable<string> args, string? workingDir, Action<string>? onProgress, CancellationToken ct, string? stdin = null, IReadOnlyDictionary<string, string>? environment = null)
     {
+        var argList = args.ToList();
+        var cloneTarget = CloneTarget(argList, workingDir);
+        var cloneTargetExisted = cloneTarget is not null && Directory.Exists(cloneTarget);
+        var cloneTargetHadContent = cloneTargetExisted && Directory.EnumerateFileSystemEntries(cloneTarget!).Any();
+        for (var attempt = 1; ; attempt++)
+        {
+            var result = await RunOnceAsync(exe, argList, workingDir, onProgress, ct, stdin, environment).ConfigureAwait(false);
+            if (result.Code == 0 || ct.IsCancellationRequested) return result;
+            var reason = GitRetry.Classify(argList, result.Stderr);
+            var delays = _retry.DelaysFor(reason);
+            if (attempt > delays.Count || cloneTargetHadContent) return result;
+            if (cloneTarget is not null && !TryClearCloneTarget(cloneTarget, cloneTargetExisted)) return result;
+            onProgress?.Invoke(GitRetry.Describe(reason, attempt + 1, delays.Count + 1));
+            await Task.Delay(delays[attempt - 1], ct).ConfigureAwait(false);
+        }
+    }
+
+    private static string? CloneTarget(List<string> args, string? workingDir)
+    {
+        if (GitRetry.CommandOf(args) != "clone") return null;
+        var separator = args.IndexOf("--");
+        if (separator < 0 || separator != args.Count - 3) return null;
+        return Path.GetFullPath(args[^1], workingDir ?? Environment.CurrentDirectory);
+    }
+
+    private static bool TryClearCloneTarget(string target, bool keepFolder)
+    {
+        try
+        {
+            FileRetry.DeleteDirectory(target, keepFolder);
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            DiagnosticLog.Write($"Clearing {target} before cloning it again", ex);
+            return false;
+        }
+    }
+
+    private async Task<(int Code, string Stdout, string Stderr)> RunOnceAsync(string exe, IReadOnlyList<string> args, string? workingDir, Action<string>? onProgress, CancellationToken ct, string? stdin, IReadOnlyDictionary<string, string>? environment)
+    {
         var psi = new ProcessStartInfo
         {
             FileName = exe,
@@ -1444,17 +1492,7 @@ public sealed class GitService
         return (p.ExitCode, stdout.ToString(), stderr.ToString());
     }
 
-    private static bool IsNetworkCommand(IEnumerable<string> args)
-    {
-        using var arg = args.GetEnumerator();
-        while (arg.MoveNext())
-        {
-            if (arg.Current == "-c") { arg.MoveNext(); continue; }
-            if (arg.Current.StartsWith('-')) continue;
-            return arg.Current is "clone" or "fetch" or "ls-remote" or "push";
-        }
-        return false;
-    }
+    private static bool IsNetworkCommand(IEnumerable<string> args) => GitRetry.CommandOf(args) is "clone" or "fetch" or "ls-remote" or "push";
 
     private static void Kill(Process process)
     {

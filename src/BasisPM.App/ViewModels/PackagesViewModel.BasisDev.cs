@@ -113,63 +113,77 @@ public sealed partial class PackagesViewModel
     private async Task RunBasisDevChoiceAsync(BasisDevChoice? choice)
     {
         if (choice is null || _install is null || !_install.HasUnityProject) return;
-        var install = _install;
-        var id = choice.Item.Id;
-        IsBusy = true;
-        SetStatus(L.Tr("basisdev.status.working", id));
-        try
-        {
-            void Progress(string line) => Avalonia.Threading.Dispatcher.UIThread.Post(() => SetStatus(line));
-            var result = await BasisDev.ApplyAsync(install, id, choice.Action, force: false, Progress);
-            if (!result.Ok && result.NeedsForce)
-            {
-                var confirmed = choice.Action == BasisDevAction.UseClone
-                    ? await Dialogs.ConfirmAsync(L.Tr("basisdev.confirm.committedTitle"), L.Tr("basisdev.confirm.committedBody", id, choice.Item.Package.ManifestValue ?? ""))
-                    : await Dialogs.ConfirmAsync(L.Tr("basisdev.confirm.localWorkTitle"), L.Tr("basisdev.confirm.localWorkBody", id, choice.Item.Clone ?? ""));
-                if (!confirmed)
-                {
-                    SetStatus(L.Tr("basisdev.status.cancelled", id), StatusKind.Info);
-                    return;
-                }
-                result = await BasisDev.ApplyAsync(install, id, choice.Action, force: true, Progress);
-            }
-            if (result.Ok)
-            {
-                _mountEditedIds.Remove(id);
-                _mountEditSummaries.Remove(id);
-            }
-            SetStatus(result.Ok ? SucceededText(choice.Action, id) : L.Tr("basisdev.status.failed", id, result.Message), result.Ok ? StatusKind.Success : StatusKind.Error);
-            await ReloadInstalledAsync();
-        }
-        catch (Exception ex)
-        {
-            DiagnosticLog.Write($"Reconciling {id}", ex);
-            SetStatus(L.Tr("basisdev.status.failed", id, ex.Message), StatusKind.Error);
-        }
-        finally { IsBusy = false; }
+        await RunBasisDevChoiceAsync(_install, choice);
     }
+
+    private Task RunBasisDevChoiceAsync(BasisInstall install, BasisDevChoice choice) =>
+        PackageWorkAsync(install, choice.Item.Id, L.Tr("basisdev.status.working", choice.Item.Id), async () =>
+        {
+            var id = choice.Item.Id;
+            var key = QueueKey(install, id);
+            Task Retry() => RunBasisDevChoiceAsync(install, choice);
+            IsBusy = true;
+            SetStatus(L.Tr("basisdev.status.working", id), StatusKind.Info, install.DisplayName);
+            try
+            {
+                void Progress(string line) => Avalonia.Threading.Dispatcher.UIThread.Post(() => SetStatus(line, StatusKind.Info, install.DisplayName));
+                var result = await BasisDev.ApplyAsync(install, id, choice.Action, force: false, Progress);
+                if (!result.Ok && result.NeedsForce)
+                {
+                    var confirmed = choice.Action == BasisDevAction.UseClone
+                        ? await Dialogs.ConfirmAsync(L.Tr("basisdev.confirm.committedTitle"), L.Tr("basisdev.confirm.committedBody", id, choice.Item.Package.ManifestValue ?? ""))
+                        : await Dialogs.ConfirmAsync(L.Tr("basisdev.confirm.localWorkTitle"), L.Tr("basisdev.confirm.localWorkBody", id, choice.Item.Clone ?? ""));
+                    if (!confirmed)
+                    {
+                        SetStatus(L.Tr("basisdev.status.cancelled", id), StatusKind.Info, install.DisplayName);
+                        return;
+                    }
+                    result = await BasisDev.ApplyAsync(install, id, choice.Action, force: true, Progress);
+                }
+                if (result.Ok)
+                {
+                    _mountEditedIds.Remove(id);
+                    _mountEditSummaries.Remove(id);
+                    SetStatus(SucceededText(choice.Action, id), StatusKind.Success, install.DisplayName, key: key);
+                }
+                else SetStatus(L.Tr("basisdev.status.failed", id, result.Message), StatusKind.Error, install.DisplayName, Retry, key);
+                await ReloadInstalledAsync();
+            }
+            catch (Exception ex)
+            {
+                DiagnosticLog.Write($"Reconciling {id}", ex);
+                SetStatus(L.Tr("basisdev.status.failed", id, ex.Message), StatusKind.Error, install.DisplayName, Retry, key);
+            }
+            finally { IsBusy = false; }
+        });
 
     private async Task FixBasisDevRecordsAsync()
     {
         if (_install is null || !_install.HasUnityProject) return;
-        var install = _install;
-        var recorded = _basisDevReport.Packages.Count(p => p.Actions.Contains(BasisDevAction.Record));
-        var forgotten = _basisDevReport.Packages.Count(p => p.Actions.Contains(BasisDevAction.Prune));
-        IsBusy = true;
-        try
-        {
-            var result = await BasisDev.ReconcileAsync(install);
-            SetStatus(result.Ok ? L.Tr("basisdev.status.reconciled", recorded, forgotten) : L.Tr("basisdev.status.reconcileFailed", result.Message),
-                result.Ok ? StatusKind.Success : StatusKind.Error);
-            RefreshInstalled();
-        }
-        catch (Exception ex)
-        {
-            DiagnosticLog.Write("Reconciling .basisdev records", ex);
-            SetStatus(L.Tr("basisdev.status.reconcileFailed", ex.Message), StatusKind.Error);
-        }
-        finally { IsBusy = false; }
+        await FixBasisDevRecordsAsync(_install);
     }
+
+    private Task FixBasisDevRecordsAsync(BasisInstall install) =>
+        ProjectWorkAsync(install, L.Tr("basisdev.button.fixRecords"), async () =>
+        {
+            var key = "basisdev|" + install.UnityProjectPath;
+            var recorded = _basisDevReport.Packages.Count(p => p.Actions.Contains(BasisDevAction.Record));
+            var forgotten = _basisDevReport.Packages.Count(p => p.Actions.Contains(BasisDevAction.Prune));
+            IsBusy = true;
+            try
+            {
+                var result = await BasisDev.ReconcileAsync(install);
+                if (result.Ok) SetStatus(L.Tr("basisdev.status.reconciled", recorded, forgotten), StatusKind.Success, install.DisplayName, key: key);
+                else SetStatus(L.Tr("basisdev.status.reconcileFailed", result.Message), StatusKind.Error, install.DisplayName, () => FixBasisDevRecordsAsync(install), key);
+                RefreshInstalled();
+            }
+            catch (Exception ex)
+            {
+                DiagnosticLog.Write("Reconciling .basisdev records", ex);
+                SetStatus(L.Tr("basisdev.status.reconcileFailed", ex.Message), StatusKind.Error, install.DisplayName, () => FixBasisDevRecordsAsync(install), key);
+            }
+            finally { IsBusy = false; }
+        });
 
     private void OpenBasisDevFolder(BasisDevItem? item)
     {
@@ -187,6 +201,7 @@ public sealed partial class PackagesViewModel
         BasisDevAction.Restore => L.Tr("basisdev.status.restored", id),
         BasisDevAction.Ignore => L.Tr("basisdev.status.ignored", id),
         BasisDevAction.Unignore => L.Tr("basisdev.status.unignored", id),
+        BasisDevAction.Move => L.Tr("basisdev.status.moved", id),
         _ => L.Tr("basisdev.status.recloned", id),
     };
 }

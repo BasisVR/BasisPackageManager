@@ -916,7 +916,7 @@
     },
     {
       "key": "develop.confirm.packageExists",
-      "value": "Packages/{0} 已存在且非空 — 它可能是残留的挂载或本地副本。\n\n用全新的克隆替换它吗？其当前内容将被删除。"
+      "value": ".basisdev/{0} 已存在且非空 — 它可能是残留的挂载或本地副本。\n\n用全新的克隆替换它吗？其当前内容将被删除。"
     },
     {
       "key": "develop.confirm.packageThereTitle",
@@ -964,7 +964,7 @@
     },
     {
       "key": "develop.status.clearFailed",
-      "value": "无法清除 Packages/{0}：{1}"
+      "value": "无法清除 .basisdev/{0}：{1}"
     },
     {
       "key": "develop.status.gitRequired",
@@ -980,7 +980,7 @@
     },
     {
       "key": "develop.status.mountCancelled",
-      "value": "已取消挂载 — Packages/{0} 保持原样。"
+      "value": "已取消挂载 — .basisdev/{0} 保持原样。"
     },
     {
       "key": "develop.status.mountError",
@@ -992,7 +992,7 @@
     },
     {
       "key": "develop.status.mounted",
-      "value": "已将 {0} 挂载到 Packages/ — 在 Unity 中编辑它，然后提交 PR。"
+      "value": "已将 {0} 挂载到 .basisdev/ — 在 Unity 中编辑它，然后提交 PR。"
     },
     {
       "key": "develop.status.mounting",

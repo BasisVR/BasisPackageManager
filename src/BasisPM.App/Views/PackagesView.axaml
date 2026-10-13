@@ -22,10 +22,10 @@
                         <TextBlock Text="{Binding InstallButtonLabel}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-                <ProgressBar IsVisible="{Binding InstallPending}" IsIndeterminate="True"
+                <ProgressBar IsVisible="{Binding IsWorking}" IsIndeterminate="True"
                              Height="4" CornerRadius="2" Margin="0,-2,0,0"/>
                 <Button Classes="secondary" HorizontalAlignment="Stretch"
-                        IsVisible="{Binding IsManageable}" Click="OnManageClick"
+                        IsVisible="{Binding IsManageable}" IsEnabled="{Binding IsIdle}" Click="OnManageClick"
                         ToolTip.Tip="{loc:Tr packages.tooltip.manage}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon Classes="leadingIcon" Data="{StaticResource IconSettings}" VerticalAlignment="Center"/>
@@ -679,10 +679,10 @@
                                 <TextBlock Text="{Binding InstallButtonLabel}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <ProgressBar IsVisible="{Binding InstallPending}" IsIndeterminate="True"
+                        <ProgressBar IsVisible="{Binding IsWorking}" IsIndeterminate="True"
                                      Height="4" CornerRadius="2" Margin="0,-4,0,0"/>
                         <Button Classes="primary" HorizontalAlignment="Stretch"
-                                IsVisible="{Binding CanUpdate}"
+                                IsVisible="{Binding CanUpdate}" IsEnabled="{Binding IsIdle}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).InstallCommand}"
                                 CommandParameter="{Binding Entry}"
                                 ToolTip.Tip="{loc:Tr packages.tooltip.update}">
@@ -692,7 +692,7 @@
                             </StackPanel>
                         </Button>
                         <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding CanChooseVersion}"
+                                IsVisible="{Binding CanChooseVersion}" IsEnabled="{Binding IsIdle}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ChooseVersionCommand}"
                                 CommandParameter="{Binding Entry}"
                                 ToolTip.Tip="{loc:Tr packages.tooltip.chooseVersion}">
@@ -703,7 +703,7 @@
                         </Button>
                         <!-- Mount to edit: clone this git package into the project and swap the manifest to it. -->
                         <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding CanMountToEdit}"
+                                IsVisible="{Binding CanMountToEdit}" IsEnabled="{Binding IsIdle}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).MountCommand}"
                                 CommandParameter="{Binding}"
                                 ToolTip.Tip="{loc:Tr develop.tooltip.mountToEdit}">
@@ -724,7 +724,7 @@
                             </StackPanel>
                         </Button>
                         <Button HorizontalAlignment="Stretch"
-                                IsVisible="{Binding CanSubmitPr}"
+                                IsVisible="{Binding CanSubmitPr}" IsEnabled="{Binding IsIdle}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).SubmitPrCommand}"
                                 CommandParameter="{Binding}"
                                 ToolTip.Tip="{loc:Tr develop.tooltip.submitPr}">
@@ -745,7 +745,7 @@
                         </Button>
                         <!-- Accidental edits made directly in Library/PackageCache → turn them into a PR. -->
                         <Button Classes="primary" HorizontalAlignment="Stretch"
-                                IsVisible="{Binding HasDrift}"
+                                IsVisible="{Binding HasDrift}" IsEnabled="{Binding IsIdle}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).ReviewDriftCommand}"
                                 CommandParameter="{Binding}"
                                 ToolTip.Tip="{loc:Tr packages.tooltip.reviewDrift}">
@@ -755,7 +755,7 @@
                             </StackPanel>
                         </Button>
                         <Button Classes="danger" HorizontalAlignment="Stretch"
-                                IsVisible="{Binding CanRemove}"
+                                IsVisible="{Binding CanRemove}" IsEnabled="{Binding IsIdle}"
                                 Command="{Binding #Root.((vm:PackagesViewModel)DataContext).RemoveCommand}"
                                 CommandParameter="{Binding Entry}"
                                 ToolTip.Tip="{loc:Tr packages.tooltip.remove}">

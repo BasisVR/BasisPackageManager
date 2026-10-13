@@ -916,7 +916,7 @@
     },
     {
       "key": "develop.confirm.packageExists",
-      "value": "Packages/{0} existiert bereits und ist nicht leer — möglicherweise eine übrig gebliebene Einbindung oder eine lokale Kopie.\n\nDurch einen frischen Klon ersetzen? Der aktuelle Inhalt wird gelöscht."
+      "value": ".basisdev/{0} existiert bereits und ist nicht leer — möglicherweise eine übrig gebliebene Einbindung oder eine lokale Kopie.\n\nDurch einen frischen Klon ersetzen? Der aktuelle Inhalt wird gelöscht."
     },
     {
       "key": "develop.confirm.packageThereTitle",
@@ -964,7 +964,7 @@
     },
     {
       "key": "develop.status.clearFailed",
-      "value": "Packages/{0} konnte nicht geleert werden: {1}"
+      "value": ".basisdev/{0} konnte nicht geleert werden: {1}"
     },
     {
       "key": "develop.status.gitRequired",
@@ -980,7 +980,7 @@
     },
     {
       "key": "develop.status.mountCancelled",
-      "value": "Einbinden abgebrochen — Packages/{0} unverändert gelassen."
+      "value": "Einbinden abgebrochen — .basisdev/{0} unverändert gelassen."
     },
     {
       "key": "develop.status.mountError",
@@ -992,7 +992,7 @@
     },
     {
       "key": "develop.status.mounted",
-      "value": "{0} in Packages/ eingebunden — bearbeite es in Unity und reiche dann einen PR ein."
+      "value": "{0} in .basisdev/ eingebunden — bearbeite es in Unity und reiche dann einen PR ein."
     },
     {
       "key": "develop.status.mounting",

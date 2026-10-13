@@ -437,10 +437,12 @@ public sealed partial class BasisDevServiceTests
         var package = (await p.Service.ScanAsync(p.Install)).Find("com.x")!;
         Assert.Equal(PackageSourceKind.DevClone, package.Source);
         Assert.True(package.CloneActive);
-        Assert.Equal(new[] { BasisDevIssueKind.Unrecorded }, package.Issues);
+        Assert.Equal(new[] { BasisDevIssueKind.Unrecorded, BasisDevIssueKind.InPackages }, package.Issues);
+        Assert.Equal(new[] { BasisDevAction.Record, BasisDevAction.Move }, package.Actions);
 
         Assert.True((await p.Service.ApplyAsync(p.Install, "com.x", BasisDevAction.Record)).Ok);
         Assert.Equal("Packages/com.x", BasisDevStore.Read(p.Unity, "com.x")!.Folder);
+        Assert.Null(BasisPackagesStore.Find(p.Unity, "com.x"));
 
         var released = await p.Service.ApplyAsync(p.Install, "com.x", BasisDevAction.Release);
         Assert.True(released.Ok, released.Message);
