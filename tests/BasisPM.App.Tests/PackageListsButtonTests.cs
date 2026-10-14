@@ -26,12 +26,13 @@ public sealed class PackageListsButtonTests
 
         registry.PackageLists = "[]";
         vm.RefreshCommand.Execute(null);
-        Pump(() => !vm.HasRegistryPackageLists);
+        Pump(() => !vm.HasRegistryPackageLists && vm.RefreshCommand.CanExecute(null));
         Assert.False(vm.HasRegistryPackageLists);
+        Assert.True(vm.RefreshCommand.CanExecute(null));
 
         registry.PackageLists = OneList;
         vm.RefreshCommand.Execute(null);
-        Pump(() => vm.HasRegistryPackageLists);
+        Pump(() => vm.HasRegistryPackageLists && vm.RefreshCommand.CanExecute(null));
         Assert.True(vm.HasRegistryPackageLists);
     }
 
@@ -71,12 +72,22 @@ public sealed class PackageListsButtonTests
                 HttpListenerContext context;
                 try { context = await _listener.GetContextAsync(); }
                 catch (Exception ex) when (ex is HttpListenerException or ObjectDisposedException) { return; }
-                var body = context.Request.Url?.AbsolutePath switch
-                {
-                    "/catalog.json" => """{ "name": "Test", "packages": {} }""",
-                    "/packagelists.json" => PackageLists,
-                    _ => null,
-                };
+                _ = RespondAsync(context);
+            }
+        }
+
+        private async Task RespondAsync(HttpListenerContext context)
+        {
+            var path = context.Request.Url?.AbsolutePath;
+            if (path == "/catalog.json") await Task.Delay(300);
+            var body = path switch
+            {
+                "/catalog.json" => """{ "name": "Test", "packages": {} }""",
+                "/packagelists.json" => PackageLists,
+                _ => null,
+            };
+            try
+            {
                 context.Response.StatusCode = body is null ? 404 : 200;
                 if (body is not null)
                 {
@@ -86,6 +97,7 @@ public sealed class PackageListsButtonTests
                 }
                 context.Response.Close();
             }
+            catch (Exception ex) when (ex is HttpListenerException or ObjectDisposedException or IOException) { }
         }
 
         public void Dispose() => _listener.Close();

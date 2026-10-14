@@ -380,12 +380,14 @@ public sealed partial class PackagesViewModel : ObservableObject
     /// one list. The official catalog always wins a package-id conflict; extras contribute only ids it
     /// doesn't already define, tracked in <see cref="_unofficialIds"/> so they can be badged.</summary>
     private bool _hasRegistryPackageLists;
+    private int _packageListsCheck;
     public bool HasRegistryPackageLists { get => _hasRegistryPackageLists; private set => SetField(ref _hasRegistryPackageLists, value); }
 
     private async Task CheckRegistryPackageListsAsync()
     {
+        var check = ++_packageListsCheck;
         var lists = await _packageListService.TryLoadAsync(_officialCatalogUrl);
-        HasRegistryPackageLists = lists is { Count: > 0 };
+        if (check == _packageListsCheck) HasRegistryPackageLists = lists is { Count: > 0 };
     }
 
     private async Task ReloadCatalogAsync()
@@ -1686,6 +1688,7 @@ public sealed partial class PackagesViewModel : ObservableObject
             return;
         }
         _shell.ClearFailure("packagelists");
+        _packageListsCheck++;
         HasRegistryPackageLists = lists.Count > 0;
         if (lists.Count == 0)
         {
