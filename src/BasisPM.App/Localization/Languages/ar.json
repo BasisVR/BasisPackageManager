@@ -7235,12 +7235,12 @@
       "value": "نتيجة آخر فحص لهذه الحزمة."
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "فحص الحزم بعد تثبيتها أو تحديث Basis"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "الترجمة البرمجية باستخدام Unity بعد التثبيت وتحديثات Basis"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "بعد التثبيت أو تحديث Basis، يبحث عن تعارضات ويُصرّف المشروع باستخدام Unity، ثم يُعلمك إذا تعطّل أي شيء."
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "بعد التثبيت أو تحديث Basis، يترجم المشروع أيضًا باستخدام Unity لاكتشاف الحزم المعطلة. قد يستغرق ذلك عدة دقائق. يظل الفحص السريع للتعارضات يعمل عند إيقاف هذا الخيار."
     },
     {
       "key": "packages.apiUpgrade.applied",

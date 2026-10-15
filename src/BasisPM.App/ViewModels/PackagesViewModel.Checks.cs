@@ -71,8 +71,7 @@ public sealed partial class PackagesViewModel
         _installedThisRun.Clear();
         try
         {
-            if (!(await _settingsService.LoadAsync()).VerifyAfterInstall) return;
-            foreach (var (target, ids) in runs) await VerifyAsync(target, ids.ToList(), "install");
+            foreach (var (target, ids) in runs) await VerifyAsync(target, ids.ToList(), "install", CompileAfterInstall);
         }
         catch (Exception ex) { DiagnosticLog.Write("Checking freshly installed packages", ex); }
     }
@@ -81,13 +80,12 @@ public sealed partial class PackagesViewModel
     {
         try
         {
-            if (!(await _settingsService.LoadAsync()).VerifyAfterInstall) return;
-            if (InstallOptions.FirstOrDefault(i => Platform.PathsEqual(i.RepoRoot, repoRoot)) is { HasUnityProject: true } target) await VerifyAsync(target, null, "basis-update");
+            if (InstallOptions.FirstOrDefault(i => Platform.PathsEqual(i.RepoRoot, repoRoot)) is { HasUnityProject: true } target) await VerifyAsync(target, null, "basis-update", CompileAfterInstall);
         }
         catch (Exception ex) { DiagnosticLog.Write($"Checking packages after a Basis update of {repoRoot}", ex); }
     }
 
-    public async Task VerifyAsync(BasisInstall target, IReadOnlyCollection<string>? ids, string reason)
+    public async Task VerifyAsync(BasisInstall target, IReadOnlyCollection<string>? ids, string reason, bool compile = true)
     {
         if (!target.HasUnityProject || !_verifyingProjects.Add(target.RepoRoot)) return;
         RaiseVerifying();
@@ -96,7 +94,7 @@ public sealed partial class PackagesViewModel
         var key = "verify|" + target.RepoRoot;
         try
         {
-            var open = UnityProjectService.IsOpenInUnity(target.UnityProjectPath);
+            var open = compile && UnityProjectService.IsOpenInUnity(target.UnityProjectPath);
             if (open) _shell.ReportActivity(activity, L.Tr("packages.verify.waitingForUnity", target.DisplayName));
             var request = new ProjectCheckRequest
             {
@@ -106,18 +104,19 @@ public sealed partial class PackagesViewModel
                 Editors = await EditorsAsync(target),
                 Focus = ids,
                 Reason = reason,
-                UpgradeApis = true,
+                Compile = compile,
+                UpgradeApis = compile,
             };
             void Progress(string line) => Dispatcher.UIThread.Post(() => _shell.ReportActivity(activity, line));
             Task<ProjectCheckReport> Run() => Checks.RunAsync(request, Progress);
             var report = open ? await Run() : await _shell.Work.RunAsync(target.RepoRoot, L.Tr("packages.verify.activityAll", target.DisplayName), Run,
                 running => _shell.ReportActivity(activity, L.Tr("shell.work.waiting", running)));
-            ReportVerification(target, report, ids, reason, key);
+            ReportVerification(target, report, ids, reason, compile, key);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             DiagnosticLog.Write($"Checking packages in {target.DisplayName}", ex);
-            SetStatus(L.Tr("packages.verify.error", ex.Message), StatusKind.Error, target.DisplayName, () => VerifyAsync(target, ids, reason), key);
+            SetStatus(L.Tr("packages.verify.error", ex.Message), StatusKind.Error, target.DisplayName, () => VerifyAsync(target, ids, reason, compile), key);
         }
         finally
         {
@@ -132,14 +131,14 @@ public sealed partial class PackagesViewModel
         }
     }
 
-    private void ReportVerification(BasisInstall target, ProjectCheckReport report, IReadOnlyCollection<string>? ids, string reason, string key)
+    private void ReportVerification(BasisInstall target, ProjectCheckReport report, IReadOnlyCollection<string>? ids, string reason, bool compile, string key)
     {
         var focus = ids is { Count: > 0 } ? ids : null;
         var names = focus is null ? null : string.Join(", ", focus.Select(DisplayNameOf));
         bool Blamed(PackageIssue issue) => focus is null || focus.Contains(issue.Package, StringComparer.OrdinalIgnoreCase)
             || report.IsIntroduced(issue) && (report.Attributed is null || focus.Any(id => report.Attributed.GetValueOrDefault(id)?.Contains(PackageCheckKeys.Of(issue)) == true));
         var errors = report.Issues.Where(i => i.Severity == IssueSeverity.Error && Blamed(i)).ToList();
-        Func<Task> retry = () => VerifyAsync(target, ids, reason);
+        Func<Task> retry = () => VerifyAsync(target, ids, reason, compile);
         if (errors.Count > 0)
         {
             var where = IssueLine(errors[0]);

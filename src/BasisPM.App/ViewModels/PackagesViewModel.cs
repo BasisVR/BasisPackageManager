@@ -30,6 +30,7 @@ public sealed partial class PackagesViewModel : ObservableObject
     private readonly BasisUpdateService _basisUpdates;
     private readonly MainWindowViewModel _shell;
     private bool _isGridView;
+    private bool _compileAfterInstall = true;
 
     private Catalog _catalog = new();
     private BasisInstall? _install;
@@ -294,6 +295,35 @@ public sealed partial class PackagesViewModel : ObservableObject
         OnPropertyChanged(nameof(InstallName));
         BuildFacets();
         Refilter();
+    }
+
+    // Advanced: whether the automatic check after installs and Basis updates also compiles with Unity. Persisted.
+    public bool CompileAfterInstall
+    {
+        get => _compileAfterInstall;
+        set
+        {
+            if (!SetField(ref _compileAfterInstall, value)) return;
+            _ = PersistCompileAfterInstallAsync(value);
+        }
+    }
+
+    public void SetInitialCompileAfterInstall(bool compile)
+    {
+        if (_compileAfterInstall == compile) return;
+        _compileAfterInstall = compile;
+        OnPropertyChanged(nameof(CompileAfterInstall));
+    }
+
+    private async Task PersistCompileAfterInstallAsync(bool compile)
+    {
+        try
+        {
+            var settings = await _settingsService.LoadAsync();
+            settings.CompileAfterInstall = compile;
+            await _settingsService.SaveAsync(settings);
+        }
+        catch (Exception ex) { DiagnosticLog.Write("Saving the compile-after-install preference", ex); }
     }
 
     /// <summary>Applies the persisted layout choice at startup without re-saving it.</summary>

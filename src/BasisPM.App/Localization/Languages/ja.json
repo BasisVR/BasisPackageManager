@@ -7235,12 +7235,12 @@
       "value": "このパッケージの前回のチェック結果です。"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "パッケージのインストール後や Basis の更新後にパッケージをチェックする"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "インストールと Basis の更新後に Unity でコンパイルする"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "インストールや Basis の更新の後に、競合を探して Unity でプロジェクトをコンパイルし、何か壊れていればお知らせします。"
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "インストールや Basis の更新後に、壊れたパッケージを見つけるためプロジェクトを Unity でもコンパイルします。数分かかることがあります。オフにしても簡易的な競合チェックは実行されます。"
     },
     {
       "key": "packages.apiUpgrade.applied",

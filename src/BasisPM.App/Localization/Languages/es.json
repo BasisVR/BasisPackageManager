@@ -7235,12 +7235,12 @@
       "value": "El resultado de la última comprobación de este paquete."
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "Comprobar los paquetes después de instalarlos o de actualizar Basis"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "Compilar con Unity tras instalaciones y actualizaciones de Basis"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "Después de una instalación o de una actualización de Basis, busca conflictos y compila el proyecto con Unity, y luego te avisa si algo se ha roto."
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "Tras una instalación o una actualización de Basis, también compila el proyecto con Unity para detectar paquetes rotos. Puede tardar varios minutos. La comprobación rápida de conflictos se sigue haciendo aunque esto esté desactivado."
     },
     {
       "key": "packages.apiUpgrade.applied",

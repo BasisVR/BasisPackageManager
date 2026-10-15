@@ -7235,12 +7235,12 @@
       "value": "The result of the last check of this package."
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "Check packages after installing them or updating Basis"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "Compile with Unity after installs and Basis updates"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "After an install or a Basis update, looks for conflicts and compiles the project with Unity, then tells you if anything broke."
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "After an install or a Basis update, also compiles the project with Unity to catch broken packages. This can take several minutes. The quick conflict check still runs when this is off."
     },
     {
       "key": "packages.apiUpgrade.applied",

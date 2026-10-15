@@ -7235,12 +7235,12 @@
       "value": "此套件上次檢查的結果。"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "安裝套件或更新 Basis 後檢查套件"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "安裝和 Basis 更新後用 Unity 編譯"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "在安裝套件或更新 Basis 後，尋找衝突並以 Unity 編譯專案，然後告訴你是否有任何損壞。"
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "安裝或 Basis 更新後，還會用 Unity 編譯專案以找出損壞的套件。這可能需要幾分鐘。關閉此項時仍會進行快速衝突檢查。"
     },
     {
       "key": "packages.apiUpgrade.applied",

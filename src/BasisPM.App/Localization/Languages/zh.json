@@ -7235,12 +7235,12 @@
       "value": "此包上次检查的结果。"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "安装包或更新 Basis 后检查包"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "安装和 Basis 更新后用 Unity 编译"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "在安装或 Basis 更新之后，查找冲突并使用 Unity 编译项目，如有问题会通知你。"
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "安装或 Basis 更新后，还会用 Unity 编译项目以发现损坏的包。这可能需要几分钟。关闭此项时仍会进行快速冲突检查。"
     },
     {
       "key": "packages.apiUpgrade.applied",

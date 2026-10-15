@@ -58,8 +58,9 @@ public sealed class UserSettings
     [JsonPropertyName("autoCheckBasisUpdates")]
     public bool AutoCheckBasisUpdates { get; set; } = true;
 
-    [JsonPropertyName("verifyAfterInstall")]
-    public bool VerifyAfterInstall { get; set; } = true;
+    // Packages tab: compile the project with Unity in the automatic check after installs and Basis updates.
+    [JsonPropertyName("compileAfterInstall")]
+    public bool CompileAfterInstall { get; set; } = true;
 
     [JsonPropertyName("dismissedBasisUpdates")]
     public List<string> DismissedBasisUpdates { get; set; } = new();

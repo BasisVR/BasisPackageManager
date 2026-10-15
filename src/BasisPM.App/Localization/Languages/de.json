@@ -7235,12 +7235,12 @@
       "value": "Das Ergebnis der letzten Prüfung dieses Pakets."
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "Pakete nach der Installation oder einem Basis-Update prüfen"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "Nach Installationen und Basis-Updates mit Unity kompilieren"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "Sucht nach einer Installation oder einem Basis-Update nach Konflikten, kompiliert das Projekt mit Unity und teilt dir dann mit, ob etwas kaputtgegangen ist."
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "Kompiliert das Projekt nach einer Installation oder einem Basis-Update zusätzlich mit Unity, um defekte Pakete zu finden. Das kann mehrere Minuten dauern. Die schnelle Konfliktprüfung läuft auch, wenn dies aus ist."
     },
     {
       "key": "packages.apiUpgrade.applied",

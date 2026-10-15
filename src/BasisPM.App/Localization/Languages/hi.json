@@ -7235,12 +7235,12 @@
       "value": "इस पैकेज की पिछली जाँच का परिणाम।"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "पैकेज इंस्टॉल करने या Basis अपडेट करने के बाद उनकी जाँच करें"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "इंस्टॉल और Basis अपडेट के बाद Unity से कंपाइल करें"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "इंस्टॉल या Basis अपडेट के बाद, टकराव खोजता है और Unity से प्रोजेक्ट कंपाइल करता है, फिर बताता है कि कुछ खराब हुआ या नहीं।"
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "इंस्टॉल या Basis अपडेट के बाद, टूटे पैकेज पकड़ने के लिए प्रोजेक्ट को Unity से भी कंपाइल करता है। इसमें कई मिनट लग सकते हैं। इसे बंद रखने पर भी तेज़ कॉन्फ़्लिक्ट जाँच चलती है।"
     },
     {
       "key": "packages.apiUpgrade.applied",

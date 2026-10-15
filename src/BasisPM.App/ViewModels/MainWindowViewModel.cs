@@ -507,6 +507,7 @@ public sealed class MainWindowViewModel : ObservableObject
         _dismissedBasisUpdates.UnionWith(settings.DismissedBasisUpdates);
         SettingsVM.Apply(settings);
         PackagesVM.SetInitialGridView(settings.PackagesGridView);
+        PackagesVM.SetInitialCompileAfterInstall(settings.CompileAfterInstall);
         await InstallsVM.LoadAsync(settings);
         await PackagesVM.LoadCatalogAsync(settings.CatalogUrl, settings.ExtraCatalogUrls);
     }

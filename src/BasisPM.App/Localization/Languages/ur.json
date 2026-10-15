@@ -7235,12 +7235,12 @@
       "value": "اس پیکج کی پچھلی جانچ کا نتیجہ۔"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "پیکجز انسٹال کرنے یا Basis اپڈیٹ کرنے کے بعد ان کی جانچ کریں"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "انسٹال اور Basis اپڈیٹس کے بعد Unity سے کمپائل کریں"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "انسٹال یا Basis اپڈیٹ کے بعد تصادم تلاش کرتا ہے اور Unity سے پروجیکٹ کمپائل کرتا ہے، پھر بتاتا ہے کہ کیا کچھ خراب ہوا۔"
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "انسٹال یا Basis اپڈیٹ کے بعد، خراب پیکیجز پکڑنے کے لیے پروجیکٹ کو Unity سے بھی کمپائل کرتا ہے۔ اس میں کئی منٹ لگ سکتے ہیں۔ اسے بند رکھنے پر بھی تیز ٹکراؤ کی جانچ چلتی ہے۔"
     },
     {
       "key": "packages.apiUpgrade.applied",

@@ -7235,12 +7235,12 @@
       "value": "Результат последней проверки этого пакета."
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "Проверять пакеты после их установки или обновления Basis"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "Компилировать в Unity после установок и обновлений Basis"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "После установки или обновления Basis ищет конфликты и компилирует проект в Unity, а затем сообщает, если что-то сломалось."
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "После установки или обновления Basis также компилирует проект в Unity, чтобы найти сломанные пакеты. Это может занять несколько минут. Быстрая проверка конфликтов выполняется и при выключенном параметре."
     },
     {
       "key": "packages.apiUpgrade.applied",

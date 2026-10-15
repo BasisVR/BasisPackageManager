@@ -7235,12 +7235,12 @@
       "value": "Het resultaat van de laatste controle van dit pakket."
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "Pakketten controleren na installatie of na het bijwerken van Basis"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "Compileren met Unity na installaties en Basis-updates"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "Zoekt na een installatie of Basis-update naar conflicten en compileert het project met Unity, en laat je daarna weten of er iets kapot is gegaan."
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "Compileert het project na een installatie of Basis-update ook met Unity om kapotte pakketten te vinden. Dit kan enkele minuten duren. De snelle conflictcontrole draait ook als dit uit staat."
     },
     {
       "key": "packages.apiUpgrade.applied",

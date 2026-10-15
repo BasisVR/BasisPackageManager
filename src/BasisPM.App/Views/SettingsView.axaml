@@ -176,9 +176,6 @@
                     <CheckBox Content="{loc:Tr settings.toggle.autoCheckBasis}" IsChecked="{Binding AutoCheckBasisUpdates}"
                               ToolTip.Tip="{loc:Tr settings.toggle.autoCheckBasis.tip}"/>
 
-                    <CheckBox Content="{loc:Tr settings.toggle.verifyAfterInstall}" IsChecked="{Binding VerifyAfterInstall}"
-                              IsVisible="{Binding #AdvancedToggle.IsChecked}" ToolTip.Tip="{loc:Tr settings.toggle.verifyAfterInstall.tip}"/>
-
                     <Button Classes="primary" Command="{Binding SaveCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr settings.tooltip.save}">
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconSave}" VerticalAlignment="Center"/>

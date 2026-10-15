@@ -7235,12 +7235,12 @@
       "value": "এটি এই প্যাকেজের শেষ যাচাইয়ের ফলাফল।"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall",
-      "value": "প্যাকেজ ইনস্টল বা Basis আপডেট করার পরে প্যাকেজ যাচাই করুন"
+      "key": "packages.toggle.compileAfterInstall",
+      "value": "ইনস্টল ও Basis আপডেটের পরে Unity দিয়ে কম্পাইল করুন"
     },
     {
-      "key": "settings.toggle.verifyAfterInstall.tip",
-      "value": "কোনো ইনস্টল বা Basis আপডেটের পরে দ্বন্দ্ব খোঁজে এবং Unity দিয়ে প্রকল্পটি কম্পাইল করে, তারপর কিছু ভেঙে গেলে আপনাকে জানায়।"
+      "key": "packages.toggle.compileAfterInstall.tip",
+      "value": "ইনস্টল বা Basis আপডেটের পরে ভাঙা প্যাকেজ খুঁজতে প্রজেক্টটি Unity দিয়েও কম্পাইল করে। এতে কয়েক মিনিট লাগতে পারে। এটি বন্ধ থাকলেও দ্রুত কনফ্লিক্ট পরীক্ষা চলে।"
     },
     {
       "key": "packages.apiUpgrade.applied",
