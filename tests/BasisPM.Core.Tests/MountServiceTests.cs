@@ -150,6 +150,51 @@ public sealed class MountServiceTests
         return (new MountService(new GitService(), new UnityProjectService(), registry), new BasisInstall { RepoRoot = t.Path, UnityProjectPath = project, Name = "Basis" }, manifest);
     }
 
+    // Installing over a .basisdev clone the manifest doesn't use (detached, or marked handled by the project)
+    // used to update the clone and report success while Unity never loaded it.
+    [Fact]
+    public async Task ActivateClone_points_the_manifest_at_an_unused_basisdev_clone()
+    {
+        using var t = new TempDir();
+        t.CreateDir("Basis/Assets");
+        var project = t.Combine("Basis");
+        t.WriteFile("Basis/ProjectSettings/ProjectVersion.txt", "m_EditorVersion: 6000.0.0f1\n");
+        var manifest = t.WriteFile("Basis/Packages/manifest.json", """{ "dependencies": {} }""");
+        t.WriteFile("Basis/.basisdev/com.y/package.json", """{ "name": "com.y" }""");
+        t.WriteFile("Basis/.basisdev/com.y/.git/HEAD", "ref: refs/heads/main\n");
+        BasisDevStore.Write(project, new BasisDevSidecar
+        {
+            Package = "com.y",
+            Folder = ".basisdev/com.y",
+            Upstream = new BasisDevUpstream { Url = "https://github.com/o/y.git" },
+            HandledByProject = true,
+        });
+        var service = new MountService(new GitService(), new UnityProjectService(), new MountRegistry(t.Combine("data")));
+        var install = new BasisInstall { RepoRoot = t.Path, UnityProjectPath = project, Name = "Basis" };
+
+        Assert.True(await service.ActivateCloneAsync(install, "com.y"));
+        Assert.Contains("\"com.y\": \"file:../.basisdev/com.y\"", File.ReadAllText(manifest));
+        Assert.Null(BasisDevStore.Read(project, "com.y")!.HandledByProject);
+    }
+
+    [Fact]
+    public async Task ActivateClone_leaves_the_manifest_alone_when_Packages_has_its_own_copy()
+    {
+        using var t = new TempDir();
+        t.CreateDir("Basis/Assets");
+        var project = t.Combine("Basis");
+        t.WriteFile("Basis/ProjectSettings/ProjectVersion.txt", "m_EditorVersion: 6000.0.0f1\n");
+        var manifest = t.WriteFile("Basis/Packages/manifest.json", """{ "dependencies": {} }""");
+        t.WriteFile("Basis/Packages/com.y/package.json", """{ "name": "com.y" }""");
+        t.WriteFile("Basis/.basisdev/com.y/package.json", """{ "name": "com.y" }""");
+        t.WriteFile("Basis/.basisdev/com.y/.git/HEAD", "ref: refs/heads/main\n");
+        BasisDevStore.Write(project, new BasisDevSidecar { Package = "com.y", Folder = ".basisdev/com.y", Upstream = new BasisDevUpstream { Url = "https://github.com/o/y.git" } });
+        var service = new MountService(new GitService(), new UnityProjectService(), new MountRegistry(t.Combine("data")));
+
+        Assert.False(await service.ActivateCloneAsync(new BasisInstall { RepoRoot = t.Path, UnityProjectPath = project, Name = "Basis" }, "com.y"));
+        Assert.DoesNotContain("com.y", File.ReadAllText(manifest));
+    }
+
     [Fact]
     public void MountResult_helpers()
     {

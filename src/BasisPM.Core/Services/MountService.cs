@@ -159,6 +159,46 @@ public sealed class MountService
         return MountResult.Success(folder, mountedValue);
     }
 
+    /// <summary>
+    /// Installing a package whose clone is already in <c>.basisdev/</c> updates that clone in place, which leaves
+    /// <c>manifest.json</c> alone. When the line is missing or points elsewhere (the clone was detached, or marked as
+    /// handled by the project), Unity never loads it. This points the line at the clone and clears the
+    /// handled-by-project flag. A <c>Packages/&lt;id&gt;</c> folder still wins in Unity, so that case is left alone.
+    /// </summary>
+    /// <returns>True when the manifest now loads the package from the clone.</returns>
+    public async Task<bool> ActivateCloneAsync(BasisInstall install, string packageId, CancellationToken ct = default)
+    {
+        var project = install.UnityProjectPath;
+        if (FindMount(project, packageId)?.FolderPath is not { } folder || !IsWorkingClone(folder)) return false;
+        var embedded = Path.Combine(project, "Packages", packageId);
+        if (Directory.Exists(embedded) && !string.Equals(Path.GetFullPath(embedded).TrimEnd(Path.DirectorySeparatorChar), Path.GetFullPath(folder).TrimEnd(Path.DirectorySeparatorChar), StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        var sidecar = BasisDevStore.Read(project, packageId);
+        var subPath = sidecar?.Upstream.Path ?? UpmGitUrl.Parse(FindMount(project, packageId)?.OriginalManifestValue)?.Path;
+        if ((BasisDevStore.PackageRoot(folder, subPath) ?? BasisDevStore.PackageRoot(folder, null)) is not { } packageRoot) return false;
+        var line = BasisDevStore.ManifestLine(project, packageRoot);
+
+        var info = await _projects.LoadAsync(project, ct).ConfigureAwait(false);
+        var key = info.Manifest.Dependencies.Keys.FirstOrDefault(k => string.Equals(k, packageId, StringComparison.OrdinalIgnoreCase));
+        if (key is null || !string.Equals(info.Manifest.Dependencies[key], line, StringComparison.Ordinal))
+        {
+            if (key is not null && key != packageId) info.Manifest.Dependencies.Remove(key);
+            info.Manifest.Dependencies[packageId] = line;
+            await UnityProjectService.SaveManifestAsync(project, info.Manifest, ct).ConfigureAwait(false);
+        }
+        install.Manifest = info.Manifest;
+
+        if (sidecar is not null && (sidecar.HandledByProject is not null || !string.Equals(sidecar.Manifest.Mounted, line, StringComparison.Ordinal)))
+        {
+            sidecar.HandledByProject = null;
+            sidecar.Manifest.Mounted = line;
+            try { BasisDevStore.Write(project, sidecar); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { DiagnosticLog.Write($"Recording the {BasisDevStore.FolderName} sidecar for {packageId}", ex); }
+        }
+        return true;
+    }
+
     public async Task<string?> PackageCheckoutAsync(string folder, string manifestGitValue, bool orDefaultBranch, CancellationToken ct = default)
     {
         if (UpmGitUrl.Parse(manifestGitValue) is not { } parsed) return null;

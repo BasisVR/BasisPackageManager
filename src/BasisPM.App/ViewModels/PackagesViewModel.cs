@@ -842,7 +842,7 @@ public sealed partial class PackagesViewModel : ObservableObject
         if (_gitService.IsAvailable && WorkingCloneMount(target, packageId) is not null)
         {
             var (updated, updatedUrl) = await TryUpdateInPlaceAsync(target, packageId, gitUrl, orDefaultBranch, review);
-            if (updated) return (true, updatedUrl);
+            if (updated) return (await _mountService.ActivateCloneAsync(target, packageId), updatedUrl);
             if (WorkingCloneMount(target, packageId) is not null && !await ConfirmDiscardEditsAsync(target, packageId, packageId)) throw new ReviewDeclinedException();
         }
         if (WorkingCloneMount(target, packageId) is not null)

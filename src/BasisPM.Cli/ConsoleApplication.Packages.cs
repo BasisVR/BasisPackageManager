@@ -333,7 +333,7 @@ internal sealed partial class ConsoleApplication
             switch (updated.Outcome)
             {
                 case PackageUpdateOutcome.Updated or PackageUpdateOutcome.UpToDate:
-                    return (true, updated.ManifestValue ?? gitUrl);
+                    return (await _mounts.ActivateCloneAsync(install, packageId), updated.ManifestValue ?? gitUrl);
                 case PackageUpdateOutcome.Declined:
                     throw new DeclinedException();
                 case PackageUpdateOutcome.Conflict:
