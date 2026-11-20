@@ -372,7 +372,7 @@
     },
     {
       "key": "installs.tooltip.sync",
-      "value": "從此專案自己的遠端拉取團隊的新提交（僅快轉），然後複製或移動 Packages/basispackages.json 列出的套件，使其保持一致。你的編輯絕不會被覆寫。"
+      "value": "從此專案自己的遠端拉取團隊的新提交（僅快轉），然後複製或移動 bpm-manifest.json 列出的套件，使其保持一致。你的編輯絕不會被覆寫。"
     },
     {
       "key": "installs.button.sync",
@@ -3080,7 +3080,7 @@
     },
     {
       "key": "dialog.share.body",
-      "value": "你的編輯會推送到你 fork 的 {0}（若你有推送權限，則直接推送到 {0} 本身），並將 Packages/basispackages.json 指向該分支。"
+      "value": "你的編輯會推送到你 fork 的 {0}（若你有推送權限，則直接推送到 {0} 本身），並將 bpm-manifest.json 指向該分支。"
     },
     {
       "key": "dialog.share.branch",
@@ -3104,7 +3104,7 @@
     },
     {
       "key": "dialog.share.note",
-      "value": "之後請提交 Packages/basispackages.json，讓隊友取得此變更。"
+      "value": "之後請提交 bpm-manifest.json，讓隊友取得此變更。"
     },
     {
       "key": "dialog.share.cancel",
@@ -3432,7 +3432,7 @@
     },
     {
       "key": "packages.status.shared",
-      "value": "已在分支 {1}（{2}）上分享你的 {0} 版本。請提交 Packages/basispackages.json；隊友下次同步時就會取得。"
+      "value": "已在分支 {1}（{2}）上分享你的 {0} 版本。請提交 bpm-manifest.json；隊友下次同步時就會取得。"
     },
     {
       "key": "packages.status.shareFailed",
@@ -3816,7 +3816,7 @@
     },
     {
       "key": "packages.tooltip.share",
-      "value": "將你的編輯推送到你對此套件的 fork（或你可推送的分支），並讓 Packages/basispackages.json 指向它，隊友同步時就能取得你的版本。"
+      "value": "將你的編輯推送到你對此套件的 fork（或你可推送的分支），並讓 bpm-manifest.json 指向它，隊友同步時就能取得你的版本。"
     },
     {
       "key": "settings.tooltip.addCatalog",
@@ -4271,12 +4271,24 @@
       "value": "Unity 端已移除，但 Basis Server 端未能移除：{0}"
     },
     {
-      "key": "basisdev.banner.title",
-      "value": "套件來源需要協調"
+      "key": "basisdev.banner.titleDownload",
+      "value": "{0} 個套件待下載"
     },
     {
-      "key": "basisdev.banner.summary",
-      "value": "有 {0} 個套件在 manifest.json、專案及其 .basisdev 複製項目之間不一致。"
+      "key": "basisdev.banner.summaryDownload",
+      "value": "bpm-manifest.json 列出了 {0}，但它們還不在這台電腦上，或版本不同。通常發生在拉取隊友的變更之後。"
+    },
+    {
+      "key": "basisdev.banner.titleDecide",
+      "value": "{0} 個套件需要你決定"
+    },
+    {
+      "key": "basisdev.banner.summaryDecide",
+      "value": "Unity 沒有載入 .basisdev 中的這些複製。請為每一個選擇處理方式。"
+    },
+    {
+      "key": "basisdev.status.autoListed",
+      "value": "已將 {0} 寫入 bpm-manifest.json，讓專案的其他副本也能取得它。"
     },
     {
       "key": "basisdev.button.fixRecords",
@@ -4288,11 +4300,11 @@
     },
     {
       "key": "basisdev.tooltip.restoreAll",
-      "value": "複製 Packages/basispackages.json 中列出、但此處缺少的套件，並將複製項目移至其中列出的版本。含有你自己編輯的複製項目，只有在編輯能順利沿用時才會移動。"
+      "value": "複製 bpm-manifest.json 中列出、但此處缺少的套件，並將複製項目移至其中列出的版本。含有你自己編輯的複製項目，只有在編輯能順利沿用時才會移動。"
     },
     {
       "key": "basisdev.tooltip.fixRecords",
-      "value": "寫入缺少的 .basisdev 附屬檔，將使用中的複製項目列入 Packages/basispackages.json，並忘記過時的掛載紀錄。套件檔案與 manifest.json 不會變更。"
+      "value": "寫入缺少的 .basisdev 附屬檔，將使用中的複製項目列入 bpm-manifest.json，並忘記過時的掛載紀錄。套件檔案與 manifest.json 不會變更。"
     },
     {
       "key": "basisdev.stale.summary",
@@ -4436,11 +4448,11 @@
     },
     {
       "key": "basisdev.issue.unlisted",
-      "value": "不在 basispackages.json 中"
+      "value": "不在 bpm-manifest.json 中"
     },
     {
       "key": "basisdev.issue.unlisted.description",
-      "value": "Unity 會載入 {0}，但 Packages/basispackages.json 未列出它，因此此專案的其他副本無法重新複製它。"
+      "value": "Unity 會載入 {0}，但 bpm-manifest.json 未列出它，因此此專案的其他副本無法重新複製它。"
     },
     {
       "key": "basisdev.issue.inPackages",
@@ -4500,7 +4512,7 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "將此複製項目的來源（origin、分支與提交）記錄到 .basisdev/{0}.json；若 Unity 使用此複製項目，也會記錄到 Packages/basispackages.json，讓此專案的其他副本能重新複製它。套件檔案不會變更。"
+      "value": "將此複製項目的來源（origin、分支與提交）記錄到 .basisdev/{0}.json；若 Unity 使用此複製項目，也會記錄到 bpm-manifest.json，讓此專案的其他副本能重新複製它。套件檔案不會變更。"
     },
     {
       "key": "basisdev.tooltip.forget",
@@ -4564,7 +4576,7 @@
     },
     {
       "key": "basisdev.status.recorded",
-      "value": "已將 {0} 的上游記錄到 .basisdev 與 Packages/basispackages.json。"
+      "value": "已將 {0} 的上游記錄到 .basisdev 與 bpm-manifest.json。"
     },
     {
       "key": "basisdev.status.forgotten",
@@ -4588,7 +4600,7 @@
     },
     {
       "key": "basisdev.status.switched",
-      "value": "{0} 現在與 Packages/basispackages.json 一致。"
+      "value": "{0} 現在與 bpm-manifest.json 一致。"
     },
     {
       "key": "basisdev.status.restoringAll",
@@ -4608,7 +4620,7 @@
     },
     {
       "key": "basisdev.issue.versionMismatch.description",
-      "value": "Packages/basispackages.json 列出的是 {0}，但此複製項目位於 {1}。可能是隊友變更了它。"
+      "value": "bpm-manifest.json 列出的是 {0}，但此複製項目位於 {1}。可能是隊友變更了它。"
     },
     {
       "key": "basisdev.action.switch",
@@ -4616,7 +4628,7 @@
     },
     {
       "key": "basisdev.tooltip.switch",
-      "value": "將複製項目移至 {0}（Packages/basispackages.json 中的版本）。若你的編輯沒有衝突則會保留。"
+      "value": "將複製項目移至 {0}（bpm-manifest.json 中的版本）。若你的編輯沒有衝突則會保留。"
     },
     {
       "key": "basisdev.status.ignored",
@@ -5788,7 +5800,7 @@
     },
     {
       "key": "dialog.storage.clonesIntro",
-      "value": ".basisdev 中的複製項目。當 Unity 未載入某個複製項目、它沒有尚未提交或尚未推送的成果，且未列在 basispackages.json 中時，即可將它移除。"
+      "value": ".basisdev 中的複製項目。當 Unity 未載入某個複製項目、它沒有尚未提交或尚未推送的成果，且未列在 bpm-manifest.json 中時，即可將它移除。"
     },
     {
       "key": "dialog.storage.cloneInUse",
@@ -5800,7 +5812,7 @@
     },
     {
       "key": "dialog.storage.cloneListed",
-      "value": "未使用，但因 basispackages.json 列出而保留"
+      "value": "未使用，但因 bpm-manifest.json 列出而保留"
     },
     {
       "key": "dialog.storage.cloneLocalWork",

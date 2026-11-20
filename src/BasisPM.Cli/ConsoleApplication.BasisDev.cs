@@ -94,7 +94,7 @@ internal sealed partial class ConsoleApplication
         if (record + forget > 0)
         {
             Out.Say();
-            Out.Hint($"'{Prefix}basisdev reconcile' records {Plural(record, "clone")} (in {BasisDevStore.FolderName} and Packages/{BasisPackagesStore.FileName}) and forgets {Plural(forget, "stale mount record")}. It doesn't touch package files or manifest.json.");
+            Out.Hint($"'{Prefix}basisdev reconcile' records {Plural(record, "clone")} (in {BasisDevStore.FolderName} and {BasisPackagesStore.FileName}) and forgets {Plural(forget, "stale mount record")}. It doesn't touch package files or manifest.json.");
         }
     }
 
@@ -120,7 +120,7 @@ internal sealed partial class ConsoleApplication
             : "Not in use: manifest.json has no entry for this package.",
         BasisDevIssueKind.Shadowed => $"Not in use: Unity loads Packages/{Path.GetFileName(package.EmbeddedFolder)} instead.",
         BasisDevIssueKind.StaleRecord => "The mount record points at a folder that is no longer a clone.",
-        BasisDevIssueKind.Unlisted => $"Not listed in Packages/{BasisPackagesStore.FileName}, so other copies of the project can't clone it again.",
+        BasisDevIssueKind.Unlisted => $"Not listed in {BasisPackagesStore.FileName}, so other copies of the project can't clone it again.",
         BasisDevIssueKind.InPackages => $"Cloned into Packages/{Path.GetFileName(package.CloneFolder)}. Package Manager clones belong in {BasisDevStore.FolderName}/{package.Id}.",
         _ => $"No {BasisDevStore.FolderName} sidecar yet, so its upstream isn't recorded.",
     };

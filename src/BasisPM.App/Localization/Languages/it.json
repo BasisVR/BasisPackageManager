@@ -372,7 +372,7 @@
     },
     {
       "key": "installs.tooltip.sync",
-      "value": "Scarica i nuovi commit del tuo team dal remoto di questo progetto (solo fast-forward), poi clona o sposta i pacchetti elencati in Packages/basispackages.json per allinearli. Le tue modifiche non vengono mai sovrascritte."
+      "value": "Scarica i nuovi commit del tuo team dal remoto di questo progetto (solo fast-forward), poi clona o sposta i pacchetti elencati in bpm-manifest.json per allinearli. Le tue modifiche non vengono mai sovrascritte."
     },
     {
       "key": "installs.button.sync",
@@ -3080,7 +3080,7 @@
     },
     {
       "key": "dialog.share.body",
-      "value": "Viene eseguito il push delle tue modifiche sul tuo fork di {0} (o su {0} stesso se puoi eseguire il push lì), e Packages/basispackages.json viene fatto puntare a quel branch."
+      "value": "Viene eseguito il push delle tue modifiche sul tuo fork di {0} (o su {0} stesso se puoi eseguire il push lì), e bpm-manifest.json viene fatto puntare a quel branch."
     },
     {
       "key": "dialog.share.branch",
@@ -3104,7 +3104,7 @@
     },
     {
       "key": "dialog.share.note",
-      "value": "Dopo, esegui il commit di Packages/basispackages.json così i membri del team ricevono la modifica."
+      "value": "Dopo, esegui il commit di bpm-manifest.json così i membri del team ricevono la modifica."
     },
     {
       "key": "dialog.share.cancel",
@@ -3432,7 +3432,7 @@
     },
     {
       "key": "packages.status.shared",
-      "value": "La tua versione di {0} è stata condivisa sul branch {1} ({2}). Esegui il commit di Packages/basispackages.json; i membri del team la riceveranno alla prossima sincronizzazione."
+      "value": "La tua versione di {0} è stata condivisa sul branch {1} ({2}). Esegui il commit di bpm-manifest.json; i membri del team la riceveranno alla prossima sincronizzazione."
     },
     {
       "key": "packages.status.shareFailed",
@@ -3816,7 +3816,7 @@
     },
     {
       "key": "packages.tooltip.share",
-      "value": "Esegui il push delle tue modifiche sul tuo fork di questo pacchetto (o su un branch su cui puoi eseguire il push) e fai puntare Packages/basispackages.json a esso, così i membri del team ricevono la tua versione quando sincronizzano."
+      "value": "Esegui il push delle tue modifiche sul tuo fork di questo pacchetto (o su un branch su cui puoi eseguire il push) e fai puntare bpm-manifest.json a esso, così i membri del team ricevono la tua versione quando sincronizzano."
     },
     {
       "key": "settings.tooltip.addCatalog",
@@ -4271,12 +4271,24 @@
       "value": "La parte per Unity è stata rimossa, ma quella per il Basis Server no: {0}"
     },
     {
-      "key": "basisdev.banner.title",
-      "value": "Le sorgenti dei pacchetti vanno riconciliate"
+      "key": "basisdev.banner.titleDownload",
+      "value": "{0} pacchetto/i da scaricare"
     },
     {
-      "key": "basisdev.banner.summary",
-      "value": "{0} pacchetto/i non corrispondono tra manifest.json, il progetto e i suoi cloni in .basisdev."
+      "key": "basisdev.banner.summaryDownload",
+      "value": "bpm-manifest.json elenca {0}, che non sono ancora su questo computer o hanno un'altra versione. Succede di solito dopo aver scaricato le modifiche di un collega."
+    },
+    {
+      "key": "basisdev.banner.titleDecide",
+      "value": "{0} pacchetto/i richiedono una decisione"
+    },
+    {
+      "key": "basisdev.banner.summaryDecide",
+      "value": "Unity non carica questi cloni in .basisdev. Scegli cosa fare per ognuno."
+    },
+    {
+      "key": "basisdev.status.autoListed",
+      "value": "{0} è stato aggiunto a bpm-manifest.json così le altre copie del progetto possono ottenerlo."
     },
     {
       "key": "basisdev.button.fixRecords",
@@ -4288,11 +4300,11 @@
     },
     {
       "key": "basisdev.tooltip.restoreAll",
-      "value": "Clona i pacchetti elencati in Packages/basispackages.json che mancano qui, e porta i cloni alla versione indicata lì. I cloni con modifiche tue vengono spostati solo se le modifiche si possono trasferire senza conflitti."
+      "value": "Clona i pacchetti elencati in bpm-manifest.json che mancano qui, e porta i cloni alla versione indicata lì. I cloni con modifiche tue vengono spostati solo se le modifiche si possono trasferire senza conflitti."
     },
     {
       "key": "basisdev.tooltip.fixRecords",
-      "value": "Scrivi i file sidecar .basisdev mancanti, elenca i cloni in uso in Packages/basispackages.json e dimentica i record di montaggio obsoleti. I file dei pacchetti e manifest.json non cambiano."
+      "value": "Scrivi i file sidecar .basisdev mancanti, elenca i cloni in uso in bpm-manifest.json e dimentica i record di montaggio obsoleti. I file dei pacchetti e manifest.json non cambiano."
     },
     {
       "key": "basisdev.stale.summary",
@@ -4436,11 +4448,11 @@
     },
     {
       "key": "basisdev.issue.unlisted",
-      "value": "Non in basispackages.json"
+      "value": "Non in bpm-manifest.json"
     },
     {
       "key": "basisdev.issue.unlisted.description",
-      "value": "Unity carica {0}, ma Packages/basispackages.json non lo elenca, quindi le altre copie del progetto non possono clonarlo di nuovo."
+      "value": "Unity carica {0}, ma bpm-manifest.json non lo elenca, quindi le altre copie del progetto non possono clonarlo di nuovo."
     },
     {
       "key": "basisdev.issue.inPackages",
@@ -4500,7 +4512,7 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "Registra la provenienza di questo clone (origin, branch e commit) in .basisdev/{0}.json e, se Unity usa il clone, in Packages/basispackages.json, così le altre copie del progetto possono clonarlo di nuovo. I file del pacchetto non vengono modificati."
+      "value": "Registra la provenienza di questo clone (origin, branch e commit) in .basisdev/{0}.json e, se Unity usa il clone, in bpm-manifest.json, così le altre copie del progetto possono clonarlo di nuovo. I file del pacchetto non vengono modificati."
     },
     {
       "key": "basisdev.tooltip.forget",
@@ -4564,7 +4576,7 @@
     },
     {
       "key": "basisdev.status.recorded",
-      "value": "Upstream di {0} registrato in .basisdev e Packages/basispackages.json."
+      "value": "Upstream di {0} registrato in .basisdev e bpm-manifest.json."
     },
     {
       "key": "basisdev.status.forgotten",
@@ -4588,7 +4600,7 @@
     },
     {
       "key": "basisdev.status.switched",
-      "value": "{0} ora corrisponde a Packages/basispackages.json."
+      "value": "{0} ora corrisponde a bpm-manifest.json."
     },
     {
       "key": "basisdev.status.restoringAll",
@@ -4608,7 +4620,7 @@
     },
     {
       "key": "basisdev.issue.versionMismatch.description",
-      "value": "Packages/basispackages.json indica {0}, ma questo clone è a {1}. Probabilmente l'ha cambiato un membro del team."
+      "value": "bpm-manifest.json indica {0}, ma questo clone è a {1}. Probabilmente l'ha cambiato un membro del team."
     },
     {
       "key": "basisdev.action.switch",
@@ -4616,7 +4628,7 @@
     },
     {
       "key": "basisdev.tooltip.switch",
-      "value": "Porta il clone a {0}, la versione indicata in Packages/basispackages.json. Le tue modifiche vengono mantenute se non sono in conflitto."
+      "value": "Porta il clone a {0}, la versione indicata in bpm-manifest.json. Le tue modifiche vengono mantenute se non sono in conflitto."
     },
     {
       "key": "basisdev.status.ignored",
@@ -5788,7 +5800,7 @@
     },
     {
       "key": "dialog.storage.clonesIntro",
-      "value": "Cloni in .basisdev. Un clone può essere rimosso quando Unity non lo carica, non contiene lavoro non committato o non inviato con push e non è elencato in basispackages.json."
+      "value": "Cloni in .basisdev. Un clone può essere rimosso quando Unity non lo carica, non contiene lavoro non committato o non inviato con push e non è elencato in bpm-manifest.json."
     },
     {
       "key": "dialog.storage.cloneInUse",
@@ -5800,7 +5812,7 @@
     },
     {
       "key": "dialog.storage.cloneListed",
-      "value": "Non usato, ma mantenuto perché elencato in basispackages.json"
+      "value": "Non usato, ma mantenuto perché elencato in bpm-manifest.json"
     },
     {
       "key": "dialog.storage.cloneLocalWork",

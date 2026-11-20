@@ -1,39 +1,25 @@
-using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using BasisPM.Core.Models;
 
 namespace BasisPM.Core.Services;
 
 public static class BasisPackagesStore
 {
-    public const string FileName = "basispackages.json";
-
-    private static readonly object Gate = new();
-
-    private static readonly JsonSerializerOptions Json = new()
-    {
-        WriteIndented = true,
-        NewLine = "\n",
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        PropertyNameCaseInsensitive = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        AllowTrailingCommas = true,
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-    };
+    public const string FileName = BpmStore.ManifestFileName;
 
     private static readonly JsonDocumentOptions PackageJson = new() { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
 
-    public static string FilePath(string unityProjectPath) => Path.Combine(unityProjectPath, "Packages", FileName);
+    public static string FilePath(string unityProjectPath) => BpmStore.ManifestPath(unityProjectPath);
 
     public static IReadOnlyDictionary<string, BasisPackageEntry> Read(string unityProjectPath)
     {
         var result = new Dictionary<string, BasisPackageEntry>(StringComparer.OrdinalIgnoreCase);
         try
         {
-            foreach (var (id, entry) in Load(FilePath(unityProjectPath)).Packages)
-                if (entry is not null && BasisDevStore.IsValidId(id) && !string.IsNullOrWhiteSpace(entry.Url)) result.TryAdd(id, entry);
+            var manifest = BpmStore.ReadManifest(unityProjectPath);
+            var locked = BpmStore.ReadLock(unityProjectPath);
+            foreach (var (id, package) in manifest.Packages)
+                if (BasisDevStore.IsValidId(id) && package.IsEnabled && ToEntry(package, Find(locked.Packages, id)) is { } entry) result.TryAdd(id, entry);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException) { DiagnosticLog.Write($"Reading {FilePath(unityProjectPath)}", ex); }
         return result;
@@ -44,32 +30,56 @@ public static class BasisPackagesStore
     public static void Set(string unityProjectPath, string packageId, BasisPackageEntry entry)
     {
         if (!BasisDevStore.IsValidId(packageId)) throw new ArgumentException($"\"{packageId}\" can't be listed in {FileName}.");
-        lock (Gate)
+        BpmStore.Update(unityProjectPath, (manifest, locked) =>
         {
-            var path = FilePath(unityProjectPath);
-            var file = Load(path);
-            if (Key(file, packageId) is { } existing)
+            var url = entry.Url.Trim();
+            var existing = Key(manifest.Packages, packageId) is { } key ? manifest.Packages[key] : null;
+            var existingLock = Key(locked.Packages, packageId) is { } lockKey ? locked.Packages[lockKey] : null;
+            Remove(manifest.Packages, packageId);
+            Remove(locked.Packages, packageId);
+            var extra = entry.Extra ?? existing?.Extra;
+            var requested = BpmVersion.Git(url, entry.Path, Blank(entry.Ref));
+            manifest.Packages[packageId] = new BpmManifestPackage { Version = requested, Enabled = existing?.Enabled, CopiedFrom = existing?.CopiedFrom, ForkOf = Blank(entry.ForkOf), Extra = extra };
+            locked.Packages[packageId] = new BpmLockPackage
             {
-                entry.Extra ??= file.Packages[existing]?.Extra;
-                file.Packages.Remove(existing);
-            }
-            file.Packages[packageId] = entry;
-            Save(path, file);
-        }
+                Version = BpmVersion.Git(url, entry.Path, Blank(entry.Commit) ?? Blank(entry.Ref)),
+                Requested = requested,
+                PackageVersion = Blank(entry.Version),
+                ForkOf = Blank(entry.ForkOf),
+                Depth = existingLock?.Depth ?? 0,
+                Dependencies = existingLock?.Dependencies,
+            };
+        });
     }
 
     public static bool Remove(string unityProjectPath, string packageId)
     {
-        lock (Gate)
+        if (!File.Exists(FilePath(unityProjectPath)) && !File.Exists(BpmStore.LegacyPath(unityProjectPath))) return false;
+        var removed = false;
+        BpmStore.Update(unityProjectPath, (manifest, locked) =>
         {
-            var path = FilePath(unityProjectPath);
-            if (!File.Exists(path)) return false;
-            var file = Load(path);
-            if (Key(file, packageId) is not { } existing) return false;
-            file.Packages.Remove(existing);
-            Save(path, file);
-            return true;
-        }
+            removed = Remove(manifest.Packages, packageId);
+            Remove(locked.Packages, packageId);
+        });
+        return removed;
+    }
+
+    internal static BasisPackageEntry? ToEntry(BpmManifestPackage package, BpmLockPackage? locked)
+    {
+        var wanted = BpmVersion.Parse(package.Version);
+        if (wanted.Kind != BpmVersionKind.Git || string.IsNullOrWhiteSpace(wanted.Url)) return null;
+        var pinned = locked is null ? null : BpmVersion.Parse(locked.Version);
+        var commit = pinned is { Kind: BpmVersionKind.Git } && BpmVersion.IsCommitHash(pinned.Ref) ? pinned.Ref : null;
+        return new BasisPackageEntry
+        {
+            Version = locked?.PackageVersion,
+            Url = wanted.Url,
+            Ref = wanted.Ref,
+            Path = wanted.SubPath,
+            Commit = commit,
+            ForkOf = Blank(package.ForkOf) ?? Blank(locked?.ForkOf),
+            Extra = package.Extra,
+        };
     }
 
     public static BasisPackageEntry EntryFor(BasisDevUpstream upstream, string? packageRoot) => new()
@@ -82,25 +92,38 @@ public static class BasisPackagesStore
         ForkOf = string.IsNullOrWhiteSpace(upstream.ForkOf) ? null : upstream.ForkOf,
     };
 
-    public static BasisDevSidecar? SidecarFor(string packageId, BasisPackageEntry entry)
+    public static BasisDevSidecar? SidecarFor(string packageId, BasisPackageEntry entry) => SidecarFor(null, packageId, entry);
+
+    public static BasisDevSidecar? SidecarFor(string? unityProjectPath, string packageId, BasisPackageEntry entry)
     {
         if (!BasisDevStore.IsValidId(packageId) || string.IsNullOrWhiteSpace(entry.Url) || !GitUrlPolicy.IsSafeRef(entry.Ref) || !GitUrlPolicy.IsSafeSubPath(entry.Path)) return null;
         var upstream = new BasisDevUpstream { Url = entry.Url.Trim(), Ref = entry.Ref, Path = entry.Path, Commit = entry.Commit, ForkOf = string.IsNullOrWhiteSpace(entry.ForkOf) ? null : entry.ForkOf.Trim() };
-        var folder = BasisDevStore.FolderName + "/" + packageId;
+        string folder, mounted;
+        if (unityProjectPath is null)
+        {
+            folder = BasisDevStore.FolderName + "/" + packageId;
+            mounted = "file:../" + folder + (string.IsNullOrEmpty(entry.Path) ? "" : "/" + entry.Path);
+        }
+        else
+        {
+            var clone = BasisDevStore.CloneFolder(unityProjectPath, packageId);
+            folder = BasisDevStore.RelativeFolder(unityProjectPath, clone);
+            mounted = BasisDevStore.ManifestLine(unityProjectPath, string.IsNullOrEmpty(entry.Path) ? clone : Path.Combine(clone, entry.Path.Replace('/', Path.DirectorySeparatorChar)));
+        }
         return new BasisDevSidecar
         {
             Package = packageId,
             Folder = folder,
             Upstream = upstream,
-            Manifest = new BasisDevManifestLine { Original = upstream.ManifestUrl, Mounted = "file:../" + folder + (string.IsNullOrEmpty(entry.Path) ? "" : "/" + entry.Path) },
+            Manifest = new BasisDevManifestLine { Original = upstream.ManifestUrl, Mounted = mounted },
         };
     }
 
     public static BasisDevSidecar? SidecarFor(string unityProjectPath, string packageId) =>
-        Find(unityProjectPath, packageId) is { } entry ? SidecarFor(packageId, entry) : null;
+        Find(unityProjectPath, packageId) is { } entry ? SidecarFor(unityProjectPath, packageId, entry) : null;
 
     public static IReadOnlyList<BasisDevSidecar> Sidecars(string unityProjectPath) =>
-        Read(unityProjectPath).Select(p => SidecarFor(p.Key, p.Value)).OfType<BasisDevSidecar>().ToList();
+        Read(unityProjectPath).Select(p => SidecarFor(unityProjectPath, p.Key, p.Value)).OfType<BasisDevSidecar>().ToList();
 
     public static string? ReadVersion(string? packageRoot)
     {
@@ -116,31 +139,12 @@ public static class BasisPackagesStore
         catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { return null; }
     }
 
-    private static string? Key(BasisPackagesFile file, string packageId) =>
-        file.Packages.Keys.FirstOrDefault(k => string.Equals(k, packageId, StringComparison.OrdinalIgnoreCase));
+    private static string? Key<T>(Dictionary<string, T> map, string packageId) =>
+        map.Keys.FirstOrDefault(k => string.Equals(k, packageId, StringComparison.OrdinalIgnoreCase));
 
-    private static BasisPackagesFile Load(string path)
-    {
-        if (!File.Exists(path)) return new BasisPackagesFile();
-        BasisPackagesFile? file;
-        try { file = JsonSerializer.Deserialize<BasisPackagesFile>(File.ReadAllText(path), Json); }
-        catch (JsonException ex) { throw new InvalidDataException($"{path} isn't valid JSON ({ex.Message}). Fix it, for example a merge conflict, then try again.", ex); }
-        if (file is null) throw new InvalidDataException($"{path} doesn't hold a package list. Fix or delete it, then try again.");
-        file.Packages ??= new Dictionary<string, BasisPackageEntry>();
-        return file;
-    }
+    private static T? Find<T>(Dictionary<string, T> map, string packageId) where T : class => Key(map, packageId) is { } key ? map[key] : null;
 
-    private static void Save(string path, BasisPackagesFile file)
-    {
-        if (file.Packages.Count == 0 && file.Extra is not { Count: > 0 })
-        {
-            if (File.Exists(path)) File.Delete(path);
-            return;
-        }
-        file.Format = BasisPackagesFile.CurrentFormat;
-        file.Packages = file.Packages.OrderBy(p => p.Key, StringComparer.Ordinal).ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal);
-        var text = JsonSerializer.Serialize(file, Json) + "\n";
-        if (File.Exists(path) && string.Equals(File.ReadAllText(path), text, StringComparison.Ordinal)) return;
-        AtomicFile.WriteAllText(path, text);
-    }
+    private static bool Remove<T>(Dictionary<string, T> map, string packageId) => Key(map, packageId) is { } key && map.Remove(key);
+
+    private static string? Blank(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }

@@ -25,7 +25,7 @@ public static class BasisDevStore
 
     public static string ToolName { get; } = "BasisPM " + (typeof(BasisDevStore).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+')[0] ?? "0.0.0");
 
-    public static string Root(string unityProjectPath) => Path.Combine(unityProjectPath, FolderName);
+    public static string Root(string unityProjectPath) => BasisDevLocator.Resolve(unityProjectPath);
 
     public static string CloneFolder(string unityProjectPath, string packageId) => Path.Combine(Root(unityProjectPath), packageId);
 
@@ -99,11 +99,13 @@ public static class BasisDevStore
 
     public static string? ResolveFolder(string unityProjectPath, string? relativeFolder)
     {
-        if (string.IsNullOrWhiteSpace(relativeFolder) || !GitUrlPolicy.IsSafeSubPath(relativeFolder)) return null;
-        var parts = relativeFolder.Replace('\\', '/').Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length != 2 || parts.Any(p => p == ".") || !IsValidId(parts[1])) return null;
-        if (!string.Equals(parts[0], FolderName, StringComparison.Ordinal) && !string.Equals(parts[0], "Packages", StringComparison.Ordinal)) return null;
-        return Path.Combine(Path.GetFullPath(unityProjectPath), parts[0], parts[1]);
+        if (string.IsNullOrWhiteSpace(relativeFolder) || relativeFolder.Contains(':') || Path.IsPathRooted(relativeFolder) || relativeFolder.StartsWith('/')) return null;
+        var parts = relativeFolder.Replace(Path.DirectorySeparatorChar, '/').Replace(Path.AltDirectorySeparatorChar, '/').Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 2 || parts.Any(p => p == ".") || !IsValidId(parts[^1])) return null;
+        var project = Path.GetFullPath(unityProjectPath);
+        var full = Path.GetFullPath(Path.Combine(project, Path.Combine(parts)));
+        var parent = Path.GetDirectoryName(full);
+        return SamePath(parent, Path.Combine(project, "Packages")) || SamePath(parent, Root(unityProjectPath)) ? full : null;
     }
 
     public static string? ResolveFolder(string unityProjectPath, BasisDevSidecar sidecar) => ResolveFolder(unityProjectPath, sidecar.Folder);
@@ -111,9 +113,13 @@ public static class BasisDevStore
     public static bool IsCloneFolder(string unityProjectPath, string? folder)
     {
         if (string.IsNullOrWhiteSpace(folder)) return false;
-        var parts = RelativeFolder(unityProjectPath, folder).Split('/');
-        return parts.Length == 2 && string.Equals(parts[0], FolderName, StringComparison.Ordinal) && IsValidId(parts[1]);
+        var full = Path.GetFullPath(folder).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        return SamePath(Path.GetDirectoryName(full), Root(unityProjectPath)) && IsValidId(Path.GetFileName(full));
     }
+
+    internal static bool SamePath(string? a, string? b) =>
+        a is not null && b is not null && string.Equals(Path.GetFullPath(a).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar),
+            Path.GetFullPath(b).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar), OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 
     public static string ManifestLine(string unityProjectPath, string packageRoot) =>
         "file:" + Path.GetRelativePath(Path.Combine(Path.GetFullPath(unityProjectPath), "Packages"), Path.GetFullPath(packageRoot)).Replace('\\', '/');

@@ -372,7 +372,7 @@
     },
     {
       "key": "installs.tooltip.sync",
-      "value": "Haal de nieuwe commits van je team op van de eigen remote van dit project (alleen fast-forward), en kloon daarna de pakketten uit Packages/basispackages.json of zet ze op de vermelde versie, zodat alles overeenkomt. Je bewerkingen worden nooit overschreven."
+      "value": "Haal de nieuwe commits van je team op van de eigen remote van dit project (alleen fast-forward), en kloon daarna de pakketten uit bpm-manifest.json of zet ze op de vermelde versie, zodat alles overeenkomt. Je bewerkingen worden nooit overschreven."
     },
     {
       "key": "installs.button.sync",
@@ -3080,7 +3080,7 @@
     },
     {
       "key": "dialog.share.body",
-      "value": "Je bewerkingen worden gepusht naar je fork van {0} (of naar {0} zelf als je daar kunt pushen), en Packages/basispackages.json gaat naar die branch verwijzen."
+      "value": "Je bewerkingen worden gepusht naar je fork van {0} (of naar {0} zelf als je daar kunt pushen), en bpm-manifest.json gaat naar die branch verwijzen."
     },
     {
       "key": "dialog.share.branch",
@@ -3104,7 +3104,7 @@
     },
     {
       "key": "dialog.share.note",
-      "value": "Commit daarna Packages/basispackages.json, zodat je teamgenoten de wijziging krijgen."
+      "value": "Commit daarna bpm-manifest.json, zodat je teamgenoten de wijziging krijgen."
     },
     {
       "key": "dialog.share.cancel",
@@ -3432,7 +3432,7 @@
     },
     {
       "key": "packages.status.shared",
-      "value": "Je versie van {0} gedeeld op branch {1} ({2}). Commit Packages/basispackages.json; je teamgenoten krijgen hem bij hun volgende synchronisatie."
+      "value": "Je versie van {0} gedeeld op branch {1} ({2}). Commit bpm-manifest.json; je teamgenoten krijgen hem bij hun volgende synchronisatie."
     },
     {
       "key": "packages.status.shareFailed",
@@ -3816,7 +3816,7 @@
     },
     {
       "key": "packages.tooltip.share",
-      "value": "Push je bewerkingen naar je fork van dit pakket (of naar een branch waarnaar je kunt pushen) en laat Packages/basispackages.json daarnaar verwijzen, zodat je teamgenoten jouw versie krijgen wanneer ze synchroniseren."
+      "value": "Push je bewerkingen naar je fork van dit pakket (of naar een branch waarnaar je kunt pushen) en laat bpm-manifest.json daarnaar verwijzen, zodat je teamgenoten jouw versie krijgen wanneer ze synchroniseren."
     },
     {
       "key": "settings.tooltip.addCatalog",
@@ -4271,12 +4271,24 @@
       "value": "Het Unity-deel is verwijderd, maar het Basis Server-deel niet: {0}"
     },
     {
-      "key": "basisdev.banner.title",
-      "value": "Pakketbronnen moeten worden afgestemd"
+      "key": "basisdev.banner.titleDownload",
+      "value": "{0} pakket(ten) om te downloaden"
     },
     {
-      "key": "basisdev.banner.summary",
-      "value": "{0} pakket(ten) komen niet overeen tussen manifest.json, het project en de .basisdev-klonen."
+      "key": "basisdev.banner.summaryDownload",
+      "value": "bpm-manifest.json noemt {0}, die nog niet op deze computer staan of een andere versie hebben. Dat gebeurt meestal nadat je wijzigingen van een teamgenoot hebt opgehaald."
+    },
+    {
+      "key": "basisdev.banner.titleDecide",
+      "value": "{0} pakket(ten) hebben een beslissing nodig"
+    },
+    {
+      "key": "basisdev.banner.summaryDecide",
+      "value": "Unity laadt deze klonen in .basisdev niet. Kies per kloon wat er moet gebeuren."
+    },
+    {
+      "key": "basisdev.status.autoListed",
+      "value": "{0} is in bpm-manifest.json gezet zodat andere kopieën van het project het krijgen."
     },
     {
       "key": "basisdev.button.fixRecords",
@@ -4288,11 +4300,11 @@
     },
     {
       "key": "basisdev.tooltip.restoreAll",
-      "value": "Kloon de pakketten uit Packages/basispackages.json die hier ontbreken, en zet klonen op de versie die daar staat. Klonen met je eigen bewerkingen worden alleen verzet als de bewerkingen netjes mee kunnen."
+      "value": "Kloon de pakketten uit bpm-manifest.json die hier ontbreken, en zet klonen op de versie die daar staat. Klonen met je eigen bewerkingen worden alleen verzet als de bewerkingen netjes mee kunnen."
     },
     {
       "key": "basisdev.tooltip.fixRecords",
-      "value": "Schrijf de ontbrekende .basisdev-sidecars, zet gebruikte klonen in Packages/basispackages.json en vergeet verouderde koppelingsrecords. Pakketbestanden en manifest.json veranderen niet."
+      "value": "Schrijf de ontbrekende .basisdev-sidecars, zet gebruikte klonen in bpm-manifest.json en vergeet verouderde koppelingsrecords. Pakketbestanden en manifest.json veranderen niet."
     },
     {
       "key": "basisdev.stale.summary",
@@ -4436,11 +4448,11 @@
     },
     {
       "key": "basisdev.issue.unlisted",
-      "value": "Niet in basispackages.json"
+      "value": "Niet in bpm-manifest.json"
     },
     {
       "key": "basisdev.issue.unlisted.description",
-      "value": "Unity laadt {0}, maar Packages/basispackages.json vermeldt het niet, dus andere kopieën van het project kunnen het niet opnieuw klonen."
+      "value": "Unity laadt {0}, maar bpm-manifest.json vermeldt het niet, dus andere kopieën van het project kunnen het niet opnieuw klonen."
     },
     {
       "key": "basisdev.issue.inPackages",
@@ -4500,7 +4512,7 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "Leg vast waar deze kloon vandaan komt (origin, branch en commit) in .basisdev/{0}.json en, als Unity de kloon gebruikt, in Packages/basispackages.json, zodat andere kopieën van het project hem opnieuw kunnen klonen. Pakketbestanden worden niet gewijzigd."
+      "value": "Leg vast waar deze kloon vandaan komt (origin, branch en commit) in .basisdev/{0}.json en, als Unity de kloon gebruikt, in bpm-manifest.json, zodat andere kopieën van het project hem opnieuw kunnen klonen. Pakketbestanden worden niet gewijzigd."
     },
     {
       "key": "basisdev.tooltip.forget",
@@ -4564,7 +4576,7 @@
     },
     {
       "key": "basisdev.status.recorded",
-      "value": "De upstream van {0} is vastgelegd in .basisdev en Packages/basispackages.json."
+      "value": "De upstream van {0} is vastgelegd in .basisdev en bpm-manifest.json."
     },
     {
       "key": "basisdev.status.forgotten",
@@ -4588,7 +4600,7 @@
     },
     {
       "key": "basisdev.status.switched",
-      "value": "{0} komt nu overeen met Packages/basispackages.json."
+      "value": "{0} komt nu overeen met bpm-manifest.json."
     },
     {
       "key": "basisdev.status.restoringAll",
@@ -4608,7 +4620,7 @@
     },
     {
       "key": "basisdev.issue.versionMismatch.description",
-      "value": "Packages/basispackages.json vermeldt {0}, maar deze kloon staat op {1}. Waarschijnlijk heeft een teamgenoot dat gewijzigd."
+      "value": "bpm-manifest.json vermeldt {0}, maar deze kloon staat op {1}. Waarschijnlijk heeft een teamgenoot dat gewijzigd."
     },
     {
       "key": "basisdev.action.switch",
@@ -4616,7 +4628,7 @@
     },
     {
       "key": "basisdev.tooltip.switch",
-      "value": "Zet de kloon op {0}, de versie in Packages/basispackages.json. Je bewerkingen blijven behouden als ze niet botsen."
+      "value": "Zet de kloon op {0}, de versie in bpm-manifest.json. Je bewerkingen blijven behouden als ze niet botsen."
     },
     {
       "key": "basisdev.status.ignored",
@@ -5788,7 +5800,7 @@
     },
     {
       "key": "dialog.storage.clonesIntro",
-      "value": "Klonen in .basisdev. Een kloon kan worden verwijderd als Unity hem niet laadt, hij geen niet-gecommit of niet-gepusht werk bevat en hij niet in basispackages.json staat."
+      "value": "Klonen in .basisdev. Een kloon kan worden verwijderd als Unity hem niet laadt, hij geen niet-gecommit of niet-gepusht werk bevat en hij niet in bpm-manifest.json staat."
     },
     {
       "key": "dialog.storage.cloneInUse",
@@ -5800,7 +5812,7 @@
     },
     {
       "key": "dialog.storage.cloneListed",
-      "value": "Niet gebruikt, maar behouden omdat basispackages.json hem vermeldt"
+      "value": "Niet gebruikt, maar behouden omdat bpm-manifest.json hem vermeldt"
     },
     {
       "key": "dialog.storage.cloneLocalWork",

@@ -372,7 +372,7 @@
     },
     {
       "key": "installs.tooltip.sync",
-      "value": "يسحب الالتزامات الجديدة لفريقك من المستودع البعيد الخاص بهذا المشروع (fast-forward فقط)، ثم يستنسخ الحزم المدرجة في Packages/basispackages.json أو ينقلها لتتطابق معه. لا تتم الكتابة فوق تعديلاتك أبدًا."
+      "value": "يسحب الالتزامات الجديدة لفريقك من المستودع البعيد الخاص بهذا المشروع (fast-forward فقط)، ثم يستنسخ الحزم المدرجة في bpm-manifest.json أو ينقلها لتتطابق معه. لا تتم الكتابة فوق تعديلاتك أبدًا."
     },
     {
       "key": "installs.button.sync",
@@ -3080,7 +3080,7 @@
     },
     {
       "key": "dialog.share.body",
-      "value": "تُدفع تعديلاتك إلى نسختك المتفرّعة من {0} (أو إلى {0} نفسه إذا كان بإمكانك الدفع إليه)، ويُوجَّه Packages/basispackages.json إلى ذلك الفرع."
+      "value": "تُدفع تعديلاتك إلى نسختك المتفرّعة من {0} (أو إلى {0} نفسه إذا كان بإمكانك الدفع إليه)، ويُوجَّه bpm-manifest.json إلى ذلك الفرع."
     },
     {
       "key": "dialog.share.branch",
@@ -3104,7 +3104,7 @@
     },
     {
       "key": "dialog.share.note",
-      "value": "أودِع Packages/basispackages.json بعد ذلك ليحصل زملاؤك على التغيير."
+      "value": "أودِع bpm-manifest.json بعد ذلك ليحصل زملاؤك على التغيير."
     },
     {
       "key": "dialog.share.cancel",
@@ -3432,7 +3432,7 @@
     },
     {
       "key": "packages.status.shared",
-      "value": "تمت مشاركة نسختك من {0} على الفرع {1} ({2}). أودِع Packages/basispackages.json؛ وسيحصل عليها زملاؤك عند المزامنة التالية."
+      "value": "تمت مشاركة نسختك من {0} على الفرع {1} ({2}). أودِع bpm-manifest.json؛ وسيحصل عليها زملاؤك عند المزامنة التالية."
     },
     {
       "key": "packages.status.shareFailed",
@@ -3816,7 +3816,7 @@
     },
     {
       "key": "packages.tooltip.share",
-      "value": "يدفع تعديلاتك إلى نسختك المتفرّعة من هذه الحزمة (أو إلى فرع يمكنك الدفع إليه) ويوجّه Packages/basispackages.json إليه، ليحصل زملاؤك على نسختك عند المزامنة."
+      "value": "يدفع تعديلاتك إلى نسختك المتفرّعة من هذه الحزمة (أو إلى فرع يمكنك الدفع إليه) ويوجّه bpm-manifest.json إليه، ليحصل زملاؤك على نسختك عند المزامنة."
     },
     {
       "key": "settings.tooltip.addCatalog",
@@ -4271,12 +4271,24 @@
       "value": "تمت إزالة الجانب الخاص بـ Unity، لكن لم تتم إزالة الجانب الخاص بـ Basis Server: {0}"
     },
     {
-      "key": "basisdev.banner.title",
-      "value": "مصادر الحزم بحاجة إلى مواءمة"
+      "key": "basisdev.banner.titleDownload",
+      "value": "حزم للتنزيل: {0}"
     },
     {
-      "key": "basisdev.banner.summary",
-      "value": "{0} حزمة غير متطابقة بين manifest.json والمشروع ونسخه المستنسخة في .basisdev."
+      "key": "basisdev.banner.summaryDownload",
+      "value": "يسرد bpm-manifest.json الحزم {0}، وهي غير موجودة على هذا الكمبيوتر بعد أو بإصدار مختلف. يحدث هذا عادةً بعد جلب تغييرات أحد زملائك."
+    },
+    {
+      "key": "basisdev.banner.titleDecide",
+      "value": "حزم تحتاج إلى قرار: {0}"
+    },
+    {
+      "key": "basisdev.banner.summaryDecide",
+      "value": "لا يحمّل Unity هذه النسخ في .basisdev. اختر ما تريد فعله بكل واحدة."
+    },
+    {
+      "key": "basisdev.status.autoListed",
+      "value": "تمت إضافة {0} إلى bpm-manifest.json لكي تحصل عليها النسخ الأخرى من المشروع."
     },
     {
       "key": "basisdev.button.fixRecords",
@@ -4288,11 +4300,11 @@
     },
     {
       "key": "basisdev.tooltip.restoreAll",
-      "value": "يستنسخ الحزم المدرجة في Packages/basispackages.json وغير الموجودة هنا، وينقل النسخ المستنسخة إلى الإصدار المدرج فيه. ولا تُنقل النسخ المستنسخة التي تحتوي على تعديلاتك إلا إذا انتقلت التعديلات دون تعارض."
+      "value": "يستنسخ الحزم المدرجة في bpm-manifest.json وغير الموجودة هنا، وينقل النسخ المستنسخة إلى الإصدار المدرج فيه. ولا تُنقل النسخ المستنسخة التي تحتوي على تعديلاتك إلا إذا انتقلت التعديلات دون تعارض."
     },
     {
       "key": "basisdev.tooltip.fixRecords",
-      "value": "يكتب ملفات .basisdev المرافقة المفقودة، ويُدرج النسخ المستنسخة المستخدمة في Packages/basispackages.json، وينسى سجلات التركيب القديمة. لا تتغيّر ملفات الحزم ولا manifest.json."
+      "value": "يكتب ملفات .basisdev المرافقة المفقودة، ويُدرج النسخ المستنسخة المستخدمة في bpm-manifest.json، وينسى سجلات التركيب القديمة. لا تتغيّر ملفات الحزم ولا manifest.json."
     },
     {
       "key": "basisdev.stale.summary",
@@ -4436,11 +4448,11 @@
     },
     {
       "key": "basisdev.issue.unlisted",
-      "value": "غير موجودة في basispackages.json"
+      "value": "غير موجودة في bpm-manifest.json"
     },
     {
       "key": "basisdev.issue.unlisted.description",
-      "value": "يحمّل Unity الحزمة {0}، لكنها غير مدرجة في Packages/basispackages.json، لذا لا تستطيع النسخ الأخرى من المشروع استنساخها مجددًا."
+      "value": "يحمّل Unity الحزمة {0}، لكنها غير مدرجة في bpm-manifest.json، لذا لا تستطيع النسخ الأخرى من المشروع استنساخها مجددًا."
     },
     {
       "key": "basisdev.issue.inPackages",
@@ -4500,7 +4512,7 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "يسجّل مصدر هذه النسخة المستنسخة (origin والفرع والالتزام) في .basisdev/{0}.json، وفي Packages/basispackages.json إذا كان Unity يستخدم النسخة المستنسخة، لتتمكن النسخ الأخرى من المشروع من استنساخها مجددًا. لا تتغيّر ملفات الحزمة."
+      "value": "يسجّل مصدر هذه النسخة المستنسخة (origin والفرع والالتزام) في .basisdev/{0}.json، وفي bpm-manifest.json إذا كان Unity يستخدم النسخة المستنسخة، لتتمكن النسخ الأخرى من المشروع من استنساخها مجددًا. لا تتغيّر ملفات الحزمة."
     },
     {
       "key": "basisdev.tooltip.forget",
@@ -4564,7 +4576,7 @@
     },
     {
       "key": "basisdev.status.recorded",
-      "value": "تم تسجيل المستودع المصدر لـ {0} في .basisdev وPackages/basispackages.json."
+      "value": "تم تسجيل المستودع المصدر لـ {0} في .basisdev وbpm-manifest.json."
     },
     {
       "key": "basisdev.status.forgotten",
@@ -4588,7 +4600,7 @@
     },
     {
       "key": "basisdev.status.switched",
-      "value": "تطابق {0} الآن Packages/basispackages.json."
+      "value": "تطابق {0} الآن bpm-manifest.json."
     },
     {
       "key": "basisdev.status.restoringAll",
@@ -4608,7 +4620,7 @@
     },
     {
       "key": "basisdev.issue.versionMismatch.description",
-      "value": "يُدرج Packages/basispackages.json الإصدار {0}، لكن هذه النسخة المستنسخة على {1}. على الأرجح غيّره أحد زملائك."
+      "value": "يُدرج bpm-manifest.json الإصدار {0}، لكن هذه النسخة المستنسخة على {1}. على الأرجح غيّره أحد زملائك."
     },
     {
       "key": "basisdev.action.switch",
@@ -4616,7 +4628,7 @@
     },
     {
       "key": "basisdev.tooltip.switch",
-      "value": "ينقل النسخة المستنسخة إلى {0}، وهو الإصدار المذكور في Packages/basispackages.json. يُحتفظ بتعديلاتك ما لم تتعارض."
+      "value": "ينقل النسخة المستنسخة إلى {0}، وهو الإصدار المذكور في bpm-manifest.json. يُحتفظ بتعديلاتك ما لم تتعارض."
     },
     {
       "key": "basisdev.status.ignored",
@@ -5788,7 +5800,7 @@
     },
     {
       "key": "dialog.storage.clonesIntro",
-      "value": "النسخ المستنسخة في .basisdev. يمكن إزالة نسخة مستنسخة عندما لا يحمّلها Unity، ولا تحتوي على عمل غير مودَع أو غير مدفوع، وغير مدرجة في basispackages.json."
+      "value": "النسخ المستنسخة في .basisdev. يمكن إزالة نسخة مستنسخة عندما لا يحمّلها Unity، ولا تحتوي على عمل غير مودَع أو غير مدفوع، وغير مدرجة في bpm-manifest.json."
     },
     {
       "key": "dialog.storage.cloneInUse",
@@ -5800,7 +5812,7 @@
     },
     {
       "key": "dialog.storage.cloneListed",
-      "value": "غير مستخدمة، لكن يُحتفظ بها لأنها مدرجة في basispackages.json"
+      "value": "غير مستخدمة، لكن يُحتفظ بها لأنها مدرجة في bpm-manifest.json"
     },
     {
       "key": "dialog.storage.cloneLocalWork",

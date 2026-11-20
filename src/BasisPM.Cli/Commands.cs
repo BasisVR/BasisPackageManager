@@ -5,7 +5,7 @@ internal sealed partial class ConsoleApplication
     private const string ProjectsGroup = "Projects", UpdatesGroup = "Basis updates", PackagesGroup = "Packages", DevGroup = "Development clones (.basisdev)";
     private const string ContributeGroup = "Sending changes to Basis", ServerGroup = "Basis Server", UnityGroup = "Unity", ToolsGroup = "Settings and diagnostics", ConsoleGroup = "Interactive console";
 
-    internal static readonly string[] GroupOrder = { ProjectsGroup, UpdatesGroup, PackagesGroup, DevGroup, ContributeGroup, ServerGroup, UnityGroup, ToolsGroup, ConsoleGroup };
+    internal static readonly string[] GroupOrder = { ProjectsGroup, BpmGroup, UpdatesGroup, PackagesGroup, DevGroup, ContributeGroup, ServerGroup, UnityGroup, ToolsGroup, ConsoleGroup };
 
     private static readonly CliOption Yes = new("--yes", "Don't ask for confirmation", Short: "-y");
 
@@ -88,7 +88,7 @@ internal sealed partial class ConsoleApplication
             Summary = "Pull your team's commits, then restore packages",
             Usage = new[] { "sync [--yes]" },
             Details = "Pulls the current branch from its own remote (fast-forward only, so your commits and edits are never rewritten), then clones the packages "
-                + "Packages/basispackages.json lists that are missing and moves clones to the listed versions, like 'restore'. Basis itself isn't touched; use 'update-basis' for that.",
+                + "bpm-manifest.json lists that are missing and moves clones to the listed versions, like 'restore'. Basis itself isn't touched; use 'update-basis' for that.",
             Options = new[] { new CliOption("--yes", "Install listed packages that need review without asking", Short: "-y") },
             SeeAlso = new[] { "restore", "update-basis" }, Run = SyncProjectAsync,
         },
@@ -116,7 +116,7 @@ internal sealed partial class ConsoleApplication
             Usage = new[] { "clean library|temp|logs|clones|cache [--yes]" },
             Details = "library deletes Unity's Library folder; Unity rebuilds it the next time it opens the project, which can take a long time. temp deletes Unity's Temp folder. "
                 + "Both refuse while Unity has the project open. logs deletes the project's log files, leaving any that are in use. clones removes .basisdev clones Unity "
-                + "doesn't load, as long as they have no uncommitted or unpushed work and aren't listed in Packages/basispackages.json. cache empties the shared download "
+                + "doesn't load, as long as they have no uncommitted or unpushed work and aren't listed in bpm-manifest.json. cache empties the shared download "
                 + "cache that makes new clones faster; it isn't tied to a project.",
             Verbs = new() { ["library"] = Array.Empty<ArgKind>(), ["temp"] = Array.Empty<ArgKind>(), ["logs"] = Array.Empty<ArgKind>(), ["clones"] = Array.Empty<ArgKind>(), ["cache"] = Array.Empty<ArgKind>() },
             Options = new[] { Yes },
@@ -339,12 +339,15 @@ internal sealed partial class ConsoleApplication
         new()
         {
             Name = "restore", Group = PackagesGroup, Aliases = new[] { "restore-packages" },
-            Summary = "Clone the packages basispackages.json lists",
+            Summary = "Rebuild .basisdev from bpm-lock.json",
             Usage = new[] { "restore [--no-switch] [--yes]" },
-            Details = "Clones every package Packages/basispackages.json lists that's missing from .basisdev, at the commit it lists, and moves existing clones to the listed "
-                + "version when a teammate changed it (clones with clashing edits are left alone). Run it after cloning a project or in CI. Exits with code 1 when anything couldn't be restored.",
+            Details = "Builds whatever is missing in .basisdev from the committed files: the bare repositories, pinned checkouts at the locked commit with their sparse folders, working trees "
+                + "(created from their url and branch when missing, otherwise left as they are and reported), and the package clones bpm-lock.json lists. Then it mounts the locked packages. "
+                + "Checkouts in a folder outside .basisdev and local overrides aren't restored; missing ones are reported. It never touches Assets, ProjectSettings, bpm-manifest.json or bpm-lock.json, "
+                + "is safe to run twice, and doesn't need the project to be a git repository. Run it after cloning a project, after pulling a change to bpm-lock.json, and in CI before Unity starts. "
+                + "Exits with code 1 when anything couldn't be restored.",
             Options = new[] { new CliOption("--no-switch", "Only clone missing packages; leave existing clones where they are"), new CliOption("--yes", "Install listed packages that need review without asking", Short: "-y") },
-            SeeAlso = new[] { "sync", "basisdev" }, Run = RestorePackagesAsync,
+            SeeAlso = new[] { "sync", "basisdev", "lock", "manifest" }, Run = RestorePackagesAsync,
         },
         new()
         {
@@ -411,12 +414,12 @@ internal sealed partial class ConsoleApplication
             Summary = "Show and reconcile the development clones",
             Usage = new[] { "basisdev [--all]", "basisdev reconcile", "basisdev record|forget|use|release|restore|reclone|ignore|unignore|move|switch <package-id> [--force]", "basisdev share <package-id> [--branch <name>] [--message <text>]" },
             Details = "Lists the development clones with their recorded upstream and anything that needs reconciling (--all lists every package). Installed packages are cloned into "
-                + ".basisdev and listed in Packages/basispackages.json, which the project can commit even when .basisdev is ignored. When the Basis repo has its own copy "
-                + "of a cloned package, it compares the two. 'reconcile' records clones without a sidecar or basispackages.json entry and forgets stale mount records. 'use' points manifest.json at a clone that "
+                + ".basisdev and listed in bpm-manifest.json, which the project can commit even when .basisdev is ignored. When the Basis repo has its own copy "
+                + "of a cloned package, it compares the two. 'reconcile' records clones without a sidecar or bpm-manifest.json entry and forgets stale mount records. 'use' points manifest.json at a clone that "
                 + "isn't in use; 'release' deletes a clone (the project's own copy or manifest source stays); 'restore' and 'reclone' fix a missing clone, such as one listed in "
-                + "basispackages.json on a fresh checkout; 'ignore' stops flagging a clone that isn't used because the project, such as the Basis repo, handles the package itself; "
-                + "'move' moves an older clone from Packages into .basisdev; 'switch' moves a clone to the version basispackages.json lists when a teammate changed it; "
-                + "'share' commits your edits, pushes them to your fork on GitHub (or a branch you can push to) and points basispackages.json at that branch so teammates get them.",
+                + "bpm-manifest.json on a fresh checkout; 'ignore' stops flagging a clone that isn't used because the project, such as the Basis repo, handles the package itself; "
+                + "'move' moves an older clone from Packages into .basisdev; 'switch' moves a clone to the version bpm-manifest.json lists when a teammate changed it; "
+                + "'share' commits your edits, pushes them to your fork on GitHub (or a branch you can push to) and points bpm-manifest.json at that branch so teammates get them.",
             Options = new[]
             {
                 new CliOption("--all", "List every package, not only clones and problems"), new CliOption("--force", "Go ahead even when that discards local work"),

@@ -372,7 +372,7 @@
     },
     {
       "key": "installs.tooltip.sync",
-      "value": "このプロジェクト自身のリモートからチームの新しいコミットをプルし（fast-forward のみ）、Packages/basispackages.json に記載されたパッケージをクローンまたは移動して一致させます。あなたの編集内容が上書きされることはありません。"
+      "value": "このプロジェクト自身のリモートからチームの新しいコミットをプルし（fast-forward のみ）、bpm-manifest.json に記載されたパッケージをクローンまたは移動して一致させます。あなたの編集内容が上書きされることはありません。"
     },
     {
       "key": "installs.button.sync",
@@ -3080,7 +3080,7 @@
     },
     {
       "key": "dialog.share.body",
-      "value": "編集内容は {0} のあなたのフォーク（プッシュ権限があれば {0} 自体）にプッシュされ、Packages/basispackages.json がそのブランチを参照するように更新されます。"
+      "value": "編集内容は {0} のあなたのフォーク（プッシュ権限があれば {0} 自体）にプッシュされ、bpm-manifest.json がそのブランチを参照するように更新されます。"
     },
     {
       "key": "dialog.share.branch",
@@ -3104,7 +3104,7 @@
     },
     {
       "key": "dialog.share.note",
-      "value": "チームメイトに変更が届くよう、後で Packages/basispackages.json をコミットしてください。"
+      "value": "チームメイトに変更が届くよう、後で bpm-manifest.json をコミットしてください。"
     },
     {
       "key": "dialog.share.cancel",
@@ -3432,7 +3432,7 @@
     },
     {
       "key": "packages.status.shared",
-      "value": "{0} のあなたのバージョンをブランチ {1} で共有しました（{2}）。Packages/basispackages.json をコミットしてください。チームメイトは次回の同期時に受け取ります。"
+      "value": "{0} のあなたのバージョンをブランチ {1} で共有しました（{2}）。bpm-manifest.json をコミットしてください。チームメイトは次回の同期時に受け取ります。"
     },
     {
       "key": "packages.status.shareFailed",
@@ -3816,7 +3816,7 @@
     },
     {
       "key": "packages.tooltip.share",
-      "value": "編集内容をこのパッケージのあなたのフォーク（またはプッシュできるブランチ）にプッシュし、Packages/basispackages.json がそれを参照するようにします。これにより、チームメイトは同期時にあなたのバージョンを受け取ります。"
+      "value": "編集内容をこのパッケージのあなたのフォーク（またはプッシュできるブランチ）にプッシュし、bpm-manifest.json がそれを参照するようにします。これにより、チームメイトは同期時にあなたのバージョンを受け取ります。"
     },
     {
       "key": "settings.tooltip.addCatalog",
@@ -4271,12 +4271,24 @@
       "value": "Unity 側は削除されましたが、Basis Server 側は削除されませんでした: {0}"
     },
     {
-      "key": "basisdev.banner.title",
-      "value": "パッケージのソースの整合が必要です"
+      "key": "basisdev.banner.titleDownload",
+      "value": "ダウンロードするパッケージ: {0} 個"
     },
     {
-      "key": "basisdev.banner.summary",
-      "value": "{0} 個のパッケージで、manifest.json、プロジェクト、.basisdev のクローンの間に食い違いがあります。"
+      "key": "basisdev.banner.summaryDownload",
+      "value": "bpm-manifest.json に {0} が記載されていますが、このコンピューターにまだないか、バージョンが異なります。チームメイトの変更を取り込んだ後によく起こります。"
+    },
+    {
+      "key": "basisdev.banner.titleDecide",
+      "value": "判断が必要なパッケージ: {0} 個"
+    },
+    {
+      "key": "basisdev.banner.summaryDecide",
+      "value": "Unity は .basisdev 内のこれらのクローンを読み込んでいません。それぞれの扱いを選んでください。"
+    },
+    {
+      "key": "basisdev.status.autoListed",
+      "value": "プロジェクトの他のコピーでも取得できるように、{0} を bpm-manifest.json に追加しました。"
     },
     {
       "key": "basisdev.button.fixRecords",
@@ -4288,11 +4300,11 @@
     },
     {
       "key": "basisdev.tooltip.restoreAll",
-      "value": "Packages/basispackages.json に記載されていてここにないパッケージをクローンし、クローンをそこに記載されたバージョンに移動します。独自の編集内容があるクローンは、編集内容をきれいに引き継げる場合にのみ移動します。"
+      "value": "bpm-manifest.json に記載されていてここにないパッケージをクローンし、クローンをそこに記載されたバージョンに移動します。独自の編集内容があるクローンは、編集内容をきれいに引き継げる場合にのみ移動します。"
     },
     {
       "key": "basisdev.tooltip.fixRecords",
-      "value": "不足している .basisdev サイドカーファイルを書き込み、使用中のクローンを Packages/basispackages.json に記載し、古いマウント記録を破棄します。パッケージのファイルと manifest.json は変更されません。"
+      "value": "不足している .basisdev サイドカーファイルを書き込み、使用中のクローンを bpm-manifest.json に記載し、古いマウント記録を破棄します。パッケージのファイルと manifest.json は変更されません。"
     },
     {
       "key": "basisdev.stale.summary",
@@ -4436,11 +4448,11 @@
     },
     {
       "key": "basisdev.issue.unlisted",
-      "value": "basispackages.json に未記載"
+      "value": "bpm-manifest.json に未記載"
     },
     {
       "key": "basisdev.issue.unlisted.description",
-      "value": "Unity は {0} を読み込みますが、Packages/basispackages.json に記載されていないため、プロジェクトのほかのコピーでは再度クローンできません。"
+      "value": "Unity は {0} を読み込みますが、bpm-manifest.json に記載されていないため、プロジェクトのほかのコピーでは再度クローンできません。"
     },
     {
       "key": "basisdev.issue.inPackages",
@@ -4500,7 +4512,7 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "このクローンの取得元（origin、ブランチ、コミット）を .basisdev/{0}.json に記録し、Unity がクローンを使用している場合は Packages/basispackages.json にも記録します。これにより、プロジェクトのほかのコピーでも再度クローンできます。パッケージのファイルは変更されません。"
+      "value": "このクローンの取得元（origin、ブランチ、コミット）を .basisdev/{0}.json に記録し、Unity がクローンを使用している場合は bpm-manifest.json にも記録します。これにより、プロジェクトのほかのコピーでも再度クローンできます。パッケージのファイルは変更されません。"
     },
     {
       "key": "basisdev.tooltip.forget",
@@ -4564,7 +4576,7 @@
     },
     {
       "key": "basisdev.status.recorded",
-      "value": "{0} のアップストリームを .basisdev と Packages/basispackages.json に記録しました。"
+      "value": "{0} のアップストリームを .basisdev と bpm-manifest.json に記録しました。"
     },
     {
       "key": "basisdev.status.forgotten",
@@ -4588,7 +4600,7 @@
     },
     {
       "key": "basisdev.status.switched",
-      "value": "{0} は Packages/basispackages.json と一致しました。"
+      "value": "{0} は bpm-manifest.json と一致しました。"
     },
     {
       "key": "basisdev.status.restoringAll",
@@ -4608,7 +4620,7 @@
     },
     {
       "key": "basisdev.issue.versionMismatch.description",
-      "value": "Packages/basispackages.json には {0} と記載されていますが、このクローンは {1} です。チームメイトが変更した可能性があります。"
+      "value": "bpm-manifest.json には {0} と記載されていますが、このクローンは {1} です。チームメイトが変更した可能性があります。"
     },
     {
       "key": "basisdev.action.switch",
@@ -4616,7 +4628,7 @@
     },
     {
       "key": "basisdev.tooltip.switch",
-      "value": "クローンを Packages/basispackages.json のバージョンである {0} に移動します。競合しない編集内容は保持されます。"
+      "value": "クローンを bpm-manifest.json のバージョンである {0} に移動します。競合しない編集内容は保持されます。"
     },
     {
       "key": "basisdev.status.ignored",
@@ -5788,7 +5800,7 @@
     },
     {
       "key": "dialog.storage.clonesIntro",
-      "value": ".basisdev 内のクローンです。Unity が読み込んでおらず、未コミットや未プッシュの作業がなく、basispackages.json に記載されていないクローンは削除できます。"
+      "value": ".basisdev 内のクローンです。Unity が読み込んでおらず、未コミットや未プッシュの作業がなく、bpm-manifest.json に記載されていないクローンは削除できます。"
     },
     {
       "key": "dialog.storage.cloneInUse",
@@ -5800,7 +5812,7 @@
     },
     {
       "key": "dialog.storage.cloneListed",
-      "value": "未使用ですが、basispackages.json に記載されているため保持"
+      "value": "未使用ですが、bpm-manifest.json に記載されているため保持"
     },
     {
       "key": "dialog.storage.cloneLocalWork",

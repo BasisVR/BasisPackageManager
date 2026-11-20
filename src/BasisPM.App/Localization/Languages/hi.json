@@ -372,7 +372,7 @@
     },
     {
       "key": "installs.tooltip.sync",
-      "value": "इस प्रोजेक्ट के अपने रिमोट से आपकी टीम के नए कमिट पुल करें (केवल fast-forward), फिर Packages/basispackages.json में सूचीबद्ध पैकेज को क्लोन करें या आगे बढ़ाएँ ताकि वे उससे मेल खाएँ। आपके संपादन कभी ओवरराइट नहीं होते।"
+      "value": "इस प्रोजेक्ट के अपने रिमोट से आपकी टीम के नए कमिट पुल करें (केवल fast-forward), फिर bpm-manifest.json में सूचीबद्ध पैकेज को क्लोन करें या आगे बढ़ाएँ ताकि वे उससे मेल खाएँ। आपके संपादन कभी ओवरराइट नहीं होते।"
     },
     {
       "key": "installs.button.sync",
@@ -3080,7 +3080,7 @@
     },
     {
       "key": "dialog.share.body",
-      "value": "आपके संपादन {0} के आपके फ़ोर्क में पुश किए जाते हैं (या यदि आप सीधे {0} में पुश कर सकते हैं तो वहीं), और Packages/basispackages.json को उस ब्रांच की ओर इंगित किया जाता है।"
+      "value": "आपके संपादन {0} के आपके फ़ोर्क में पुश किए जाते हैं (या यदि आप सीधे {0} में पुश कर सकते हैं तो वहीं), और bpm-manifest.json को उस ब्रांच की ओर इंगित किया जाता है।"
     },
     {
       "key": "dialog.share.branch",
@@ -3104,7 +3104,7 @@
     },
     {
       "key": "dialog.share.note",
-      "value": "बाद में Packages/basispackages.json कमिट करें ताकि टीम के साथियों को यह बदलाव मिले।"
+      "value": "बाद में bpm-manifest.json कमिट करें ताकि टीम के साथियों को यह बदलाव मिले।"
     },
     {
       "key": "dialog.share.cancel",
@@ -3432,7 +3432,7 @@
     },
     {
       "key": "packages.status.shared",
-      "value": "{0} का आपका संस्करण ब्रांच {1} ({2}) पर साझा किया गया। Packages/basispackages.json कमिट करें; टीम के साथियों को यह अगली बार सिंक करने पर मिल जाएगा।"
+      "value": "{0} का आपका संस्करण ब्रांच {1} ({2}) पर साझा किया गया। bpm-manifest.json कमिट करें; टीम के साथियों को यह अगली बार सिंक करने पर मिल जाएगा।"
     },
     {
       "key": "packages.status.shareFailed",
@@ -3816,7 +3816,7 @@
     },
     {
       "key": "packages.tooltip.share",
-      "value": "अपने संपादन इस पैकेज के अपने फ़ोर्क में (या किसी ऐसी ब्रांच में जिसमें आप पुश कर सकते हैं) पुश करें और Packages/basispackages.json को उसकी ओर इंगित करें, ताकि टीम के साथियों को सिंक करने पर आपका संस्करण मिले।"
+      "value": "अपने संपादन इस पैकेज के अपने फ़ोर्क में (या किसी ऐसी ब्रांच में जिसमें आप पुश कर सकते हैं) पुश करें और bpm-manifest.json को उसकी ओर इंगित करें, ताकि टीम के साथियों को सिंक करने पर आपका संस्करण मिले।"
     },
     {
       "key": "settings.tooltip.addCatalog",
@@ -4271,12 +4271,24 @@
       "value": "Unity वाला हिस्सा हटा दिया गया, लेकिन Basis Server वाला हिस्सा नहीं हटा: {0}"
     },
     {
-      "key": "basisdev.banner.title",
-      "value": "पैकेज स्रोतों का मिलान आवश्यक है"
+      "key": "basisdev.banner.titleDownload",
+      "value": "डाउनलोड करने के लिए पैकेज: {0}"
     },
     {
-      "key": "basisdev.banner.summary",
-      "value": "{0} पैकेज manifest.json, प्रोजेक्ट और उसके .basisdev क्लोनों के बीच मेल नहीं खाते।"
+      "key": "basisdev.banner.summaryDownload",
+      "value": "bpm-manifest.json में {0} हैं, जो अभी इस कंप्यूटर पर नहीं हैं या किसी दूसरे संस्करण में हैं। आमतौर पर ऐसा किसी साथी के बदलाव लाने के बाद होता है।"
+    },
+    {
+      "key": "basisdev.banner.titleDecide",
+      "value": "फ़ैसले की ज़रूरत वाले पैकेज: {0}"
+    },
+    {
+      "key": "basisdev.banner.summaryDecide",
+      "value": "Unity .basisdev में इन क्लोन को लोड नहीं कर रहा है। हर एक के लिए चुनें कि क्या करना है।"
+    },
+    {
+      "key": "basisdev.status.autoListed",
+      "value": "{0} को bpm-manifest.json में जोड़ा गया, ताकि प्रोजेक्ट की दूसरी कॉपियों को भी यह मिले।"
     },
     {
       "key": "basisdev.button.fixRecords",
@@ -4288,11 +4300,11 @@
     },
     {
       "key": "basisdev.tooltip.restoreAll",
-      "value": "Packages/basispackages.json में सूचीबद्ध जो पैकेज यहाँ नहीं हैं उन्हें क्लोन करें, और क्लोनों को वहाँ सूचीबद्ध संस्करण पर ले जाएँ। आपके अपने संपादनों वाले क्लोन तभी आगे बढ़ते हैं जब संपादन बिना टकराव के साथ आ सकें।"
+      "value": "bpm-manifest.json में सूचीबद्ध जो पैकेज यहाँ नहीं हैं उन्हें क्लोन करें, और क्लोनों को वहाँ सूचीबद्ध संस्करण पर ले जाएँ। आपके अपने संपादनों वाले क्लोन तभी आगे बढ़ते हैं जब संपादन बिना टकराव के साथ आ सकें।"
     },
     {
       "key": "basisdev.tooltip.fixRecords",
-      "value": "गायब .basisdev साइडकार लिखें, उपयोग में आ रहे क्लोनों को Packages/basispackages.json में सूचीबद्ध करें और पुराने माउंट रिकॉर्ड भूल जाएँ। पैकेज फ़ाइलें और manifest.json नहीं बदलते।"
+      "value": "गायब .basisdev साइडकार लिखें, उपयोग में आ रहे क्लोनों को bpm-manifest.json में सूचीबद्ध करें और पुराने माउंट रिकॉर्ड भूल जाएँ। पैकेज फ़ाइलें और manifest.json नहीं बदलते।"
     },
     {
       "key": "basisdev.stale.summary",
@@ -4436,11 +4448,11 @@
     },
     {
       "key": "basisdev.issue.unlisted",
-      "value": "basispackages.json में नहीं"
+      "value": "bpm-manifest.json में नहीं"
     },
     {
       "key": "basisdev.issue.unlisted.description",
-      "value": "Unity, {0} को लोड करता है, लेकिन Packages/basispackages.json में यह सूचीबद्ध नहीं है, इसलिए प्रोजेक्ट की अन्य प्रतियाँ इसे फिर से क्लोन नहीं कर सकतीं।"
+      "value": "Unity, {0} को लोड करता है, लेकिन bpm-manifest.json में यह सूचीबद्ध नहीं है, इसलिए प्रोजेक्ट की अन्य प्रतियाँ इसे फिर से क्लोन नहीं कर सकतीं।"
     },
     {
       "key": "basisdev.issue.inPackages",
@@ -4500,7 +4512,7 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "यह क्लोन कहाँ से आया (origin, ब्रांच और कमिट), इसे .basisdev/{0}.json में और, यदि Unity क्लोन का उपयोग करता है तो, Packages/basispackages.json में दर्ज करें, ताकि प्रोजेक्ट की अन्य प्रतियाँ इसे फिर से क्लोन कर सकें। पैकेज फ़ाइलें नहीं बदली जातीं।"
+      "value": "यह क्लोन कहाँ से आया (origin, ब्रांच और कमिट), इसे .basisdev/{0}.json में और, यदि Unity क्लोन का उपयोग करता है तो, bpm-manifest.json में दर्ज करें, ताकि प्रोजेक्ट की अन्य प्रतियाँ इसे फिर से क्लोन कर सकें। पैकेज फ़ाइलें नहीं बदली जातीं।"
     },
     {
       "key": "basisdev.tooltip.forget",
@@ -4564,7 +4576,7 @@
     },
     {
       "key": "basisdev.status.recorded",
-      "value": "{0} का अपस्ट्रीम .basisdev और Packages/basispackages.json में दर्ज किया गया।"
+      "value": "{0} का अपस्ट्रीम .basisdev और bpm-manifest.json में दर्ज किया गया।"
     },
     {
       "key": "basisdev.status.forgotten",
@@ -4588,7 +4600,7 @@
     },
     {
       "key": "basisdev.status.switched",
-      "value": "{0} अब Packages/basispackages.json से मेल खाता है।"
+      "value": "{0} अब bpm-manifest.json से मेल खाता है।"
     },
     {
       "key": "basisdev.status.restoringAll",
@@ -4608,7 +4620,7 @@
     },
     {
       "key": "basisdev.issue.versionMismatch.description",
-      "value": "Packages/basispackages.json में {0} सूचीबद्ध है, लेकिन यह क्लोन {1} पर है। संभवतः किसी टीम साथी ने इसे बदला है।"
+      "value": "bpm-manifest.json में {0} सूचीबद्ध है, लेकिन यह क्लोन {1} पर है। संभवतः किसी टीम साथी ने इसे बदला है।"
     },
     {
       "key": "basisdev.action.switch",
@@ -4616,7 +4628,7 @@
     },
     {
       "key": "basisdev.tooltip.switch",
-      "value": "क्लोन को {0} पर ले जाएँ, जो Packages/basispackages.json में दिया गया संस्करण है। टकराव न होने पर आपके संपादन रखे जाते हैं।"
+      "value": "क्लोन को {0} पर ले जाएँ, जो bpm-manifest.json में दिया गया संस्करण है। टकराव न होने पर आपके संपादन रखे जाते हैं।"
     },
     {
       "key": "basisdev.status.ignored",
@@ -5788,7 +5800,7 @@
     },
     {
       "key": "dialog.storage.clonesIntro",
-      "value": ".basisdev में क्लोन। किसी क्लोन को तब हटाया जा सकता है जब Unity उसे लोड नहीं करता, उसमें कोई कमिट न किया गया या पुश न किया गया काम नहीं है, और वह basispackages.json में सूचीबद्ध नहीं है।"
+      "value": ".basisdev में क्लोन। किसी क्लोन को तब हटाया जा सकता है जब Unity उसे लोड नहीं करता, उसमें कोई कमिट न किया गया या पुश न किया गया काम नहीं है, और वह bpm-manifest.json में सूचीबद्ध नहीं है।"
     },
     {
       "key": "dialog.storage.cloneInUse",
@@ -5800,7 +5812,7 @@
     },
     {
       "key": "dialog.storage.cloneListed",
-      "value": "उपयोग नहीं होता, लेकिन रखा गया है क्योंकि basispackages.json में यह सूचीबद्ध है"
+      "value": "उपयोग नहीं होता, लेकिन रखा गया है क्योंकि bpm-manifest.json में यह सूचीबद्ध है"
     },
     {
       "key": "dialog.storage.cloneLocalWork",

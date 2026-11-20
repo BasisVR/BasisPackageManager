@@ -36,7 +36,7 @@ public sealed class PackageShareService
         if (_mounts.FindMount(install.UnityProjectPath, packageId) is not { } mount || !MountService.IsWorkingClone(mount.FolderPath))
             return (null, false, $"{packageId} isn't installed as a working copy.");
         if (!BasisDevStore.IsCloneFolder(install.UnityProjectPath, mount.FolderPath))
-            return (null, false, $"{packageId} isn't in {BasisDevStore.FolderName}, so teammates can't get it from Packages/{BasisPackagesStore.FileName}.");
+            return (null, false, $"{packageId} isn't in {BasisDevStore.FolderName}, so teammates can't get it from {BasisPackagesStore.FileName}.");
         var original = OriginalOf(install, packageId, mount) ?? UpmGitUrl.Parse(await _git.GetConfigValueAsync(mount.FolderPath, "remote.origin.url", ct).ConfigureAwait(false));
         if (original is not { IsGitHub: true }) return (original, false, "Sharing needs the package to come from GitHub.");
         if (!await _mounts.HasLocalWorkAsync(mount.FolderPath, ct).ConfigureAwait(false)) return (original, false, "There's nothing to share: the clone has no edits or commits of its own.");
@@ -130,7 +130,7 @@ public sealed class PackageShareService
         BasisDevStore.Write(project, record);
         _registry.Add(mount with { OriginalManifestValue = manifestValue });
         MountService.ListClone(install, packageId, folder, upstream);
-        return new PackageShareResult(true, $"Pushed {target} to {owner}/{name}. Packages/{BasisPackagesStore.FileName} now points teammates at it; they get it when they sync.")
+        return new PackageShareResult(true, $"Pushed {target} to {owner}/{name}. {BasisPackagesStore.FileName} now points teammates at it; they get it when they sync.")
         {
             Url = url,
             Branch = target,

@@ -67,7 +67,7 @@ public sealed partial class BasisDevServiceTests
         Assert.Empty(package.Issues);
         var status = GitSandbox.Status(p.Repo);
         Assert.DoesNotContain(".basisdev", status);
-        Assert.Contains("Proj/Packages/basispackages.json", status);
+        Assert.Contains("Proj/bpm-manifest.json", status);
 
         var removed = await p.Mounts.UnmountAsync(p.Install, "com.root", restoreManifest: true);
 
@@ -257,7 +257,7 @@ public sealed partial class BasisDevServiceTests
 
         Assert.True(moved.Ok, moved.Message);
         Assert.EndsWith("The Basis Server builds it from .basisdev/com.test.transport now.", moved.Message);
-        Assert.Equal(p.Combine(".basisdev/com.test.transport"), server.LoadLinks(p.Repo)["com.test.transport"]);
+        Assert.Equal(Path.Combine(p.Repo, ".basisdev", "com.test.transport"), server.LoadLinks(p.Repo)["com.test.transport"]);
     }
 
     [GitFact]

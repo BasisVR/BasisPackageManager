@@ -8,7 +8,7 @@ namespace BasisPM.Core.Tests;
 public sealed class BasisPackagesStoreTests
 {
     [Fact]
-    public void Entries_are_written_sorted_next_to_the_manifest_and_read_back_by_id()
+    public void Entries_are_written_to_the_manifest_and_lock_and_read_back_by_id()
     {
         using var t = new TempDir("basispackages");
         var project = t.CreateDir("Proj");
@@ -16,31 +16,50 @@ public sealed class BasisPackagesStoreTests
         BasisPackagesStore.Set(project, "com.zeta", new BasisPackageEntry { Version = "2.0.0", Url = "https://github.com/o/zeta.git", Ref = "v2.0.0", Commit = "abc1234" });
         BasisPackagesStore.Set(project, "com.alpha", new BasisPackageEntry { Url = "https://gitlab.com/g/alpha.git", Path = "Packages/com.alpha" });
 
-        Assert.Equal(Path.Combine(project, "Packages", "basispackages.json"), BasisPackagesStore.FilePath(project));
+        Assert.Equal(Path.Combine(project, "bpm-manifest.json"), BasisPackagesStore.FilePath(project));
         Assert.Equal("""
             {
               "format": 1,
               "packages": {
                 "com.alpha": {
-                  "url": "https://gitlab.com/g/alpha.git",
-                  "path": "Packages/com.alpha"
+                  "version": "https://gitlab.com/g/alpha.git?path=Packages/com.alpha"
                 },
                 "com.zeta": {
-                  "version": "2.0.0",
-                  "url": "https://github.com/o/zeta.git",
-                  "ref": "v2.0.0",
-                  "commit": "abc1234"
+                  "version": "https://github.com/o/zeta.git#v2.0.0"
                 }
               }
             }
 
             """.ReplaceLineEndings("\n"), File.ReadAllText(BasisPackagesStore.FilePath(project)));
-        Assert.Equal("v2.0.0", BasisPackagesStore.Find(project, "COM.ZETA")!.Ref);
+        Assert.Equal("""
+            {
+              "format": 1,
+              "packages": {
+                "com.alpha": {
+                  "version": "https://gitlab.com/g/alpha.git?path=Packages/com.alpha",
+                  "requested": "https://gitlab.com/g/alpha.git?path=Packages/com.alpha",
+                  "depth": 0
+                },
+                "com.zeta": {
+                  "version": "https://github.com/o/zeta.git#abc1234",
+                  "requested": "https://github.com/o/zeta.git#v2.0.0",
+                  "packageVersion": "2.0.0",
+                  "depth": 0
+                }
+              }
+            }
+
+            """.ReplaceLineEndings("\n"), File.ReadAllText(BpmStore.LockPath(project)));
+        var zeta = BasisPackagesStore.Find(project, "COM.ZETA")!;
+        Assert.Equal("v2.0.0", zeta.Ref);
+        Assert.Equal("abc1234", zeta.Commit);
+        Assert.Equal("2.0.0", zeta.Version);
+        Assert.Equal("Packages/com.alpha", BasisPackagesStore.Find(project, "com.alpha")!.Path);
         Assert.Equal(new[] { "com.alpha", "com.zeta" }, BasisPackagesStore.Read(project).Keys.Order());
     }
 
     [Fact]
-    public void Removing_the_last_entry_deletes_the_file()
+    public void Removing_the_last_entry_deletes_both_files()
     {
         using var t = new TempDir("basispackages");
         var project = t.CreateDir("Proj");
@@ -48,8 +67,30 @@ public sealed class BasisPackagesStoreTests
 
         Assert.True(BasisPackagesStore.Remove(project, "COM.X"));
         Assert.False(File.Exists(BasisPackagesStore.FilePath(project)));
+        Assert.False(File.Exists(BpmStore.LockPath(project)));
         Assert.False(BasisPackagesStore.Remove(project, "com.x"));
         Assert.Empty(BasisPackagesStore.Read(project));
+    }
+
+    [Fact]
+    public void An_old_basispackages_file_is_read_and_replaced_on_the_first_change()
+    {
+        using var t = new TempDir("basispackages");
+        var project = t.CreateDir("Proj");
+        var legacy = t.WriteFile("Proj/Packages/basispackages.json", """{ "format": 1, "note": "kept", "packages": { "com.x": { "version": "1.0.0", "url": "https://github.com/o/x.git", "ref": "v1", "commit": "abc1234", "server": true } } }""");
+
+        var read = BasisPackagesStore.Find(project, "com.x")!;
+        Assert.Equal(("v1", "abc1234", "1.0.0"), (read.Ref, read.Commit, read.Version));
+
+        BasisPackagesStore.Set(project, "com.y", new BasisPackageEntry { Url = "https://github.com/o/y.git" });
+
+        Assert.False(File.Exists(legacy));
+        var text = File.ReadAllText(BasisPackagesStore.FilePath(project));
+        Assert.Contains("\"note\": \"kept\"", text);
+        Assert.Contains("\"server\": true", text);
+        Assert.Contains("\"version\": \"https://github.com/o/x.git#v1\"", text);
+        Assert.Contains("\"version\": \"https://github.com/o/x.git#abc1234\"", File.ReadAllText(BpmStore.LockPath(project)));
+        Assert.Equal(2, BasisPackagesStore.Read(project).Count);
     }
 
     [Fact]
@@ -57,25 +98,36 @@ public sealed class BasisPackagesStoreTests
     {
         using var t = new TempDir("basispackages");
         var project = t.CreateDir("Proj");
-        t.WriteFile("Proj/Packages/basispackages.json", """{ "format": 1, "note": "kept", "packages": { "com.x": { "url": "https://github.com/o/x.git", "server": true } } }""");
+        t.WriteFile("Proj/bpm-manifest.json", """{ "format": 1, "later": 3, "packages": { "com.x": { "version": "https://github.com/o/x.git", "enabled": "yes", "server": true } } }""");
 
         BasisPackagesStore.Set(project, "com.x", new BasisPackageEntry { Url = "https://github.com/o/x.git", Ref = "v2" });
-        BasisPackagesStore.Set(project, "com.y", new BasisPackageEntry { Url = "https://github.com/o/y.git" });
 
         var text = File.ReadAllText(BasisPackagesStore.FilePath(project));
-        Assert.Contains("\"note\": \"kept\"", text);
+        Assert.Contains("\"later\": 3", text);
         Assert.Contains("\"server\": true", text);
-        Assert.Contains("\"ref\": \"v2\"", text);
-        Assert.Equal(2, BasisPackagesStore.Read(project).Count);
+        Assert.Contains("\"enabled\": \"yes\"", text);
+        Assert.Contains("#v2", text);
     }
 
     [Fact]
-    public void A_file_with_a_merge_conflict_is_never_overwritten()
+    public void Disabled_packages_are_not_listed()
+    {
+        using var t = new TempDir("basispackages");
+        var project = t.CreateDir("Proj");
+        t.WriteFile("Proj/bpm-manifest.json", """{ "packages": { "com.x": { "version": "https://github.com/o/x.git", "enabled": "no" }, "com.y": { "version": "https://github.com/o/y.git" } } }""");
+
+        Assert.Equal(new[] { "com.y" }, BasisPackagesStore.Read(project).Keys);
+    }
+
+    [Theory]
+    [InlineData("Packages/basispackages.json")]
+    [InlineData("bpm-manifest.json")]
+    public void A_file_with_a_merge_conflict_is_never_overwritten(string file)
     {
         using var t = new TempDir("basispackages");
         var project = t.CreateDir("Proj");
         const string conflicted = "{\n<<<<<<< HEAD\n  \"packages\": {}\n=======\n  \"packages\": { \"com.y\": { \"url\": \"https://github.com/o/y.git\" } }\n>>>>>>> theirs\n}\n";
-        var path = t.WriteFile("Proj/Packages/basispackages.json", conflicted);
+        var path = t.WriteFile("Proj/" + file, conflicted);
 
         Assert.Empty(BasisPackagesStore.Read(project));
         Assert.Throws<InvalidDataException>(() => BasisPackagesStore.Set(project, "com.x", new BasisPackageEntry { Url = "https://github.com/o/x.git" }));

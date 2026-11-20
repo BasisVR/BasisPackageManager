@@ -161,7 +161,7 @@ public sealed class BasisDevService
     private static BasisDevPackage Classify(string project, string id, string? value, LocalPackage? local, BasisDevSidecar? sidecar, BasisPackageEntry? entry, MountRecord? record, string? looseClone, IReadOnlySet<string>? trackedFolders)
     {
         var recorded = sidecar;
-        sidecar ??= entry is null ? null : BasisPackagesStore.SidecarFor(id, entry);
+        sidecar ??= entry is null ? null : BasisPackagesStore.SidecarFor(project, id, entry);
         var candidates = new[] { sidecar is null ? null : BasisDevStore.ResolveFolder(project, sidecar), record?.FolderPath, looseClone };
         var cloneFolder = candidates.FirstOrDefault(MountService.IsWorkingClone) ?? candidates.FirstOrDefault(c => c is not null);
         if (cloneFolder is null && local is not null && trackedFolders is not null && !trackedFolders.Contains(local.FolderName) && MountService.IsWorkingClone(local.FolderPath))
@@ -190,7 +190,7 @@ public sealed class BasisDevService
         else if ((sidecar is not null || record is not null) && cloneFolder is not null)
         {
             var vanished = local is null && value is null && SamePath(cloneFolder, Path.Combine(project, "Packages", id));
-            issues.Add(pointsAtClone || vanished ? BasisDevIssueKind.MissingClone : BasisDevIssueKind.StaleRecord);
+            issues.Add(pointsAtClone || vanished || entry is not null ? BasisDevIssueKind.MissingClone : BasisDevIssueKind.StaleRecord);
         }
 
         return new BasisDevPackage
@@ -247,7 +247,7 @@ public sealed class BasisDevService
 
     private async Task<BasisDevResult> SwitchAsync(BasisInstall install, BasisDevPackage package, Action<string>? onProgress, CancellationToken ct)
     {
-        if (package.Listed is not { } entry) return BasisDevResult.Fail($"{package.Id} isn't listed in Packages/{BasisPackagesStore.FileName}.");
+        if (package.Listed is not { } entry) return BasisDevResult.Fail($"{package.Id} isn't listed in {BasisPackagesStore.FileName}.");
         var request = new PackageUpdateRequest(entry.Ref, entry.Url, entry.Commit, entry.ForkOf, ReplaceForkOf: true);
         var result = await _updates.UpdateCloneAsync(install, package.Id, request, ApproveUpdate, onProgress, ct).ConfigureAwait(false);
         return result.Ok ? BasisDevResult.Success(result.Message) : BasisDevResult.Fail(result.Message);
@@ -273,7 +273,7 @@ public sealed class BasisDevService
         }
         ExcludeFromProject(install, package.CloneFolder);
         var listed = package.Listed is null && package.CloneActive && await ListAsync(install, package.Id, package.CloneFolder, sidecar.Upstream, ct).ConfigureAwait(false);
-        return BasisDevResult.Success($"Recorded {package.Id}: {DescribeUpstream(sidecar.Upstream)}" + (listed ? $", listed in Packages/{BasisPackagesStore.FileName}." : "."));
+        return BasisDevResult.Success($"Recorded {package.Id}: {DescribeUpstream(sidecar.Upstream)}" + (listed ? $", listed in {BasisPackagesStore.FileName}." : "."));
     }
 
     private async Task<bool> ListAsync(BasisInstall install, string id, string? cloneFolder, BasisDevUpstream upstream, CancellationToken ct)
@@ -492,7 +492,7 @@ public sealed class BasisDevService
         catch (Exception ex) when (ex is InvalidDataException or IOException or UnauthorizedAccessException or ArgumentException)
         {
             DiagnosticLog.Write($"Listing {id} in {BasisPackagesStore.FileName}", ex);
-            return $" It isn't listed in Packages/{BasisPackagesStore.FileName} yet: {ex.Message}";
+            return $" It isn't listed in {BasisPackagesStore.FileName} yet: {ex.Message}";
         }
     }
 
@@ -730,8 +730,12 @@ public sealed class BasisDevService
         return relative.StartsWith("../", StringComparison.Ordinal) || relative == ".." || Path.IsPathRooted(relative) ? null : relative;
     }
 
-    private static string RelativeTo(string project, string? folder) =>
-        folder is null ? "" : GitPath(project, folder) is { Length: > 0 } relative ? relative : folder;
+    private static string RelativeTo(string project, string? folder)
+    {
+        if (folder is null) return "";
+        if (GitPath(project, folder) is { Length: > 0 } relative) return relative;
+        return Path.GetDirectoryName(Normalize(BasisDevStore.Root(project))) is { } owner && GitPath(owner, folder) is { Length: > 0 } fromOwner ? fromOwner : folder;
+    }
 
     private static string DescribeUpstream(BasisDevUpstream upstream)
     {

@@ -372,7 +372,7 @@
     },
     {
       "key": "installs.tooltip.sync",
-      "value": "اس پروجیکٹ کے اپنے ریموٹ سے آپ کی ٹیم کے نئے commits کو pull کریں (صرف fast-forward)، پھر Packages/basispackages.json میں درج پیکجز کو کلون یا منتقل کریں تاکہ وہ اس سے مطابقت رکھیں۔ آپ کی ترامیم کبھی اوور رائٹ نہیں ہوتیں۔"
+      "value": "اس پروجیکٹ کے اپنے ریموٹ سے آپ کی ٹیم کے نئے commits کو pull کریں (صرف fast-forward)، پھر bpm-manifest.json میں درج پیکجز کو کلون یا منتقل کریں تاکہ وہ اس سے مطابقت رکھیں۔ آپ کی ترامیم کبھی اوور رائٹ نہیں ہوتیں۔"
     },
     {
       "key": "installs.button.sync",
@@ -3080,7 +3080,7 @@
     },
     {
       "key": "dialog.share.body",
-      "value": "آپ کی ترامیم {0} کے آپ کے fork پر push کی جاتی ہیں (یا خود {0} پر اگر آپ وہاں push کر سکتے ہیں)، اور Packages/basispackages.json کو اس برانچ کی طرف اشارہ کر دیا جاتا ہے۔"
+      "value": "آپ کی ترامیم {0} کے آپ کے fork پر push کی جاتی ہیں (یا خود {0} پر اگر آپ وہاں push کر سکتے ہیں)، اور bpm-manifest.json کو اس برانچ کی طرف اشارہ کر دیا جاتا ہے۔"
     },
     {
       "key": "dialog.share.branch",
@@ -3104,7 +3104,7 @@
     },
     {
       "key": "dialog.share.note",
-      "value": "بعد میں Packages/basispackages.json کو commit کریں تاکہ ٹیم کے ساتھیوں کو یہ تبدیلی مل جائے۔"
+      "value": "بعد میں bpm-manifest.json کو commit کریں تاکہ ٹیم کے ساتھیوں کو یہ تبدیلی مل جائے۔"
     },
     {
       "key": "dialog.share.cancel",
@@ -3432,7 +3432,7 @@
     },
     {
       "key": "packages.status.shared",
-      "value": "{0} کا آپ کا ورژن برانچ {1} ({2}) پر شیئر کر دیا۔ Packages/basispackages.json کو commit کریں؛ ٹیم کے ساتھیوں کو یہ اگلی بار سنک کرنے پر مل جائے گا۔"
+      "value": "{0} کا آپ کا ورژن برانچ {1} ({2}) پر شیئر کر دیا۔ bpm-manifest.json کو commit کریں؛ ٹیم کے ساتھیوں کو یہ اگلی بار سنک کرنے پر مل جائے گا۔"
     },
     {
       "key": "packages.status.shareFailed",
@@ -3816,7 +3816,7 @@
     },
     {
       "key": "packages.tooltip.share",
-      "value": "اپنی ترامیم اس پیکج کے اپنے fork پر (یا کسی ایسی برانچ پر جہاں آپ push کر سکیں) push کریں اور Packages/basispackages.json کو اس کی طرف اشارہ کرائیں، تاکہ ٹیم کے ساتھیوں کو سنک کرنے پر آپ کا ورژن ملے۔"
+      "value": "اپنی ترامیم اس پیکج کے اپنے fork پر (یا کسی ایسی برانچ پر جہاں آپ push کر سکیں) push کریں اور bpm-manifest.json کو اس کی طرف اشارہ کرائیں، تاکہ ٹیم کے ساتھیوں کو سنک کرنے پر آپ کا ورژن ملے۔"
     },
     {
       "key": "settings.tooltip.addCatalog",
@@ -4271,12 +4271,24 @@
       "value": "Unity والا حصہ ہٹا دیا گیا، لیکن Basis Server والا حصہ نہیں ہٹا: {0}"
     },
     {
-      "key": "basisdev.banner.title",
-      "value": "پیکج ذرائع میں ہم آہنگی درکار ہے"
+      "key": "basisdev.banner.titleDownload",
+      "value": "ڈاؤن لوڈ کے لیے پیکجز: {0}"
     },
     {
-      "key": "basisdev.banner.summary",
-      "value": "{0} پیکجز manifest.json، پروجیکٹ اور اس کے .basisdev کلونز کے درمیان مطابقت نہیں رکھتے۔"
+      "key": "basisdev.banner.summaryDownload",
+      "value": "bpm-manifest.json میں {0} درج ہیں، جو ابھی اس کمپیوٹر پر نہیں ہیں یا کسی اور ورژن میں ہیں۔ عموماً یہ کسی ساتھی کی تبدیلیاں لانے کے بعد ہوتا ہے۔"
+    },
+    {
+      "key": "basisdev.banner.titleDecide",
+      "value": "فیصلے کے منتظر پیکجز: {0}"
+    },
+    {
+      "key": "basisdev.banner.summaryDecide",
+      "value": "Unity .basisdev میں ان کلونز کو لوڈ نہیں کر رہا۔ ہر ایک کے لیے منتخب کریں کہ کیا کرنا ہے۔"
+    },
+    {
+      "key": "basisdev.status.autoListed",
+      "value": "{0} کو bpm-manifest.json میں شامل کر دیا گیا تاکہ پروجیکٹ کی دوسری کاپیوں کو بھی یہ ملے۔"
     },
     {
       "key": "basisdev.button.fixRecords",
@@ -4288,11 +4300,11 @@
     },
     {
       "key": "basisdev.tooltip.restoreAll",
-      "value": "Packages/basispackages.json میں درج جو پیکجز یہاں موجود نہیں انہیں کلون کریں، اور کلونز کو وہاں درج ورژن پر منتقل کریں۔ جن کلونز میں آپ کی اپنی ترامیم ہیں وہ صرف تب منتقل ہوتے ہیں جب ترامیم صاف طور پر منتقل ہو سکیں۔"
+      "value": "bpm-manifest.json میں درج جو پیکجز یہاں موجود نہیں انہیں کلون کریں، اور کلونز کو وہاں درج ورژن پر منتقل کریں۔ جن کلونز میں آپ کی اپنی ترامیم ہیں وہ صرف تب منتقل ہوتے ہیں جب ترامیم صاف طور پر منتقل ہو سکیں۔"
     },
     {
       "key": "basisdev.tooltip.fixRecords",
-      "value": "غائب .basisdev sidecar فائلیں لکھیں، زیرِ استعمال کلونز کو Packages/basispackages.json میں درج کریں اور پرانے ماؤنٹ ریکارڈز بھلا دیں۔ پیکج فائلیں اور manifest.json تبدیل نہیں ہوتیں۔"
+      "value": "غائب .basisdev sidecar فائلیں لکھیں، زیرِ استعمال کلونز کو bpm-manifest.json میں درج کریں اور پرانے ماؤنٹ ریکارڈز بھلا دیں۔ پیکج فائلیں اور manifest.json تبدیل نہیں ہوتیں۔"
     },
     {
       "key": "basisdev.stale.summary",
@@ -4436,11 +4448,11 @@
     },
     {
       "key": "basisdev.issue.unlisted",
-      "value": "basispackages.json میں نہیں"
+      "value": "bpm-manifest.json میں نہیں"
     },
     {
       "key": "basisdev.issue.unlisted.description",
-      "value": "Unity {0} لوڈ کرتا ہے، لیکن Packages/basispackages.json میں یہ درج نہیں، اس لیے پروجیکٹ کی دوسری کاپیاں اسے دوبارہ کلون نہیں کر سکتیں۔"
+      "value": "Unity {0} لوڈ کرتا ہے، لیکن bpm-manifest.json میں یہ درج نہیں، اس لیے پروجیکٹ کی دوسری کاپیاں اسے دوبارہ کلون نہیں کر سکتیں۔"
     },
     {
       "key": "basisdev.issue.inPackages",
@@ -4500,7 +4512,7 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "ریکارڈ کریں کہ یہ کلون کہاں سے آیا (origin، برانچ اور commit)، .basisdev/{0}.json میں اور، اگر Unity یہ کلون استعمال کرتا ہے تو، Packages/basispackages.json میں بھی، تاکہ پروجیکٹ کی دوسری کاپیاں اسے دوبارہ کلون کر سکیں۔ پیکج فائلیں تبدیل نہیں ہوتیں۔"
+      "value": "ریکارڈ کریں کہ یہ کلون کہاں سے آیا (origin، برانچ اور commit)، .basisdev/{0}.json میں اور، اگر Unity یہ کلون استعمال کرتا ہے تو، bpm-manifest.json میں بھی، تاکہ پروجیکٹ کی دوسری کاپیاں اسے دوبارہ کلون کر سکیں۔ پیکج فائلیں تبدیل نہیں ہوتیں۔"
     },
     {
       "key": "basisdev.tooltip.forget",
@@ -4564,7 +4576,7 @@
     },
     {
       "key": "basisdev.status.recorded",
-      "value": "{0} کا اپ اسٹریم .basisdev اور Packages/basispackages.json میں ریکارڈ کر دیا۔"
+      "value": "{0} کا اپ اسٹریم .basisdev اور bpm-manifest.json میں ریکارڈ کر دیا۔"
     },
     {
       "key": "basisdev.status.forgotten",
@@ -4588,7 +4600,7 @@
     },
     {
       "key": "basisdev.status.switched",
-      "value": "{0} اب Packages/basispackages.json سے مطابقت رکھتا ہے۔"
+      "value": "{0} اب bpm-manifest.json سے مطابقت رکھتا ہے۔"
     },
     {
       "key": "basisdev.status.restoringAll",
@@ -4608,7 +4620,7 @@
     },
     {
       "key": "basisdev.issue.versionMismatch.description",
-      "value": "Packages/basispackages.json میں {0} درج ہے، لیکن یہ کلون {1} پر ہے۔ غالباً ٹیم کے کسی ساتھی نے اسے تبدیل کیا ہے۔"
+      "value": "bpm-manifest.json میں {0} درج ہے، لیکن یہ کلون {1} پر ہے۔ غالباً ٹیم کے کسی ساتھی نے اسے تبدیل کیا ہے۔"
     },
     {
       "key": "basisdev.action.switch",
@@ -4616,7 +4628,7 @@
     },
     {
       "key": "basisdev.tooltip.switch",
-      "value": "کلون کو {0} پر منتقل کریں، جو Packages/basispackages.json میں درج ورژن ہے۔ جو ترامیم نہ ٹکرائیں وہ برقرار رہتی ہیں۔"
+      "value": "کلون کو {0} پر منتقل کریں، جو bpm-manifest.json میں درج ورژن ہے۔ جو ترامیم نہ ٹکرائیں وہ برقرار رہتی ہیں۔"
     },
     {
       "key": "basisdev.status.ignored",
@@ -5788,7 +5800,7 @@
     },
     {
       "key": "dialog.storage.clonesIntro",
-      "value": ".basisdev میں کلونز۔ کوئی کلون تب ہٹایا جا سکتا ہے جب Unity اسے لوڈ نہ کرتا ہو، اس میں کوئی غیر commit شدہ یا غیر push شدہ کام نہ ہو، اور یہ basispackages.json میں درج نہ ہو۔"
+      "value": ".basisdev میں کلونز۔ کوئی کلون تب ہٹایا جا سکتا ہے جب Unity اسے لوڈ نہ کرتا ہو، اس میں کوئی غیر commit شدہ یا غیر push شدہ کام نہ ہو، اور یہ bpm-manifest.json میں درج نہ ہو۔"
     },
     {
       "key": "dialog.storage.cloneInUse",
@@ -5800,7 +5812,7 @@
     },
     {
       "key": "dialog.storage.cloneListed",
-      "value": "استعمال میں نہیں، لیکن رکھا گیا ہے کیونکہ basispackages.json میں درج ہے"
+      "value": "استعمال میں نہیں، لیکن رکھا گیا ہے کیونکہ bpm-manifest.json میں درج ہے"
     },
     {
       "key": "dialog.storage.cloneLocalWork",

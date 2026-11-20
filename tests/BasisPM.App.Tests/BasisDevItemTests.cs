@@ -189,8 +189,8 @@ public sealed class BasisDevItemTests
 
         var item = new BasisDevItem(package, Install());
 
-        Assert.Equal("Not in basispackages.json", item.IssueLabel);
-        Assert.Equal("Unity loads .basisdev/com.y, but Packages/basispackages.json doesn't list it, so other copies of the project can't clone it again.", item.IssueText);
+        Assert.Equal("Not in bpm-manifest.json", item.IssueLabel);
+        Assert.Equal("Unity loads .basisdev/com.y, but bpm-manifest.json doesn't list it, so other copies of the project can't clone it again.", item.IssueText);
         Assert.Equal("Record upstream", Assert.Single(item.Choices).Label);
     }
 }

@@ -12,6 +12,8 @@ public sealed partial class PackagesViewModel
     private BasisDevReport _basisDevReport = BasisDevReport.Empty;
     private Dictionary<string, BasisDevItem> _basisDevItems = new(StringComparer.OrdinalIgnoreCase);
     private IReadOnlyList<BasisDevPackage> _basisDevStale = Array.Empty<BasisDevPackage>();
+    private IReadOnlyList<string> _basisDevDownloads = Array.Empty<string>();
+    private readonly HashSet<string> _basisDevAutoFixed = new(StringComparer.Ordinal);
     private BasisInstall? _basisDevItemsInstall;
     private string? _basisDevItemsLanguage;
     private bool _basisDevItemsDirty = true;
@@ -25,10 +27,13 @@ public sealed partial class PackagesViewModel
     private BasisDevService BasisDev => _basisDevService ??= new BasisDevService(_gitService, _projectService, _mountRegistry, _mountService, Updates);
 
     public ObservableCollection<BasisDevItem> BasisDevIssues { get; } = new();
-    public bool HasBasisDevIssues => BasisDevIssues.Count > 0 || _basisDevStale.Count > 0;
+    public bool HasBasisDevIssues => BasisDevIssues.Count > 0 || _basisDevDownloads.Count > 0 || _basisDevStale.Count > 0;
+    public bool HasBasisDevDecisions => BasisDevIssues.Count > 0;
+    public bool HasBasisDevDownloads => _basisDevDownloads.Count > 0;
+    public string BasisDevTitle => BasisDevIssues.Count > 0 ? L.Tr("basisdev.banner.titleDecide", BasisDevIssues.Count) : L.Tr("basisdev.banner.titleDownload", _basisDevDownloads.Count);
+    public string BasisDevDownloadText => L.Tr("basisdev.banner.summaryDownload", string.Join(", ", _basisDevDownloads));
     public bool HasBasisDevStale => _basisDevStale.Count > 0;
     public bool CanFixBasisDevRecords => _basisDevReport.SafeFixes.Count > 0;
-    public string BasisDevSummary => L.Tr("basisdev.banner.summary", BasisDevIssues.Count + _basisDevStale.Count);
     public string BasisDevStaleText => L.Tr("basisdev.stale.summary", _basisDevStale.Count, string.Join(", ", _basisDevStale.Select(p => p.Id)));
 
     public RelayCommand<BasisDevChoice> RunBasisDevChoiceCommand => _runBasisDevChoiceCommand ??= new RelayCommand<BasisDevChoice>(RunBasisDevChoiceAsync);
@@ -60,6 +65,18 @@ public sealed partial class PackagesViewModel
         {
             var install = _install;
             var report = await Task.Run(() => BasisDev.ScanAsync(install));
+            if (report.SafeFixes.Count > 0 && !IsBusy && _basisDevAutoFixed.Add(install.UnityProjectPath + "|" + string.Join(",", report.SafeFixes.Select(p => p.Id).Order(StringComparer.Ordinal))))
+            {
+                var listing = report.Packages.Where(p => p.Issues.Contains(BasisDevIssueKind.Unlisted)).Select(p => p.Id).ToList();
+                var fixedUp = await Task.Run(() => BasisDev.ReconcileAsync(install));
+                if (fixedUp.Ok)
+                {
+                    report = await Task.Run(() => BasisDev.ScanAsync(install));
+                    if (listing.Count > 0)
+                        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() => SetStatus(L.Tr("basisdev.status.autoListed", string.Join(", ", listing)), StatusKind.Info, install.DisplayName));
+                }
+                else DiagnosticLog.Write("Fixing .basisdev records", new InvalidOperationException(fixedUp.Message));
+            }
             await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
                 if (!ReferenceEquals(install, _install)) return;
@@ -92,6 +109,7 @@ public sealed partial class PackagesViewModel
         _basisDevItems = new Dictionary<string, BasisDevItem>(StringComparer.OrdinalIgnoreCase);
         BasisDevIssues.Clear();
         var stale = new List<BasisDevPackage>();
+        var downloads = new List<string>();
         if (install is not null && string.Equals(_basisDevReport.UnityProjectPath, install.UnityProjectPath, StringComparison.Ordinal))
         {
             foreach (var package in _basisDevReport.Packages)
@@ -99,19 +117,28 @@ public sealed partial class PackagesViewModel
                 var item = new BasisDevItem(package, install);
                 _basisDevItems[package.Id] = item;
                 if (package.Issues.Count == 1 && package.Issues[0] == BasisDevIssueKind.StaleRecord) stale.Add(package);
+                else if (IsDownloadOnly(package)) downloads.Add(package.Id);
                 else if (package.Issues.Count > 0) BasisDevIssues.Add(item);
             }
         }
         _basisDevStale = stale;
+        _basisDevDownloads = downloads;
         OnPropertyChanged(nameof(HasBasisDevIssues));
+        OnPropertyChanged(nameof(HasBasisDevDecisions));
+        OnPropertyChanged(nameof(HasBasisDevDownloads));
+        OnPropertyChanged(nameof(BasisDevTitle));
+        OnPropertyChanged(nameof(BasisDevDownloadText));
         OnPropertyChanged(nameof(HasBasisDevStale));
         OnPropertyChanged(nameof(CanFixBasisDevRecords));
-        OnPropertyChanged(nameof(BasisDevSummary));
         OnPropertyChanged(nameof(BasisDevStaleText));
         OnPropertyChanged(nameof(CanRestoreAll));
         OnPropertyChanged(nameof(RestorableCount));
         OnPropertyChanged(nameof(RestoreAllLabel));
     }
+
+    private static bool IsDownloadOnly(BasisDevPackage package) =>
+        package.Issues.Count > 0 && package.Issues.All(i => i is BasisDevIssueKind.MissingClone or BasisDevIssueKind.VersionMismatch)
+        && (package.Actions.Contains(BasisDevAction.Reclone) || package.Actions.Contains(BasisDevAction.Switch));
 
     private async Task RunBasisDevChoiceAsync(BasisDevChoice? choice)
     {

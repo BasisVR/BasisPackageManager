@@ -196,14 +196,7 @@ internal sealed partial class ConsoleApplication
         var noSwitch = TakeFlag(options, "--no-switch");
         var assumeYes = TakeFlag(options, "--yes") | TakeFlag(options, "-y");
         Expect(options, 0, 0, "");
-        var install = await LoadInstallAsync();
-        var catalog = await LoadCatalogAsync();
-        BasisDevResult result = null!;
-        _basisDev.ApproveUpdate = ListedReview(catalog, assumeYes);
-        try { await RunOperationAsync(async ct => result = await _basisDev.RestoreAllAsync(install, !noSwitch, Out.Progress, ct), "Restoring the listed packages" + Out.Ellipsis); }
-        finally { _basisDev.ApproveUpdate = null; }
-        if (!result.Ok) throw new InvalidOperationException(result.Message);
-        Out.Success(result.Message);
+        await RestoreProjectAsync(noSwitch, assumeYes);
     }
 
     private async Task SyncProjectAsync(List<string> values)
@@ -225,7 +218,7 @@ internal sealed partial class ConsoleApplication
     {
         var entry = _catalogs.AllLatest(catalog).FirstOrDefault(p => p.Name.Equals(target.PackageId, StringComparison.OrdinalIgnoreCase));
         var registry = entry is not null && !_unofficialIds.Contains(entry.Name) && PackageUpdateService.SameRepository(entry.Url, target.Source.CloneUrl);
-        var review = ReviewGate($"{target.PackageId} comes from {target.Source.Slug}, which Packages/basispackages.json lists but the Basis registry hasn't checked.", registry ? entry : null, registry, assumeYes);
+        var review = ReviewGate($"{target.PackageId} comes from {target.Source.Slug}, which bpm-manifest.json lists but the Basis registry hasn't checked.", registry ? entry : null, registry, assumeYes);
         return PackageUpdates.ReviewBeforeUpdate(review)(target, ct);
     };
 
@@ -250,7 +243,7 @@ internal sealed partial class ConsoleApplication
         await RunOperationAsync(async ct => result = await shares.ShareAsync(install, id, token, user, message, branch, Out.Progress, ct), $"Sharing {id}" + Out.Ellipsis);
         if (!result.Ok) throw new InvalidOperationException(result.Message);
         Out.Success(result.Message);
-        Out.Hint($"Commit Packages/{BasisPackagesStore.FileName} so teammates get it; they run '{Prefix}sync' or '{Prefix}restore'.");
+        Out.Hint($"Commit {BasisPackagesStore.FileName} so teammates get it; they run '{Prefix}sync' or '{Prefix}restore'.");
     }
 
     private async Task InstallMissingDependenciesAsync(BasisInstall install, Catalog catalog, string packageId, bool assumeYes, ShippedPackages shipped, int depth)

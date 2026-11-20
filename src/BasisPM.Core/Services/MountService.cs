@@ -16,7 +16,7 @@ public sealed record MountResult(bool Ok, string? FolderPath, string? Error)
 /// <summary>
 /// Mounts a git-loaded package into a project's <c>.basisdev/</c> folder for editing, and swaps it back.
 /// Mount = clone the repo into <c>.basisdev/&lt;id&gt;/</c>, point its <c>manifest.json</c> line at the clone with a
-/// <c>file:</c> path and list it in <c>Packages/basispackages.json</c>. Swap-back = restore the manifest line and delete the folder.
+/// <c>file:</c> path and list it in <c>bpm-manifest.json</c>. Swap-back = restore the manifest line and delete the folder.
 /// </summary>
 public sealed class MountService
 {

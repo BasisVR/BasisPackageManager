@@ -115,6 +115,66 @@ release fits before it downloads anything.
 `?path=` and `#ref` like a `manifest.json` line). They're cloned into `.basisdev` like any other
 install, and reviewed first when the URL isn't the Basis registry's.
 
+## Project files
+
+A project says which Basis and which packages it uses in two files at its root, next to `Assets`.
+`bpm-manifest.json` is the one you edit, by hand or through the app. `bpm-lock.json` is written by
+`basispm lock` and pins everything to a commit. Commit both, along with `Packages/manifest.json`,
+and ignore `.basisdev`. Git, Plastic and Perforce each need one ignore line and no exceptions.
+
+```json
+{
+  "format": 1,
+  "checkouts": {
+    "Basis": { "url": "https://github.com/BasisVR/Basis.git", "commit": "3f801ae47d818c6f0475a3fb45cf85ac4c00cb37" }
+  },
+  "packages": {
+    "com.basis.sdk": { "version": "checkout:Basis" },
+    "com.example.tool": { "version": "https://github.com/example/tool.git#v1.2.0" },
+    "com.example.wip": { "version": "https://github.com/example/wip.git", "enabled": "no" }
+  }
+}
+```
+
+A package's `version` is a registry version (`1.2.3`), a git URL with an optional `?path=` and
+`#hash`, tag or branch, a local folder (`file:../somewhere`), or `checkout:<name>` for a package
+that comes out of a checkout. A Basis package that's needed but not listed comes from the default
+checkout. `"enabled": "no"` keeps a package's checkout on disk but stops mounting it.
+
+Checkouts hold more than one package and are held one of three ways. A pinned checkout has a
+`commit` hash; BPM owns it and keeps it in `.basisdev` as a bare repository (`basis.git`) with a
+sparse worktree that holds only the locked packages. A working tree has a `branch` and is yours to
+edit and commit in, which is how a fork of Basis is carried: give it `"repository": "Basis"` and it
+becomes a second remote and worktree of `basis.git`, so it can be rebased onto the pin. An inline
+checkout is just a folder. Working trees and inline checkouts can live outside `.basisdev` with a
+`path` relative to the manifest; BPM only reads and mounts those and never creates, moves or
+deletes anything there.
+
+`.basisdev` is found by walking up from the project, so `Basis/` and `Basis Server/` in a Basis
+clone share the one at the clone root. It holds the checkouts and `bpm-local.json`, this machine's
+local overrides and the mount lines BPM wrote. A working tree in it can hold unpushed commits, so
+BPM never removes one without checking first.
+
+Packages are mounted with `file:` lines in `Packages/manifest.json`, never symlinks. Each package
+says what it needs from other packages in `bpmDependencies` in its `package.json` (id to version);
+`vpmDependencies` is still read while packages move over, and `gitDependencies` names packages by
+git URL. Unity's own `dependencies` are left to Unity.
+
+| Command | What it does |
+|---|---|
+| `init-project <folder> --game` | Pin Basis, use the Basis packages you list with `--packages`, and leave `Assets` and `ProjectSettings` to you. In an existing project it says which layers and tags Basis expects. |
+| `init-project <folder> --content` | Avatar, world and prop projects. Every Basis package is mounted, and `Assets` and `ProjectSettings` are copied from Basis and keep following it. |
+| `lock` | Write `bpm-lock.json` from `bpm-manifest.json`. Locked commits only move with `--refresh` or `pin`. |
+| `restore` | Rebuild whatever is missing in `.basisdev` from the lock, then mount. Safe to run twice, needs no git in the project, and is what CI runs before Unity starts. |
+| `mount` | Rewrite the mount lines from the lock. |
+| `pin <checkout> <rev>` | Move a pinned checkout, list the packages that changed, and for a content project show the `Assets`/`ProjectSettings` changes and ask before applying them. Files you changed are left for you. |
+| `override <id> <folder>` | Mount a package from a folder on this machine only, the Unity side of `server-link`. |
+| `enable-package`, `disable-package` | Flip `enabled` and mount again. |
+| `manifest` | Show the checkouts and mounts, and anything out of date: a stale lock, edits in a pinned checkout, a fork that isn't rebased onto the pin, or client and Basis Server locks that disagree. |
+
+A project that still has `Packages/basispackages.json` keeps working; the first change writes the
+two new files and removes it.
+
 ## Package registry server
 
 `src/BasisPM.Server` is a [Hangar](https://hangar.papermc.io/)-style package registry where the
@@ -220,7 +280,7 @@ gets installed, and that a bad package can be pulled from everyone quickly.
   checks it whenever it loads the catalog and remembers the last copy for offline starts; the CLI
   checks it on install and in `doctor`. A matching package gets a red PULLED pill and a banner with
   Remove on the Packages tab of any project that has it, and installing it is refused.
-- **Lockfile clones.** **Clone again** from `Packages/basispackages.json` checks out the recorded
+- **Lockfile clones.** **Clone again** from `bpm-lock.json` checks out the recorded
   commit, not whatever the tag points at today, and refuses when that commit has been rewritten away.
 - **CLI.** `basispm scan <folder|git-url> [--strict] [--json]` runs the same checks without
   installing anything, for reviewing a submission or in CI.

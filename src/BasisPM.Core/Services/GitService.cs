@@ -5,7 +5,7 @@ using BasisPM.Core.Models;
 
 namespace BasisPM.Core.Services;
 
-public sealed class GitService
+public sealed partial class GitService
 {
     private static readonly string[] WindowsGitPaths =
     {

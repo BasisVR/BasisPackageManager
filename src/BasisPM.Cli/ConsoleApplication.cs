@@ -68,7 +68,7 @@ internal sealed partial class ConsoleApplication
         _github = new GitHubService();
         _contribute = new BasisContributeService(_git, _updates, _ghApi);
         _stateDirectory = stateDirectory ?? AppDataPaths.Root;
-        _commands = BuildCommands();
+        _commands = BuildCommands().Concat(BpmCommands()).ToList();
         _byName = new Dictionary<string, CliCommand>(StringComparer.OrdinalIgnoreCase);
         foreach (var command in _commands)
             foreach (var name in command.Names) _byName[name] = command;

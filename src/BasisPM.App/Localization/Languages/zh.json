@@ -372,7 +372,7 @@
     },
     {
       "key": "installs.tooltip.sync",
-      "value": "从此项目自己的远程拉取团队的新提交（仅快进），然后克隆或移动 Packages/basispackages.json 中列出的包，使它们保持一致。你的编辑永远不会被覆盖。"
+      "value": "从此项目自己的远程拉取团队的新提交（仅快进），然后克隆或移动 bpm-manifest.json 中列出的包，使它们保持一致。你的编辑永远不会被覆盖。"
     },
     {
       "key": "installs.button.sync",
@@ -3080,7 +3080,7 @@
     },
     {
       "key": "dialog.share.body",
-      "value": "你的编辑会被推送到你的 {0} 复刻（如果你有推送权限，则直接推送到 {0}），并且 Packages/basispackages.json 会指向该分支。"
+      "value": "你的编辑会被推送到你的 {0} 复刻（如果你有推送权限，则直接推送到 {0}），并且 bpm-manifest.json 会指向该分支。"
     },
     {
       "key": "dialog.share.branch",
@@ -3104,7 +3104,7 @@
     },
     {
       "key": "dialog.share.note",
-      "value": "之后请提交 Packages/basispackages.json，以便队友获得此更改。"
+      "value": "之后请提交 bpm-manifest.json，以便队友获得此更改。"
     },
     {
       "key": "dialog.share.cancel",
@@ -3432,7 +3432,7 @@
     },
     {
       "key": "packages.status.shared",
-      "value": "已在分支 {1}（{2}）上共享你的 {0} 版本。请提交 Packages/basispackages.json；队友下次同步时就会获得它。"
+      "value": "已在分支 {1}（{2}）上共享你的 {0} 版本。请提交 bpm-manifest.json；队友下次同步时就会获得它。"
     },
     {
       "key": "packages.status.shareFailed",
@@ -3816,7 +3816,7 @@
     },
     {
       "key": "packages.tooltip.share",
-      "value": "将你的编辑推送到此包的复刻（或你有权推送的分支），并让 Packages/basispackages.json 指向它，这样队友同步时就会获得你的版本。"
+      "value": "将你的编辑推送到此包的复刻（或你有权推送的分支），并让 bpm-manifest.json 指向它，这样队友同步时就会获得你的版本。"
     },
     {
       "key": "settings.tooltip.addCatalog",
@@ -4271,12 +4271,24 @@
       "value": "Unity 部分已移除，但 Basis Server 部分未移除：{0}"
     },
     {
-      "key": "basisdev.banner.title",
-      "value": "包来源需要协调"
+      "key": "basisdev.banner.titleDownload",
+      "value": "{0} 个包待下载"
     },
     {
-      "key": "basisdev.banner.summary",
-      "value": "有 {0} 个包在 manifest.json、项目及其 .basisdev 克隆之间不一致。"
+      "key": "basisdev.banner.summaryDownload",
+      "value": "bpm-manifest.json 列出了 {0}，但它们还不在这台电脑上，或者版本不同。通常发生在拉取队友的更改之后。"
+    },
+    {
+      "key": "basisdev.banner.titleDecide",
+      "value": "{0} 个包需要你决定"
+    },
+    {
+      "key": "basisdev.banner.summaryDecide",
+      "value": "Unity 没有加载 .basisdev 中的这些克隆。请为每一个选择处理方式。"
+    },
+    {
+      "key": "basisdev.status.autoListed",
+      "value": "已将 {0} 写入 bpm-manifest.json，这样项目的其他副本也能获取它。"
     },
     {
       "key": "basisdev.button.fixRecords",
@@ -4288,11 +4300,11 @@
     },
     {
       "key": "basisdev.tooltip.restoreAll",
-      "value": "克隆 Packages/basispackages.json 中列出但此处缺失的包，并将克隆移动到其中列出的版本。含有你自己编辑的克隆，只有在编辑能顺利保留时才会移动。"
+      "value": "克隆 bpm-manifest.json 中列出但此处缺失的包，并将克隆移动到其中列出的版本。含有你自己编辑的克隆，只有在编辑能顺利保留时才会移动。"
     },
     {
       "key": "basisdev.tooltip.fixRecords",
-      "value": "写入缺失的 .basisdev 附属文件，将正在使用的克隆列入 Packages/basispackages.json，并清除过时的挂载记录。包文件和 manifest.json 不会改变。"
+      "value": "写入缺失的 .basisdev 附属文件，将正在使用的克隆列入 bpm-manifest.json，并清除过时的挂载记录。包文件和 manifest.json 不会改变。"
     },
     {
       "key": "basisdev.stale.summary",
@@ -4436,11 +4448,11 @@
     },
     {
       "key": "basisdev.issue.unlisted",
-      "value": "不在 basispackages.json 中"
+      "value": "不在 bpm-manifest.json 中"
     },
     {
       "key": "basisdev.issue.unlisted.description",
-      "value": "Unity 会加载 {0}，但 Packages/basispackages.json 中没有列出它，因此该项目的其他副本无法重新克隆它。"
+      "value": "Unity 会加载 {0}，但 bpm-manifest.json 中没有列出它，因此该项目的其他副本无法重新克隆它。"
     },
     {
       "key": "basisdev.issue.inPackages",
@@ -4500,7 +4512,7 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "将此克隆的来源（origin、分支和提交）记录到 .basisdev/{0}.json 中，如果 Unity 使用该克隆，还会记录到 Packages/basispackages.json 中，以便该项目的其他副本可以重新克隆它。包文件不会被更改。"
+      "value": "将此克隆的来源（origin、分支和提交）记录到 .basisdev/{0}.json 中，如果 Unity 使用该克隆，还会记录到 bpm-manifest.json 中，以便该项目的其他副本可以重新克隆它。包文件不会被更改。"
     },
     {
       "key": "basisdev.tooltip.forget",
@@ -4564,7 +4576,7 @@
     },
     {
       "key": "basisdev.status.recorded",
-      "value": "已将 {0} 的上游记录到 .basisdev 和 Packages/basispackages.json 中。"
+      "value": "已将 {0} 的上游记录到 .basisdev 和 bpm-manifest.json 中。"
     },
     {
       "key": "basisdev.status.forgotten",
@@ -4588,7 +4600,7 @@
     },
     {
       "key": "basisdev.status.switched",
-      "value": "{0} 现在与 Packages/basispackages.json 一致。"
+      "value": "{0} 现在与 bpm-manifest.json 一致。"
     },
     {
       "key": "basisdev.status.restoringAll",
@@ -4608,7 +4620,7 @@
     },
     {
       "key": "basisdev.issue.versionMismatch.description",
-      "value": "Packages/basispackages.json 中列出的是 {0}，但此克隆位于 {1}。可能是某位队友更改了它。"
+      "value": "bpm-manifest.json 中列出的是 {0}，但此克隆位于 {1}。可能是某位队友更改了它。"
     },
     {
       "key": "basisdev.action.switch",
@@ -4616,7 +4628,7 @@
     },
     {
       "key": "basisdev.tooltip.switch",
-      "value": "将克隆移动到 {0}，即 Packages/basispackages.json 中的版本。在不冲突时，你的编辑会被保留。"
+      "value": "将克隆移动到 {0}，即 bpm-manifest.json 中的版本。在不冲突时，你的编辑会被保留。"
     },
     {
       "key": "basisdev.status.ignored",
@@ -5788,7 +5800,7 @@
     },
     {
       "key": "dialog.storage.clonesIntro",
-      "value": ".basisdev 中的克隆。当 Unity 未加载某个克隆、它没有未提交或未推送的工作，并且未在 basispackages.json 中列出时，可以将其移除。"
+      "value": ".basisdev 中的克隆。当 Unity 未加载某个克隆、它没有未提交或未推送的工作，并且未在 bpm-manifest.json 中列出时，可以将其移除。"
     },
     {
       "key": "dialog.storage.cloneInUse",
@@ -5800,7 +5812,7 @@
     },
     {
       "key": "dialog.storage.cloneListed",
-      "value": "未使用，但因 basispackages.json 中列出了它而保留"
+      "value": "未使用，但因 bpm-manifest.json 中列出了它而保留"
     },
     {
       "key": "dialog.storage.cloneLocalWork",

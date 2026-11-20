@@ -372,7 +372,7 @@
     },
     {
       "key": "installs.tooltip.sync",
-      "value": "Получить новые коммиты вашей команды из собственного удалённого репозитория проекта (только fast-forward), затем клонировать или переместить пакеты из списка Packages/basispackages.json, чтобы они ему соответствовали. Ваши правки никогда не перезаписываются."
+      "value": "Получить новые коммиты вашей команды из собственного удалённого репозитория проекта (только fast-forward), затем клонировать или переместить пакеты из списка bpm-manifest.json, чтобы они ему соответствовали. Ваши правки никогда не перезаписываются."
     },
     {
       "key": "installs.button.sync",
@@ -3080,7 +3080,7 @@
     },
     {
       "key": "dialog.share.body",
-      "value": "Ваши правки отправляются в ваш форк {0} (или в сам {0}, если у вас есть права на отправку туда), а Packages/basispackages.json начинает указывать на эту ветку."
+      "value": "Ваши правки отправляются в ваш форк {0} (или в сам {0}, если у вас есть права на отправку туда), а bpm-manifest.json начинает указывать на эту ветку."
     },
     {
       "key": "dialog.share.branch",
@@ -3104,7 +3104,7 @@
     },
     {
       "key": "dialog.share.note",
-      "value": "После этого зафиксируйте Packages/basispackages.json, чтобы коллеги получили изменение."
+      "value": "После этого зафиксируйте bpm-manifest.json, чтобы коллеги получили изменение."
     },
     {
       "key": "dialog.share.cancel",
@@ -3432,7 +3432,7 @@
     },
     {
       "key": "packages.status.shared",
-      "value": "Ваша версия {0} опубликована в ветке {1} ({2}). Зафиксируйте Packages/basispackages.json; коллеги получат её при следующей синхронизации."
+      "value": "Ваша версия {0} опубликована в ветке {1} ({2}). Зафиксируйте bpm-manifest.json; коллеги получат её при следующей синхронизации."
     },
     {
       "key": "packages.status.shareFailed",
@@ -3816,7 +3816,7 @@
     },
     {
       "key": "packages.tooltip.share",
-      "value": "Отправить ваши правки в ваш форк этого пакета (или в ветку, куда у вас есть права на отправку) и указать на неё в Packages/basispackages.json, чтобы коллеги получили вашу версию при синхронизации."
+      "value": "Отправить ваши правки в ваш форк этого пакета (или в ветку, куда у вас есть права на отправку) и указать на неё в bpm-manifest.json, чтобы коллеги получили вашу версию при синхронизации."
     },
     {
       "key": "settings.tooltip.addCatalog",
@@ -4271,12 +4271,24 @@
       "value": "Часть для Unity удалена, а часть для Basis Server нет: {0}"
     },
     {
-      "key": "basisdev.banner.title",
-      "value": "Источники пакетов нужно согласовать"
+      "key": "basisdev.banner.titleDownload",
+      "value": "Пакетов для загрузки: {0}"
     },
     {
-      "key": "basisdev.banner.summary",
-      "value": "Пакетов с расхождениями между manifest.json, проектом и его клонами в .basisdev: {0}."
+      "key": "basisdev.banner.summaryDownload",
+      "value": "В bpm-manifest.json указаны {0}, но их ещё нет на этом компьютере или у них другая версия. Обычно так бывает после получения изменений от коллеги."
+    },
+    {
+      "key": "basisdev.banner.titleDecide",
+      "value": "Пакетов, требующих решения: {0}"
+    },
+    {
+      "key": "basisdev.banner.summaryDecide",
+      "value": "Unity не загружает эти клоны в .basisdev. Выберите, что сделать с каждым."
+    },
+    {
+      "key": "basisdev.status.autoListed",
+      "value": "{0} добавлен в bpm-manifest.json, чтобы другие копии проекта тоже его получили."
     },
     {
       "key": "basisdev.button.fixRecords",
@@ -4288,11 +4300,11 @@
     },
     {
       "key": "basisdev.tooltip.restoreAll",
-      "value": "Клонировать пакеты из списка Packages/basispackages.json, которых здесь нет, и перевести клоны на указанные там версии. Клоны с вашими правками переводятся, только если правки переносятся без конфликтов."
+      "value": "Клонировать пакеты из списка bpm-manifest.json, которых здесь нет, и перевести клоны на указанные там версии. Клоны с вашими правками переводятся, только если правки переносятся без конфликтов."
     },
     {
       "key": "basisdev.tooltip.fixRecords",
-      "value": "Записать недостающие служебные файлы .basisdev, внести используемые клоны в Packages/basispackages.json и забыть устаревшие записи о подключении. Файлы пакетов и manifest.json не изменяются."
+      "value": "Записать недостающие служебные файлы .basisdev, внести используемые клоны в bpm-manifest.json и забыть устаревшие записи о подключении. Файлы пакетов и manifest.json не изменяются."
     },
     {
       "key": "basisdev.stale.summary",
@@ -4436,11 +4448,11 @@
     },
     {
       "key": "basisdev.issue.unlisted",
-      "value": "Нет в basispackages.json"
+      "value": "Нет в bpm-manifest.json"
     },
     {
       "key": "basisdev.issue.unlisted.description",
-      "value": "Unity загружает {0}, но в Packages/basispackages.json его нет, поэтому другие копии проекта не смогут клонировать его заново."
+      "value": "Unity загружает {0}, но в bpm-manifest.json его нет, поэтому другие копии проекта не смогут клонировать его заново."
     },
     {
       "key": "basisdev.issue.inPackages",
@@ -4500,7 +4512,7 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "Записать, откуда взят этот клон (origin, ветка и коммит), в .basisdev/{0}.json и, если Unity использует клон, в Packages/basispackages.json, чтобы другие копии проекта могли клонировать его заново. Файлы пакета не изменяются."
+      "value": "Записать, откуда взят этот клон (origin, ветка и коммит), в .basisdev/{0}.json и, если Unity использует клон, в bpm-manifest.json, чтобы другие копии проекта могли клонировать его заново. Файлы пакета не изменяются."
     },
     {
       "key": "basisdev.tooltip.forget",
@@ -4564,7 +4576,7 @@
     },
     {
       "key": "basisdev.status.recorded",
-      "value": "Исходный репозиторий {0} записан в .basisdev и Packages/basispackages.json."
+      "value": "Исходный репозиторий {0} записан в .basisdev и bpm-manifest.json."
     },
     {
       "key": "basisdev.status.forgotten",
@@ -4588,7 +4600,7 @@
     },
     {
       "key": "basisdev.status.switched",
-      "value": "{0} теперь соответствует Packages/basispackages.json."
+      "value": "{0} теперь соответствует bpm-manifest.json."
     },
     {
       "key": "basisdev.status.restoringAll",
@@ -4608,7 +4620,7 @@
     },
     {
       "key": "basisdev.issue.versionMismatch.description",
-      "value": "В Packages/basispackages.json указана версия {0}, но этот клон находится на {1}. Вероятно, её изменил кто-то из коллег."
+      "value": "В bpm-manifest.json указана версия {0}, но этот клон находится на {1}. Вероятно, её изменил кто-то из коллег."
     },
     {
       "key": "basisdev.action.switch",
@@ -4616,7 +4628,7 @@
     },
     {
       "key": "basisdev.tooltip.switch",
-      "value": "Перевести клон на {0}, версию из Packages/basispackages.json. Ваши правки сохраняются, если они не конфликтуют."
+      "value": "Перевести клон на {0}, версию из bpm-manifest.json. Ваши правки сохраняются, если они не конфликтуют."
     },
     {
       "key": "basisdev.status.ignored",
@@ -5788,7 +5800,7 @@
     },
     {
       "key": "dialog.storage.clonesIntro",
-      "value": "Клоны в .basisdev. Клон можно удалить, если Unity его не загружает, в нём нет незафиксированной или неотправленной работы и его нет в basispackages.json."
+      "value": "Клоны в .basisdev. Клон можно удалить, если Unity его не загружает, в нём нет незафиксированной или неотправленной работы и его нет в bpm-manifest.json."
     },
     {
       "key": "dialog.storage.cloneInUse",
@@ -5800,7 +5812,7 @@
     },
     {
       "key": "dialog.storage.cloneListed",
-      "value": "Не используется, но сохраняется, так как указан в basispackages.json"
+      "value": "Не используется, но сохраняется, так как указан в bpm-manifest.json"
     },
     {
       "key": "dialog.storage.cloneLocalWork",

@@ -287,8 +287,9 @@
                                 <PathIcon Grid.Column="0" Width="18" Height="18" Margin="0,2,0,0" VerticalAlignment="Top"
                                           Data="{StaticResource IconWarning}" Foreground="{StaticResource BasisWarningBrush}"/>
                                 <StackPanel Grid.Column="1" Margin="12,0" Spacing="2">
-                                    <TextBlock Text="{loc:Tr basisdev.banner.title}" FontWeight="SemiBold" FontSize="14"/>
-                                    <TextBlock Text="{Binding BasisDevSummary}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding BasisDevTitle}" FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock Text="{Binding BasisDevDownloadText}" IsVisible="{Binding HasBasisDevDownloads}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{loc:Tr basisdev.banner.summaryDecide}" IsVisible="{Binding HasBasisDevDecisions}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                                     <Button IsVisible="{Binding CanRestoreAll}" Command="{Binding RestoreAllCommand}"

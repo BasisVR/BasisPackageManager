@@ -372,7 +372,7 @@
     },
     {
       "key": "installs.tooltip.sync",
-      "value": "এই প্রকল্পের নিজস্ব রিমোট থেকে আপনার দলের নতুন কমিটগুলো পুল করুন (শুধু ফাস্ট-ফরোয়ার্ড), তারপর Packages/basispackages.json-এ তালিকাভুক্ত প্যাকেজগুলো ক্লোন করুন বা সরিয়ে নিন যাতে সেগুলো তালিকার সাথে মেলে। আপনার সম্পাদনা কখনও ওভাররাইট করা হয় না।"
+      "value": "এই প্রকল্পের নিজস্ব রিমোট থেকে আপনার দলের নতুন কমিটগুলো পুল করুন (শুধু ফাস্ট-ফরোয়ার্ড), তারপর bpm-manifest.json-এ তালিকাভুক্ত প্যাকেজগুলো ক্লোন করুন বা সরিয়ে নিন যাতে সেগুলো তালিকার সাথে মেলে। আপনার সম্পাদনা কখনও ওভাররাইট করা হয় না।"
     },
     {
       "key": "installs.button.sync",
@@ -3080,7 +3080,7 @@
     },
     {
       "key": "dialog.share.body",
-      "value": "আপনার সম্পাদনাগুলো {0}-এর আপনার ফর্কে পুশ করা হয় (অথবা আপনার পুশ করার অনুমতি থাকলে সরাসরি {0}-এ), এবং Packages/basispackages.json সেই ব্রাঞ্চের দিকে নির্দেশ করানো হয়।"
+      "value": "আপনার সম্পাদনাগুলো {0}-এর আপনার ফর্কে পুশ করা হয় (অথবা আপনার পুশ করার অনুমতি থাকলে সরাসরি {0}-এ), এবং bpm-manifest.json সেই ব্রাঞ্চের দিকে নির্দেশ করানো হয়।"
     },
     {
       "key": "dialog.share.branch",
@@ -3104,7 +3104,7 @@
     },
     {
       "key": "dialog.share.note",
-      "value": "পরে Packages/basispackages.json কমিট করুন, যাতে দলের সদস্যরা পরিবর্তনটি পান।"
+      "value": "পরে bpm-manifest.json কমিট করুন, যাতে দলের সদস্যরা পরিবর্তনটি পান।"
     },
     {
       "key": "dialog.share.cancel",
@@ -3432,7 +3432,7 @@
     },
     {
       "key": "packages.status.shared",
-      "value": "{0}-এর আপনার সংস্করণ {1} ব্রাঞ্চে শেয়ার করা হয়েছে ({2})। Packages/basispackages.json কমিট করুন; দলের সদস্যরা পরেরবার সিঙ্ক করলে এটি পাবেন।"
+      "value": "{0}-এর আপনার সংস্করণ {1} ব্রাঞ্চে শেয়ার করা হয়েছে ({2})। bpm-manifest.json কমিট করুন; দলের সদস্যরা পরেরবার সিঙ্ক করলে এটি পাবেন।"
     },
     {
       "key": "packages.status.shareFailed",
@@ -3816,7 +3816,7 @@
     },
     {
       "key": "packages.tooltip.share",
-      "value": "আপনার সম্পাদনাগুলো এই প্যাকেজের আপনার ফর্কে (অথবা আপনি পুশ করতে পারেন এমন একটি ব্রাঞ্চে) পুশ করুন এবং Packages/basispackages.json-কে সেটির দিকে নির্দেশ করান, যাতে দলের সদস্যরা সিঙ্ক করার সময় আপনার সংস্করণটি পান।"
+      "value": "আপনার সম্পাদনাগুলো এই প্যাকেজের আপনার ফর্কে (অথবা আপনি পুশ করতে পারেন এমন একটি ব্রাঞ্চে) পুশ করুন এবং bpm-manifest.json-কে সেটির দিকে নির্দেশ করান, যাতে দলের সদস্যরা সিঙ্ক করার সময় আপনার সংস্করণটি পান।"
     },
     {
       "key": "settings.tooltip.addCatalog",
@@ -4271,12 +4271,24 @@
       "value": "Unity অংশটি সরানো হয়েছে, কিন্তু Basis Server অংশটি সরানো যায়নি: {0}"
     },
     {
-      "key": "basisdev.banner.title",
-      "value": "প্যাকেজের উৎসগুলো মেলানো প্রয়োজন"
+      "key": "basisdev.banner.titleDownload",
+      "value": "ডাউনলোড করার প্যাকেজ: {0}টি"
     },
     {
-      "key": "basisdev.banner.summary",
-      "value": "{0}টি প্যাকেজ manifest.json, প্রকল্প এবং এর .basisdev ক্লোনগুলোর মধ্যে মিলছে না।"
+      "key": "basisdev.banner.summaryDownload",
+      "value": "bpm-manifest.json-এ {0} আছে, কিন্তু সেগুলো এখনও এই কম্পিউটারে নেই বা অন্য সংস্করণে আছে। সাধারণত সহকর্মীর পরিবর্তন আনার পরে এমন হয়।"
+    },
+    {
+      "key": "basisdev.banner.titleDecide",
+      "value": "সিদ্ধান্ত দরকার এমন প্যাকেজ: {0}টি"
+    },
+    {
+      "key": "basisdev.banner.summaryDecide",
+      "value": "Unity .basisdev-এর এই ক্লোনগুলো লোড করছে না। প্রতিটির জন্য কী করবেন বেছে নিন।"
+    },
+    {
+      "key": "basisdev.status.autoListed",
+      "value": "{0} bpm-manifest.json-এ যোগ করা হয়েছে, যাতে প্রজেক্টের অন্য কপিগুলোও এটি পায়।"
     },
     {
       "key": "basisdev.button.fixRecords",
@@ -4288,11 +4300,11 @@
     },
     {
       "key": "basisdev.tooltip.restoreAll",
-      "value": "Packages/basispackages.json-এ তালিকাভুক্ত যে প্যাকেজগুলো এখানে নেই সেগুলো ক্লোন করুন, এবং ক্লোনগুলোকে সেখানে তালিকাভুক্ত সংস্করণে সরিয়ে নিন। আপনার নিজস্ব সম্পাদনাযুক্ত ক্লোন কেবল তখনই সরানো হয়, যখন সম্পাদনাগুলো ঠিকঠাক সাথে নেওয়া যায়।"
+      "value": "bpm-manifest.json-এ তালিকাভুক্ত যে প্যাকেজগুলো এখানে নেই সেগুলো ক্লোন করুন, এবং ক্লোনগুলোকে সেখানে তালিকাভুক্ত সংস্করণে সরিয়ে নিন। আপনার নিজস্ব সম্পাদনাযুক্ত ক্লোন কেবল তখনই সরানো হয়, যখন সম্পাদনাগুলো ঠিকঠাক সাথে নেওয়া যায়।"
     },
     {
       "key": "basisdev.tooltip.fixRecords",
-      "value": "অনুপস্থিত .basisdev সাইডকারগুলো লিখুন, ব্যবহৃত ক্লোনগুলো Packages/basispackages.json-এ তালিকাভুক্ত করুন এবং পুরোনো মাউন্ট রেকর্ডগুলো ভুলে যান। প্যাকেজ ফাইল ও manifest.json পরিবর্তন হয় না।"
+      "value": "অনুপস্থিত .basisdev সাইডকারগুলো লিখুন, ব্যবহৃত ক্লোনগুলো bpm-manifest.json-এ তালিকাভুক্ত করুন এবং পুরোনো মাউন্ট রেকর্ডগুলো ভুলে যান। প্যাকেজ ফাইল ও manifest.json পরিবর্তন হয় না।"
     },
     {
       "key": "basisdev.stale.summary",
@@ -4436,11 +4448,11 @@
     },
     {
       "key": "basisdev.issue.unlisted",
-      "value": "basispackages.json-এ নেই"
+      "value": "bpm-manifest.json-এ নেই"
     },
     {
       "key": "basisdev.issue.unlisted.description",
-      "value": "Unity {0} লোড করে, কিন্তু Packages/basispackages.json-এ এটি তালিকাভুক্ত নয়, তাই প্রকল্পের অন্য কপিগুলো এটি আবার ক্লোন করতে পারে না।"
+      "value": "Unity {0} লোড করে, কিন্তু bpm-manifest.json-এ এটি তালিকাভুক্ত নয়, তাই প্রকল্পের অন্য কপিগুলো এটি আবার ক্লোন করতে পারে না।"
     },
     {
       "key": "basisdev.issue.inPackages",
@@ -4500,7 +4512,7 @@
     },
     {
       "key": "basisdev.tooltip.record",
-      "value": "এই ক্লোনটি কোথা থেকে এসেছে (origin, ব্রাঞ্চ ও কমিট) তা .basisdev/{0}.json-এ, এবং Unity ক্লোনটি ব্যবহার করলে Packages/basispackages.json-এ রেকর্ড করুন, যাতে প্রকল্পের অন্য কপিগুলো এটি আবার ক্লোন করতে পারে। প্যাকেজ ফাইল পরিবর্তন করা হয় না।"
+      "value": "এই ক্লোনটি কোথা থেকে এসেছে (origin, ব্রাঞ্চ ও কমিট) তা .basisdev/{0}.json-এ, এবং Unity ক্লোনটি ব্যবহার করলে bpm-manifest.json-এ রেকর্ড করুন, যাতে প্রকল্পের অন্য কপিগুলো এটি আবার ক্লোন করতে পারে। প্যাকেজ ফাইল পরিবর্তন করা হয় না।"
     },
     {
       "key": "basisdev.tooltip.forget",
@@ -4564,7 +4576,7 @@
     },
     {
       "key": "basisdev.status.recorded",
-      "value": "{0}-এর আপস্ট্রিম .basisdev এবং Packages/basispackages.json-এ রেকর্ড করা হয়েছে।"
+      "value": "{0}-এর আপস্ট্রিম .basisdev এবং bpm-manifest.json-এ রেকর্ড করা হয়েছে।"
     },
     {
       "key": "basisdev.status.forgotten",
@@ -4588,7 +4600,7 @@
     },
     {
       "key": "basisdev.status.switched",
-      "value": "{0} এখন Packages/basispackages.json-এর সাথে মেলে।"
+      "value": "{0} এখন bpm-manifest.json-এর সাথে মেলে।"
     },
     {
       "key": "basisdev.status.restoringAll",
@@ -4608,7 +4620,7 @@
     },
     {
       "key": "basisdev.issue.versionMismatch.description",
-      "value": "Packages/basispackages.json-এ {0} তালিকাভুক্ত, কিন্তু এই ক্লোনটি {1}-এ আছে। সম্ভবত দলের কোনো সদস্য এটি পরিবর্তন করেছেন।"
+      "value": "bpm-manifest.json-এ {0} তালিকাভুক্ত, কিন্তু এই ক্লোনটি {1}-এ আছে। সম্ভবত দলের কোনো সদস্য এটি পরিবর্তন করেছেন।"
     },
     {
       "key": "basisdev.action.switch",
@@ -4616,7 +4628,7 @@
     },
     {
       "key": "basisdev.tooltip.switch",
-      "value": "ক্লোনটিকে {0}-এ সরিয়ে নিন, যা Packages/basispackages.json-এর সংস্করণ। আপনার সম্পাদনা সাংঘর্ষিক না হলে সেগুলো রাখা হয়।"
+      "value": "ক্লোনটিকে {0}-এ সরিয়ে নিন, যা bpm-manifest.json-এর সংস্করণ। আপনার সম্পাদনা সাংঘর্ষিক না হলে সেগুলো রাখা হয়।"
     },
     {
       "key": "basisdev.status.ignored",
@@ -5788,7 +5800,7 @@
     },
     {
       "key": "dialog.storage.clonesIntro",
-      "value": ".basisdev-এর ক্লোনগুলো। কোনো ক্লোন তখনই সরানো যায়, যখন Unity সেটি লোড করে না, এতে কমিট না করা বা পুশ না করা কোনো কাজ নেই, এবং এটি basispackages.json-এ তালিকাভুক্ত নয়।"
+      "value": ".basisdev-এর ক্লোনগুলো। কোনো ক্লোন তখনই সরানো যায়, যখন Unity সেটি লোড করে না, এতে কমিট না করা বা পুশ না করা কোনো কাজ নেই, এবং এটি bpm-manifest.json-এ তালিকাভুক্ত নয়।"
     },
     {
       "key": "dialog.storage.cloneInUse",
@@ -5800,7 +5812,7 @@
     },
     {
       "key": "dialog.storage.cloneListed",
-      "value": "ব্যবহৃত নয়, কিন্তু basispackages.json-এ তালিকাভুক্ত বলে রাখা হয়েছে"
+      "value": "ব্যবহৃত নয়, কিন্তু bpm-manifest.json-এ তালিকাভুক্ত বলে রাখা হয়েছে"
     },
     {
       "key": "dialog.storage.cloneLocalWork",
