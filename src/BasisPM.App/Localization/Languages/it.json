@@ -371,14 +371,6 @@
       "value": "Passa questo progetto a un altro dei suoi branch git, oppure spostalo su un altro branch di Basis. Le modifiche non committate vengono mantenute e puoi prima eseguire un backup. Chiudi Unity prima di cambiare branch."
     },
     {
-      "key": "installs.tooltip.sync",
-      "value": "Scarica i nuovi commit del tuo team dal remoto di questo progetto (solo fast-forward), poi clona o sposta i pacchetti elencati in bpm-manifest.json per allinearli. Le tue modifiche non vengono mai sovrascritte."
-    },
-    {
-      "key": "installs.button.sync",
-      "value": "Pull e sincronizza ({0})"
-    },
-    {
       "key": "installs.status.syncing",
       "value": "Sincronizzazione di {0}…"
     },
@@ -452,7 +444,7 @@
     },
     {
       "key": "installs.button.updateBasis",
-      "value": "Aggiorna Basis"
+      "value": "Ottieni aggiornamenti"
     },
     {
       "key": "installs.button.finishUpdate",
@@ -464,7 +456,27 @@
     },
     {
       "key": "installs.tooltip.updateBasis",
-      "value": "Controlla su github.com/BasisVR/Basis se ci sono nuovi commit sul branch di Basis seguito da questo progetto, poi esamina cosa cambierebbe prima che succeda qualcosa. Le tue modifiche vengono mantenute e i tuoi remoti git non vengono toccati. Chiudi Unity prima di aggiornare."
+      "value": "Prima scarica i nuovi commit del tuo team dal remote di questo progetto, poi controlla github.com/BasisVR/Basis per nuovi commit sul branch Basis seguito da questo progetto. Rivedi le modifiche di Basis prima che venga unito qualcosa e le tue modifiche restano. Chiudi Unity prima di aggiornare."
+    },
+    {
+      "key": "dialog.getUpdates.title",
+      "value": "Ottieni aggiornamenti per {0}"
+    },
+    {
+      "key": "dialog.getUpdates.body",
+      "value": "1. Dal tuo team: {0} nuovi sul remote di questo progetto. Arrivano per primi, senza nulla da decidere, e le tue modifiche restano.\n\n2. Da Basis ({1}): controllato dopo che i commit del tuo team sono arrivati. Se c'è qualcosa di nuovo, lo rivedi prima dell'unione."
+    },
+    {
+      "key": "installs.team.updateCountOne",
+      "value": "1 nuovo dal tuo team"
+    },
+    {
+      "key": "installs.team.updateCount",
+      "value": "{0} nuovi dal tuo team"
+    },
+    {
+      "key": "installs.team.tooltip",
+      "value": "I tuoi compagni hanno inviato commit al remote di questo progetto. Ottieni aggiornamenti li scarica prima di controllare Basis."
     },
     {
       "key": "installs.tooltip.finishUpdate",
@@ -540,7 +552,7 @@
     },
     {
       "key": "installs.updateAll.confirmWaiting",
-      "value": "Lasciati al rispettivo pulsante Aggiorna Basis:"
+      "value": "Lasciati al rispettivo pulsante Ottieni aggiornamenti:"
     },
     {
       "key": "installs.updateAll.waitingItem",
@@ -573,6 +585,10 @@
     {
       "key": "installs.updateAll.reason.busy",
       "value": "occupato con un'altra operazione"
+    },
+    {
+      "key": "installs.updateAll.reason.teamAhead",
+      "value": "il tuo team ha nuovi commit da scaricare prima"
     },
     {
       "key": "installs.updateAll.reason.paused",
@@ -3712,7 +3728,7 @@
     },
     {
       "key": "installs.tooltip.updateAll",
-      "value": "Aggiorna ogni progetto al branch di Basis che segue. Prima confermi l'elenco, e le tue modifiche vengono mantenute. I progetti che richiedono una decisione, ad esempio per conflitti o perché Unity è aperto, attendono il rispettivo pulsante Aggiorna Basis."
+      "value": "Aggiorna ogni progetto al branch di Basis che segue. Prima confermi l'elenco, e le tue modifiche vengono mantenute. I progetti che richiedono una decisione, ad esempio per conflitti o perché Unity è aperto, attendono il rispettivo pulsante Ottieni aggiornamenti."
     },
     {
       "key": "installs.tooltip.newProject",
@@ -4912,7 +4928,7 @@
     },
     {
       "key": "basisChanges.block.notGitRepo",
-      "value": "Questo progetto non è tracciato da git, quindi le sue modifiche non possono essere confrontate con Basis. Usa prima Aggiorna Basis per configurare git."
+      "value": "Questo progetto non è tracciato da git, quindi le sue modifiche non possono essere confrontate con Basis. Usa prima Ottieni aggiornamenti per configurare git."
     },
     {
       "key": "basisChanges.block.noCommits",
@@ -6484,7 +6500,7 @@
     },
     {
       "key": "installs.tooltip.branchNoGit",
-      "value": "Questo progetto non è tracciato da git, quindi non ha ancora un branch. Aggiorna Basis propone di configurare git, necessario per gli aggiornamenti."
+      "value": "Questo progetto non è tracciato da git, quindi non ha ancora un branch. Ottieni aggiornamenti propone di configurare git, necessario per gli aggiornamenti."
     },
     {
       "key": "installs.tooltip.localChanges",
@@ -6496,7 +6512,7 @@
     },
     {
       "key": "installs.tooltip.basisUpdateAvailable",
-      "value": "Basis {0} su github.com/BasisVR/Basis ha nuovi commit che questo progetto non ha ancora. Fai clic su Aggiorna Basis per esaminarli prima che cambi qualcosa."
+      "value": "Basis {0} su github.com/BasisVR/Basis ha nuovi commit che questo progetto non ha ancora. Fai clic su Ottieni aggiornamenti per esaminarli prima che cambi qualcosa."
     },
     {
       "key": "dialog.findProjects.tooltip.project",

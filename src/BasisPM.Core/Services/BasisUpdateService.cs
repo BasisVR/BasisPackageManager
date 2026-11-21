@@ -503,7 +503,7 @@ public sealed class BasisUpdateService
         return BasisStepResult.Success with { AddedFiles = added, Unhidden = unhidden, LeftOut = hiddenClones.Concat(clones).ToList(), LargeFiles = large };
     }
 
-    // A Packages/.gitignore from a VRChat project (`/*/`) hides every embedded package, and in a Basis project those are
+    // A Packages/.gitignore with a catch-all rule (`/*/`) hides every embedded package, and in a Basis project those are
     // Basis's own, which updates have to reach. Each package folder a project .gitignore hides gets a matching `!` rule
     // appended to that same file. A package that's a git clone of its own stays hidden: it would only be recorded as a link.
     private async Task<(List<string> Unhidden, List<string> Clones)> UnhidePackagesAsync(string root, string unityProjectPath, CancellationToken ct)
@@ -513,7 +513,7 @@ public sealed class BasisUpdateService
         var packages = Path.Combine(unityProjectPath, "Packages");
         if (!Directory.Exists(packages)) return (unhidden, clones);
         var folders = Directory.EnumerateDirectories(packages).Where(d => File.Exists(Path.Combine(d, "package.json")))
-            .Select(d => Path.GetRelativePath(root, d).Replace('\\', '/')).ToList();
+            .Select(d => Path.GetRelativePath(root, d).Replace('\\', '/')).Order(StringComparer.Ordinal).ToList();
         foreach (var rules in (await _git.ListIgnoreRulesAsync(root, folders, ct).ConfigureAwait(false)).GroupBy(r => r.Source.Replace('\\', '/')))
         {
             // Only the project's own .gitignore files; .git/info/exclude and global excludes belong to this machine, not the project.

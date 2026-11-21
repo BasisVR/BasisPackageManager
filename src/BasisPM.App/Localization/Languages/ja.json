@@ -371,14 +371,6 @@
       "value": "このプロジェクトを自身の別の git ブランチに切り替えるか、別の Basis ブランチに移行します。未コミットの編集内容も引き継がれ、事前にバックアップすることもできます。切り替える前に Unity を閉じてください。"
     },
     {
-      "key": "installs.tooltip.sync",
-      "value": "このプロジェクト自身のリモートからチームの新しいコミットをプルし（fast-forward のみ）、bpm-manifest.json に記載されたパッケージをクローンまたは移動して一致させます。あなたの編集内容が上書きされることはありません。"
-    },
-    {
-      "key": "installs.button.sync",
-      "value": "プルして同期（{0}）"
-    },
-    {
       "key": "installs.status.syncing",
       "value": "{0} を同期中…"
     },
@@ -452,7 +444,7 @@
     },
     {
       "key": "installs.button.updateBasis",
-      "value": "Basis を更新"
+      "value": "更新を取得"
     },
     {
       "key": "installs.button.finishUpdate",
@@ -464,7 +456,27 @@
     },
     {
       "key": "installs.tooltip.updateBasis",
-      "value": "このプロジェクトが追従している Basis ブランチの新しいコミットを github.com/BasisVR/Basis で確認し、何かが行われる前に変更内容を確認できます。あなたの変更は保持され、独自の git リモートには一切触れません。更新する前に Unity を閉じてください。"
+      "value": "まずこのプロジェクト自身のリモートからチームの新しいコミットを取り込み、その後このプロジェクトが追従する Basis ブランチの新しいコミットを github.com/BasisVR/Basis で確認します。Basis の変更はマージ前に確認でき、あなたの編集は保持されます。更新前に Unity を閉じてください。"
+    },
+    {
+      "key": "dialog.getUpdates.title",
+      "value": "{0} の更新を取得"
+    },
+    {
+      "key": "dialog.getUpdates.body",
+      "value": "1. チームから: このプロジェクト自身のリモートに新しいコミットが {0} 件あります。最初に取り込まれ、判断は不要で、あなたの編集は保持されます。\n\n2. Basis ({1}) から: チームのコミットを取り込んだ後に確認します。新しいものがあれば、マージ前に確認できます。"
+    },
+    {
+      "key": "installs.team.updateCountOne",
+      "value": "チームから新着 1 件"
+    },
+    {
+      "key": "installs.team.updateCount",
+      "value": "チームから新着 {0} 件"
+    },
+    {
+      "key": "installs.team.tooltip",
+      "value": "チームメンバーがこのプロジェクト自身のリモートにコミットをプッシュしました。「更新を取得」は Basis を確認する前にそれらを取り込みます。"
     },
     {
       "key": "installs.tooltip.finishUpdate",
@@ -540,7 +552,7 @@
     },
     {
       "key": "installs.updateAll.confirmWaiting",
-      "value": "個別の「Basis を更新」ボタンで対応するもの:"
+      "value": "個別の「更新を取得」ボタンで対応するもの:"
     },
     {
       "key": "installs.updateAll.waitingItem",
@@ -573,6 +585,10 @@
     {
       "key": "installs.updateAll.reason.busy",
       "value": "別のタスクを実行中"
+    },
+    {
+      "key": "installs.updateAll.reason.teamAhead",
+      "value": "先に取り込むチームの新しいコミットがあります"
     },
     {
       "key": "installs.updateAll.reason.paused",
@@ -3712,7 +3728,7 @@
     },
     {
       "key": "installs.tooltip.updateAll",
-      "value": "すべてのプロジェクトを、それぞれが追従している Basis ブランチの最新状態に更新します。最初に一覧を確認でき、あなた自身の変更は保持されます。競合がある、Unity で開かれているなど、判断が必要なプロジェクトは、それぞれの「Basis を更新」ボタンでの対応を待ちます。"
+      "value": "すべてのプロジェクトを、それぞれが追従している Basis ブランチの最新状態に更新します。最初に一覧を確認でき、あなた自身の変更は保持されます。競合がある、Unity で開かれているなど、判断が必要なプロジェクトは、それぞれの「更新を取得」ボタンでの対応を待ちます。"
     },
     {
       "key": "installs.tooltip.newProject",
@@ -4912,7 +4928,7 @@
     },
     {
       "key": "basisChanges.block.notGitRepo",
-      "value": "このプロジェクトは git で管理されていないため、変更を Basis と比較できません。先に「Basis を更新」で git をセットアップしてください。"
+      "value": "このプロジェクトは git で管理されていないため、変更を Basis と比較できません。先に「更新を取得」で git をセットアップしてください。"
     },
     {
       "key": "basisChanges.block.noCommits",
@@ -6484,7 +6500,7 @@
     },
     {
       "key": "installs.tooltip.branchNoGit",
-      "value": "このプロジェクトは git で管理されていないため、まだブランチがありません。「Basis を更新」から、更新に必要な git のセットアップを行えます。"
+      "value": "このプロジェクトは git で管理されていないため、まだブランチがありません。「更新を取得」から、更新に必要な git のセットアップを行えます。"
     },
     {
       "key": "installs.tooltip.localChanges",
@@ -6496,7 +6512,7 @@
     },
     {
       "key": "installs.tooltip.basisUpdateAvailable",
-      "value": "github.com/BasisVR/Basis の Basis {0} に、このプロジェクトにまだない新しいコミットがあります。「Basis を更新」をクリックすると、何かが変更される前に内容を確認できます。"
+      "value": "github.com/BasisVR/Basis の Basis {0} に、このプロジェクトにまだない新しいコミットがあります。「更新を取得」をクリックすると、何かが変更される前に内容を確認できます。"
     },
     {
       "key": "dialog.findProjects.tooltip.project",

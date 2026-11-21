@@ -48,14 +48,14 @@ public sealed class BasisUpdateUiTests
     {
         Localizer.Instance.SetLanguage("en");
         var row = Row("Game");
-        Assert.False(row.HighlightBasisUpdate);
+        Assert.False(row.HighlightUpdates);
 
         row.ApplyBasisCheck(new BasisUpdateCheck(BasisUpdateStatus.UpdateAvailable, "developer", "tip", 70, false));
         Assert.True(row.BasisUpdateAvailable);
-        Assert.True(row.HighlightBasisUpdate);
+        Assert.True(row.HighlightUpdates);
         Assert.False(row.BasisPillMuted);
         Assert.Contains("70", row.BasisPillText);
-        Assert.Equal("Update Basis", row.UpdateButtonLabel);
+        Assert.Equal("Get updates", row.UpdateButtonLabel);
 
         row.ApplyBasisCheck(new BasisUpdateCheck(BasisUpdateStatus.UpdateAvailable, "developer", "tip", null, true));
         Assert.True(row.BasisUpdateInProgress);
@@ -64,8 +64,14 @@ public sealed class BasisUpdateUiTests
 
         row.ApplyBasisCheck(new BasisUpdateCheck(BasisUpdateStatus.UpToDate, "long-term-support-20260916", "tip", 0, false));
         Assert.True(row.BasisPillMuted);
-        Assert.False(row.HighlightBasisUpdate);
+        Assert.False(row.HighlightUpdates);
         Assert.Contains("long-term-support-20260916", row.BasisPillText);
+
+        row.RemoteBehind = 3;
+        Assert.True(row.TeamHasUpdates);
+        Assert.True(row.HighlightUpdates);
+        Assert.True(row.BasisPillMuted);
+        Assert.Equal("3 new from your team", row.TeamPillText);
     }
 
     [AvaloniaFact]

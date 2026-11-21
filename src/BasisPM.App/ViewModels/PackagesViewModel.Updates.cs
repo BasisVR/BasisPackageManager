@@ -323,7 +323,7 @@ public sealed partial class PackagesViewModel
                 ?? UnityPackageMap.List(target.UnityProjectPath, includeAssets: false).FirstOrDefault(p => string.Equals(p.Id, packageId, StringComparison.OrdinalIgnoreCase))?.Root;
             if (root is null) return;
             var catalog = _catalog;
-            var gaps = await Task.Run(() => PackageDependencies.AnalyzeInstalled(target.UnityProjectPath, root, target.Manifest, catalog));
+            var gaps = (await Task.Run(() => PackageDependencies.AnalyzeInstalled(target.UnityProjectPath, root, target.Manifest, catalog))).Where(d => !IsInstallQueued(target, d.Id)).ToList();
             var installable = gaps.Where(d => d.CanInstall && !IsIncluded(d.Id)).ToList();
             var unknown = gaps.Where(d => d.State == DependencyState.Missing).Select(d => d.Id).ToList();
             if (unknown.Count > 0)

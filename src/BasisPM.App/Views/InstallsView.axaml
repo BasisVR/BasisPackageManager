@@ -144,6 +144,14 @@
                                             </Border.IsVisible>
                                             <TextBlock Text="{Binding LeftOutText}" FontSize="11" Classes="muted"/>
                                         </Border>
+                                        <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding TeamHasUpdates}"
+                                                ToolTip.Tip="{loc:Tr installs.team.tooltip}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconDownload}"
+                                                          Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding TeamPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
+                                            </StackPanel>
+                                        </Border>
                                         <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisUpdateAvailable}"
                                                 ToolTip.Tip="{Binding BasisPillTooltip}">
                                             <StackPanel Orientation="Horizontal" Spacing="6">
@@ -182,22 +190,13 @@
                                             <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Classes.cta="{Binding HighlightBasisUpdate}"
+                                    <Button Classes.cta="{Binding HighlightUpdates}"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).UpdateBasisCommand}"
                                             CommandParameter="{Binding}"
                                             ToolTip.Tip="{Binding UpdateButtonTooltip}">
                                         <StackPanel Orientation="Horizontal" Spacing="8">
                                             <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding UpdateButtonLabel}" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button IsVisible="{Binding CoreHasUpdate}"
-                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).SyncCommand}"
-                                            CommandParameter="{Binding}"
-                                            ToolTip.Tip="{loc:Tr installs.tooltip.sync}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding SyncLabel}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
                                     <StackPanel Orientation="Horizontal" IsVisible="{Binding #AdvancedToggle.IsChecked}">
@@ -328,6 +327,14 @@
                                         <TextBlock Text="{Binding LeftOutText}" FontSize="11" Classes="muted"
                                                    MaxWidth="210" TextTrimming="CharacterEllipsis"/>
                                     </Border>
+                                    <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding TeamHasUpdates}"
+                                            ToolTip.Tip="{loc:Tr installs.team.tooltip}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <PathIcon Width="11" Height="11" Data="{StaticResource IconDownload}"
+                                                      Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding TeamPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
+                                        </StackPanel>
+                                    </Border>
                                     <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisUpdateAvailable}"
                                             ToolTip.Tip="{Binding BasisPillTooltip}">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
@@ -365,7 +372,7 @@
                                                 <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Grid.Column="2" Classes.cta="{Binding HighlightBasisUpdate}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="10,9"
+                                        <Button Grid.Column="2" Classes.cta="{Binding HighlightUpdates}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="10,9"
                                                 Command="{Binding #Root.((vm:InstallsViewModel)DataContext).UpdateBasisCommand}"
                                                 CommandParameter="{Binding}"
                                                 ToolTip.Tip="{Binding UpdateButtonTooltip}">
@@ -375,16 +382,6 @@
                                             </StackPanel>
                                         </Button>
                                     </Grid>
-                                    <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="10,9"
-                                            IsVisible="{Binding CoreHasUpdate}"
-                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).SyncCommand}"
-                                            CommandParameter="{Binding}"
-                                            ToolTip.Tip="{loc:Tr installs.tooltip.sync}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding SyncLabel}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                        </StackPanel>
-                                    </Button>
                                     <Grid ColumnDefinitions="*,Auto">
                                         <StackPanel Orientation="Horizontal" Spacing="4">
                                             <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding #AdvancedToggle.IsChecked}">

@@ -371,14 +371,6 @@
       "value": "يبدّل هذا المشروع إلى فرع git آخر من فروعه، أو ينقله إلى فرع Basis مختلف. تنتقل تعديلاتك غير المودَعة معه، ويمكنك إنشاء نسخة احتياطية أولًا. أغلق Unity قبل التبديل."
     },
     {
-      "key": "installs.tooltip.sync",
-      "value": "يسحب الالتزامات الجديدة لفريقك من المستودع البعيد الخاص بهذا المشروع (fast-forward فقط)، ثم يستنسخ الحزم المدرجة في bpm-manifest.json أو ينقلها لتتطابق معه. لا تتم الكتابة فوق تعديلاتك أبدًا."
-    },
-    {
-      "key": "installs.button.sync",
-      "value": "سحب ومزامنة ({0})"
-    },
-    {
       "key": "installs.status.syncing",
       "value": "جارٍ مزامنة {0}…"
     },
@@ -452,7 +444,7 @@
     },
     {
       "key": "installs.button.updateBasis",
-      "value": "تحديث Basis"
+      "value": "جلب التحديثات"
     },
     {
       "key": "installs.button.finishUpdate",
@@ -464,7 +456,27 @@
     },
     {
       "key": "installs.tooltip.updateBasis",
-      "value": "يتحقق من github.com/BasisVR/Basis بحثًا عن التزامات جديدة في فرع Basis الذي يتبعه هذا المشروع، ثم يتيح لك مراجعة ما سيتغيّر قبل حدوث أي شيء. يُحتفظ بتغييراتك، ولا يتم المساس بمستودعات git البعيدة الخاصة بك. أغلق Unity قبل التحديث."
+      "value": "يجلب أولاً الإيداعات الجديدة لفريقك من المستودع البعيد الخاص بهذا المشروع، ثم يتحقق من github.com/BasisVR/Basis بحثاً عن إيداعات جديدة على فرع Basis الذي يتبعه هذا المشروع. تراجع تغييرات Basis قبل دمج أي شيء، وتبقى تعديلاتك محفوظة. أغلق Unity قبل التحديث."
+    },
+    {
+      "key": "dialog.getUpdates.title",
+      "value": "جلب التحديثات لـ {0}"
+    },
+    {
+      "key": "dialog.getUpdates.body",
+      "value": "1. من فريقك: {0} جديدة على المستودع البعيد الخاص بهذا المشروع. تأتي أولاً دون أن تحتاج لاتخاذ قرار، وتبقى تعديلاتك محفوظة.\n\n2. من Basis ({1}): يتم التحقق بعد وصول إيداعات فريقك. إن وُجد جديد، تراجعه قبل دمجه."
+    },
+    {
+      "key": "installs.team.updateCountOne",
+      "value": "1 جديد من فريقك"
+    },
+    {
+      "key": "installs.team.updateCount",
+      "value": "{0} جديدة من فريقك"
+    },
+    {
+      "key": "installs.team.tooltip",
+      "value": "دفع زملاؤك إيداعات إلى المستودع البعيد الخاص بهذا المشروع. يجلبها زر جلب التحديثات قبل التحقق من Basis."
     },
     {
       "key": "installs.tooltip.finishUpdate",
@@ -540,7 +552,7 @@
     },
     {
       "key": "installs.updateAll.confirmWaiting",
-      "value": "متروكة لزر “تحديث Basis” الخاص بكلٍّ منها:"
+      "value": "متروكة لزر “جلب التحديثات” الخاص بكلٍّ منها:"
     },
     {
       "key": "installs.updateAll.waitingItem",
@@ -573,6 +585,10 @@
     {
       "key": "installs.updateAll.reason.busy",
       "value": "مشغول بمهمة أخرى"
+    },
+    {
+      "key": "installs.updateAll.reason.teamAhead",
+      "value": "لدى فريقك إيداعات جديدة يجب جلبها أولاً"
     },
     {
       "key": "installs.updateAll.reason.paused",
@@ -3712,7 +3728,7 @@
     },
     {
       "key": "installs.tooltip.updateAll",
-      "value": "يحدّث كل مشروع وفق فرع Basis الذي يتبعه. تؤكّد القائمة أولًا، ويُحتفظ بتغييراتك. أما المشاريع التي تحتاج إلى قرار، كوجود تعارضات أو كون Unity مفتوحًا، فتنتظر زر “تحديث Basis” الخاص بكلٍّ منها."
+      "value": "يحدّث كل مشروع وفق فرع Basis الذي يتبعه. تؤكّد القائمة أولًا، ويُحتفظ بتغييراتك. أما المشاريع التي تحتاج إلى قرار، كوجود تعارضات أو كون Unity مفتوحًا، فتنتظر زر “جلب التحديثات” الخاص بكلٍّ منها."
     },
     {
       "key": "installs.tooltip.newProject",
@@ -4912,7 +4928,7 @@
     },
     {
       "key": "basisChanges.block.notGitRepo",
-      "value": "لا يتتبّع git هذا المشروع، لذا لا يمكن مقارنة تغييراته بـ Basis. استخدم “تحديث Basis” لإعداد git له أولًا."
+      "value": "لا يتتبّع git هذا المشروع، لذا لا يمكن مقارنة تغييراته بـ Basis. استخدم “جلب التحديثات” لإعداد git له أولًا."
     },
     {
       "key": "basisChanges.block.noCommits",
@@ -6484,7 +6500,7 @@
     },
     {
       "key": "installs.tooltip.branchNoGit",
-      "value": "لا يتتبّع git هذا المشروع، لذا ليس له فرع بعد. يعرض “تحديث Basis” إعداد git له، وهو ما تحتاجه التحديثات."
+      "value": "لا يتتبّع git هذا المشروع، لذا ليس له فرع بعد. يعرض “جلب التحديثات” إعداد git له، وهو ما تحتاجه التحديثات."
     },
     {
       "key": "installs.tooltip.localChanges",
@@ -6496,7 +6512,7 @@
     },
     {
       "key": "installs.tooltip.basisUpdateAvailable",
-      "value": "يحتوي Basis {0} على github.com/BasisVR/Basis على التزامات جديدة لا يملكها هذا المشروع بعد. انقر “تحديث Basis” لمراجعتها قبل أي تغيير."
+      "value": "يحتوي Basis {0} على github.com/BasisVR/Basis على التزامات جديدة لا يملكها هذا المشروع بعد. انقر “جلب التحديثات” لمراجعتها قبل أي تغيير."
     },
     {
       "key": "dialog.findProjects.tooltip.project",

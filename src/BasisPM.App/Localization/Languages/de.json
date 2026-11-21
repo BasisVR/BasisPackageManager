@@ -371,14 +371,6 @@
       "value": "Wechselt dieses Projekt auf einen anderen seiner eigenen Git-Branches oder stellt es auf einen anderen Basis-Branch um. Deine nicht committeten Änderungen werden mitgenommen, und du kannst vorher eine Sicherung erstellen. Schließe Unity vor dem Wechsel."
     },
     {
-      "key": "installs.tooltip.sync",
-      "value": "Pullt die neuen Commits deines Teams vom eigenen Remote-Repository dieses Projekts (nur Fast-Forward) und klont oder verschiebt dann die in bpm-manifest.json aufgeführten Pakete, damit sie übereinstimmen. Deine Änderungen werden nie überschrieben."
-    },
-    {
-      "key": "installs.button.sync",
-      "value": "Pullen und synchronisieren ({0})"
-    },
-    {
       "key": "installs.status.syncing",
       "value": "{0} wird synchronisiert…"
     },
@@ -452,7 +444,7 @@
     },
     {
       "key": "installs.button.updateBasis",
-      "value": "Basis aktualisieren"
+      "value": "Updates holen"
     },
     {
       "key": "installs.button.finishUpdate",
@@ -464,7 +456,27 @@
     },
     {
       "key": "installs.tooltip.updateBasis",
-      "value": "Prüft github.com/BasisVR/Basis auf neue Commits auf dem Basis-Branch, dem dieses Projekt folgt, und zeigt dir, was sich ändern würde, bevor etwas passiert. Deine Änderungen bleiben erhalten, und deine eigenen Git-Remotes bleiben unberührt. Schließe Unity vor dem Aktualisieren."
+      "value": "Holt zuerst die neuen Commits deines Teams vom eigenen Remote dieses Projekts und prüft dann github.com/BasisVR/Basis auf neue Commits im Basis-Branch, dem dieses Projekt folgt. Du prüfst die Basis-Änderungen, bevor etwas zusammengeführt wird, und deine Änderungen bleiben erhalten. Schließe Unity vor dem Aktualisieren."
+    },
+    {
+      "key": "dialog.getUpdates.title",
+      "value": "Updates für {0} holen"
+    },
+    {
+      "key": "dialog.getUpdates.body",
+      "value": "1. Von deinem Team: {0} neu auf dem eigenen Remote dieses Projekts. Diese kommen zuerst, ohne dass du etwas entscheiden musst, und deine Änderungen bleiben erhalten.\n\n2. Von Basis ({1}): wird geprüft, sobald die Commits deines Teams da sind. Wenn es Neues gibt, prüfst du es, bevor es zusammengeführt wird."
+    },
+    {
+      "key": "installs.team.updateCountOne",
+      "value": "1 neu von deinem Team"
+    },
+    {
+      "key": "installs.team.updateCount",
+      "value": "{0} neu von deinem Team"
+    },
+    {
+      "key": "installs.team.tooltip",
+      "value": "Deine Teammitglieder haben Commits auf das eigene Remote dieses Projekts gepusht. Updates holen bringt sie herein, bevor Basis geprüft wird."
     },
     {
       "key": "installs.tooltip.finishUpdate",
@@ -540,7 +552,7 @@
     },
     {
       "key": "installs.updateAll.confirmWaiting",
-      "value": "Einzeln über „Basis aktualisieren“ zu aktualisieren:"
+      "value": "Einzeln über „Updates holen“ zu aktualisieren:"
     },
     {
       "key": "installs.updateAll.waitingItem",
@@ -573,6 +585,10 @@
     {
       "key": "installs.updateAll.reason.busy",
       "value": "mit einer anderen Aufgabe beschäftigt"
+    },
+    {
+      "key": "installs.updateAll.reason.teamAhead",
+      "value": "dein Team hat neue Commits, die zuerst geholt werden müssen"
     },
     {
       "key": "installs.updateAll.reason.paused",
@@ -3712,7 +3728,7 @@
     },
     {
       "key": "installs.tooltip.updateAll",
-      "value": "Bringt jedes Projekt auf den Stand des Basis-Branches, dem es folgt. Du bestätigst zuerst die Liste, und deine eigenen Änderungen bleiben erhalten. Projekte, die eine Entscheidung erfordern, etwa bei Konflikten oder geöffnetem Unity, warten auf ihre eigene Schaltfläche „Basis aktualisieren“."
+      "value": "Bringt jedes Projekt auf den Stand des Basis-Branches, dem es folgt. Du bestätigst zuerst die Liste, und deine eigenen Änderungen bleiben erhalten. Projekte, die eine Entscheidung erfordern, etwa bei Konflikten oder geöffnetem Unity, warten auf ihre eigene Schaltfläche „Updates holen“."
     },
     {
       "key": "installs.tooltip.newProject",
@@ -4912,7 +4928,7 @@
     },
     {
       "key": "basisChanges.block.notGitRepo",
-      "value": "Dieses Projekt wird nicht von Git verfolgt, daher können seine Änderungen nicht mit Basis verglichen werden. Richte zuerst über „Basis aktualisieren“ Git dafür ein."
+      "value": "Dieses Projekt wird nicht von Git verfolgt, daher können seine Änderungen nicht mit Basis verglichen werden. Richte zuerst über „Updates holen“ Git dafür ein."
     },
     {
       "key": "basisChanges.block.noCommits",
@@ -6484,7 +6500,7 @@
     },
     {
       "key": "installs.tooltip.branchNoGit",
-      "value": "Dieses Projekt wird nicht von Git verfolgt und hat daher noch keinen Branch. „Basis aktualisieren“ bietet an, Git dafür einzurichten, was für Updates nötig ist."
+      "value": "Dieses Projekt wird nicht von Git verfolgt und hat daher noch keinen Branch. „Updates holen“ bietet an, Git dafür einzurichten, was für Updates nötig ist."
     },
     {
       "key": "installs.tooltip.localChanges",
@@ -6496,7 +6512,7 @@
     },
     {
       "key": "installs.tooltip.basisUpdateAvailable",
-      "value": "Basis {0} auf github.com/BasisVR/Basis hat neue Commits, die dieses Projekt noch nicht hat. Klicke auf „Basis aktualisieren“, um sie zu prüfen, bevor sich etwas ändert."
+      "value": "Basis {0} auf github.com/BasisVR/Basis hat neue Commits, die dieses Projekt noch nicht hat. Klicke auf „Updates holen“, um sie zu prüfen, bevor sich etwas ändert."
     },
     {
       "key": "dialog.findProjects.tooltip.project",

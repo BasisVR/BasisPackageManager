@@ -471,17 +471,17 @@ public sealed class BasisUpdateServiceTests
     }
 
     [GitFact]
-    public async Task VRChat_style_packages_gitignore_stops_hiding_the_projects_packages()
+    public async Task A_catch_all_packages_gitignore_stops_hiding_the_projects_packages()
     {
         using var box = new GitSandbox();
         box.CommitUpstream("one", ("Assets/a.txt", "a1\n"));
         var project = box.Combine("zip");
         GitSandbox.Write(project, "Assets/a.txt", "a1\n");
-        GitSandbox.Write(project, "Packages/.gitignore", "/*/\ncom.vrchat.*/\n!com.vrchat.core.*/\n!vpm-manifest.json\n!manifest.json\n");
+        GitSandbox.Write(project, "Packages/.gitignore", "/*/\ncom.other.*/\n!com.other.core.*/\n!manifest.json\n");
         GitSandbox.Write(project, "Packages/manifest.json", "{}");
         GitSandbox.Write(project, "Packages/com.basis.sdk/package.json", "{}");
         GitSandbox.Write(project, "Packages/com.basis.sdk/Runtime/Sdk.cs", "class Sdk {}");
-        GitSandbox.Write(project, "Packages/com.vrchat.base/package.json", "{}");
+        GitSandbox.Write(project, "Packages/com.other.base/package.json", "{}");
         GitSandbox.Write(project, "Packages/Server Export/build.dll", "binary");
         var clone = Path.Combine(project, "Packages", "com.vendor.lights");
         GitSandbox.Write(clone, "package.json", "{}");
@@ -491,15 +491,15 @@ public sealed class BasisUpdateServiceTests
         var init = await box.Updates.InitializeRepositoryAsync(project, project);
 
         Assert.True(init.Ok, init.Detail);
-        Assert.Equal(new[] { "Packages/com.basis.sdk", "Packages/com.vrchat.base" }, init.Unhidden.Order());
+        Assert.Equal(new[] { "Packages/com.basis.sdk", "Packages/com.other.base" }, init.Unhidden.Order());
         Assert.Equal(new[] { "Packages/com.vendor.lights" }, init.LeftOut);
         var tracked = GitSandbox.Run(project, "ls-files");
         Assert.Contains("Packages/com.basis.sdk/Runtime/Sdk.cs", tracked);
-        Assert.Contains("Packages/com.vrchat.base/package.json", tracked);
+        Assert.Contains("Packages/com.other.base/package.json", tracked);
         Assert.Contains("Packages/manifest.json", tracked);
         Assert.DoesNotContain("Server Export", tracked);
         Assert.DoesNotContain("com.vendor.lights", tracked);
-        Assert.EndsWith("!/com.basis.sdk/\n!/com.vrchat.base/\n", GitSandbox.Read(project, "Packages/.gitignore").Replace("\r", ""));
+        Assert.EndsWith("!/com.basis.sdk/\n!/com.other.base/\n", GitSandbox.Read(project, "Packages/.gitignore").Replace("\r", ""));
         Assert.Equal("", GitSandbox.Status(project));
     }
 

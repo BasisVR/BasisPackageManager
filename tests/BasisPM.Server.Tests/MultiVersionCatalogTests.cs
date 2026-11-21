@@ -127,7 +127,7 @@ public sealed class MultiVersionCatalogTests
         {
           "name": "com.someone.thing",
           "dependencies": { "com.unity.ugui": "2.0.0", "com.someone.base": "1.2.0" },
-          "vpmDependencies": { "com.someone.base": "9.9.9", "com.vrchat.base": "3.5.x", "com.someone.tools": ">=1.0.0", "com.someone.odd": "latest" },
+          "vpmDependencies": { "com.someone.base": "9.9.9", "com.someone.sdk": "3.5.x", "com.someone.tools": ">=1.0.0", "com.someone.odd": "latest" },
           "gitDependencies": { "com.someone.git": "https://github.com/someone/git.git#v1.0.0", "com.evil.ssh": "git@github.com:evil/x.git", "Bad Id": "https://github.com/x/y.git" }
         }
         """)!;
@@ -138,7 +138,7 @@ public sealed class MultiVersionCatalogTests
         Assert.Equal("1.2.0", dependencies["com.someone.base"]);
         Assert.Equal(">=1.0.0", dependencies["com.someone.tools"]);
         Assert.Equal("2.0.0", dependencies["com.unity.ugui"]);
-        Assert.Equal("3.5.x", dependencies["com.vrchat.base"]);
+        Assert.Equal("3.5.x", dependencies["com.someone.sdk"]);
         Assert.False(dependencies.ContainsKey("com.someone.odd"));
         Assert.Equal(new[] { "com.someone.git" }, git.Keys.ToArray());
     }

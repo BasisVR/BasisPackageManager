@@ -208,19 +208,19 @@ public sealed partial class InstallsViewModel : ObservableObject
     private Task CheckRemoteQueuedAsync(InstallRow row) =>
         Queued(row, L.Tr("installs.git.checkingRemote"), () => RefreshGitInfoAsync(row, fetch: true));
 
-    private RelayCommand<InstallRow>? _syncCommand;
-    public RelayCommand<InstallRow> SyncCommand => _syncCommand ??= new RelayCommand<InstallRow>(r => r is null ? Task.CompletedTask : SyncQueuedAsync(r));
-
     private Task SyncQueuedAsync(InstallRow row) =>
         Queued(row, L.Tr("installs.status.syncing", row.Name), () => SyncAsync(row));
 
-    private async Task SyncAsync(InstallRow row)
+    private async Task<bool> SyncAsync(InstallRow row)
     {
         var key = "sync|" + row.RepoRoot;
         var activity = _shell.BeginActivity(L.Tr("installs.status.syncing", row.Name), row.Name);
+        var ok = false;
         try
         {
-            ReportSync(row, await _shell.PackagesVM.SyncProjectAsync(row.Install, line => ReportActivity(activity, line)));
+            var result = await _shell.PackagesVM.SyncProjectAsync(row.Install, line => ReportActivity(activity, line));
+            ok = result.Ok;
+            ReportSync(row, result);
         }
         catch (Exception ex)
         {
@@ -229,6 +229,7 @@ public sealed partial class InstallsViewModel : ObservableObject
         }
         finally { _shell.EndActivity(activity); }
         await RefreshGitInfoAsync(row, fetch: false);
+        return ok;
     }
 
     private void ReportSync(InstallRow row, ProjectSyncResult result)
@@ -290,7 +291,6 @@ public sealed partial class InstallsViewModel : ObservableObject
             row.Commit = status.ShortCommit;
             row.GitSummary = DescribeStatus(status);
             row.ChangeCount = status.ChangeCount;
-            row.CoreHasUpdate = status.Upstream.HasUpstream && status.Upstream.Behind > 0;
             row.RemoteBehind = status.Upstream.HasUpstream ? status.Upstream.Behind : 0;
             row.LeftOutParts = await _parts.LeftOutAsync(row.RepoRoot, row.UnityProjectPath);
             if (fetch && !fetchFailed)
@@ -528,8 +528,32 @@ public sealed partial class InstallsViewModel : ObservableObject
         if (row is null) return;
         if (!_git.IsAvailable) { _shell.SetStatus(L.Tr("installs.status.gitNotFound"), StatusKind.Error); return; }
 
+        var pulledTeam = false;
+        if (!row.BasisUpdateInProgress && row.Install.IsGitRepo)
+        {
+            await RefreshGitInfoAsync(row, fetch: true);
+            if (row.TeamHasUpdates)
+            {
+                var follows = row.BasisCheck?.BasisBranch ?? BasisInstallService.DefaultBranch;
+                if (!await BasisPM.App.Services.Dialogs.ConfirmAsync(L.Tr("dialog.getUpdates.title", row.Name), L.Tr("dialog.getUpdates.body", row.RemoteBehind, follows)))
+                {
+                    return;
+                }
+                if (!await SyncAsync(row))
+                {
+                    return;
+                }
+                pulledTeam = true;
+            }
+        }
+
         var plan = await PlanBasisUpdateAsync(row, basisBranch);
         if (plan is null) return;
+        if (pulledTeam && plan.Kind == BasisUpdateKind.UpToDate)
+        {
+            await RefreshBasisStateAsync(row, allowFetch: false);
+            return;
+        }
         if (plan.Kind == BasisUpdateKind.InProgress)
         {
             await ResolveBasisUpdateAsync(row, plan.State is { } state ? OperationInfo.From(state) : OperationInfo.From(plan));
@@ -673,6 +697,7 @@ public sealed partial class InstallsViewModel : ObservableObject
     private static string? WhyNotAutomatic(InstallRow row, BasisUpdatePlan plan) => plan.Kind switch
     {
         BasisUpdateKind.InProgress => L.Tr("installs.updateAll.reason.paused"),
+        _ when row.TeamHasUpdates => L.Tr("installs.updateAll.reason.teamAhead"),
         BasisUpdateKind.NotGitRepo => L.Tr("installs.updateAll.reason.notGit"),
         BasisUpdateKind.Blocked when BasisUpdateText.DescribeBlock(plan) is { Length: > 0 } block => block,
         _ when !plan.CanApply => L.Tr("installs.updateAll.reason.review"),
@@ -1336,7 +1361,6 @@ public sealed class InstallRow : ObservableObject
     private int _changeCount;
     private bool _isBusy;
     private bool _isActive;
-    private bool _coreHasUpdate;
 
     public BasisInstall Install { get; private set; }
 
@@ -1360,12 +1384,22 @@ public sealed class InstallRow : ObservableObject
     public bool HasLocalChanges => _changeCount > 0;
     public bool IsBusy { get => _isBusy; set => SetField(ref _isBusy, value); }
     public bool IsActive { get => _isActive; set => SetField(ref _isActive, value); }
-    // True only when the checked-out branch is behind its upstream — i.e. an update is actually
-    // available. Drives the "Update Core" button's brand-red styling (neutral when up to date).
-    public bool CoreHasUpdate { get => _coreHasUpdate; set => SetField(ref _coreHasUpdate, value); }
     private int _remoteBehind;
-    public int RemoteBehind { get => _remoteBehind; set { if (SetField(ref _remoteBehind, value)) OnPropertyChanged(nameof(SyncLabel)); } }
-    public string SyncLabel => L.Tr("installs.button.sync", _remoteBehind);
+    public int RemoteBehind
+    {
+        get => _remoteBehind;
+        set
+        {
+            if (SetField(ref _remoteBehind, value))
+            {
+                OnPropertyChanged(nameof(TeamHasUpdates));
+                OnPropertyChanged(nameof(TeamPillText));
+                OnPropertyChanged(nameof(HighlightUpdates));
+            }
+        }
+    }
+    public bool TeamHasUpdates => _remoteBehind > 0;
+    public string TeamPillText => _remoteBehind == 1 ? L.Tr("installs.team.updateCountOne") : L.Tr("installs.team.updateCount", _remoteBehind);
 
     private IReadOnlyList<BasisPart> _leftOutParts = Array.Empty<BasisPart>();
 
@@ -1393,8 +1427,8 @@ public sealed class InstallRow : ObservableObject
     public bool BasisUpdateInProgress => _basisCheck?.InProgress == true;
     public bool BranchSwitchInProgress => BasisUpdateInProgress && _basisCheck!.Operation == BasisOperation.BranchSwitch;
     public bool BasisUpdateAvailable => _basisCheck is { Status: BasisUpdateStatus.UpdateAvailable, InProgress: false };
-    public bool HighlightBasisUpdate => BasisUpdateAvailable || BasisUpdateInProgress;
-    public bool BasisPillMuted => !HighlightBasisUpdate && (_isCheckingBasis || _basisCheck?.Status is BasisUpdateStatus.UpToDate or BasisUpdateStatus.Error);
+    public bool HighlightUpdates => BasisUpdateAvailable || BasisUpdateInProgress || TeamHasUpdates;
+    public bool BasisPillMuted => !BasisUpdateAvailable && !BasisUpdateInProgress && (_isCheckingBasis || _basisCheck?.Status is BasisUpdateStatus.UpToDate or BasisUpdateStatus.Error);
     public string? BasisRemoteSha => _basisCheck?.RemoteSha;
     public int? BasisBehind => _basisCheck?.Behind;
 
@@ -1440,7 +1474,7 @@ public sealed class InstallRow : ObservableObject
         OnPropertyChanged(nameof(BasisUpdateInProgress));
         OnPropertyChanged(nameof(BranchSwitchInProgress));
         OnPropertyChanged(nameof(BasisUpdateAvailable));
-        OnPropertyChanged(nameof(HighlightBasisUpdate));
+        OnPropertyChanged(nameof(HighlightUpdates));
         OnPropertyChanged(nameof(BasisPillMuted));
         OnPropertyChanged(nameof(BasisRemoteSha));
         OnPropertyChanged(nameof(BasisBehind));

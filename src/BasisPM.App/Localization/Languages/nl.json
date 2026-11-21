@@ -371,14 +371,6 @@
       "value": "Wissel dit project naar een andere eigen git-branch, of zet het over op een andere Basis-branch. Je niet-gecommitte bewerkingen gaan mee, en je kunt eerst een back-up maken. Sluit Unity voordat je wisselt."
     },
     {
-      "key": "installs.tooltip.sync",
-      "value": "Haal de nieuwe commits van je team op van de eigen remote van dit project (alleen fast-forward), en kloon daarna de pakketten uit bpm-manifest.json of zet ze op de vermelde versie, zodat alles overeenkomt. Je bewerkingen worden nooit overschreven."
-    },
-    {
-      "key": "installs.button.sync",
-      "value": "Pullen en synchroniseren ({0})"
-    },
-    {
       "key": "installs.status.syncing",
       "value": "{0} synchroniseren…"
     },
@@ -452,7 +444,7 @@
     },
     {
       "key": "installs.button.updateBasis",
-      "value": "Basis bijwerken"
+      "value": "Updates ophalen"
     },
     {
       "key": "installs.button.finishUpdate",
@@ -464,7 +456,27 @@
     },
     {
       "key": "installs.tooltip.updateBasis",
-      "value": "Controleer github.com/BasisVR/Basis op nieuwe commits op de Basis-branch die dit project volgt, en bekijk wat er zou veranderen voordat er iets gebeurt. Je wijzigingen blijven behouden en je eigen git-remotes worden niet aangeraakt. Sluit Unity voordat je bijwerkt."
+      "value": "Haalt eerst de nieuwe commits van je team op van de eigen remote van dit project en controleert daarna github.com/BasisVR/Basis op nieuwe commits in de Basis-branch die dit project volgt. Je bekijkt de Basis-wijzigingen voordat er iets wordt samengevoegd, en je eigen wijzigingen blijven behouden. Sluit Unity voor het bijwerken."
+    },
+    {
+      "key": "dialog.getUpdates.title",
+      "value": "Updates ophalen voor {0}"
+    },
+    {
+      "key": "dialog.getUpdates.body",
+      "value": "1. Van je team: {0} nieuw op de eigen remote van dit project. Deze komen eerst binnen, zonder dat je iets hoeft te beslissen, en je wijzigingen blijven behouden.\n\n2. Van Basis ({1}): gecontroleerd zodra de commits van je team binnen zijn. Is er iets nieuws, dan bekijk je het voordat het wordt samengevoegd."
+    },
+    {
+      "key": "installs.team.updateCountOne",
+      "value": "1 nieuw van je team"
+    },
+    {
+      "key": "installs.team.updateCount",
+      "value": "{0} nieuw van je team"
+    },
+    {
+      "key": "installs.team.tooltip",
+      "value": "Je teamgenoten hebben commits naar de eigen remote van dit project gepusht. Updates ophalen haalt ze binnen voordat Basis wordt gecontroleerd."
     },
     {
       "key": "installs.tooltip.finishUpdate",
@@ -540,7 +552,7 @@
     },
     {
       "key": "installs.updateAll.confirmWaiting",
-      "value": "Wachten op hun eigen knop Basis bijwerken:"
+      "value": "Wachten op hun eigen knop Updates ophalen:"
     },
     {
       "key": "installs.updateAll.waitingItem",
@@ -573,6 +585,10 @@
     {
       "key": "installs.updateAll.reason.busy",
       "value": "bezig met een andere taak"
+    },
+    {
+      "key": "installs.updateAll.reason.teamAhead",
+      "value": "je team heeft nieuwe commits die eerst opgehaald moeten worden"
     },
     {
       "key": "installs.updateAll.reason.paused",
@@ -3712,7 +3728,7 @@
     },
     {
       "key": "installs.tooltip.updateAll",
-      "value": "Werk elk project bij naar de Basis-branch die het volgt. Je bevestigt eerst de lijst, en je eigen wijzigingen blijven behouden. Projecten waarvoor een keuze nodig is, bijvoorbeeld bij conflicten of als Unity open is, wachten op hun eigen knop Basis bijwerken."
+      "value": "Werk elk project bij naar de Basis-branch die het volgt. Je bevestigt eerst de lijst, en je eigen wijzigingen blijven behouden. Projecten waarvoor een keuze nodig is, bijvoorbeeld bij conflicten of als Unity open is, wachten op hun eigen knop Updates ophalen."
     },
     {
       "key": "installs.tooltip.newProject",
@@ -4912,7 +4928,7 @@
     },
     {
       "key": "basisChanges.block.notGitRepo",
-      "value": "Dit project wordt niet door git bijgehouden, dus de wijzigingen kunnen niet met Basis worden vergeleken. Gebruik eerst Basis bijwerken om git ervoor in te stellen."
+      "value": "Dit project wordt niet door git bijgehouden, dus de wijzigingen kunnen niet met Basis worden vergeleken. Gebruik eerst Updates ophalen om git ervoor in te stellen."
     },
     {
       "key": "basisChanges.block.noCommits",
@@ -6484,7 +6500,7 @@
     },
     {
       "key": "installs.tooltip.branchNoGit",
-      "value": "Dit project wordt niet door git bijgehouden, dus het heeft nog geen branch. Basis bijwerken biedt aan om git ervoor in te stellen, wat nodig is voor updates."
+      "value": "Dit project wordt niet door git bijgehouden, dus het heeft nog geen branch. Updates ophalen biedt aan om git ervoor in te stellen, wat nodig is voor updates."
     },
     {
       "key": "installs.tooltip.localChanges",
@@ -6496,7 +6512,7 @@
     },
     {
       "key": "installs.tooltip.basisUpdateAvailable",
-      "value": "Basis {0} op github.com/BasisVR/Basis heeft nieuwe commits die dit project nog niet heeft. Klik op Basis bijwerken om ze te bekijken voordat er iets verandert."
+      "value": "Basis {0} op github.com/BasisVR/Basis heeft nieuwe commits die dit project nog niet heeft. Klik op Updates ophalen om ze te bekijken voordat er iets verandert."
     },
     {
       "key": "dialog.findProjects.tooltip.project",

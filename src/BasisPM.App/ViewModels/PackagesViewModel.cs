@@ -938,6 +938,7 @@ public sealed partial class PackagesViewModel : ObservableObject
         {
             while (_installQueue.Count > 0)
             {
+                OrderInstallQueueDependenciesFirst();
                 var (entry, target) = _installQueue.Dequeue();
                 _installingId = QueueKey(target, entry.Name);
                 InstallQueueRemaining = _installQueue.Count;
@@ -997,6 +998,35 @@ public sealed partial class PackagesViewModel : ObservableObject
     }
 
     private static string QueueKey(BasisInstall target, string id) => target.UnityProjectPath + "|" + id;
+
+    private void OrderInstallQueueDependenciesFirst()
+    {
+        if (_installQueue.Count < 2)
+        {
+            return;
+        }
+        var queued = _installQueue.ToList();
+        var entries = new Dictionary<string, CatalogPackageVersion>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (entry, target) in queued)
+        {
+            entries.TryAdd(QueueKey(target, entry.Name), entry);
+        }
+        var ordered = InstallOrder.DependenciesFirst(queued, q => QueueKey(q.Target, q.Entry.Name), key =>
+        {
+            var split = key.LastIndexOf('|');
+            var project = key[..(split + 1)];
+            var entry = entries.GetValueOrDefault(key) ?? CatalogEntryFor(key[(split + 1)..]);
+            return InstallOrder.DependencyIds(entry).Select(id => project + id);
+        });
+        _installQueue.Clear();
+        foreach (var item in ordered)
+        {
+            _installQueue.Enqueue(item);
+        }
+    }
+
+    private bool IsInstallQueued(BasisInstall target, string id) =>
+        _queuedInstallIds.Contains(QueueKey(target, id)) && !string.Equals(QueueKey(target, id), _installingId, StringComparison.OrdinalIgnoreCase);
 
     private async Task PackageWorkAsync(BasisInstall target, string id, string label, Func<Task> work, bool alwaysQueue = false)
     {

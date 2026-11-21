@@ -371,14 +371,6 @@
       "value": "將此專案切換到它自己的另一個 git 分支，或移到不同的 Basis 分支。你尚未提交的編輯會一併帶過去，你也可以先備份。切換前請先關閉 Unity。"
     },
     {
-      "key": "installs.tooltip.sync",
-      "value": "從此專案自己的遠端拉取團隊的新提交（僅快轉），然後複製或移動 bpm-manifest.json 列出的套件，使其保持一致。你的編輯絕不會被覆寫。"
-    },
-    {
-      "key": "installs.button.sync",
-      "value": "拉取並同步（{0}）"
-    },
-    {
       "key": "installs.status.syncing",
       "value": "正在同步 {0}…"
     },
@@ -452,7 +444,7 @@
     },
     {
       "key": "installs.button.updateBasis",
-      "value": "更新 Basis"
+      "value": "取得更新"
     },
     {
       "key": "installs.button.finishUpdate",
@@ -464,7 +456,27 @@
     },
     {
       "key": "installs.tooltip.updateBasis",
-      "value": "檢查 github.com/BasisVR/Basis 上此專案所追蹤的 Basis 分支是否有新提交，並在任何變更發生前先檢視會改變的內容。你的變更會保留，你自己的 git 遠端也不會受到影響。更新前請先關閉 Unity。"
+      "value": "先從此專案自己的遠端儲存庫拉取團隊的新提交，然後在 github.com/BasisVR/Basis 上檢查此專案所跟隨的 Basis 分支是否有新提交。合併之前你會先審閱 Basis 的變更，你的修改會被保留。更新前請關閉 Unity。"
+    },
+    {
+      "key": "dialog.getUpdates.title",
+      "value": "取得 {0} 的更新"
+    },
+    {
+      "key": "dialog.getUpdates.body",
+      "value": "1. 來自你的團隊：此專案自己的遠端儲存庫有 {0} 個新提交。它們會最先進入，不需要你做決定，你的修改會被保留。\n\n2. 來自 Basis（{1}）：在團隊的提交進入後再檢查。如果有新內容，合併前你會先審閱。"
+    },
+    {
+      "key": "installs.team.updateCountOne",
+      "value": "團隊有 1 個新提交"
+    },
+    {
+      "key": "installs.team.updateCount",
+      "value": "團隊有 {0} 個新提交"
+    },
+    {
+      "key": "installs.team.tooltip",
+      "value": "你的隊友向此專案自己的遠端儲存庫推送了提交。「取得更新」會在檢查 Basis 之前先拉取它們。"
     },
     {
       "key": "installs.tooltip.finishUpdate",
@@ -540,7 +552,7 @@
     },
     {
       "key": "installs.updateAll.confirmWaiting",
-      "value": "留待各自的「更新 Basis」按鈕處理："
+      "value": "留待各自的「取得更新」按鈕處理："
     },
     {
       "key": "installs.updateAll.waitingItem",
@@ -573,6 +585,10 @@
     {
       "key": "installs.updateAll.reason.busy",
       "value": "正忙於其他工作"
+    },
+    {
+      "key": "installs.updateAll.reason.teamAhead",
+      "value": "你的團隊有需要先取得的新提交"
     },
     {
       "key": "installs.updateAll.reason.paused",
@@ -3712,7 +3728,7 @@
     },
     {
       "key": "installs.tooltip.updateAll",
-      "value": "將每個專案更新至其所追蹤之 Basis 分支的最新狀態。你會先確認清單，你自己的變更也會保留。需要做決定的專案（例如有衝突或 Unity 正在開啟中）會留待各自的「更新 Basis」按鈕處理。"
+      "value": "將每個專案更新至其所追蹤之 Basis 分支的最新狀態。你會先確認清單，你自己的變更也會保留。需要做決定的專案（例如有衝突或 Unity 正在開啟中）會留待各自的「取得更新」按鈕處理。"
     },
     {
       "key": "installs.tooltip.newProject",
@@ -4912,7 +4928,7 @@
     },
     {
       "key": "basisChanges.block.notGitRepo",
-      "value": "此專案未受 git 追蹤，因此無法將其變更與 Basis 比較。請先使用「更新 Basis」為它設定 git。"
+      "value": "此專案未受 git 追蹤，因此無法將其變更與 Basis 比較。請先使用「取得更新」為它設定 git。"
     },
     {
       "key": "basisChanges.block.noCommits",
@@ -6484,7 +6500,7 @@
     },
     {
       "key": "installs.tooltip.branchNoGit",
-      "value": "此專案未受 git 追蹤，因此還沒有分支。「更新 Basis」會提議為它設定 git，這是進行更新所必需的。"
+      "value": "此專案未受 git 追蹤，因此還沒有分支。「取得更新」會提議為它設定 git，這是進行更新所必需的。"
     },
     {
       "key": "installs.tooltip.localChanges",
@@ -6496,7 +6512,7 @@
     },
     {
       "key": "installs.tooltip.basisUpdateAvailable",
-      "value": "github.com/BasisVR/Basis 上的 Basis {0} 有此專案尚未擁有的新提交。點擊「更新 Basis」，即可在任何變更發生前先檢視它們。"
+      "value": "github.com/BasisVR/Basis 上的 Basis {0} 有此專案尚未擁有的新提交。點擊「取得更新」，即可在任何變更發生前先檢視它們。"
     },
     {
       "key": "dialog.findProjects.tooltip.project",

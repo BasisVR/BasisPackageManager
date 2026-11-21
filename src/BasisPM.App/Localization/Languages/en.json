@@ -371,14 +371,6 @@
       "value": "Switch this project to another of its own git branches, or move it onto a different Basis branch. Your uncommitted edits come along, and you can back up first. Close Unity before switching."
     },
     {
-      "key": "installs.tooltip.sync",
-      "value": "Pull your team's new commits from this project's own remote (fast-forward only), then clone or move the packages bpm-manifest.json lists so they match. Your edits are never overwritten."
-    },
-    {
-      "key": "installs.button.sync",
-      "value": "Pull and sync ({0})"
-    },
-    {
       "key": "installs.status.syncing",
       "value": "Syncing {0}…"
     },
@@ -452,7 +444,7 @@
     },
     {
       "key": "installs.button.updateBasis",
-      "value": "Update Basis"
+      "value": "Get updates"
     },
     {
       "key": "installs.button.finishUpdate",
@@ -464,7 +456,27 @@
     },
     {
       "key": "installs.tooltip.updateBasis",
-      "value": "Check github.com/BasisVR/Basis for new commits on the Basis branch this project follows, then review what would change before anything happens. Your changes are kept and your own git remotes are not touched. Close Unity before updating."
+      "value": "Get your team's new commits from this project's own remote first, then check github.com/BasisVR/Basis for new commits on the Basis branch this project follows. You review the Basis changes before anything is merged, and your edits are kept. Close Unity before updating."
+    },
+    {
+      "key": "dialog.getUpdates.title",
+      "value": "Get updates for {0}"
+    },
+    {
+      "key": "dialog.getUpdates.body",
+      "value": "1. From your team: {0} new on this project's own remote. These come in first with nothing to decide, and your edits are kept.\n\n2. From Basis ({1}): checked once your team's commits are in. If anything is new, you review it before it is merged."
+    },
+    {
+      "key": "installs.team.updateCountOne",
+      "value": "1 new from your team"
+    },
+    {
+      "key": "installs.team.updateCount",
+      "value": "{0} new from your team"
+    },
+    {
+      "key": "installs.team.tooltip",
+      "value": "Your teammates pushed commits to this project's own remote. Get updates brings them in before it checks Basis."
     },
     {
       "key": "installs.tooltip.finishUpdate",
@@ -540,7 +552,7 @@
     },
     {
       "key": "installs.updateAll.confirmWaiting",
-      "value": "Left for their own Update Basis button:"
+      "value": "Left for their own Get updates button:"
     },
     {
       "key": "installs.updateAll.waitingItem",
@@ -573,6 +585,10 @@
     {
       "key": "installs.updateAll.reason.busy",
       "value": "busy with another task"
+    },
+    {
+      "key": "installs.updateAll.reason.teamAhead",
+      "value": "your team has new commits to get first"
     },
     {
       "key": "installs.updateAll.reason.paused",
@@ -3712,7 +3728,7 @@
     },
     {
       "key": "installs.tooltip.updateAll",
-      "value": "Bring every project up to date with the Basis branch it follows. You confirm the list first, and your own changes are kept. Projects that need a decision, such as conflicts or Unity being open, wait for their own Update Basis button."
+      "value": "Bring every project up to date with the Basis branch it follows. You confirm the list first, and your own changes are kept. Projects that need a decision, such as conflicts or Unity being open, wait for their own Get updates button."
     },
     {
       "key": "installs.tooltip.newProject",
@@ -4912,7 +4928,7 @@
     },
     {
       "key": "basisChanges.block.notGitRepo",
-      "value": "This project isn't tracked by git, so its changes can't be compared with Basis. Use Update Basis to set up git for it first."
+      "value": "This project isn't tracked by git, so its changes can't be compared with Basis. Use Get updates to set up git for it first."
     },
     {
       "key": "basisChanges.block.noCommits",
@@ -6484,7 +6500,7 @@
     },
     {
       "key": "installs.tooltip.branchNoGit",
-      "value": "This project isn't tracked by git, so it has no branch yet. Update Basis offers to set up git for it, which updates need."
+      "value": "This project isn't tracked by git, so it has no branch yet. Get updates offers to set up git for it, which updates need."
     },
     {
       "key": "installs.tooltip.localChanges",
@@ -6496,7 +6512,7 @@
     },
     {
       "key": "installs.tooltip.basisUpdateAvailable",
-      "value": "Basis {0} on github.com/BasisVR/Basis has new commits this project doesn't have yet. Click Update Basis to review them before anything changes."
+      "value": "Basis {0} on github.com/BasisVR/Basis has new commits this project doesn't have yet. Click Get updates to review them before anything changes."
     },
     {
       "key": "dialog.findProjects.tooltip.project",

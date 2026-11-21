@@ -198,16 +198,25 @@ internal sealed partial class ConsoleApplication
         var latest = _catalogs.AllLatest(catalog).ToList();
         var shipped = await LoadShippedPackagesAsync(install);
         var failed = 0;
+        var entries = new List<CatalogPackageVersion>();
         foreach (var id in options)
         {
-            var entry = latest.FirstOrDefault(p => p.Name.Equals(id, StringComparison.OrdinalIgnoreCase));
-            if (entry is null)
+            var found = latest.FirstOrDefault(p => p.Name.Equals(id, StringComparison.OrdinalIgnoreCase));
+            if (found is null)
             {
                 if (options.Count == 1) throw new InvalidOperationException(NotFound(id, catalog, install));
                 Out.Error(NotFound(id, catalog, install));
                 failed++;
                 continue;
             }
+            entries.Add(found);
+        }
+        var distinct = entries.DistinctBy(e => e.Name, StringComparer.OrdinalIgnoreCase).ToList();
+        var requested = distinct.ToDictionary(e => e.Name, StringComparer.OrdinalIgnoreCase);
+        var ordered = InstallOrder.DependenciesFirst(distinct, e => e.Name,
+            name => InstallOrder.DependencyIds(requested.GetValueOrDefault(name) ?? latest.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase))));
+        foreach (var entry in ordered)
+        {
             try
             {
                 if (await InstallCatalogPackageAsync(install, catalog, entry, version, assumeYes, shipped) && !noDeps)
