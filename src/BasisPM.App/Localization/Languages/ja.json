@@ -7293,6 +7293,522 @@
     {
       "key": "settings.tooltip.advanced",
       "value": "開発者向けの設定（パッケージカタログ URL と追加カタログ、Unity Hub の指定、プレリリース更新、インストール後のパッケージチェック、ダウンロードキャッシュ、検出されたツール）の表示・非表示を切り替えます。選択は記憶されます。"
+    },
+    {
+      "key": "packages.button.projectFiles",
+      "value": "プロジェクトファイル"
+    },
+    {
+      "key": "packages.tooltip.projectFiles",
+      "value": "このプロジェクトの bpm-manifest.json を開きます。.basisdev 内の Basis チェックアウトとそのピン、ロックされているパッケージと各パッケージのマウント方法、ローカルの上書き、新しいチェックアウト後の一括復元を扱えます。"
+    },
+    {
+      "key": "bpm.title",
+      "value": "プロジェクトファイル"
+    },
+    {
+      "key": "bpm.heading",
+      "value": "{0}: チェックアウトとパッケージ"
+    },
+    {
+      "key": "bpm.intro",
+      "value": "bpm-manifest.json には、このプロジェクトが使うパッケージとその取得元が記録されます。bpm-lock.json は各パッケージをコミットに固定します。両方と Packages/manifest.json をコミットしてください。.basisdev は決してコミットしないでください。"
+    },
+    {
+      "key": "bpm.basisdev",
+      "value": ".basisdev: {0}"
+    },
+    {
+      "key": "bpm.tooltip.openBasisDev",
+      "value": "このコンピューター上で Basis のチェックアウトとパッケージのクローンが置かれている .basisdev フォルダーを開きます。"
+    },
+    {
+      "key": "bpm.tooltip.refresh",
+      "value": "bpm-manifest.json、bpm-lock.json、チェックアウトを読み込み直します。"
+    },
+    {
+      "key": "bpm.button.restore",
+      "value": "復元"
+    },
+    {
+      "key": "bpm.tooltip.restore",
+      "value": ".basisdev に足りないものを bpm-lock.json から作り直し、パッケージをマウントします。新しいチェックアウトの後や、新しいロックを取り込んだ後に実行してください。何度実行しても安全です。"
+    },
+    {
+      "key": "bpm.button.lock",
+      "value": "ロック"
+    },
+    {
+      "key": "bpm.tooltip.lock",
+      "value": "bpm-manifest.json から bpm-lock.json を書き出します。すべてのパッケージとそれが必要とするパッケージを、それぞれコミットに固定します。"
+    },
+    {
+      "key": "bpm.button.mount",
+      "value": "マウント"
+    },
+    {
+      "key": "bpm.tooltip.mount",
+      "value": "ロックに基づいて Packages/manifest.json の file: 行を書き直します。BPM が書いていない行はそのまま残ります。"
+    },
+    {
+      "key": "bpm.button.close",
+      "value": "閉じる"
+    },
+    {
+      "key": "bpm.tooltip.close",
+      "value": "このウィンドウを閉じます。"
+    },
+    {
+      "key": "bpm.plan.heading",
+      "value": "{0} を {1} に移すと Assets と ProjectSettings が変わります"
+    },
+    {
+      "key": "bpm.plan.intro",
+      "value": "このプロジェクトの Assets と ProjectSettings は Basis に追従します。手を加えていないファイルは更新、追加、または削除されます。変更したファイルは比較できるようそのまま残します。"
+    },
+    {
+      "key": "bpm.button.cancelPlan",
+      "value": "元のピンのままにする"
+    },
+    {
+      "key": "bpm.tooltip.cancelPlan",
+      "value": "ピンを元の位置に戻します。Assets と ProjectSettings は何も変わりません。"
+    },
+    {
+      "key": "bpm.button.applyPlan",
+      "value": "適用"
+    },
+    {
+      "key": "bpm.tooltip.applyPlan",
+      "value": "ピンを移し、チェックアウトを復元し、これらの変更を Assets と ProjectSettings に適用して、もう一度マウントします。その後、Assets に重複した GUID がないか確認します。"
+    },
+    {
+      "key": "bpm.setup.heading",
+      "value": ".basisdev から Basis を使う"
+    },
+    {
+      "key": "bpm.setup.intro",
+      "value": "このプロジェクトにはまだ bpm-manifest.json がありません。設定すると Basis がコミットに固定され、必要な部分だけが .basisdev にダウンロードされ、file: 行でマウントされます。"
+    },
+    {
+      "key": "bpm.setup.game",
+      "value": "ゲーム"
+    },
+    {
+      "key": "bpm.setup.gameText",
+      "value": "Assets と ProjectSettings はあなたのものです。使いたい Basis パッケージを選ぶと、その依存関係も一緒に入ります。"
+    },
+    {
+      "key": "bpm.tooltip.setupGame",
+      "value": "自分のゲームやアプリ向けです。BPM は Assets や ProjectSettings に書き込まず、Basis が必要とするレイヤーとタグを知らせるだけです。"
+    },
+    {
+      "key": "bpm.setup.content",
+      "value": "アバター、ワールド、プロップ"
+    },
+    {
+      "key": "bpm.setup.contentText",
+      "value": "すべての Basis パッケージがマウントされ、Assets と ProjectSettings は Basis からコピーされて以後も追従します。"
+    },
+    {
+      "key": "bpm.tooltip.setupContent",
+      "value": "Basis SDK で作るコンテンツ向けです。ピンが動くと、BPM は Assets と ProjectSettings で何が変わるかを示し、先に確認を求めます。"
+    },
+    {
+      "key": "bpm.setup.packages",
+      "value": "使用する Basis パッケージ（カンマ区切り）"
+    },
+    {
+      "key": "bpm.tooltip.setupPackages",
+      "value": "com.basis.sdk のようなパッケージ ID です。依存しているパッケージは自動でロックに追加されます。"
+    },
+    {
+      "key": "bpm.setup.at",
+      "value": "固定する Basis のブランチ、タグ、またはコミット"
+    },
+    {
+      "key": "bpm.tooltip.setupAt",
+      "value": "マニフェストには常にコミットハッシュが記録されるため、ピンは自分で動かしたときだけ動きます。"
+    },
+    {
+      "key": "bpm.button.setup",
+      "value": "セットアップ"
+    },
+    {
+      "key": "bpm.tooltip.setup",
+      "value": "bpm-manifest.json と bpm-lock.json を書き出し、Basis を .basisdev にダウンロードしてパッケージをマウントします。プロジェクトが git、Plastic、Perforce を使っている場合、.basisdev は無視リストに追加されます。"
+    },
+    {
+      "key": "bpm.section.checkouts",
+      "value": ".basisdev 内のチェックアウト"
+    },
+    {
+      "key": "bpm.checkouts.none",
+      "value": "チェックアウトはありません。パッケージはそれぞれの git リポジトリかローカルフォルダーから取得されます。"
+    },
+    {
+      "key": "bpm.tooltip.held",
+      "value": "固定されたチェックアウトは BPM が管理し、ロックされたコミットに置かれます。ワーキングツリーはあなたのもので、ブランチ上でその場で編集やコミットを行います。インラインフォルダーは読み取りのみです。"
+    },
+    {
+      "key": "bpm.tooltip.openCheckout",
+      "value": "このチェックアウトのフォルダーを開きます。"
+    },
+    {
+      "key": "bpm.pin.watermark",
+      "value": "ブランチ、タグ、またはコミット"
+    },
+    {
+      "key": "bpm.tooltip.pinTarget",
+      "value": "ピンの移動先です。ブランチやタグは一度だけ解決され、コミットハッシュが記録されます。"
+    },
+    {
+      "key": "bpm.button.pin",
+      "value": "ピンを移動"
+    },
+    {
+      "key": "bpm.tooltip.pin",
+      "value": "フェッチし、新しいコミットに固定し、ロック、復元、マウントを行った後、変更されたパッケージを一覧表示するので、再テストが必要なものがわかります。"
+    },
+    {
+      "key": "bpm.section.packages",
+      "value": "パッケージ"
+    },
+    {
+      "key": "bpm.packages.none",
+      "value": "bpm-manifest.json にはまだパッケージがありません。"
+    },
+    {
+      "key": "bpm.button.override",
+      "value": "ローカルフォルダーを使う"
+    },
+    {
+      "key": "bpm.tooltip.override",
+      "value": "このコンピューター上のフォルダー（アドオンの自分用クローンなど）からこのパッケージをマウントします。このマシンの .basisdev にのみ記録されるため、他の人のプロジェクトは変わりません。Packages/manifest.json の変更された行はコミットしないでください。"
+    },
+    {
+      "key": "bpm.button.clearOverride",
+      "value": "フォルダーの使用をやめる"
+    },
+    {
+      "key": "bpm.tooltip.clearOverride",
+      "value": "ローカルの上書きを解除し、ロックからパッケージをマウントし直します。"
+    },
+    {
+      "key": "bpm.button.embed",
+      "value": "Packages にコピー"
+    },
+    {
+      "key": "bpm.tooltip.embed",
+      "value": "パッチを当てるためにこのパッケージを Packages/ にコピーします。コピーはバージョン管理に記録され、bpm-manifest.json にはコピー元のコミットが残るので、後でアップストリームと比較して送り返せます。"
+    },
+    {
+      "key": "bpm.tooltip.toggle",
+      "value": "パッケージをオフにすると、チェックアウトは残したままマウントだけを止めます。トラブルシューティングや、同じパッケージの 2 つの取得元を切り替えるときに使います。オンにすると再びマウントされます。"
+    },
+    {
+      "key": "bpm.package.turnOff",
+      "value": "オフにする"
+    },
+    {
+      "key": "bpm.package.turnOn",
+      "value": "オンにする"
+    },
+    {
+      "key": "bpm.package.dependency",
+      "value": "別のパッケージが必要としています（深さ {0}）"
+    },
+    {
+      "key": "bpm.package.notLocked",
+      "value": "未ロック"
+    },
+    {
+      "key": "bpm.package.off",
+      "value": "オフ"
+    },
+    {
+      "key": "bpm.package.lockedVersion",
+      "value": "ロック済み {0}"
+    },
+    {
+      "key": "bpm.package.override",
+      "value": "ローカルフォルダー: {0}"
+    },
+    {
+      "key": "bpm.package.embedded",
+      "value": "Packages/ に埋め込み済み"
+    },
+    {
+      "key": "bpm.package.copiedFrom",
+      "value": "{0} からコピー"
+    },
+    {
+      "key": "bpm.held.pinned",
+      "value": "固定"
+    },
+    {
+      "key": "bpm.held.workingTree",
+      "value": "ワーキングツリー"
+    },
+    {
+      "key": "bpm.held.inline",
+      "value": "フォルダー"
+    },
+    {
+      "key": "bpm.checkout.missing",
+      "value": "まだダウンロードされていません。復元すると戻ります。"
+    },
+    {
+      "key": "bpm.checkout.onBranch",
+      "value": "{0} @ {1}"
+    },
+    {
+      "key": "bpm.checkout.locked",
+      "value": "ロック: {0}"
+    },
+    {
+      "key": "bpm.checkout.changes",
+      "value": "変更されたファイル {0} 件"
+    },
+    {
+      "key": "bpm.status.locking",
+      "value": "ロック中…"
+    },
+    {
+      "key": "bpm.status.restoring",
+      "value": "復元中…"
+    },
+    {
+      "key": "bpm.status.mounting",
+      "value": "マウント中…"
+    },
+    {
+      "key": "bpm.status.settingUp",
+      "value": "プロジェクトをセットアップ中…"
+    },
+    {
+      "key": "bpm.status.pinning",
+      "value": "ピンを移動中…"
+    },
+    {
+      "key": "bpm.status.embedding",
+      "value": "{0} を Packages にコピー中…"
+    },
+    {
+      "key": "bpm.status.failed",
+      "value": "一部の手順が完了しませんでした。下のメッセージを確認してください。"
+    },
+    {
+      "key": "bpm.override.set",
+      "value": "{0} はこのコンピューターの {1} から読み込まれます。"
+    },
+    {
+      "key": "bpm.override.cleared",
+      "value": "{0} は再びロックからマウントされます。"
+    },
+    {
+      "key": "bpm.override.noPackage",
+      "value": "{0} には package.json がないため、マウントできません。"
+    },
+    {
+      "key": "bpm.pin.badRef",
+      "value": "'{0}' は有効なブランチ、タグ、コミットではありません。"
+    },
+    {
+      "key": "bpm.plan.cancelled",
+      "value": "変更はありません。{0} は {1} のままです。"
+    },
+    {
+      "key": "bpm.picker.override",
+      "value": "{0} の読み込み元フォルダー"
+    },
+    {
+      "key": "shell.status.fix",
+      "value": "修正"
+    },
+    {
+      "key": "shell.status.fixTooltip",
+      "value": "競合しているファイルを開き、それぞれ残すバージョンを選びます。すべて解決すると、一時停止中の手順が完了し、同期がもう一度実行されます。"
+    },
+    {
+      "key": "installs.status.fixingConflicts",
+      "value": "{0} の競合を開いています…"
+    },
+    {
+      "key": "installs.status.conflictsOutsideUpdate",
+      "value": "{0} には Basis の更新以外が原因のマージ競合があります。git ツールで解決してから、もう一度同期してください。"
+    },
+    {
+      "key": "installs.updateAll.fixTooltip",
+      "value": "対応が必要なプロジェクトを 1 つずつ確認します。それぞれの Basis 更新が開き、変更の確認、競合するファイルの扱いの選択、一時停止中の更新の完了ができます。"
+    },
+    {
+      "key": "installs.updateAll.fixOneTooltip",
+      "value": "このプロジェクトの Basis 更新を開きます。変更の確認、競合するファイルの扱いの選択、一時停止中の更新の完了ができます。"
+    },
+    {
+      "key": "dialog.needsYou.title",
+      "value": "対応が必要なプロジェクト"
+    },
+    {
+      "key": "dialog.needsYou.heading",
+      "value": "{0} 件のプロジェクトは、Basis が更新する前にあなたの判断が必要です"
+    },
+    {
+      "key": "dialog.needsYou.headingOne",
+      "value": "{0} は、Basis が更新する前にあなたの判断が必要です"
+    },
+    {
+      "key": "dialog.needsYou.intro",
+      "value": "これらのプロジェクトは何も変更されていません。1 つ選ぶと、その Basis の更新が開きます。終わったら、残りのプロジェクトとともにここに戻ります。"
+    },
+    {
+      "key": "dialog.needsYou.close",
+      "value": "後で"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.close",
+      "value": "この一覧を閉じます。ステータスバーの「修正」ボタンや「アクティビティ」一覧から再び開けます。"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.fix",
+      "value": "このプロジェクトの Basis の更新を開きます。何かが書き込まれる前に変更内容を確認でき、キャンセルもできます。"
+    },
+    {
+      "key": "dialog.needsYou.action.finish",
+      "value": "更新を完了"
+    },
+    {
+      "key": "dialog.needsYou.action.review",
+      "value": "更新を確認"
+    },
+    {
+      "key": "dialog.needsYou.action.open",
+      "value": "更新を開く"
+    },
+    {
+      "key": "dialog.needsYou.hint.paused",
+      "value": "以前の更新が途中で止まり、一部のファイルにまだ競合があります。各ファイルで残す版を選ぶと、更新が完了します。"
+    },
+    {
+      "key": "dialog.needsYou.hint.conflicts",
+      "value": "あなたの編集の一部が、Basis が変更したのと同じ行に触れています。更新を適用する前に、それらのファイルを確認して残す内容を選んでください。"
+    },
+    {
+      "key": "dialog.needsYou.hint.other",
+      "value": "更新を開いて、何が必要か確認してください。"
+    },
+    {
+      "key": "dialog.needsYou.allDone",
+      "value": "対応が必要だったプロジェクトはすべて片付きました。"
+    },
+    {
+      "key": "dialog.needsYou.titleResults",
+      "value": "Basis の更新結果"
+    },
+    {
+      "key": "dialog.needsYou.results",
+      "value": "{0} 件を更新、{1} 件は対応が必要"
+    },
+    {
+      "key": "dialog.needsYou.resultsAllDone",
+      "value": "{0} 件を更新、残りの作業はありません"
+    },
+    {
+      "key": "dialog.needsYou.introDone",
+      "value": "すべてのプロジェクトが最新の Basis になりました。開く前に、それぞれに必要な Unity エディターを確認してください。"
+    },
+    {
+      "key": "dialog.needsYou.section.updated",
+      "value": "更新済み（{0}）"
+    },
+    {
+      "key": "dialog.needsYou.section.needsYou",
+      "value": "対応が必要（{0}）"
+    },
+    {
+      "key": "dialog.needsYou.updated.done",
+      "value": "最新の Basis になりました。"
+    },
+    {
+      "key": "dialog.needsYou.updated.unity",
+      "value": "最新の Basis になりました。Unity {0} を使用します。"
+    },
+    {
+      "key": "dialog.needsYou.updated.unityMissing",
+      "value": "Unity {0} がまだインストールされていないため、インストールするまでプロジェクトは開けません。"
+    },
+    {
+      "key": "dialog.needsYou.action.getUnity",
+      "value": "Unity {0} を入手"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.getUnity",
+      "value": "このバージョンを選択した状態で Unity エディタータブに移動し、モジュールを選んでインストールできます。"
+    },
+    {
+      "key": "dialog.syncBlocked.title",
+      "value": "編集済みのファイルが同期をブロックしています"
+    },
+    {
+      "key": "dialog.syncBlocked.heading",
+      "value": "{0}: 編集したファイルのうち {1} 件がリモートでも変更されています"
+    },
+    {
+      "key": "dialog.syncBlocked.headingOne",
+      "value": "{0}: 編集したファイルの 1 件がリモートでも変更されています"
+    },
+    {
+      "key": "dialog.syncBlocked.intro",
+      "value": "これらの未コミットの編集内容を上書きしてしまうため、Git は {0} からプルしません。対処方法を選んでください。あなたのバージョンは先にプロジェクトの .git フォルダー内にバックアップされるので、どちらを選んでも失われません。"
+    },
+    {
+      "key": "dialog.syncBlocked.files",
+      "value": "ここで編集され、リモートでも変更されたファイル"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.title",
+      "value": "自分のバージョンを残す"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.text",
+      "value": "プルしてから、各ファイルのあなたのバージョンを上に戻します。Git では新しいコミットに対する編集として表示されるので、比較して必要なものをコミットできます。"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.button",
+      "value": "プルして自分のものを残す"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.title",
+      "value": "リモートのバージョンを使う"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.text",
+      "value": "プルして、各ファイルの受信したバージョンを使います。編集内容が Unity によって自動的に書き換えられたものである場合に最適です。あなたのコピーはバックアップフォルダーに残ります。"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.button",
+      "value": "プルして相手のものを使う"
+    },
+    {
+      "key": "dialog.syncBlocked.cancel",
+      "value": "今はしない"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.keep",
+      "value": "これらのファイルをバックアップしてプルし、新しいファイルの上にあなたのバージョンをコピーします。"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.theirs",
+      "value": "これらのファイルをバックアップしてからプルし、それぞれリモートのバージョンを残します。"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.cancel",
+      "value": "何も変更せずに閉じます。「修正」ボタンで再び表示できます。"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.fix",
+      "value": "プルをブロックしている編集済みファイルを表示し、自分のものを残すかリモートのものを使うかを選びます。あなたのバージョンは先にバックアップされます。"
     }
   ]
 }

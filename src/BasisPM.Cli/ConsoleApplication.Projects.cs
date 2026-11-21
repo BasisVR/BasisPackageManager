@@ -263,6 +263,8 @@ internal sealed partial class ConsoleApplication
         var options = values.ToList();
         var name = TakeValue(options, "--name");
         var leaveOut = ParseParts(TakeValues(options, "--without"));
+        var url = TakeValue(options, "--basis") ?? BasisInstallService.BasisRepoUrl;
+        if (!_git.CanFetch(url)) throw new UsageException($"'{url}' isn't a git repository BPM will clone.");
         Expect(options, 1, 2, "an empty folder to clone into");
         if (!_git.IsAvailable) throw new InvalidOperationException("Git was not found on PATH. Install it from https://git-scm.com/ and try again.");
         var destination = FullPath(options[0]);
@@ -275,7 +277,7 @@ internal sealed partial class ConsoleApplication
 
         await RunOperationAsync(async ct =>
         {
-            var result = await _git.CloneAsync(BasisInstallService.BasisRepoUrl, destination, branch, Out.Progress, ct, BasisPartsService.ClonePatterns(leaveOut));
+            var result = await _git.CloneAsync(url, destination, branch, Out.Progress, ct, BasisPartsService.ClonePatterns(leaveOut));
             if (!result.Ok) throw new InvalidOperationException($"Clone failed: {Tail(result.Output)}");
         }, $"Cloning Basis {branch}" + (leaveOut.Count == 0 ? "" : $" without {string.Join(" and ", leaveOut.Select(p => p.Name))}") + Out.Ellipsis);
 

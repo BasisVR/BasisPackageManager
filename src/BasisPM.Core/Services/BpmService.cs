@@ -83,6 +83,7 @@ public sealed class BpmService
             if (entry is not null) locked.Checkouts[name] = entry;
             if (index is not null) indexes[name] = index;
         }
+        issues.AddRange(SharedBranchIssues(manifest));
 
         var defaultCheckout = DefaultCheckout(manifest);
         var queue = new Queue<(string Id, string Version, int Depth, string? NeededBy)>();
@@ -230,9 +231,13 @@ public sealed class BpmService
 
         foreach (var name in (locked.Checkouts?.Keys ?? Enumerable.Empty<string>()).Where(n => manifest.Checkouts?.ContainsKey(n) != true))
             issues.Add(new(BpmIssueLevel.Warning, name, $"{BpmStore.LockFileName} lists checkout {name}, but {BpmStore.ManifestFileName} doesn't. Lock again."));
+        var sharedBranch = SharedBranchIssues(manifest);
+        issues.AddRange(sharedBranch);
+        var blocked = sharedBranch.Select(i => i.Subject).ToHashSet(StringComparer.Ordinal);
         foreach (var (name, checkout) in manifest.Checkouts ?? new Dictionary<string, BpmCheckout>())
         {
             ct.ThrowIfCancellationRequested();
+            if (blocked.Contains(name)) continue;
             var entry = locked.Checkouts?.GetValueOrDefault(name)
                 ?? (checkout.Kind == BpmHeld.Pinned ? null : new BpmLockCheckout { Url = Blank(checkout.Url), Branch = Blank(checkout.Branch), Held = checkout.Kind == BpmHeld.WorkingTree ? "working-tree" : "inline", Path = Blank(checkout.Path) });
             if (entry is null)
@@ -265,6 +270,19 @@ public sealed class BpmService
             if (!File.Exists(Path.Combine(projectPath, file.Value, "package.json"))) issues.Add(new(BpmIssueLevel.Error, id, $"{id} should be in {file.Value}, which has no package.json."));
         }
         return new BpmResult(!issues.Any(i => i.Level == BpmIssueLevel.Error), issues, done);
+    }
+
+    public static IReadOnlyList<BpmIssue> SharedBranchIssues(BpmManifest manifest)
+    {
+        var issues = new List<BpmIssue>();
+        var trees = (manifest.Checkouts ?? new Dictionary<string, BpmCheckout>()).Where(c => c.Value.Kind == BpmHeld.WorkingTree && !string.IsNullOrWhiteSpace(c.Value.Repository) && !string.IsNullOrWhiteSpace(c.Value.Branch));
+        foreach (var group in trees.GroupBy(c => (Repository: c.Value.Repository!.Trim().ToLowerInvariant(), Branch: c.Value.Branch!.Trim())).Where(g => g.Count() > 1))
+        {
+            var names = group.Select(c => c.Key).Order(StringComparer.Ordinal).ToList();
+            foreach (var name in names.Skip(1))
+                issues.Add(new(BpmIssueLevel.Error, name, $"{name} and {names[0]} both want branch {group.Key.Branch} of {group.Key.Repository}.git. Git won't check out one branch in two worktrees, so give each its own branch."));
+        }
+        return issues;
     }
 
     public static IReadOnlyList<string> SparseFolders(BpmManifest manifest, BpmLock locked, string name, BpmCheckout checkout)
@@ -510,8 +528,53 @@ public sealed class BpmService
         {
             var key = manifest.Packages.Keys.FirstOrDefault(k => string.Equals(k, id, StringComparison.OrdinalIgnoreCase))
                 ?? throw new ArgumentException($"{id} isn't listed in {BpmStore.ManifestFileName}.");
-            manifest.Packages[key].Enabled = enabled ? null : "no";
+            manifest.Packages[key].Enabled = enabled ? "yes" : "no";
         });
+    }
+
+    public static BpmResult Embed(string projectPath, string id)
+    {
+        var fail = (string message) => new BpmResult(false, new[] { new BpmIssue(BpmIssueLevel.Error, id, message) }, Array.Empty<string>());
+        BpmManifest manifest;
+        BpmLock locked;
+        try { (manifest, locked) = (BpmStore.ReadManifest(projectPath), BpmStore.ReadLock(projectPath)); }
+        catch (InvalidDataException ex) { return fail(ex.Message); }
+        var key = locked.Packages.Keys.FirstOrDefault(k => string.Equals(k, id, StringComparison.OrdinalIgnoreCase));
+        if (key is null) return fail($"{id} isn't in {BpmStore.LockFileName}. Lock first.");
+        var package = locked.Packages[key];
+        var version = BpmVersion.Parse(package.Version);
+        string source, url, commit, subPath;
+        switch (version.Kind)
+        {
+            case BpmVersionKind.Checkout:
+                if (manifest.Checkouts?.GetValueOrDefault(version.Value) is not { } checkout || string.IsNullOrWhiteSpace(package.Folder)) return fail($"{key} comes from checkout {version.Value}, which {BpmStore.ManifestFileName} doesn't define.");
+                if (locked.Checkouts?.GetValueOrDefault(version.Value)?.Commit is not { } at || string.IsNullOrWhiteSpace(checkout.Url)) return fail($"Checkout {version.Value} has no url and locked commit, so the copy couldn't say where it came from.");
+                source = Path.Combine(CheckoutFolder(projectPath, version.Value, checkout), package.Folder.Replace('/', Path.DirectorySeparatorChar));
+                (url, commit, subPath) = (checkout.Url.Trim(), at, package.Folder.Trim('/'));
+                break;
+            case BpmVersionKind.Git when BpmVersion.IsCommitHash(version.Ref):
+                if (BasisDevStore.PackageRoot(BasisDevStore.CloneFolder(projectPath, key), version.SubPath) is not { } clonedRoot) return fail($"{package.Version} has a path BPM won't follow.");
+                source = clonedRoot;
+                (url, commit, subPath) = (version.Url!, version.Ref!, version.SubPath ?? "");
+                break;
+            default:
+                return fail($"{key} is {package.Version}, which is already a folder of yours.");
+        }
+        if (source.EndsWith(".tgz", StringComparison.OrdinalIgnoreCase)) return fail($"{key} is a .tgz in its checkout, so there's no folder to copy. Unpack it into Packages/ by hand.");
+        if (!File.Exists(Path.Combine(source, "package.json"))) return fail($"{source} has no package.json. Run restore first.");
+        var folderName = Path.GetFileName(source.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        var target = Path.Combine(projectPath, "Packages", folderName);
+        if (Directory.Exists(target)) return fail($"Packages/{folderName} already exists. Move it away first.");
+        CopyFolder(source, target, skipGit: true);
+        BpmStore.Update(projectPath, (m, _) =>
+        {
+            var listed = m.Packages.Keys.FirstOrDefault(k => string.Equals(k, key, StringComparison.OrdinalIgnoreCase));
+            var entry = listed is null ? new BpmManifestPackage() : m.Packages[listed];
+            entry.Version = "file:Packages/" + folderName;
+            entry.CopiedFrom = BpmVersion.Git(url, subPath, commit);
+            m.Packages[listed ?? key] = entry;
+        });
+        return new BpmResult(true, Array.Empty<BpmIssue>(), new[] { $"Copied {key} into Packages/{folderName} from {Short(commit)}. Its mount line goes away, and {BpmStore.ManifestFileName} records where it came from so it can be diffed and sent back." });
     }
 
     public async Task<BpmReport> StatusAsync(string projectPath, CancellationToken ct = default)
@@ -532,6 +595,12 @@ public sealed class BpmService
         }
         foreach (var id in manifest.Packages.Where(p => !p.Value.IsEnabled).Select(p => p.Key).Where(locked.Packages.ContainsKey))
             issues.Add(new(BpmIssueLevel.Warning, id, $"{id} is turned off but still locked. Lock again."));
+        foreach (var (id, package) in manifest.Packages.Where(p => !string.IsNullOrWhiteSpace(p.Value.CopiedFrom)))
+            issues.Add(new(BpmIssueLevel.Info, id, $"{id} is your copy in {BpmVersion.Parse(package.Version).Value}, taken from {package.CopiedFrom}. Diff it against that commit to send changes back."));
+        issues.AddRange(SharedBranchIssues(manifest));
+        if (Directory.Exists(root))
+            foreach (var file in BpmIgnore.Files(root).Where(f => !f.Covered))
+                issues.Add(new(BpmIssueLevel.Warning, BasisDevStore.FolderName, $"{file.Vcs} doesn't ignore {BasisDevStore.FolderName}. Add \"{file.Line}\" to {file.Path}, or anything in it gets committed."));
 
         string? pinCommit = null;
         var defaultName = DefaultCheckout(manifest);
@@ -632,7 +701,7 @@ public sealed class BpmService
             var local = Path.Combine(projectPath, relative.Replace('/', Path.DirectorySeparatorChar));
             var basePath = Path.Combine(folder, change.Path.Replace('/', Path.DirectorySeparatorChar));
             var localExists = File.Exists(local);
-            var same = localExists && File.Exists(basePath) && SameBytes(local, basePath);
+            var same = localExists && File.Exists(basePath) && SameTemplateBytes(local, basePath, relative);
             plan.Add(change.Status switch
             {
                 'A' => !localExists ? new(relative, BpmTemplateChangeKind.Add, "new in Basis") : new(relative, BpmTemplateChangeKind.Conflict, "new in Basis, and the project already has a different file there"),
@@ -658,7 +727,7 @@ public sealed class BpmService
                 {
                     case BpmTemplateChangeKind.Add or BpmTemplateChangeKind.Update:
                         Directory.CreateDirectory(Path.GetDirectoryName(local)!);
-                        File.Copy(source, local, overwrite: true);
+                        File.WriteAllBytes(local, TemplateBytes(change.Path, File.ReadAllBytes(source)));
                         if (change.Kind == BpmTemplateChangeKind.Add) added++; else updated++;
                         break;
                     case BpmTemplateChangeKind.Delete:
@@ -792,7 +861,7 @@ public sealed class BpmService
                 var from = Path.Combine(checkoutProject, part);
                 var to = Path.Combine(projectPath, part);
                 if (Directory.Exists(to) && Directory.EnumerateFileSystemEntries(to).Any()) { issues.Add(new(BpmIssueLevel.Warning, part, $"{part} isn't empty, so the Basis template wasn't copied into it.")); continue; }
-                if (Directory.Exists(from)) { CopyFolder(from, to); done.Add($"Copied the Basis {part}."); }
+                if (Directory.Exists(from)) { CopyFolder(from, to, part); done.Add($"Copied the Basis {part}."); }
             }
             if (!followsTemplate)
             {
@@ -814,6 +883,13 @@ public sealed class BpmService
         var mounted = await MountAsync(projectPath, ct).ConfigureAwait(false);
         done.AddRange(mounted.Done);
         issues.AddRange(mounted.Issues);
+        try
+        {
+            var ignoreFiles = BpmIgnore.Files(root);
+            foreach (var written in BpmIgnore.Ensure(root)) done.Add($"Added {BasisDevStore.FolderName} to {written}.");
+            if (ignoreFiles.Count == 0) issues.Add(new(BpmIssueLevel.Info, BasisDevStore.FolderName, $"No version control was found here. If you add one, ignore {BasisDevStore.FolderName} and commit {BpmStore.ManifestFileName}, {BpmStore.LockFileName} and Packages/manifest.json."));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { issues.Add(new(BpmIssueLevel.Warning, BasisDevStore.FolderName, $"Couldn't add {BasisDevStore.FolderName} to the ignore list: {ex.Message}")); }
         return new BpmResult(!issues.Any(i => i.Level == BpmIssueLevel.Error), issues, done);
     }
 
@@ -979,19 +1055,38 @@ public sealed class BpmService
         return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
     }
 
-    private static void CopyFolder(string from, string to)
+    private static void CopyFolder(string from, string to, string? templatePrefix = null, bool skipGit = false)
     {
-        foreach (var dir in Directory.EnumerateDirectories(from, "*", SearchOption.AllDirectories)) Directory.CreateDirectory(Path.Combine(to, Path.GetRelativePath(from, dir)));
+        bool Skip(string path) => skipGit && Path.GetRelativePath(from, path).Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)[0] == ".git";
+        foreach (var dir in Directory.EnumerateDirectories(from, "*", SearchOption.AllDirectories).Where(d => !Skip(d))) Directory.CreateDirectory(Path.Combine(to, Path.GetRelativePath(from, dir)));
         Directory.CreateDirectory(to);
-        foreach (var file in Directory.EnumerateFiles(from, "*", SearchOption.AllDirectories)) File.Copy(file, Path.Combine(to, Path.GetRelativePath(from, file)), overwrite: false);
+        foreach (var file in Directory.EnumerateFiles(from, "*", SearchOption.AllDirectories).Where(f => !Skip(f)))
+        {
+            var destination = Path.Combine(to, Path.GetRelativePath(from, file));
+            if (File.Exists(destination)) continue;
+            if (templatePrefix is null) File.Copy(file, destination);
+            else File.WriteAllBytes(destination, TemplateBytes(templatePrefix + "/" + Path.GetRelativePath(from, file).Replace('\\', '/'), File.ReadAllBytes(file)));
+        }
     }
 
-    private static bool SameBytes(string a, string b)
+    private static readonly (string From, string To)[] ProjectSettingsRenames =
     {
-        var fa = new FileInfo(a);
-        var fb = new FileInfo(b);
-        if (fa.Length != fb.Length) return false;
-        return File.ReadAllBytes(a).AsSpan().SequenceEqual(File.ReadAllBytes(b));
+        ("com.BasisUnity.BasisUnity", "org.BasisUnity.BasisUnity"),
+        ("com.Basis-Unity.Basis-Unity", "org.Basis-Unity.Basis-Unity"),
+    };
+
+    public static byte[] TemplateBytes(string relativePath, byte[] bytes)
+    {
+        if (!string.Equals(relativePath, "ProjectSettings/ProjectSettings.asset", StringComparison.Ordinal)) return bytes;
+        var text = System.Text.Encoding.UTF8.GetString(bytes);
+        var renamed = ProjectSettingsRenames.Aggregate(text, (t, r) => t.Replace(r.From, r.To, StringComparison.Ordinal));
+        return ReferenceEquals(renamed, text) || renamed == text ? bytes : System.Text.Encoding.UTF8.GetBytes(renamed);
+    }
+
+    private static bool SameTemplateBytes(string local, string template, string relativePath)
+    {
+        var expected = TemplateBytes(relativePath, File.ReadAllBytes(template));
+        return new FileInfo(local).Length == expected.Length && File.ReadAllBytes(local).AsSpan().SequenceEqual(expected);
     }
 
     private static string RemoteName(string checkoutName) => new string(checkoutName.Select(c => char.IsLetterOrDigit(c) || c is '-' or '_' or '.' ? c : '-').ToArray()).TrimStart('-', '.') is { Length: > 0 } n ? n : "fork";

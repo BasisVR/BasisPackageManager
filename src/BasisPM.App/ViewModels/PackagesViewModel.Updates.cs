@@ -443,10 +443,16 @@ public sealed partial class PackagesViewModel
         });
     }
 
-    public async Task<ProjectSyncResult> SyncProjectAsync(BasisInstall install, Action<string>? onProgress = null)
+    public Task<ProjectSyncResult> SyncProjectAsync(BasisInstall install, Action<string>? onProgress = null) =>
+        RunSyncAsync(install, sync => sync.SyncAsync(install, onProgress));
+
+    public Task<ProjectSyncResult> SyncProjectSettingAsideAsync(BasisInstall install, IReadOnlyList<string> paths, bool keepMine, Action<string>? onProgress = null) =>
+        RunSyncAsync(install, sync => sync.SyncSettingAsideAsync(install, paths, keepMine, onProgress));
+
+    private async Task<ProjectSyncResult> RunSyncAsync(BasisInstall install, Func<ProjectSyncService, Task<ProjectSyncResult>> run)
     {
         BasisDev.ApproveUpdate = ListedReview(install);
-        try { return await new ProjectSyncService(_gitService, BasisDev, _projectService).SyncAsync(install, onProgress); }
+        try { return await run(new ProjectSyncService(_gitService, BasisDev, _projectService)); }
         finally
         {
             BasisDev.ApproveUpdate = null;

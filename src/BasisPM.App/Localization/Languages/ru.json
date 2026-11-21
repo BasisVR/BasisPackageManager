@@ -7293,6 +7293,522 @@
     {
       "key": "settings.tooltip.advanced",
       "value": "Показать или скрыть настройки для разработчиков: URL каталога пакетов и дополнительные каталоги, переопределение Unity Hub, предварительные обновления, проверку пакетов после установки, кэш загрузок и обнаруженные инструменты. Ваш выбор запоминается."
+    },
+    {
+      "key": "packages.button.projectFiles",
+      "value": "Файлы проекта"
+    },
+    {
+      "key": "packages.tooltip.projectFiles",
+      "value": "Открыть bpm-manifest.json этого проекта: рабочие копии Basis в .basisdev и их закрепления, какие пакеты зафиксированы и как подключён каждый из них, локальные переопределения и восстановление всего после получения новой рабочей копии."
+    },
+    {
+      "key": "bpm.title",
+      "value": "Файлы проекта"
+    },
+    {
+      "key": "bpm.heading",
+      "value": "{0}: рабочие копии и пакеты"
+    },
+    {
+      "key": "bpm.intro",
+      "value": "bpm-manifest.json указывает, какие пакеты использует проект и откуда они берутся. bpm-lock.json закрепляет каждый из них за коммитом. Коммитьте оба файла и Packages/manifest.json. Никогда не коммитьте .basisdev."
+    },
+    {
+      "key": "bpm.basisdev",
+      "value": ".basisdev: {0}"
+    },
+    {
+      "key": "bpm.tooltip.openBasisDev",
+      "value": "Открыть папку .basisdev, где на этом компьютере хранятся рабочие копии Basis и клоны пакетов."
+    },
+    {
+      "key": "bpm.tooltip.refresh",
+      "value": "Заново прочитать bpm-manifest.json, bpm-lock.json и рабочие копии."
+    },
+    {
+      "key": "bpm.button.restore",
+      "value": "Восстановить"
+    },
+    {
+      "key": "bpm.tooltip.restore",
+      "value": "Воссоздать всё, чего не хватает в .basisdev, по bpm-lock.json, затем подключить пакеты. Запускайте после получения новой рабочей копии или после получения нового lock. Повторный запуск безопасен."
+    },
+    {
+      "key": "bpm.button.lock",
+      "value": "Зафиксировать"
+    },
+    {
+      "key": "bpm.tooltip.lock",
+      "value": "Записать bpm-lock.json по bpm-manifest.json: каждый пакет и нужные ему пакеты, каждый закреплён за коммитом."
+    },
+    {
+      "key": "bpm.button.mount",
+      "value": "Подключить"
+    },
+    {
+      "key": "bpm.tooltip.mount",
+      "value": "Переписать строки file: в Packages/manifest.json по lock. Строки, которые записал не BPM, не изменяются."
+    },
+    {
+      "key": "bpm.button.close",
+      "value": "Закрыть"
+    },
+    {
+      "key": "bpm.tooltip.close",
+      "value": "Закрыть это окно."
+    },
+    {
+      "key": "bpm.plan.heading",
+      "value": "Перенос {0} на {1} изменит Assets и ProjectSettings"
+    },
+    {
+      "key": "bpm.plan.intro",
+      "value": "Assets и ProjectSettings этого проекта следуют за Basis. Файлы, которые вы не трогали, обновляются, добавляются или удаляются. Изменённые вами файлы остаются для сравнения."
+    },
+    {
+      "key": "bpm.button.cancelPlan",
+      "value": "Оставить прежнее закрепление"
+    },
+    {
+      "key": "bpm.tooltip.cancelPlan",
+      "value": "Вернуть закрепление на прежнее место. В Assets и ProjectSettings ничего не изменится."
+    },
+    {
+      "key": "bpm.button.applyPlan",
+      "value": "Применить"
+    },
+    {
+      "key": "bpm.tooltip.applyPlan",
+      "value": "Перенести закрепление, восстановить рабочую копию, применить эти изменения к Assets и ProjectSettings и снова подключить. После этого Assets проверяются на повторяющиеся GUID."
+    },
+    {
+      "key": "bpm.setup.heading",
+      "value": "Брать Basis из .basisdev"
+    },
+    {
+      "key": "bpm.setup.intro",
+      "value": "У этого проекта ещё нет bpm-manifest.json. При настройке Basis закрепляется за коммитом, в .basisdev загружаются только нужные части, и они подключаются строками file:."
+    },
+    {
+      "key": "bpm.setup.game",
+      "value": "Игра"
+    },
+    {
+      "key": "bpm.setup.gameText",
+      "value": "Assets и ProjectSettings принадлежат вам. Выберите нужные пакеты Basis, и их зависимости добавятся вместе с ними."
+    },
+    {
+      "key": "bpm.tooltip.setupGame",
+      "value": "Для вашей собственной игры или приложения. BPM никогда не пишет в Assets и ProjectSettings и только сообщает, какие слои и теги ожидает Basis."
+    },
+    {
+      "key": "bpm.setup.content",
+      "value": "Аватары, миры и предметы"
+    },
+    {
+      "key": "bpm.setup.contentText",
+      "value": "Подключается каждый пакет Basis, а Assets и ProjectSettings копируются из Basis и продолжают следовать за ним."
+    },
+    {
+      "key": "bpm.tooltip.setupContent",
+      "value": "Для контента, созданного с Basis SDK. Когда закрепление переносится, BPM показывает, что изменится в Assets и ProjectSettings, и сначала спрашивает."
+    },
+    {
+      "key": "bpm.setup.packages",
+      "value": "Пакеты Basis через запятую"
+    },
+    {
+      "key": "bpm.tooltip.setupPackages",
+      "value": "Идентификаторы пакетов, например com.basis.sdk. Пакеты, от которых они зависят, добавляются в lock автоматически."
+    },
+    {
+      "key": "bpm.setup.at",
+      "value": "Ветка, тег или коммит Basis для закрепления"
+    },
+    {
+      "key": "bpm.tooltip.setupAt",
+      "value": "Манифест всегда хранит хеш коммита, поэтому закрепление переносится только тогда, когда это делаете вы."
+    },
+    {
+      "key": "bpm.button.setup",
+      "value": "Настроить"
+    },
+    {
+      "key": "bpm.tooltip.setup",
+      "value": "Записать bpm-manifest.json и bpm-lock.json, загрузить Basis в .basisdev и подключить пакеты. Если проект использует git, Plastic или Perforce, .basisdev добавляется в список игнорируемых."
+    },
+    {
+      "key": "bpm.section.checkouts",
+      "value": "Рабочие копии в .basisdev"
+    },
+    {
+      "key": "bpm.checkouts.none",
+      "value": "Нет рабочих копий. Пакеты берутся из собственных git-репозиториев или локальных папок."
+    },
+    {
+      "key": "bpm.tooltip.held",
+      "value": "Закреплённые рабочие копии принадлежат BPM и стоят на зафиксированном коммите. Рабочее дерево принадлежит вам: оно на ветке, правки и коммиты делаются прямо в нём. Встроенная папка только читается."
+    },
+    {
+      "key": "bpm.tooltip.openCheckout",
+      "value": "Открыть папку этой рабочей копии."
+    },
+    {
+      "key": "bpm.pin.watermark",
+      "value": "Ветка, тег или коммит"
+    },
+    {
+      "key": "bpm.tooltip.pinTarget",
+      "value": "Куда перенести закрепление. Ветка или тег определяются один раз, и записывается хеш коммита."
+    },
+    {
+      "key": "bpm.button.pin",
+      "value": "Перенести"
+    },
+    {
+      "key": "bpm.tooltip.pin",
+      "value": "Выполнить fetch, закрепить за новым коммитом, зафиксировать, восстановить и подключить, затем показать изменившиеся пакеты, чтобы вы знали, что проверить заново."
+    },
+    {
+      "key": "bpm.section.packages",
+      "value": "Пакеты"
+    },
+    {
+      "key": "bpm.packages.none",
+      "value": "В bpm-manifest.json пока нет пакетов."
+    },
+    {
+      "key": "bpm.button.override",
+      "value": "Использовать локальную папку"
+    },
+    {
+      "key": "bpm.tooltip.override",
+      "value": "Подключить этот пакет из папки на этом компьютере, например из вашего клона дополнения. Это записывается в .basisdev только на этой машине, поэтому проекты других людей не меняются. Не коммитьте изменённую строку в Packages/manifest.json."
+    },
+    {
+      "key": "bpm.button.clearOverride",
+      "value": "Не использовать папку"
+    },
+    {
+      "key": "bpm.tooltip.clearOverride",
+      "value": "Удалить локальное переопределение и снова подключить пакет по lock."
+    },
+    {
+      "key": "bpm.button.embed",
+      "value": "Копировать в Packages"
+    },
+    {
+      "key": "bpm.tooltip.embed",
+      "value": "Скопировать этот пакет в Packages/, чтобы вносить в него правки. Система контроля версий сохранит копию, а bpm-manifest.json запомнит исходный коммит, чтобы позже сравнить её с upstream и отправить изменения обратно."
+    },
+    {
+      "key": "bpm.tooltip.toggle",
+      "value": "Выключите пакет, чтобы сохранить его рабочую копию, но перестать подключать его: для поиска неполадок или переключения между двумя источниками одного пакета. Включите, чтобы снова подключить."
+    },
+    {
+      "key": "bpm.package.turnOff",
+      "value": "Выключить"
+    },
+    {
+      "key": "bpm.package.turnOn",
+      "value": "Включить"
+    },
+    {
+      "key": "bpm.package.dependency",
+      "value": "Нужен другому пакету (глубина {0})"
+    },
+    {
+      "key": "bpm.package.notLocked",
+      "value": "ещё не зафиксирован"
+    },
+    {
+      "key": "bpm.package.off",
+      "value": "выключен"
+    },
+    {
+      "key": "bpm.package.lockedVersion",
+      "value": "зафиксирован: {0}"
+    },
+    {
+      "key": "bpm.package.override",
+      "value": "Локальная папка: {0}"
+    },
+    {
+      "key": "bpm.package.embedded",
+      "value": "Встроен в Packages/"
+    },
+    {
+      "key": "bpm.package.copiedFrom",
+      "value": "Скопирован из {0}"
+    },
+    {
+      "key": "bpm.held.pinned",
+      "value": "закреплена"
+    },
+    {
+      "key": "bpm.held.workingTree",
+      "value": "рабочее дерево"
+    },
+    {
+      "key": "bpm.held.inline",
+      "value": "папка"
+    },
+    {
+      "key": "bpm.checkout.missing",
+      "value": "Ещё не загружено. «Восстановить» вернёт это."
+    },
+    {
+      "key": "bpm.checkout.onBranch",
+      "value": "{0} на {1}"
+    },
+    {
+      "key": "bpm.checkout.locked",
+      "value": "lock: {0}"
+    },
+    {
+      "key": "bpm.checkout.changes",
+      "value": "Изменённых файлов: {0}"
+    },
+    {
+      "key": "bpm.status.locking",
+      "value": "Фиксация…"
+    },
+    {
+      "key": "bpm.status.restoring",
+      "value": "Восстановление…"
+    },
+    {
+      "key": "bpm.status.mounting",
+      "value": "Подключение…"
+    },
+    {
+      "key": "bpm.status.settingUp",
+      "value": "Настройка проекта…"
+    },
+    {
+      "key": "bpm.status.pinning",
+      "value": "Перенос закрепления…"
+    },
+    {
+      "key": "bpm.status.embedding",
+      "value": "Копирование {0} в Packages…"
+    },
+    {
+      "key": "bpm.status.failed",
+      "value": "Некоторые шаги не завершились. Подробности в сообщениях ниже."
+    },
+    {
+      "key": "bpm.override.set",
+      "value": "{0} загружается из {1} на этом компьютере."
+    },
+    {
+      "key": "bpm.override.cleared",
+      "value": "{0} снова подключается по lock."
+    },
+    {
+      "key": "bpm.override.noPackage",
+      "value": "У {0} нет package.json, поэтому его нельзя подключить."
+    },
+    {
+      "key": "bpm.pin.badRef",
+      "value": "«{0}» не является допустимой веткой, тегом или коммитом."
+    },
+    {
+      "key": "bpm.plan.cancelled",
+      "value": "Ничего не изменилось. {0} остаётся на {1}."
+    },
+    {
+      "key": "bpm.picker.override",
+      "value": "Папка, из которой загружать {0}"
+    },
+    {
+      "key": "shell.status.fix",
+      "value": "Исправить"
+    },
+    {
+      "key": "shell.status.fixTooltip",
+      "value": "Откройте файлы с конфликтами и выберите, какую версию оставить для каждого. Когда все будут решены, приостановленный шаг завершится и синхронизация запустится снова."
+    },
+    {
+      "key": "installs.status.fixingConflicts",
+      "value": "Открываю конфликты в {0}…"
+    },
+    {
+      "key": "installs.status.conflictsOutsideUpdate",
+      "value": "В {0} есть конфликты слияния, которые возникли не из-за обновления Basis. Решите их в своём инструменте git, затем синхронизируйте снова."
+    },
+    {
+      "key": "installs.updateAll.fixTooltip",
+      "value": "Пройдите по проектам, которым нужно ваше решение, по одному. Каждый открывает своё обновление Basis, где вы просматриваете изменения, решаете, что делать с конфликтующими файлами, или завершаете приостановленное обновление."
+    },
+    {
+      "key": "installs.updateAll.fixOneTooltip",
+      "value": "Открывает обновление Basis этого проекта, где вы просматриваете изменения, решаете, что делать с конфликтующими файлами, или завершаете приостановленное обновление."
+    },
+    {
+      "key": "dialog.needsYou.title",
+      "value": "Проекты, требующие вашего участия"
+    },
+    {
+      "key": "dialog.needsYou.heading",
+      "value": "Нужно ваше решение, прежде чем Basis сможет обновить проекты: {0}"
+    },
+    {
+      "key": "dialog.needsYou.headingOne",
+      "value": "{0}: нужно ваше решение, прежде чем Basis сможет обновить проект"
+    },
+    {
+      "key": "dialog.needsYou.intro",
+      "value": "В этих проектах ничего не изменено. Выберите проект, чтобы открыть его обновление Basis. Когда закончите, вы вернётесь сюда к оставшимся."
+    },
+    {
+      "key": "dialog.needsYou.close",
+      "value": "Позже"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.close",
+      "value": "Закрыть список. Кнопка «Исправить» в строке состояния и список «Активность» снова откроют его."
+    },
+    {
+      "key": "dialog.needsYou.tooltip.fix",
+      "value": "Открыть обновление Basis для этого проекта. Вы увидите изменения до того, как что-либо будет записано, и сможете отменить."
+    },
+    {
+      "key": "dialog.needsYou.action.finish",
+      "value": "Завершить обновление"
+    },
+    {
+      "key": "dialog.needsYou.action.review",
+      "value": "Просмотреть обновление"
+    },
+    {
+      "key": "dialog.needsYou.action.open",
+      "value": "Открыть обновление"
+    },
+    {
+      "key": "dialog.needsYou.hint.paused",
+      "value": "Предыдущее обновление остановилось на полпути, и в некоторых файлах остались конфликты. Выберите, какую версию каждого файла оставить, и обновление завершится."
+    },
+    {
+      "key": "dialog.needsYou.hint.conflicts",
+      "value": "Некоторые ваши правки затрагивают те же строки, что изменил Basis. Просмотрите эти файлы и выберите, что оставить, прежде чем обновление будет применено."
+    },
+    {
+      "key": "dialog.needsYou.hint.other",
+      "value": "Откройте обновление, чтобы узнать, что ему нужно."
+    },
+    {
+      "key": "dialog.needsYou.allDone",
+      "value": "Все проекты, требовавшие вашего участия, разобраны."
+    },
+    {
+      "key": "dialog.needsYou.titleResults",
+      "value": "Результаты обновления Basis"
+    },
+    {
+      "key": "dialog.needsYou.results",
+      "value": "Обновлено: {0}, требуют участия: {1}"
+    },
+    {
+      "key": "dialog.needsYou.resultsAllDone",
+      "value": "Обновлено: {0}, больше ничего делать не нужно"
+    },
+    {
+      "key": "dialog.needsYou.introDone",
+      "value": "Все проекты используют последнюю версию Basis. Перед открытием проверьте, какой редактор Unity нужен каждому."
+    },
+    {
+      "key": "dialog.needsYou.section.updated",
+      "value": "Обновлено ({0})"
+    },
+    {
+      "key": "dialog.needsYou.section.needsYou",
+      "value": "Требуют участия ({0})"
+    },
+    {
+      "key": "dialog.needsYou.updated.done",
+      "value": "Теперь на последней версии Basis."
+    },
+    {
+      "key": "dialog.needsYou.updated.unity",
+      "value": "Теперь на последней версии Basis, которая использует Unity {0}."
+    },
+    {
+      "key": "dialog.needsYou.updated.unityMissing",
+      "value": "Unity {0} ещё не установлен, поэтому проект не откроется, пока он не будет установлен."
+    },
+    {
+      "key": "dialog.needsYou.action.getUnity",
+      "value": "Получить Unity {0}"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.getUnity",
+      "value": "Перейти на вкладку «Редакторы Unity» с выбранной версией, чтобы выбрать модули и установить её."
+    },
+    {
+      "key": "dialog.syncBlocked.title",
+      "value": "Изменённые файлы блокируют синхронизацию"
+    },
+    {
+      "key": "dialog.syncBlocked.heading",
+      "value": "{0}: изменённых вами файлов, которые также изменились в удалённом репозитории: {1}"
+    },
+    {
+      "key": "dialog.syncBlocked.headingOne",
+      "value": "{0}: один из изменённых вами файлов также изменился в удалённом репозитории"
+    },
+    {
+      "key": "dialog.syncBlocked.intro",
+      "value": "Git не будет получать изменения из {0}, пока это перезапишет эти незафиксированные правки. Выберите, что с ними сделать. Сначала ваши версии сохраняются в папке .git проекта, так что в любом случае ничего не потеряется."
+    },
+    {
+      "key": "dialog.syncBlocked.files",
+      "value": "Файлы, изменённые здесь и в удалённом репозитории"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.title",
+      "value": "Оставить мои версии"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.text",
+      "value": "Получить изменения, затем вернуть поверх вашу версию каждого файла. Git покажет их как правки относительно нового коммита, чтобы вы могли сравнить и закоммитить нужное."
+    },
+    {
+      "key": "dialog.syncBlocked.keep.button",
+      "value": "Получить и оставить мои"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.title",
+      "value": "Взять удалённые версии"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.text",
+      "value": "Получить изменения и использовать входящую версию каждого файла. Лучше всего, если ваши правки внёс сам Unity. Ваши копии останутся в папке резервной копии."
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.button",
+      "value": "Получить и взять их версии"
+    },
+    {
+      "key": "dialog.syncBlocked.cancel",
+      "value": "Не сейчас"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.keep",
+      "value": "Сохранить копии этих файлов, получить изменения, затем скопировать ваши версии поверх новых."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.theirs",
+      "value": "Сохранить копии этих файлов, затем получить изменения и оставить удалённую версию каждого."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.cancel",
+      "value": "Закрыть без изменений. Кнопка «Исправить» снова откроет это окно."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.fix",
+      "value": "Показать изменённые файлы, блокирующие получение, и выбрать, оставить ваши или взять удалённые. Сначала ваши версии сохраняются."
     }
   ]
 }

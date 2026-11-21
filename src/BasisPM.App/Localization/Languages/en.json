@@ -7293,6 +7293,522 @@
     {
       "key": "settings.tooltip.advanced",
       "value": "Show or hide the settings for developers: the package catalog URL and additional catalogs, the Unity Hub override, prerelease updates, checking packages after installs, the download cache and the detected tooling. Your choice is remembered."
+    },
+    {
+      "key": "packages.button.projectFiles",
+      "value": "Project files"
+    },
+    {
+      "key": "packages.tooltip.projectFiles",
+      "value": "Open bpm-manifest.json for this project: the Basis checkouts in .basisdev and their pins, which packages are locked and how each one is mounted, local overrides, and restoring everything after a fresh checkout."
+    },
+    {
+      "key": "bpm.title",
+      "value": "Project files"
+    },
+    {
+      "key": "bpm.heading",
+      "value": "{0}: checkouts and packages"
+    },
+    {
+      "key": "bpm.intro",
+      "value": "bpm-manifest.json says which packages this project uses and where they come from. bpm-lock.json pins each one to a commit. Commit both, and Packages/manifest.json. Never commit .basisdev."
+    },
+    {
+      "key": "bpm.basisdev",
+      "value": ".basisdev: {0}"
+    },
+    {
+      "key": "bpm.tooltip.openBasisDev",
+      "value": "Open the .basisdev folder, where the Basis checkouts and package clones live on this computer."
+    },
+    {
+      "key": "bpm.tooltip.refresh",
+      "value": "Read bpm-manifest.json, bpm-lock.json and the checkouts again."
+    },
+    {
+      "key": "bpm.button.restore",
+      "value": "Restore"
+    },
+    {
+      "key": "bpm.tooltip.restore",
+      "value": "Rebuild whatever is missing in .basisdev from bpm-lock.json, then mount the packages. Run this after a fresh checkout or after pulling a new lock. Safe to run twice."
+    },
+    {
+      "key": "bpm.button.lock",
+      "value": "Lock"
+    },
+    {
+      "key": "bpm.tooltip.lock",
+      "value": "Write bpm-lock.json from bpm-manifest.json: every package and the packages it needs, each pinned to a commit."
+    },
+    {
+      "key": "bpm.button.mount",
+      "value": "Mount"
+    },
+    {
+      "key": "bpm.tooltip.mount",
+      "value": "Rewrite the file: lines in Packages/manifest.json from the lock. Lines BPM didn't write are left alone."
+    },
+    {
+      "key": "bpm.button.close",
+      "value": "Close"
+    },
+    {
+      "key": "bpm.tooltip.close",
+      "value": "Close this window."
+    },
+    {
+      "key": "bpm.plan.heading",
+      "value": "Moving {0} to {1} changes Assets and ProjectSettings"
+    },
+    {
+      "key": "bpm.plan.intro",
+      "value": "This project's Assets and ProjectSettings follow Basis. Files you haven't touched are updated, added or removed. Files you changed are left for you to compare."
+    },
+    {
+      "key": "bpm.button.cancelPlan",
+      "value": "Keep the old pin"
+    },
+    {
+      "key": "bpm.tooltip.cancelPlan",
+      "value": "Put the pin back where it was. Nothing in Assets or ProjectSettings changes."
+    },
+    {
+      "key": "bpm.button.applyPlan",
+      "value": "Apply"
+    },
+    {
+      "key": "bpm.tooltip.applyPlan",
+      "value": "Move the pin, restore the checkout, apply these changes to Assets and ProjectSettings, and mount again. Afterwards the Assets are checked for duplicate GUIDs."
+    },
+    {
+      "key": "bpm.setup.heading",
+      "value": "Take Basis from .basisdev"
+    },
+    {
+      "key": "bpm.setup.intro",
+      "value": "This project has no bpm-manifest.json yet. Setting one up pins Basis to a commit, downloads only the parts you need into .basisdev and mounts them with file: lines."
+    },
+    {
+      "key": "bpm.setup.game",
+      "value": "Game"
+    },
+    {
+      "key": "bpm.setup.gameText",
+      "value": "Assets and ProjectSettings are yours. Pick the Basis packages you want and their dependencies come along."
+    },
+    {
+      "key": "bpm.tooltip.setupGame",
+      "value": "For your own game or app. BPM never writes to Assets or ProjectSettings, and only tells you which layers and tags Basis expects."
+    },
+    {
+      "key": "bpm.setup.content",
+      "value": "Avatars, worlds and props"
+    },
+    {
+      "key": "bpm.setup.contentText",
+      "value": "Every Basis package is mounted, and Assets and ProjectSettings are copied from Basis and keep following it."
+    },
+    {
+      "key": "bpm.tooltip.setupContent",
+      "value": "For content made with the Basis SDK. When the pin moves, BPM shows what changes in Assets and ProjectSettings and asks first."
+    },
+    {
+      "key": "bpm.setup.packages",
+      "value": "Basis packages to use, separated by commas"
+    },
+    {
+      "key": "bpm.tooltip.setupPackages",
+      "value": "Package ids such as com.basis.sdk. The packages they depend on are added to the lock for you."
+    },
+    {
+      "key": "bpm.setup.at",
+      "value": "Basis branch, tag or commit to pin"
+    },
+    {
+      "key": "bpm.tooltip.setupAt",
+      "value": "The manifest always records the commit hash, so the pin only moves when you move it."
+    },
+    {
+      "key": "bpm.button.setup",
+      "value": "Set up"
+    },
+    {
+      "key": "bpm.tooltip.setup",
+      "value": "Write bpm-manifest.json and bpm-lock.json, download Basis into .basisdev and mount the packages. .basisdev is added to your ignore list when the project uses git, Plastic or Perforce."
+    },
+    {
+      "key": "bpm.section.checkouts",
+      "value": "Checkouts in .basisdev"
+    },
+    {
+      "key": "bpm.checkouts.none",
+      "value": "No checkouts. Packages come from their own git repositories or local folders."
+    },
+    {
+      "key": "bpm.tooltip.held",
+      "value": "Pinned checkouts belong to BPM and sit at the locked commit. A working tree is yours: on a branch, edited and committed in place. An inline folder is only read."
+    },
+    {
+      "key": "bpm.tooltip.openCheckout",
+      "value": "Open this checkout's folder."
+    },
+    {
+      "key": "bpm.pin.watermark",
+      "value": "Branch, tag or commit"
+    },
+    {
+      "key": "bpm.tooltip.pinTarget",
+      "value": "Where to move the pin. A branch or tag is looked up once and the commit hash is recorded."
+    },
+    {
+      "key": "bpm.button.pin",
+      "value": "Move pin"
+    },
+    {
+      "key": "bpm.tooltip.pin",
+      "value": "Fetch, pin to the new commit, lock, restore and mount, then list the packages that changed so you know what to retest."
+    },
+    {
+      "key": "bpm.section.packages",
+      "value": "Packages"
+    },
+    {
+      "key": "bpm.packages.none",
+      "value": "bpm-manifest.json lists no packages yet."
+    },
+    {
+      "key": "bpm.button.override",
+      "value": "Use a local folder"
+    },
+    {
+      "key": "bpm.tooltip.override",
+      "value": "Mount this package from a folder on this computer, such as your own clone of an add-on. It's recorded in .basisdev on this machine only, so nobody else's project changes. Don't commit the changed line in Packages/manifest.json."
+    },
+    {
+      "key": "bpm.button.clearOverride",
+      "value": "Stop using the folder"
+    },
+    {
+      "key": "bpm.tooltip.clearOverride",
+      "value": "Remove the local override and mount the package from the lock again."
+    },
+    {
+      "key": "bpm.button.embed",
+      "value": "Copy into Packages"
+    },
+    {
+      "key": "bpm.tooltip.embed",
+      "value": "Copy this package into Packages/ to patch it. Your version control records the copy, and bpm-manifest.json notes the commit it came from so it can be compared with upstream and sent back later."
+    },
+    {
+      "key": "bpm.tooltip.toggle",
+      "value": "Turn the package off to keep its checkout but stop mounting it, for troubleshooting or to swap between two sources of the same package. Turn it on to mount it again."
+    },
+    {
+      "key": "bpm.package.turnOff",
+      "value": "Turn off"
+    },
+    {
+      "key": "bpm.package.turnOn",
+      "value": "Turn on"
+    },
+    {
+      "key": "bpm.package.dependency",
+      "value": "Needed by another package (depth {0})"
+    },
+    {
+      "key": "bpm.package.notLocked",
+      "value": "not locked yet"
+    },
+    {
+      "key": "bpm.package.off",
+      "value": "turned off"
+    },
+    {
+      "key": "bpm.package.lockedVersion",
+      "value": "locked {0}"
+    },
+    {
+      "key": "bpm.package.override",
+      "value": "Local folder: {0}"
+    },
+    {
+      "key": "bpm.package.embedded",
+      "value": "Embedded in Packages/"
+    },
+    {
+      "key": "bpm.package.copiedFrom",
+      "value": "Copied from {0}"
+    },
+    {
+      "key": "bpm.held.pinned",
+      "value": "pinned"
+    },
+    {
+      "key": "bpm.held.workingTree",
+      "value": "working tree"
+    },
+    {
+      "key": "bpm.held.inline",
+      "value": "folder"
+    },
+    {
+      "key": "bpm.checkout.missing",
+      "value": "Not downloaded yet. Restore brings it back."
+    },
+    {
+      "key": "bpm.checkout.onBranch",
+      "value": "{0} at {1}"
+    },
+    {
+      "key": "bpm.checkout.locked",
+      "value": "lock: {0}"
+    },
+    {
+      "key": "bpm.checkout.changes",
+      "value": "{0} changed file(s)"
+    },
+    {
+      "key": "bpm.status.locking",
+      "value": "Locking…"
+    },
+    {
+      "key": "bpm.status.restoring",
+      "value": "Restoring…"
+    },
+    {
+      "key": "bpm.status.mounting",
+      "value": "Mounting…"
+    },
+    {
+      "key": "bpm.status.settingUp",
+      "value": "Setting up the project…"
+    },
+    {
+      "key": "bpm.status.pinning",
+      "value": "Moving the pin…"
+    },
+    {
+      "key": "bpm.status.embedding",
+      "value": "Copying {0} into Packages…"
+    },
+    {
+      "key": "bpm.status.failed",
+      "value": "Some steps didn't finish. See the messages below."
+    },
+    {
+      "key": "bpm.override.set",
+      "value": "{0} loads from {1} on this computer."
+    },
+    {
+      "key": "bpm.override.cleared",
+      "value": "{0} is mounted from the lock again."
+    },
+    {
+      "key": "bpm.override.noPackage",
+      "value": "{0} has no package.json, so it can't be mounted."
+    },
+    {
+      "key": "bpm.pin.badRef",
+      "value": "'{0}' isn't a valid branch, tag or commit."
+    },
+    {
+      "key": "bpm.plan.cancelled",
+      "value": "Nothing changed. {0} stays at {1}."
+    },
+    {
+      "key": "bpm.picker.override",
+      "value": "Folder to load {0} from"
+    },
+    {
+      "key": "shell.status.fix",
+      "value": "Fix"
+    },
+    {
+      "key": "shell.status.fixTooltip",
+      "value": "Open the conflicted files and pick which version to keep for each one. When they're all resolved, the paused step finishes and the sync runs again."
+    },
+    {
+      "key": "installs.status.fixingConflicts",
+      "value": "Opening the conflicts in {0}…"
+    },
+    {
+      "key": "installs.status.conflictsOutsideUpdate",
+      "value": "{0} has merge conflicts that didn't come from a Basis update. Resolve them in your git tool, then sync again."
+    },
+    {
+      "key": "installs.updateAll.fixTooltip",
+      "value": "Go through the projects that need you, one at a time. Each opens its own Basis update, where you review the changes, choose what to do with conflicting files, or finish a paused update."
+    },
+    {
+      "key": "installs.updateAll.fixOneTooltip",
+      "value": "Open this project's Basis update, where you review the changes, choose what to do with conflicting files, or finish a paused update."
+    },
+    {
+      "key": "dialog.needsYou.title",
+      "value": "Projects that need you"
+    },
+    {
+      "key": "dialog.needsYou.heading",
+      "value": "{0} projects need a decision before Basis can update them"
+    },
+    {
+      "key": "dialog.needsYou.headingOne",
+      "value": "{0} needs a decision before Basis can update it"
+    },
+    {
+      "key": "dialog.needsYou.intro",
+      "value": "Nothing was changed in these projects. Pick one to open its Basis update. When you're done with it, you come back here with the ones that are left."
+    },
+    {
+      "key": "dialog.needsYou.close",
+      "value": "Later"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.close",
+      "value": "Close this list. The Fix button in the status bar and the Activity list bring it back."
+    },
+    {
+      "key": "dialog.needsYou.tooltip.fix",
+      "value": "Open this project's Basis update. You see what changes before anything is written, and you can cancel."
+    },
+    {
+      "key": "dialog.needsYou.action.finish",
+      "value": "Finish update"
+    },
+    {
+      "key": "dialog.needsYou.action.review",
+      "value": "Review update"
+    },
+    {
+      "key": "dialog.needsYou.action.open",
+      "value": "Open update"
+    },
+    {
+      "key": "dialog.needsYou.hint.paused",
+      "value": "An earlier update stopped partway, with some files still in conflict. Pick which version of each file to keep, and the update finishes."
+    },
+    {
+      "key": "dialog.needsYou.hint.conflicts",
+      "value": "Some of your edits touch the same lines Basis changed. Review those files and choose what to keep before the update is applied."
+    },
+    {
+      "key": "dialog.needsYou.hint.other",
+      "value": "Open the update to see what it needs."
+    },
+    {
+      "key": "dialog.needsYou.allDone",
+      "value": "Every project that needed you is sorted."
+    },
+    {
+      "key": "dialog.needsYou.titleResults",
+      "value": "Basis update results"
+    },
+    {
+      "key": "dialog.needsYou.results",
+      "value": "{0} updated, {1} need you"
+    },
+    {
+      "key": "dialog.needsYou.resultsAllDone",
+      "value": "{0} updated, nothing left to do"
+    },
+    {
+      "key": "dialog.needsYou.introDone",
+      "value": "Every project is on the latest Basis. Check the Unity editor each one needs before you open it."
+    },
+    {
+      "key": "dialog.needsYou.section.updated",
+      "value": "Updated ({0})"
+    },
+    {
+      "key": "dialog.needsYou.section.needsYou",
+      "value": "Needs you ({0})"
+    },
+    {
+      "key": "dialog.needsYou.updated.done",
+      "value": "Now on the latest Basis."
+    },
+    {
+      "key": "dialog.needsYou.updated.unity",
+      "value": "Now on the latest Basis, which uses Unity {0}."
+    },
+    {
+      "key": "dialog.needsYou.updated.unityMissing",
+      "value": "Unity {0} isn't installed yet, so the project won't open until it is."
+    },
+    {
+      "key": "dialog.needsYou.action.getUnity",
+      "value": "Get Unity {0}"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.getUnity",
+      "value": "Go to the Unity Editors tab with this version picked, so you can choose its modules and install it."
+    },
+    {
+      "key": "dialog.syncBlocked.title",
+      "value": "Edited files block the sync"
+    },
+    {
+      "key": "dialog.syncBlocked.heading",
+      "value": "{0}: {1} of your edited files also changed on the remote"
+    },
+    {
+      "key": "dialog.syncBlocked.headingOne",
+      "value": "{0}: one of your edited files also changed on the remote"
+    },
+    {
+      "key": "dialog.syncBlocked.intro",
+      "value": "Git won't pull from {0} while it would write over these uncommitted edits. Pick how to handle them. Your versions are backed up inside the project's .git folder first, so nothing is lost either way."
+    },
+    {
+      "key": "dialog.syncBlocked.files",
+      "value": "Files edited here and changed on the remote"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.title",
+      "value": "Keep my versions"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.text",
+      "value": "Pull, then put your version of each file back on top. Git shows them as edits against the new commit, so you can compare and commit what you want."
+    },
+    {
+      "key": "dialog.syncBlocked.keep.button",
+      "value": "Pull and keep mine"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.title",
+      "value": "Take the remote versions"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.text",
+      "value": "Pull and use the incoming version of each file. Best when your edits are things Unity rewrote on its own. Your copies stay in the backup folder."
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.button",
+      "value": "Pull and take theirs"
+    },
+    {
+      "key": "dialog.syncBlocked.cancel",
+      "value": "Not now"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.keep",
+      "value": "Back up these files, pull, then copy your versions back over the new ones."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.theirs",
+      "value": "Back up these files, then pull and keep the remote's version of each."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.cancel",
+      "value": "Close without changing anything. The Fix button brings this back."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.fix",
+      "value": "Show the edited files that block the pull and choose whether to keep yours or take the remote's. Your versions are backed up first."
     }
   ]
 }

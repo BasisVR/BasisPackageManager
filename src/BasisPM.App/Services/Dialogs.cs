@@ -176,6 +176,24 @@ public static class Dialogs
         return owner is null ? null : await new SharePackageWindow(model).ShowDialog<SharePackageDraft?>(owner);
     }
 
+    public static async Task<bool?> ShowSyncBlockedAsync(SyncBlockedViewModel model)
+    {
+        var owner = Owner;
+        return owner is null ? null : await new SyncBlockedWindow { DataContext = model }.ShowDialog<bool?>(owner);
+    }
+
+    public static async Task<object?> ShowNeedsYouAsync(NeedsYouViewModel model)
+    {
+        var owner = Owner;
+        return owner is null ? null : await new NeedsYouWindow { DataContext = model }.ShowDialog<object?>(owner);
+    }
+
+    public static async Task ShowProjectFilesAsync(ProjectFilesViewModel model)
+    {
+        var owner = Owner;
+        if (owner is not null) await new ProjectFilesWindow { DataContext = model }.ShowDialog(owner);
+    }
+
     public static async Task ShowLicensesAsync(LicensesViewModel model)
     {
         var owner = Owner;

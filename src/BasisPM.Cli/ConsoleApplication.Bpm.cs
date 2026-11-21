@@ -13,24 +13,27 @@ internal sealed partial class ConsoleApplication
     {
         new()
         {
-            Name = "init-project", Group = BpmGroup, Aliases = new[] { "init" },
+            Name = "init-project", Group = BpmGroup, Aliases = new[] { "init", "create-project" },
             Summary = "Start a project that takes Basis from .basisdev",
-            Usage = new[] { "init-project <folder> [--content|--game] [--at <commit|branch>] [--packages <id>[,<id>]] [--copy-template] [--basis <git-url>]" },
+            Usage = new[] { "init-project <folder> [--content|--game] [--at <commit|branch>] [--packages <id>[,<id>]] [--copy-template] [--basis <git-url>]", "init-project <folder> --contributor [--at <branch>] [--basis <git-url>]" },
             Details = "Writes bpm-manifest.json with Basis pinned to a commit hash, clones Basis into .basisdev as a bare repository with a sparse worktree, locks the packages and mounts them "
                 + "with file: lines in Packages/manifest.json. --content (avatars, worlds, props) copies the Basis Assets and ProjectSettings and keeps them following Basis; every Basis package is listed. "
                 + "--game leaves Assets and ProjectSettings to you: list the Basis packages you want with --packages and their dependencies come along. In an existing project it says which layers and tags "
-                + "Basis expects instead of touching ProjectSettings. --copy-template copies the template once for a new game. Commit bpm-manifest.json, bpm-lock.json and Packages/manifest.json, and ignore .basisdev.",
+                + "Basis expects instead of touching ProjectSettings. --copy-template copies the template once for a new game. --contributor makes a full clone of Basis (or your fork) instead, the project you send PRs from. "
+                + "Commit bpm-manifest.json, bpm-lock.json and Packages/manifest.json. .basisdev is added to .gitignore, Plastic's ignore.conf or .p4ignore when the project uses one.",
             Options = new[]
             {
                 new CliOption("--content", "Assets, ProjectSettings and the Unity version follow Basis"), new CliOption("--game", "The project owns Assets and ProjectSettings (the default)"),
                 new CliOption("--at", "Basis commit or branch to pin (developer by default)", "<rev>"), new CliOption("--packages", "Basis packages to use", "<ids>"),
                 new CliOption("--copy-template", "Copy the Basis Assets and ProjectSettings once"), new CliOption("--basis", "Basis repository to use", "<git-url>"),
+                new CliOption("--contributor", "Clone all of Basis to work on Basis itself"),
             },
             Args = new[] { ArgKind.Path },
             Examples = new[]
             {
                 new CliExample("init-project D:\\Avatars\\Mine --content", "An avatar project that follows Basis"),
                 new CliExample("init-project D:\\Game --game --packages com.basis.framework,com.basis.sdk", "Use two Basis packages in your own game"),
+                new CliExample("init-project D:\\Basis --contributor", "Clone Basis to work on it"),
             },
             SeeAlso = new[] { "lock", "restore", "pin" },
             Run = InitProjectAsync,
@@ -57,13 +60,13 @@ internal sealed partial class ConsoleApplication
         },
         new()
         {
-            Name = "pin", Group = BpmGroup, Summary = "Move a pinned checkout to another commit",
-            Usage = new[] { "pin <checkout> <commit|branch|tag> [--yes]" },
+            Name = "pin", Group = BpmGroup, Aliases = new[] { "update-project" }, Summary = "Move a pinned checkout to another commit",
+            Usage = new[] { "pin [checkout] <commit|branch|tag> [--yes]" },
             Details = "Fetches the checkout's repository, pins bpm-manifest.json to the commit hash, locks, restores and mounts, and lists which packages changed so you know what to retest. "
                 + "When Assets and ProjectSettings follow the checkout, it shows what changes in them first and asks: files you haven't touched are updated, added or removed, files you changed are left for you. "
-                + "Afterwards it checks the Assets for duplicate GUIDs and orphaned .meta files. For a fork held as a working tree, rebase each fork branch onto the new pin yourself; 'manifest' says which fork is behind.",
+                + "Without a checkout name it moves the default one (Basis). Afterwards it checks the Assets for duplicate GUIDs and orphaned .meta files. For a fork held as a working tree, rebase each fork branch onto the new pin yourself; 'manifest' says which fork is behind.",
             Options = new[] { Yes },
-            Examples = new[] { new CliExample("pin Basis developer", "Move Basis to the newest developer commit") },
+            Examples = new[] { new CliExample("pin Basis developer", "Move Basis to the newest developer commit"), new CliExample("pin developer", "The same, for the default checkout") },
             SeeAlso = new[] { "manifest", "lock" },
             Run = PinAsync,
         },
@@ -91,6 +94,15 @@ internal sealed partial class ConsoleApplication
             Usage = new[] { "disable-package <package-id>" },
             Details = "Sets enabled to no in bpm-manifest.json, then locks and mounts again. The checkout stays, so turning it back on doesn't download anything; useful while troubleshooting or when two repositories provide the same package.",
             Args = new[] { ArgKind.Package }, SeeAlso = new[] { "enable-package" }, Run = values => SetEnabledAsync(values, false),
+        },
+        new()
+        {
+            Name = "embed-package", Group = BpmGroup, Aliases = new[] { "patch-package" }, Summary = "Copy a locked package into Packages/ to patch it",
+            Usage = new[] { "embed-package <package-id>" },
+            Details = "For a short-lived patch to a Basis package in a project that owns its Packages folder. Copies the package from its checkout into Packages/, where your version control records it, "
+                + "points bpm-manifest.json at that folder and notes the commit it was copied from, so the copy can be diffed against upstream later and sent back. Its mount line is removed. "
+                + "Edits made in a pinned checkout never reach a teammate, so patch a copy instead. For long-lived patches, use a fork held as a working tree.",
+            Args = new[] { ArgKind.Package }, SeeAlso = new[] { "lock", "contribute" }, Run = EmbedAsync,
         },
         new()
         {
@@ -162,14 +174,24 @@ internal sealed partial class ConsoleApplication
         var at = TakeValue(options, "--at");
         var url = TakeValue(options, "--basis") ?? BpmService.BasisUrl;
         var packages = TakeValue(options, "--packages")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var contributor = TakeFlag(options, "--contributor") | TakeFlag(options, "--framework-developer");
         Expect(options, 1, 1, "the project folder");
+        if (contributor)
+        {
+            if (content || game || copy || packages is not null) throw new UsageException("--contributor clones all of Basis, so it takes only --at and --basis.");
+            var clone = new List<string> { options[0] };
+            if (at is not null) clone.Add(at);
+            if (url != BpmService.BasisUrl) clone.AddRange(new[] { "--basis", url });
+            await CloneBasisAsync(clone);
+            return;
+        }
         if (content && game) throw new UsageException("Pick --content or --game, not both.");
         if (content && copy) throw new UsageException("--content already copies the template.");
         BpmResult result = null!;
         await RunOperationAsync(async ct => result = await Bpm.InitAsync(FullPath(options[0]), content, url, at, packages, copy, Out.Progress, ct), "Setting up the project" + Out.Ellipsis);
         Report(result);
         ThrowIfFailed(result);
-        Out.Hint($"Commit {BpmStore.ManifestFileName}, {BpmStore.LockFileName} and Packages/manifest.json. Add {BasisDevStore.FolderName}/ to your ignore list (.gitignore, ignore.conf or the Perforce equivalent).");
+        Out.Hint($"Commit {BpmStore.ManifestFileName}, {BpmStore.LockFileName} and Packages/manifest.json. Never commit {BasisDevStore.FolderName}.");
     }
 
     private async Task LockAsync(List<string> values)
@@ -232,10 +254,11 @@ internal sealed partial class ConsoleApplication
     {
         var options = values.ToList();
         var assumeYes = TakeFlag(options, "--yes") | TakeFlag(options, "-y");
-        Expect(options, 2, 2, "a checkout name and a commit, branch or tag");
-        var (name, rev) = (options[0], options[1]);
-        if (!GitUrlPolicy.IsSafeRef(rev)) throw new UsageException($"'{rev}' isn't a valid git ref.");
+        Expect(options, 1, 2, "a commit, branch or tag");
         var project = await BpmProjectAsync();
+        var (name, rev) = options.Count == 2 ? (options[0], options[1])
+            : (BpmService.DefaultCheckout(BpmStore.ReadManifest(project)) ?? throw new UsageException($"{BpmStore.ManifestFileName} has no default checkout; name the checkout to move."), options[0]);
+        if (!GitUrlPolicy.IsSafeRef(rev)) throw new UsageException($"'{rev}' isn't a valid git ref.");
         var before = BpmStore.ReadManifest(project).Checkouts?.GetValueOrDefault(name)?.Commit;
         BpmResult moved = null!;
         await RunOperationAsync(async ct => moved = await Bpm.MovePinAsync(project, name, rev, Out.Progress, ct), $"Moving {name}" + Out.Ellipsis);
@@ -325,6 +348,26 @@ internal sealed partial class ConsoleApplication
             Report(restored);
             ThrowIfFailed(restored);
         }
+        await RunOperationAsync(async ct => mounted = await Bpm.MountAsync(project, ct));
+        Report(mounted);
+        ThrowIfFailed(mounted);
+    }
+
+    private async Task EmbedAsync(List<string> values)
+    {
+        Expect(values, 1, 1, "a package id");
+        var project = await BpmProjectAsync();
+        var embedded = BpmService.Embed(project, values[0]);
+        Report(embedded);
+        ThrowIfFailed(embedded);
+        var catalog = await LoadCatalogAsync();
+        BpmResult locked = null!, restored = null!, mounted = null!;
+        await RunOperationAsync(async ct => locked = await Bpm.ResolveAsync(project, catalog, false, Out.Progress, ct), "Locking" + Out.Ellipsis);
+        Report(locked);
+        ThrowIfFailed(locked);
+        await RunOperationAsync(async ct => restored = await Bpm.RestoreAsync(project, Out.Progress, ct), "Restoring" + Out.Ellipsis);
+        Report(restored);
+        ThrowIfFailed(restored);
         await RunOperationAsync(async ct => mounted = await Bpm.MountAsync(project, ct));
         Report(mounted);
         ThrowIfFailed(mounted);

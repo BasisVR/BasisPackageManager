@@ -7293,6 +7293,522 @@
     {
       "key": "settings.tooltip.advanced",
       "value": "डेवलपर के लिए सेटिंग्स दिखाएँ या छिपाएँ: पैकेज कैटलॉग URL और अतिरिक्त कैटलॉग, Unity Hub ओवरराइड, प्रीरिलीज़ अपडेट, इंस्टॉल के बाद पैकेज की जाँच, डाउनलोड कैश और पता लगाए गए टूल। आपका चुनाव याद रखा जाता है।"
+    },
+    {
+      "key": "packages.button.projectFiles",
+      "value": "प्रोजेक्ट फ़ाइलें"
+    },
+    {
+      "key": "packages.tooltip.projectFiles",
+      "value": "इस प्रोजेक्ट का bpm-manifest.json खोलें: .basisdev में Basis चेकआउट और उनके पिन, कौन-से पैकेज लॉक हैं और हर एक कैसे माउंट है, लोकल ओवरराइड, और नए चेकआउट के बाद सब कुछ रिस्टोर करना।"
+    },
+    {
+      "key": "bpm.title",
+      "value": "प्रोजेक्ट फ़ाइलें"
+    },
+    {
+      "key": "bpm.heading",
+      "value": "{0}: चेकआउट और पैकेज"
+    },
+    {
+      "key": "bpm.intro",
+      "value": "bpm-manifest.json बताता है कि यह प्रोजेक्ट कौन-से पैकेज इस्तेमाल करता है और वे कहाँ से आते हैं। bpm-lock.json हर एक को किसी कमिट पर पिन करता है। दोनों को और Packages/manifest.json को कमिट करें। .basisdev को कभी कमिट न करें।"
+    },
+    {
+      "key": "bpm.basisdev",
+      "value": ".basisdev: {0}"
+    },
+    {
+      "key": "bpm.tooltip.openBasisDev",
+      "value": ".basisdev फ़ोल्डर खोलें, जहाँ इस कंप्यूटर पर Basis चेकआउट और पैकेज क्लोन रहते हैं।"
+    },
+    {
+      "key": "bpm.tooltip.refresh",
+      "value": "bpm-manifest.json, bpm-lock.json और चेकआउट को फिर से पढ़ें।"
+    },
+    {
+      "key": "bpm.button.restore",
+      "value": "रिस्टोर करें"
+    },
+    {
+      "key": "bpm.tooltip.restore",
+      "value": ".basisdev में जो कुछ भी गायब है उसे bpm-lock.json से फिर से बनाएँ, फिर पैकेज माउंट करें। इसे नए चेकआउट के बाद या नया लॉक पुल करने के बाद चलाएँ। दो बार चलाना भी सुरक्षित है।"
+    },
+    {
+      "key": "bpm.button.lock",
+      "value": "लॉक करें"
+    },
+    {
+      "key": "bpm.tooltip.lock",
+      "value": "bpm-manifest.json से bpm-lock.json लिखें: हर पैकेज और उसे चाहिए वाले पैकेज, हर एक किसी कमिट पर पिन किया हुआ।"
+    },
+    {
+      "key": "bpm.button.mount",
+      "value": "माउंट करें"
+    },
+    {
+      "key": "bpm.tooltip.mount",
+      "value": "लॉक से Packages/manifest.json की file: पंक्तियाँ फिर से लिखें। जो पंक्तियाँ BPM ने नहीं लिखीं, उन्हें नहीं छुआ जाता।"
+    },
+    {
+      "key": "bpm.button.close",
+      "value": "बंद करें"
+    },
+    {
+      "key": "bpm.tooltip.close",
+      "value": "यह विंडो बंद करें।"
+    },
+    {
+      "key": "bpm.plan.heading",
+      "value": "{0} को {1} पर ले जाने से Assets और ProjectSettings बदलते हैं"
+    },
+    {
+      "key": "bpm.plan.intro",
+      "value": "इस प्रोजेक्ट के Assets और ProjectSettings Basis का अनुसरण करते हैं। जिन फ़ाइलों को आपने नहीं छुआ, वे अपडेट, जोड़ी या हटाई जाती हैं। जिन फ़ाइलों को आपने बदला है, वे आपके तुलना करने के लिए छोड़ दी जाती हैं।"
+    },
+    {
+      "key": "bpm.button.cancelPlan",
+      "value": "पुराना पिन रखें"
+    },
+    {
+      "key": "bpm.tooltip.cancelPlan",
+      "value": "पिन को वापस वहीं रखें जहाँ वह था। Assets या ProjectSettings में कुछ नहीं बदलता।"
+    },
+    {
+      "key": "bpm.button.applyPlan",
+      "value": "लागू करें"
+    },
+    {
+      "key": "bpm.tooltip.applyPlan",
+      "value": "पिन को आगे ले जाएँ, चेकआउट रिस्टोर करें, ये बदलाव Assets और ProjectSettings पर लागू करें, और फिर से माउंट करें। इसके बाद Assets में डुप्लिकेट GUID की जाँच की जाती है।"
+    },
+    {
+      "key": "bpm.setup.heading",
+      "value": ".basisdev से Basis लें"
+    },
+    {
+      "key": "bpm.setup.intro",
+      "value": "इस प्रोजेक्ट में अभी कोई bpm-manifest.json नहीं है। इसे सेट अप करने से Basis किसी कमिट पर पिन हो जाता है, सिर्फ़ ज़रूरी हिस्से .basisdev में डाउनलोड होते हैं और file: पंक्तियों से माउंट होते हैं।"
+    },
+    {
+      "key": "bpm.setup.game",
+      "value": "गेम"
+    },
+    {
+      "key": "bpm.setup.gameText",
+      "value": "Assets और ProjectSettings आपके हैं। अपने चाहे गए Basis पैकेज चुनें, उनकी निर्भरताएँ साथ में आ जाएँगी।"
+    },
+    {
+      "key": "bpm.tooltip.setupGame",
+      "value": "आपके अपने गेम या ऐप के लिए। BPM कभी Assets या ProjectSettings में नहीं लिखता, और सिर्फ़ बताता है कि Basis कौन-सी लेयर और टैग चाहता है।"
+    },
+    {
+      "key": "bpm.setup.content",
+      "value": "अवतार, वर्ल्ड और प्रॉप"
+    },
+    {
+      "key": "bpm.setup.contentText",
+      "value": "हर Basis पैकेज माउंट होता है, और Assets और ProjectSettings Basis से कॉपी होकर आगे भी उसका अनुसरण करते हैं।"
+    },
+    {
+      "key": "bpm.tooltip.setupContent",
+      "value": "Basis SDK से बने कंटेंट के लिए। जब पिन बदलता है, तो BPM दिखाता है कि Assets और ProjectSettings में क्या बदलेगा और पहले पूछता है।"
+    },
+    {
+      "key": "bpm.setup.packages",
+      "value": "इस्तेमाल करने के लिए Basis पैकेज, कॉमा से अलग किए हुए"
+    },
+    {
+      "key": "bpm.tooltip.setupPackages",
+      "value": "com.basis.sdk जैसे पैकेज ID। जिन पैकेजों पर ये निर्भर हैं, वे अपने आप लॉक में जुड़ जाते हैं।"
+    },
+    {
+      "key": "bpm.setup.at",
+      "value": "पिन करने के लिए Basis ब्रांच, टैग या कमिट"
+    },
+    {
+      "key": "bpm.tooltip.setupAt",
+      "value": "मैनिफ़ेस्ट हमेशा कमिट हैश रिकॉर्ड करता है, इसलिए पिन तभी बदलता है जब आप उसे बदलते हैं।"
+    },
+    {
+      "key": "bpm.button.setup",
+      "value": "सेट अप करें"
+    },
+    {
+      "key": "bpm.tooltip.setup",
+      "value": "bpm-manifest.json और bpm-lock.json लिखें, Basis को .basisdev में डाउनलोड करें और पैकेज माउंट करें। जब प्रोजेक्ट git, Plastic या Perforce इस्तेमाल करता है, तो .basisdev आपकी इग्नोर सूची में जोड़ दिया जाता है।"
+    },
+    {
+      "key": "bpm.section.checkouts",
+      "value": ".basisdev में चेकआउट"
+    },
+    {
+      "key": "bpm.checkouts.none",
+      "value": "कोई चेकआउट नहीं। पैकेज अपनी git रिपॉज़िटरी या लोकल फ़ोल्डर से आते हैं।"
+    },
+    {
+      "key": "bpm.tooltip.held",
+      "value": "पिन किए गए चेकआउट BPM के होते हैं और लॉक किए गए कमिट पर रहते हैं। वर्किंग ट्री आपका होता है: किसी ब्रांच पर, वहीं संपादित और कमिट किया जाता है। इनलाइन फ़ोल्डर सिर्फ़ पढ़ा जाता है।"
+    },
+    {
+      "key": "bpm.tooltip.openCheckout",
+      "value": "इस चेकआउट का फ़ोल्डर खोलें।"
+    },
+    {
+      "key": "bpm.pin.watermark",
+      "value": "ब्रांच, टैग या कमिट"
+    },
+    {
+      "key": "bpm.tooltip.pinTarget",
+      "value": "पिन को कहाँ ले जाना है। ब्रांच या टैग को एक बार खोजा जाता है और कमिट हैश रिकॉर्ड किया जाता है।"
+    },
+    {
+      "key": "bpm.button.pin",
+      "value": "पिन बदलें"
+    },
+    {
+      "key": "bpm.tooltip.pin",
+      "value": "फ़ेच करें, नए कमिट पर पिन करें, लॉक, रिस्टोर और माउंट करें, फिर बदले हुए पैकेज की सूची दिखाएँ ताकि आपको पता हो कि किसे दोबारा टेस्ट करना है।"
+    },
+    {
+      "key": "bpm.section.packages",
+      "value": "पैकेज"
+    },
+    {
+      "key": "bpm.packages.none",
+      "value": "bpm-manifest.json में अभी कोई पैकेज नहीं है।"
+    },
+    {
+      "key": "bpm.button.override",
+      "value": "लोकल फ़ोल्डर इस्तेमाल करें"
+    },
+    {
+      "key": "bpm.tooltip.override",
+      "value": "इस पैकेज को इस कंप्यूटर के किसी फ़ोल्डर से माउंट करें, जैसे किसी ऐड-ऑन का आपका अपना क्लोन। यह सिर्फ़ इसी मशीन पर .basisdev में रिकॉर्ड होता है, इसलिए किसी और का प्रोजेक्ट नहीं बदलता। Packages/manifest.json में बदली हुई पंक्ति को कमिट न करें।"
+    },
+    {
+      "key": "bpm.button.clearOverride",
+      "value": "फ़ोल्डर इस्तेमाल करना बंद करें"
+    },
+    {
+      "key": "bpm.tooltip.clearOverride",
+      "value": "लोकल ओवरराइड हटाएँ और पैकेज को फिर से लॉक से माउंट करें।"
+    },
+    {
+      "key": "bpm.button.embed",
+      "value": "Packages में कॉपी करें"
+    },
+    {
+      "key": "bpm.tooltip.embed",
+      "value": "इस पैकेज में बदलाव करने के लिए इसे Packages/ में कॉपी करें। आपका वर्शन कंट्रोल कॉपी को रिकॉर्ड करता है, और bpm-manifest.json उस कमिट को नोट करता है जिससे यह आया, ताकि बाद में इसकी अपस्ट्रीम से तुलना की जा सके और इसे वापस भेजा जा सके।"
+    },
+    {
+      "key": "bpm.tooltip.toggle",
+      "value": "पैकेज को बंद करें ताकि उसका चेकआउट बना रहे पर वह माउंट न हो, समस्या निवारण के लिए या एक ही पैकेज के दो स्रोतों के बीच बदलने के लिए। फिर से माउंट करने के लिए इसे चालू करें।"
+    },
+    {
+      "key": "bpm.package.turnOff",
+      "value": "बंद करें"
+    },
+    {
+      "key": "bpm.package.turnOn",
+      "value": "चालू करें"
+    },
+    {
+      "key": "bpm.package.dependency",
+      "value": "किसी दूसरे पैकेज को इसकी ज़रूरत है (गहराई {0})"
+    },
+    {
+      "key": "bpm.package.notLocked",
+      "value": "अभी लॉक नहीं"
+    },
+    {
+      "key": "bpm.package.off",
+      "value": "बंद"
+    },
+    {
+      "key": "bpm.package.lockedVersion",
+      "value": "लॉक {0}"
+    },
+    {
+      "key": "bpm.package.override",
+      "value": "लोकल फ़ोल्डर: {0}"
+    },
+    {
+      "key": "bpm.package.embedded",
+      "value": "Packages/ में एम्बेड किया गया"
+    },
+    {
+      "key": "bpm.package.copiedFrom",
+      "value": "{0} से कॉपी किया गया"
+    },
+    {
+      "key": "bpm.held.pinned",
+      "value": "पिन किया गया"
+    },
+    {
+      "key": "bpm.held.workingTree",
+      "value": "वर्किंग ट्री"
+    },
+    {
+      "key": "bpm.held.inline",
+      "value": "फ़ोल्डर"
+    },
+    {
+      "key": "bpm.checkout.missing",
+      "value": "अभी डाउनलोड नहीं हुआ। रिस्टोर इसे वापस ले आता है।"
+    },
+    {
+      "key": "bpm.checkout.onBranch",
+      "value": "{0}, {1} पर"
+    },
+    {
+      "key": "bpm.checkout.locked",
+      "value": "लॉक: {0}"
+    },
+    {
+      "key": "bpm.checkout.changes",
+      "value": "{0} बदली हुई फ़ाइल(ें)"
+    },
+    {
+      "key": "bpm.status.locking",
+      "value": "लॉक हो रहा है…"
+    },
+    {
+      "key": "bpm.status.restoring",
+      "value": "रिस्टोर हो रहा है…"
+    },
+    {
+      "key": "bpm.status.mounting",
+      "value": "माउंट हो रहा है…"
+    },
+    {
+      "key": "bpm.status.settingUp",
+      "value": "प्रोजेक्ट सेट अप हो रहा है…"
+    },
+    {
+      "key": "bpm.status.pinning",
+      "value": "पिन बदला जा रहा है…"
+    },
+    {
+      "key": "bpm.status.embedding",
+      "value": "{0} को Packages में कॉपी किया जा रहा है…"
+    },
+    {
+      "key": "bpm.status.failed",
+      "value": "कुछ चरण पूरे नहीं हुए। नीचे दिए संदेश देखें।"
+    },
+    {
+      "key": "bpm.override.set",
+      "value": "{0} इस कंप्यूटर पर {1} से लोड होता है।"
+    },
+    {
+      "key": "bpm.override.cleared",
+      "value": "{0} फिर से लॉक से माउंट है।"
+    },
+    {
+      "key": "bpm.override.noPackage",
+      "value": "{0} में package.json नहीं है, इसलिए इसे माउंट नहीं किया जा सकता।"
+    },
+    {
+      "key": "bpm.pin.badRef",
+      "value": "'{0}' कोई मान्य ब्रांच, टैग या कमिट नहीं है।"
+    },
+    {
+      "key": "bpm.plan.cancelled",
+      "value": "कुछ नहीं बदला। {0} {1} पर ही है।"
+    },
+    {
+      "key": "bpm.picker.override",
+      "value": "{0} को लोड करने का फ़ोल्डर"
+    },
+    {
+      "key": "shell.status.fix",
+      "value": "ठीक करें"
+    },
+    {
+      "key": "shell.status.fixTooltip",
+      "value": "टकराव वाली फ़ाइलें खोलें और हर एक के लिए चुनें कि कौन-सा संस्करण रखना है। सब हल हो जाने पर रुका हुआ चरण पूरा होगा और सिंक फिर से चलेगा।"
+    },
+    {
+      "key": "installs.status.fixingConflicts",
+      "value": "{0} में टकराव खोले जा रहे हैं…"
+    },
+    {
+      "key": "installs.status.conflictsOutsideUpdate",
+      "value": "{0} में ऐसे मर्ज टकराव हैं जो Basis अपडेट से नहीं आए। उन्हें अपने git टूल में हल करें, फिर दोबारा सिंक करें।"
+    },
+    {
+      "key": "installs.updateAll.fixTooltip",
+      "value": "जिन प्रोजेक्ट को आपकी ज़रूरत है, उन्हें एक-एक करके देखें। हर एक अपना Basis अपडेट खोलता है, जहाँ आप बदलाव देखते हैं, टकराव वाली फ़ाइलों का क्या करना है चुनते हैं, या रुका हुआ अपडेट पूरा करते हैं।"
+    },
+    {
+      "key": "installs.updateAll.fixOneTooltip",
+      "value": "इस प्रोजेक्ट का Basis अपडेट खोलें, जहाँ आप बदलाव देखते हैं, टकराव वाली फ़ाइलों का क्या करना है चुनते हैं, या रुका हुआ अपडेट पूरा करते हैं।"
+    },
+    {
+      "key": "dialog.needsYou.title",
+      "value": "वे प्रोजेक्ट जिन्हें आपकी ज़रूरत है"
+    },
+    {
+      "key": "dialog.needsYou.heading",
+      "value": "{0} प्रोजेक्ट्स को Basis द्वारा अपडेट किए जाने से पहले एक निर्णय चाहिए"
+    },
+    {
+      "key": "dialog.needsYou.headingOne",
+      "value": "{0} को Basis द्वारा अपडेट किए जाने से पहले एक निर्णय चाहिए"
+    },
+    {
+      "key": "dialog.needsYou.intro",
+      "value": "इन प्रोजेक्ट्स में कुछ भी नहीं बदला गया। किसी एक का Basis अपडेट खोलने के लिए उसे चुनें। उसका काम पूरा होने पर आप बाकी बचे प्रोजेक्ट्स के साथ यहाँ लौट आते हैं।"
+    },
+    {
+      "key": "dialog.needsYou.close",
+      "value": "बाद में"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.close",
+      "value": "यह सूची बंद करें। स्टेटस बार में ‘ठीक करें’ बटन और ‘गतिविधि’ सूची इसे फिर से खोलते हैं।"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.fix",
+      "value": "इस प्रोजेक्ट का Basis अपडेट खोलें। कुछ भी लिखे जाने से पहले आप देखते हैं कि क्या बदलेगा, और आप रद्द कर सकते हैं।"
+    },
+    {
+      "key": "dialog.needsYou.action.finish",
+      "value": "अपडेट पूरा करें"
+    },
+    {
+      "key": "dialog.needsYou.action.review",
+      "value": "अपडेट की समीक्षा करें"
+    },
+    {
+      "key": "dialog.needsYou.action.open",
+      "value": "अपडेट खोलें"
+    },
+    {
+      "key": "dialog.needsYou.hint.paused",
+      "value": "पिछला अपडेट बीच में रुक गया था, और कुछ फ़ाइलों में अभी भी टकराव हैं। हर फ़ाइल का कौन-सा संस्करण रखना है चुनें, और अपडेट पूरा हो जाएगा।"
+    },
+    {
+      "key": "dialog.needsYou.hint.conflicts",
+      "value": "आपके कुछ संपादन उन्हीं पंक्तियों को छूते हैं जिन्हें Basis ने बदला है। अपडेट लागू होने से पहले उन फ़ाइलों की समीक्षा करें और चुनें कि क्या रखना है।"
+    },
+    {
+      "key": "dialog.needsYou.hint.other",
+      "value": "यह देखने के लिए अपडेट खोलें कि उसे क्या चाहिए।"
+    },
+    {
+      "key": "dialog.needsYou.allDone",
+      "value": "जिन प्रोजेक्ट्स को आपकी ज़रूरत थी, वे सब निपट गए।"
+    },
+    {
+      "key": "dialog.needsYou.titleResults",
+      "value": "Basis अपडेट के परिणाम"
+    },
+    {
+      "key": "dialog.needsYou.results",
+      "value": "{0} अपडेट हुए, {1} को आपकी ज़रूरत है"
+    },
+    {
+      "key": "dialog.needsYou.resultsAllDone",
+      "value": "{0} अपडेट हुए, करने को कुछ नहीं बचा"
+    },
+    {
+      "key": "dialog.needsYou.introDone",
+      "value": "हर प्रोजेक्ट नवीनतम Basis पर है। खोलने से पहले देख लें कि हर एक को कौन-सा Unity एडिटर चाहिए।"
+    },
+    {
+      "key": "dialog.needsYou.section.updated",
+      "value": "अपडेट हुए ({0})"
+    },
+    {
+      "key": "dialog.needsYou.section.needsYou",
+      "value": "आपकी ज़रूरत है ({0})"
+    },
+    {
+      "key": "dialog.needsYou.updated.done",
+      "value": "अब नवीनतम Basis पर है।"
+    },
+    {
+      "key": "dialog.needsYou.updated.unity",
+      "value": "अब नवीनतम Basis पर है, जो Unity {0} का उपयोग करता है।"
+    },
+    {
+      "key": "dialog.needsYou.updated.unityMissing",
+      "value": "Unity {0} अभी इंस्टॉल नहीं है, इसलिए इंस्टॉल होने तक प्रोजेक्ट नहीं खुलेगा।"
+    },
+    {
+      "key": "dialog.needsYou.action.getUnity",
+      "value": "Unity {0} प्राप्त करें"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.getUnity",
+      "value": "इस संस्करण को चुनकर Unity एडिटर टैब पर जाएँ, ताकि आप इसके मॉड्यूल चुनकर इसे इंस्टॉल कर सकें।"
+    },
+    {
+      "key": "dialog.syncBlocked.title",
+      "value": "संपादित फ़ाइलें सिंक को रोक रही हैं"
+    },
+    {
+      "key": "dialog.syncBlocked.heading",
+      "value": "{0}: आपकी संपादित फ़ाइलों में से {1} रिमोट पर भी बदली हैं"
+    },
+    {
+      "key": "dialog.syncBlocked.headingOne",
+      "value": "{0}: आपकी संपादित फ़ाइलों में से एक रिमोट पर भी बदली है"
+    },
+    {
+      "key": "dialog.syncBlocked.intro",
+      "value": "जब तक इससे ये कमिट न किए गए संपादन ओवरराइट होंगे, Git {0} से पुल नहीं करेगा। चुनें कि इन्हें कैसे संभालना है। आपके संस्करण पहले प्रोजेक्ट के .git फ़ोल्डर में बैकअप हो जाते हैं, इसलिए किसी भी स्थिति में कुछ नहीं खोता।"
+    },
+    {
+      "key": "dialog.syncBlocked.files",
+      "value": "यहाँ संपादित और रिमोट पर बदली गई फ़ाइलें"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.title",
+      "value": "मेरे संस्करण रखें"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.text",
+      "value": "पुल करें, फिर हर फ़ाइल का आपका संस्करण ऊपर वापस रखें। Git इन्हें नए कमिट के मुकाबले संपादनों के रूप में दिखाता है, ताकि आप तुलना करके जो चाहें कमिट कर सकें।"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.button",
+      "value": "पुल करें और मेरे रखें"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.title",
+      "value": "रिमोट के संस्करण लें"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.text",
+      "value": "पुल करें और हर फ़ाइल का आने वाला संस्करण इस्तेमाल करें। यह तब सबसे अच्छा है जब आपके संपादन वे चीज़ें हों जिन्हें Unity ने खुद दोबारा लिखा। आपकी कॉपियाँ बैकअप फ़ोल्डर में रहती हैं।"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.button",
+      "value": "पुल करें और उनके लें"
+    },
+    {
+      "key": "dialog.syncBlocked.cancel",
+      "value": "अभी नहीं"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.keep",
+      "value": "इन फ़ाइलों का बैकअप लें, पुल करें, फिर अपने संस्करण नई फ़ाइलों के ऊपर कॉपी करें।"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.theirs",
+      "value": "इन फ़ाइलों का बैकअप लें, फिर पुल करें और हर एक का रिमोट संस्करण रखें।"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.cancel",
+      "value": "कुछ बदले बिना बंद करें। ‘ठीक करें’ बटन इसे फिर से दिखाता है।"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.fix",
+      "value": "पुल रोकने वाली संपादित फ़ाइलें दिखाएँ और चुनें कि अपनी रखें या रिमोट की लें। आपके संस्करणों का पहले बैकअप लिया जाता है।"
     }
   ]
 }

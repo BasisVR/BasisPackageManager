@@ -27,6 +27,7 @@ public sealed class BpmServiceTests
                 ("Basis/Assets/Edited.txt", "base"),
                 ("Basis/Assets/Edited.txt.meta", "fileFormatVersion: 2\nguid: 22222222222222222222222222222222\n"),
                 ("Basis/ProjectSettings/ProjectVersion.txt", "m_EditorVersion: 6000.0.0f1\n"),
+                ("Basis/ProjectSettings/ProjectSettings.asset", "PlayerSettings:\n  applicationIdentifier:\n    Android: com.BasisUnity.BasisUnity\n    Standalone: com.Basis-Unity.Basis-Unity\n  bundleVersion: 1\n"),
                 ("Basis/ProjectSettings/TagManager.asset", "TagManager:\n  tags:\n  - Grabbable\n  layers:\n  - Default\n  - \n  - Avatar\n"),
                 ("Basis Server/readme.txt", "server"));
             Project = _temp.CreateDir("project");
@@ -141,6 +142,8 @@ public sealed class BpmServiceTests
         Assert.True((await w.Bpm.InitAsync(w.Project, false, w.Upstream, "developer", new[] { "com.basis.a", "com.basis.c" }, false)).Ok);
 
         BpmService.SetEnabled(w.Project, "com.basis.c", false);
+        BpmService.SetEnabled(w.Project, "com.basis.a", true);
+        Assert.Equal("yes", BpmStore.ReadManifest(w.Project).Packages["com.basis.a"].Enabled);
         Assert.True((await w.Bpm.ResolveAsync(w.Project)).Ok);
         Assert.True((await w.Bpm.RestoreAsync(w.Project)).Ok);
         var mounted = await w.Bpm.MountAsync(w.Project);
@@ -181,16 +184,21 @@ public sealed class BpmServiceTests
         var init = await w.Bpm.InitAsync(w.Project, followsTemplate: true, w.Upstream, "developer", null, copyTemplate: false);
         Assert.True(init.Ok, init.Summary);
         Assert.Equal("one", File.ReadAllText(Path.Combine(w.Project, "Assets", "Readme.txt")));
+        var settings = File.ReadAllText(Path.Combine(w.Project, "ProjectSettings", "ProjectSettings.asset"));
+        Assert.Contains("Android: org.BasisUnity.BasisUnity", settings);
+        Assert.Contains("Standalone: org.Basis-Unity.Basis-Unity", settings);
         Assert.Equal(new[] { "com.basis.a", "com.basis.b", "com.basis.c", "com.unity.render-pipelines.universal" }, BpmStore.ReadManifest(w.Project).Packages.Keys.Order());
         File.WriteAllText(Path.Combine(w.Project, "Assets", "Edited.txt"), "mine");
         var second = GitSandbox.Commit(w.Upstream, "template",
             ("Basis/Assets/Readme.txt", "two"),
             ("Basis/Assets/Edited.txt", "theirs"),
             ("Basis/Assets/New.txt", "new"),
-            ("Basis/Assets/New.txt.meta", "fileFormatVersion: 2\nguid: 33333333333333333333333333333333\n"));
+            ("Basis/Assets/New.txt.meta", "fileFormatVersion: 2\nguid: 33333333333333333333333333333333\n"),
+            ("Basis/ProjectSettings/ProjectSettings.asset", "PlayerSettings:\n  applicationIdentifier:\n    Android: com.BasisUnity.BasisUnity\n    Standalone: com.Basis-Unity.Basis-Unity\n  bundleVersion: 2\n"));
 
         Assert.True((await w.Bpm.MovePinAsync(w.Project, "Basis", second)).Ok);
         var plan = await w.Bpm.PlanTemplateAsync(w.Project, "Basis", second);
+        Assert.Equal(BpmTemplateChangeKind.Update, plan.Changes.Single(c => c.Path == "ProjectSettings/ProjectSettings.asset").Kind);
 
         Assert.Equal(BpmTemplateChangeKind.Update, plan.Changes.Single(c => c.Path == "Assets/Readme.txt").Kind);
         Assert.Equal(BpmTemplateChangeKind.Conflict, plan.Changes.Single(c => c.Path == "Assets/Edited.txt").Kind);
@@ -204,6 +212,72 @@ public sealed class BpmServiceTests
         Assert.Equal("two", File.ReadAllText(Path.Combine(w.Project, "Assets", "Readme.txt")));
         Assert.Equal("mine", File.ReadAllText(Path.Combine(w.Project, "Assets", "Edited.txt")));
         Assert.Equal("new", File.ReadAllText(Path.Combine(w.Project, "Assets", "New.txt")));
+        settings = File.ReadAllText(Path.Combine(w.Project, "ProjectSettings", "ProjectSettings.asset"));
+        Assert.Contains("bundleVersion: 2", settings);
+        Assert.Contains("Android: org.BasisUnity.BasisUnity", settings);
+    }
+
+    [GitFact]
+    public async Task Embedding_a_package_copies_it_into_packages_records_where_it_came_from_and_drops_its_mount()
+    {
+        using var w = new World();
+        Assert.True((await w.Bpm.InitAsync(w.Project, false, w.Upstream, "developer", new[] { "com.basis.a", "com.basis.c" }, false)).Ok);
+
+        var embedded = BpmService.Embed(w.Project, "com.basis.c");
+        Assert.True(embedded.Ok, embedded.Summary);
+        var listed = BpmStore.ReadManifest(w.Project).Packages["com.basis.c"];
+        Assert.Equal("file:Packages/com.basis.c", listed.Version);
+        Assert.Equal(w.Upstream + "?path=Basis/Packages/com.basis.c#" + w.First, listed.CopiedFrom);
+        Assert.True(File.Exists(Path.Combine(w.Project, "Packages", "com.basis.c", "package.json")));
+
+        Assert.True((await w.Bpm.ResolveAsync(w.Project)).Ok);
+        Assert.True((await w.Bpm.RestoreAsync(w.Project)).Ok);
+        var mounted = await w.Bpm.MountAsync(w.Project);
+
+        Assert.True(mounted.Ok, mounted.Summary);
+        Assert.False(w.Mounts().ContainsKey("com.basis.c"));
+        Assert.True(w.Mounts().ContainsKey("com.basis.a"));
+        Assert.False(Directory.Exists(Path.Combine(w.Project, ".basisdev", "Basis", "Basis", "Packages", "com.basis.c")));
+        Assert.False(BpmService.Embed(w.Project, "com.basis.c").Ok);
+        Assert.Contains((await w.Bpm.StatusAsync(w.Project)).Issues, i => i.Subject == "com.basis.c" && i.Message.Contains(w.First, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Two_working_trees_of_one_repository_cannot_share_a_branch()
+    {
+        var manifest = new BpmManifest
+        {
+            Checkouts = new Dictionary<string, BpmCheckout>
+            {
+                ["Basis"] = new() { Url = "https://example.com/basis.git", Commit = new string('a', 40) },
+                ["ForkA"] = new() { Url = "https://example.com/fork.git", Branch = "mine", Repository = "Basis" },
+                ["ForkB"] = new() { Url = "https://example.com/fork.git", Branch = "mine", Repository = "basis" },
+                ["ForkC"] = new() { Url = "https://example.com/fork.git", Branch = "other", Repository = "Basis" },
+            },
+        };
+
+        var issues = BpmService.SharedBranchIssues(manifest);
+
+        Assert.Equal("ForkB", Assert.Single(issues).Subject);
+        Assert.Equal(BpmIssueLevel.Error, issues[0].Level);
+    }
+
+    [GitFact]
+    public async Task Init_adds_basisdev_to_the_projects_gitignore_once()
+    {
+        using var w = new World();
+        GitSandbox.Run(w.Project, "init", "-q");
+        File.WriteAllText(Path.Combine(w.Project, ".gitignore"), "Library/");
+
+        var result = await w.Bpm.InitAsync(w.Project, false, w.Upstream, "developer", new[] { "com.basis.c" }, false);
+
+        Assert.True(result.Ok, result.Summary);
+        Assert.Equal(new[] { "Library/", ".basisdev/" }, File.ReadAllLines(Path.Combine(w.Project, ".gitignore")));
+        Assert.Empty(BpmIgnore.Ensure(Path.Combine(w.Project, ".basisdev")));
+        Assert.DoesNotContain((await w.Bpm.StatusAsync(w.Project)).Issues, i => i.Subject == ".basisdev" && i.Level == BpmIssueLevel.Warning);
+
+        File.WriteAllText(Path.Combine(w.Project, ".gitignore"), "Library/\n");
+        Assert.Contains((await w.Bpm.StatusAsync(w.Project)).Issues, i => i.Subject == ".basisdev" && i.Level == BpmIssueLevel.Warning);
     }
 
     [GitFact]

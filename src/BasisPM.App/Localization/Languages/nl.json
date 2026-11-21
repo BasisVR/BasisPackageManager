@@ -7293,6 +7293,522 @@
     {
       "key": "settings.tooltip.advanced",
       "value": "Toon of verberg de instellingen voor ontwikkelaars: de URL van de pakketcatalogus en extra catalogi, de Unity Hub-overschrijving, prerelease-updates, het controleren van pakketten na installaties, de downloadcache en de gedetecteerde tooling. Je keuze wordt onthouden."
+    },
+    {
+      "key": "packages.button.projectFiles",
+      "value": "Projectbestanden"
+    },
+    {
+      "key": "packages.tooltip.projectFiles",
+      "value": "Open bpm-manifest.json voor dit project: de Basis-checkouts in .basisdev en hun pins, welke pakketten vastgelegd zijn en hoe elk pakket gekoppeld is, lokale overschrijvingen, en alles herstellen na een nieuwe checkout."
+    },
+    {
+      "key": "bpm.title",
+      "value": "Projectbestanden"
+    },
+    {
+      "key": "bpm.heading",
+      "value": "{0}: checkouts en pakketten"
+    },
+    {
+      "key": "bpm.intro",
+      "value": "bpm-manifest.json bepaalt welke pakketten dit project gebruikt en waar ze vandaan komen. bpm-lock.json zet elk pakket vast op een commit. Commit beide, en Packages/manifest.json. Commit .basisdev nooit."
+    },
+    {
+      "key": "bpm.basisdev",
+      "value": ".basisdev: {0}"
+    },
+    {
+      "key": "bpm.tooltip.openBasisDev",
+      "value": "Open de map .basisdev, waar de Basis-checkouts en pakketklonen op deze computer staan."
+    },
+    {
+      "key": "bpm.tooltip.refresh",
+      "value": "Lees bpm-manifest.json, bpm-lock.json en de checkouts opnieuw."
+    },
+    {
+      "key": "bpm.button.restore",
+      "value": "Herstellen"
+    },
+    {
+      "key": "bpm.tooltip.restore",
+      "value": "Bouw opnieuw op wat in .basisdev ontbreekt op basis van bpm-lock.json en koppel daarna de pakketten. Voer dit uit na een nieuwe checkout of nadat je een nieuwe lock hebt binnengehaald. Kan veilig meerdere keren worden uitgevoerd."
+    },
+    {
+      "key": "bpm.button.lock",
+      "value": "Vastleggen"
+    },
+    {
+      "key": "bpm.tooltip.lock",
+      "value": "Schrijf bpm-lock.json op basis van bpm-manifest.json: elk pakket en de pakketten die het nodig heeft, elk vastgezet op een commit."
+    },
+    {
+      "key": "bpm.button.mount",
+      "value": "Koppelen"
+    },
+    {
+      "key": "bpm.tooltip.mount",
+      "value": "Herschrijf de file:-regels in Packages/manifest.json op basis van de lock. Regels die BPM niet heeft geschreven, blijven ongewijzigd."
+    },
+    {
+      "key": "bpm.button.close",
+      "value": "Sluiten"
+    },
+    {
+      "key": "bpm.tooltip.close",
+      "value": "Sluit dit venster."
+    },
+    {
+      "key": "bpm.plan.heading",
+      "value": "{0} naar {1} verplaatsen wijzigt Assets en ProjectSettings"
+    },
+    {
+      "key": "bpm.plan.intro",
+      "value": "De Assets en ProjectSettings van dit project volgen Basis. Bestanden die je niet hebt aangeraakt, worden bijgewerkt, toegevoegd of verwijderd. Bestanden die je hebt gewijzigd, blijven staan zodat je ze kunt vergelijken."
+    },
+    {
+      "key": "bpm.button.cancelPlan",
+      "value": "Oude pin behouden"
+    },
+    {
+      "key": "bpm.tooltip.cancelPlan",
+      "value": "Zet de pin terug waar hij stond. Er verandert niets in Assets of ProjectSettings."
+    },
+    {
+      "key": "bpm.button.applyPlan",
+      "value": "Toepassen"
+    },
+    {
+      "key": "bpm.tooltip.applyPlan",
+      "value": "Verplaats de pin, herstel de checkout, pas deze wijzigingen toe op Assets en ProjectSettings en koppel opnieuw. Daarna worden de Assets gecontroleerd op dubbele GUID's."
+    },
+    {
+      "key": "bpm.setup.heading",
+      "value": "Basis uit .basisdev gebruiken"
+    },
+    {
+      "key": "bpm.setup.intro",
+      "value": "Dit project heeft nog geen bpm-manifest.json. Bij het instellen wordt Basis vastgezet op een commit, worden alleen de onderdelen die je nodig hebt naar .basisdev gedownload en met file:-regels gekoppeld."
+    },
+    {
+      "key": "bpm.setup.game",
+      "value": "Game"
+    },
+    {
+      "key": "bpm.setup.gameText",
+      "value": "Assets en ProjectSettings zijn van jou. Kies de Basis-pakketten die je wilt en hun afhankelijkheden komen vanzelf mee."
+    },
+    {
+      "key": "bpm.tooltip.setupGame",
+      "value": "Voor je eigen game of app. BPM schrijft nooit naar Assets of ProjectSettings en vertelt je alleen welke layers en tags Basis verwacht."
+    },
+    {
+      "key": "bpm.setup.content",
+      "value": "Avatars, werelden en props"
+    },
+    {
+      "key": "bpm.setup.contentText",
+      "value": "Elk Basis-pakket wordt gekoppeld, en Assets en ProjectSettings worden uit Basis gekopieerd en blijven het volgen."
+    },
+    {
+      "key": "bpm.tooltip.setupContent",
+      "value": "Voor content gemaakt met de Basis SDK. Als de pin verschuift, laat BPM zien wat er in Assets en ProjectSettings verandert en vraagt het eerst om toestemming."
+    },
+    {
+      "key": "bpm.setup.packages",
+      "value": "Te gebruiken Basis-pakketten, gescheiden door komma's"
+    },
+    {
+      "key": "bpm.tooltip.setupPackages",
+      "value": "Pakket-id's zoals com.basis.sdk. De pakketten waarvan ze afhankelijk zijn, worden automatisch aan de lock toegevoegd."
+    },
+    {
+      "key": "bpm.setup.at",
+      "value": "Basis-branch, -tag of -commit om vast te zetten"
+    },
+    {
+      "key": "bpm.tooltip.setupAt",
+      "value": "Het manifest legt altijd de commit-hash vast, dus de pin verschuift alleen als jij hem verplaatst."
+    },
+    {
+      "key": "bpm.button.setup",
+      "value": "Instellen"
+    },
+    {
+      "key": "bpm.tooltip.setup",
+      "value": "Schrijf bpm-manifest.json en bpm-lock.json, download Basis naar .basisdev en koppel de pakketten. .basisdev wordt aan je negeerlijst toegevoegd als het project git, Plastic of Perforce gebruikt."
+    },
+    {
+      "key": "bpm.section.checkouts",
+      "value": "Checkouts in .basisdev"
+    },
+    {
+      "key": "bpm.checkouts.none",
+      "value": "Geen checkouts. Pakketten komen uit hun eigen git-repository's of uit lokale mappen."
+    },
+    {
+      "key": "bpm.tooltip.held",
+      "value": "Vastgezette checkouts zijn van BPM en staan op de vastgelegde commit. Een working tree is van jou: op een branch, ter plekke bewerkt en gecommit. Een inline map wordt alleen gelezen."
+    },
+    {
+      "key": "bpm.tooltip.openCheckout",
+      "value": "Open de map van deze checkout."
+    },
+    {
+      "key": "bpm.pin.watermark",
+      "value": "Branch, tag of commit"
+    },
+    {
+      "key": "bpm.tooltip.pinTarget",
+      "value": "Waar de pin naartoe moet. Een branch of tag wordt één keer opgezocht en de commit-hash wordt vastgelegd."
+    },
+    {
+      "key": "bpm.button.pin",
+      "value": "Pin verplaatsen"
+    },
+    {
+      "key": "bpm.tooltip.pin",
+      "value": "Fetch, zet vast op de nieuwe commit, leg vast, herstel en koppel, en toon daarna de gewijzigde pakketten zodat je weet wat je opnieuw moet testen."
+    },
+    {
+      "key": "bpm.section.packages",
+      "value": "Pakketten"
+    },
+    {
+      "key": "bpm.packages.none",
+      "value": "bpm-manifest.json bevat nog geen pakketten."
+    },
+    {
+      "key": "bpm.button.override",
+      "value": "Lokale map gebruiken"
+    },
+    {
+      "key": "bpm.tooltip.override",
+      "value": "Koppel dit pakket vanuit een map op deze computer, bijvoorbeeld je eigen kloon van een add-on. Dit wordt alleen op deze machine in .basisdev vastgelegd, dus het project van niemand anders verandert. Commit de gewijzigde regel in Packages/manifest.json niet."
+    },
+    {
+      "key": "bpm.button.clearOverride",
+      "value": "Map niet meer gebruiken"
+    },
+    {
+      "key": "bpm.tooltip.clearOverride",
+      "value": "Verwijder de lokale overschrijving en koppel het pakket weer vanuit de lock."
+    },
+    {
+      "key": "bpm.button.embed",
+      "value": "Naar Packages kopiëren"
+    },
+    {
+      "key": "bpm.tooltip.embed",
+      "value": "Kopieer dit pakket naar Packages/ om het aan te passen. Je versiebeheer legt de kopie vast, en bpm-manifest.json noteert de commit waar het vandaan komt, zodat je het later met upstream kunt vergelijken en terugsturen."
+    },
+    {
+      "key": "bpm.tooltip.toggle",
+      "value": "Zet het pakket uit om de checkout te behouden maar het niet meer te koppelen, voor probleemoplossing of om te wisselen tussen twee bronnen van hetzelfde pakket. Zet het aan om het weer te koppelen."
+    },
+    {
+      "key": "bpm.package.turnOff",
+      "value": "Uitzetten"
+    },
+    {
+      "key": "bpm.package.turnOn",
+      "value": "Aanzetten"
+    },
+    {
+      "key": "bpm.package.dependency",
+      "value": "Nodig voor een ander pakket (diepte {0})"
+    },
+    {
+      "key": "bpm.package.notLocked",
+      "value": "nog niet vastgelegd"
+    },
+    {
+      "key": "bpm.package.off",
+      "value": "uitgezet"
+    },
+    {
+      "key": "bpm.package.lockedVersion",
+      "value": "vastgelegd op {0}"
+    },
+    {
+      "key": "bpm.package.override",
+      "value": "Lokale map: {0}"
+    },
+    {
+      "key": "bpm.package.embedded",
+      "value": "Ingebed in Packages/"
+    },
+    {
+      "key": "bpm.package.copiedFrom",
+      "value": "Gekopieerd van {0}"
+    },
+    {
+      "key": "bpm.held.pinned",
+      "value": "vastgezet"
+    },
+    {
+      "key": "bpm.held.workingTree",
+      "value": "working tree"
+    },
+    {
+      "key": "bpm.held.inline",
+      "value": "map"
+    },
+    {
+      "key": "bpm.checkout.missing",
+      "value": "Nog niet gedownload. Herstellen haalt het terug."
+    },
+    {
+      "key": "bpm.checkout.onBranch",
+      "value": "{0} op {1}"
+    },
+    {
+      "key": "bpm.checkout.locked",
+      "value": "lock: {0}"
+    },
+    {
+      "key": "bpm.checkout.changes",
+      "value": "{0} gewijzigd(e) bestand(en)"
+    },
+    {
+      "key": "bpm.status.locking",
+      "value": "Vastleggen…"
+    },
+    {
+      "key": "bpm.status.restoring",
+      "value": "Herstellen…"
+    },
+    {
+      "key": "bpm.status.mounting",
+      "value": "Koppelen…"
+    },
+    {
+      "key": "bpm.status.settingUp",
+      "value": "Project instellen…"
+    },
+    {
+      "key": "bpm.status.pinning",
+      "value": "Pin verplaatsen…"
+    },
+    {
+      "key": "bpm.status.embedding",
+      "value": "{0} naar Packages kopiëren…"
+    },
+    {
+      "key": "bpm.status.failed",
+      "value": "Sommige stappen zijn niet voltooid. Zie de meldingen hieronder."
+    },
+    {
+      "key": "bpm.override.set",
+      "value": "{0} wordt op deze computer geladen vanuit {1}."
+    },
+    {
+      "key": "bpm.override.cleared",
+      "value": "{0} wordt weer vanuit de lock gekoppeld."
+    },
+    {
+      "key": "bpm.override.noPackage",
+      "value": "{0} heeft geen package.json en kan dus niet worden gekoppeld."
+    },
+    {
+      "key": "bpm.pin.badRef",
+      "value": "'{0}' is geen geldige branch, tag of commit."
+    },
+    {
+      "key": "bpm.plan.cancelled",
+      "value": "Er is niets gewijzigd. {0} blijft op {1}."
+    },
+    {
+      "key": "bpm.picker.override",
+      "value": "Map om {0} uit te laden"
+    },
+    {
+      "key": "shell.status.fix",
+      "value": "Oplossen"
+    },
+    {
+      "key": "shell.status.fixTooltip",
+      "value": "Open de bestanden met conflicten en kies per bestand welke versie je houdt. Als alles is opgelost, wordt de gepauzeerde stap afgerond en loopt de synchronisatie opnieuw."
+    },
+    {
+      "key": "installs.status.fixingConflicts",
+      "value": "Conflicten in {0} worden geopend…"
+    },
+    {
+      "key": "installs.status.conflictsOutsideUpdate",
+      "value": "{0} heeft mergeconflicten die niet van een Basis-update komen. Los ze op in je git-tool en synchroniseer daarna opnieuw."
+    },
+    {
+      "key": "installs.updateAll.fixTooltip",
+      "value": "Loop de projecten die je nodig hebben één voor één door. Elk opent zijn eigen Basis-update, waar je de wijzigingen bekijkt, kiest wat er met bestanden met conflicten gebeurt of een gepauzeerde update afrondt."
+    },
+    {
+      "key": "installs.updateAll.fixOneTooltip",
+      "value": "Opent de Basis-update van dit project, waar je de wijzigingen bekijkt, kiest wat er met bestanden met conflicten gebeurt of een gepauzeerde update afrondt."
+    },
+    {
+      "key": "dialog.needsYou.title",
+      "value": "Projecten die je nodig hebben"
+    },
+    {
+      "key": "dialog.needsYou.heading",
+      "value": "{0} projecten hebben een beslissing nodig voordat Basis ze kan bijwerken"
+    },
+    {
+      "key": "dialog.needsYou.headingOne",
+      "value": "{0} heeft een beslissing nodig voordat Basis het kan bijwerken"
+    },
+    {
+      "key": "dialog.needsYou.intro",
+      "value": "Er is niets gewijzigd in deze projecten. Kies er een om de Basis-update ervan te openen. Als je ermee klaar bent, kom je hier terug met de projecten die over zijn."
+    },
+    {
+      "key": "dialog.needsYou.close",
+      "value": "Later"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.close",
+      "value": "Sluit deze lijst. De knop Oplossen in de statusbalk en de lijst Activiteit openen hem weer."
+    },
+    {
+      "key": "dialog.needsYou.tooltip.fix",
+      "value": "Open de Basis-update van dit project. Je ziet wat er verandert voordat er iets wordt geschreven, en je kunt annuleren."
+    },
+    {
+      "key": "dialog.needsYou.action.finish",
+      "value": "Update voltooien"
+    },
+    {
+      "key": "dialog.needsYou.action.review",
+      "value": "Update bekijken"
+    },
+    {
+      "key": "dialog.needsYou.action.open",
+      "value": "Update openen"
+    },
+    {
+      "key": "dialog.needsYou.hint.paused",
+      "value": "Een eerdere update is halverwege gestopt, met nog enkele bestanden in conflict. Kies welke versie van elk bestand je wilt behouden, en de update wordt voltooid."
+    },
+    {
+      "key": "dialog.needsYou.hint.conflicts",
+      "value": "Sommige van je bewerkingen raken dezelfde regels die Basis heeft gewijzigd. Bekijk die bestanden en kies wat je behoudt voordat de update wordt toegepast."
+    },
+    {
+      "key": "dialog.needsYou.hint.other",
+      "value": "Open de update om te zien wat er nodig is."
+    },
+    {
+      "key": "dialog.needsYou.allDone",
+      "value": "Alle projecten die je nodig hadden, zijn afgehandeld."
+    },
+    {
+      "key": "dialog.needsYou.titleResults",
+      "value": "Resultaten van Basis-update"
+    },
+    {
+      "key": "dialog.needsYou.results",
+      "value": "{0} bijgewerkt, {1} hebben je nodig"
+    },
+    {
+      "key": "dialog.needsYou.resultsAllDone",
+      "value": "{0} bijgewerkt, niets meer te doen"
+    },
+    {
+      "key": "dialog.needsYou.introDone",
+      "value": "Alle projecten staan op de nieuwste Basis. Controleer welke Unity-editor elk project nodig heeft voordat je het opent."
+    },
+    {
+      "key": "dialog.needsYou.section.updated",
+      "value": "Bijgewerkt ({0})"
+    },
+    {
+      "key": "dialog.needsYou.section.needsYou",
+      "value": "Hebben je nodig ({0})"
+    },
+    {
+      "key": "dialog.needsYou.updated.done",
+      "value": "Nu op de nieuwste Basis."
+    },
+    {
+      "key": "dialog.needsYou.updated.unity",
+      "value": "Nu op de nieuwste Basis, die Unity {0} gebruikt."
+    },
+    {
+      "key": "dialog.needsYou.updated.unityMissing",
+      "value": "Unity {0} is nog niet geïnstalleerd, dus het project opent pas als dat wel zo is."
+    },
+    {
+      "key": "dialog.needsYou.action.getUnity",
+      "value": "Unity {0} ophalen"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.getUnity",
+      "value": "Ga naar het tabblad Unity-editors met deze versie geselecteerd, zodat je de modules kunt kiezen en hem kunt installeren."
+    },
+    {
+      "key": "dialog.syncBlocked.title",
+      "value": "Bewerkte bestanden blokkeren de synchronisatie"
+    },
+    {
+      "key": "dialog.syncBlocked.heading",
+      "value": "{0}: {1} van je bewerkte bestanden zijn ook op de remote gewijzigd"
+    },
+    {
+      "key": "dialog.syncBlocked.headingOne",
+      "value": "{0}: een van je bewerkte bestanden is ook op de remote gewijzigd"
+    },
+    {
+      "key": "dialog.syncBlocked.intro",
+      "value": "Git pullt niet van {0} zolang dat deze niet-gecommitte bewerkingen zou overschrijven. Kies hoe je ermee omgaat. Je versies worden eerst opgeslagen in de .git-map van het project, dus je verliest in geen geval iets."
+    },
+    {
+      "key": "dialog.syncBlocked.files",
+      "value": "Bestanden die hier zijn bewerkt en op de remote zijn gewijzigd"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.title",
+      "value": "Mijn versies houden"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.text",
+      "value": "Pullen en daarna je eigen versie van elk bestand er weer overheen zetten. Git toont ze als bewerkingen ten opzichte van de nieuwe commit, zodat je kunt vergelijken en committen wat je wilt."
+    },
+    {
+      "key": "dialog.syncBlocked.keep.button",
+      "value": "Pullen en de mijne houden"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.title",
+      "value": "De remote-versies nemen"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.text",
+      "value": "Pullen en de binnenkomende versie van elk bestand gebruiken. Het beste als je bewerkingen dingen zijn die Unity zelf heeft herschreven. Je kopieën blijven in de back-upmap."
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.button",
+      "value": "Pullen en die van hen nemen"
+    },
+    {
+      "key": "dialog.syncBlocked.cancel",
+      "value": "Niet nu"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.keep",
+      "value": "Maak een back-up van deze bestanden, pull en kopieer dan je versies over de nieuwe heen."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.theirs",
+      "value": "Maak een back-up van deze bestanden, pull dan en houd van elk de versie van de remote."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.cancel",
+      "value": "Sluiten zonder iets te wijzigen. Met de knop Oplossen krijg je dit weer te zien."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.fix",
+      "value": "Toon de bewerkte bestanden die de pull blokkeren en kies of je de jouwe houdt of die van de remote neemt. Je versies krijgen eerst een back-up."
     }
   ]
 }

@@ -7293,6 +7293,522 @@
     {
       "key": "settings.tooltip.advanced",
       "value": "يُظهر إعدادات المطوّرين أو يُخفيها: عنوان URL لفهرس الحزم والفهارس الإضافية، وتجاوز مسار Unity Hub، وتحديثات ما قبل الإصدار، وفحص الحزم بعد التثبيت، وذاكرة التنزيلات المؤقتة، والأدوات المكتشفة. يُحفظ اختيارك."
+    },
+    {
+      "key": "packages.button.projectFiles",
+      "value": "ملفات المشروع"
+    },
+    {
+      "key": "packages.tooltip.projectFiles",
+      "value": "افتح bpm-manifest.json لهذا المشروع: نسخ Basis المستنسخة في .basisdev وتثبيتاتها، والحزم المقفلة وطريقة تركيب كل منها، والتجاوزات المحلية، واستعادة كل شيء بعد نسخة مستنسخة جديدة."
+    },
+    {
+      "key": "bpm.title",
+      "value": "ملفات المشروع"
+    },
+    {
+      "key": "bpm.heading",
+      "value": "{0}: النسخ المستنسخة والحزم"
+    },
+    {
+      "key": "bpm.intro",
+      "value": "يحدد bpm-manifest.json الحزم التي يستخدمها هذا المشروع ومصدر كل منها. ويثبّت bpm-lock.json كل حزمة على التزام. أودِع الملفين معًا وPackages/manifest.json. لا تودِع .basisdev أبدًا."
+    },
+    {
+      "key": "bpm.basisdev",
+      "value": ".basisdev: {0}"
+    },
+    {
+      "key": "bpm.tooltip.openBasisDev",
+      "value": "افتح مجلّد .basisdev، حيث توجد نسخ Basis المستنسخة ونسخ الحزم على هذا الكمبيوتر."
+    },
+    {
+      "key": "bpm.tooltip.refresh",
+      "value": "أعد قراءة bpm-manifest.json وbpm-lock.json والنسخ المستنسخة."
+    },
+    {
+      "key": "bpm.button.restore",
+      "value": "استعادة"
+    },
+    {
+      "key": "bpm.tooltip.restore",
+      "value": "أعد بناء كل ما ينقص في .basisdev من bpm-lock.json، ثم ركّب الحزم. شغّل هذا بعد نسخة مستنسخة جديدة أو بعد سحب قفل جديد. تشغيله مرتين آمن."
+    },
+    {
+      "key": "bpm.button.lock",
+      "value": "قفل"
+    },
+    {
+      "key": "bpm.tooltip.lock",
+      "value": "اكتب bpm-lock.json من bpm-manifest.json: كل حزمة والحزم التي تحتاجها، وكل منها مثبّتة على التزام."
+    },
+    {
+      "key": "bpm.button.mount",
+      "value": "تركيب"
+    },
+    {
+      "key": "bpm.tooltip.mount",
+      "value": "أعد كتابة أسطر file: في Packages/manifest.json من القفل. تبقى الأسطر التي لم يكتبها BPM كما هي."
+    },
+    {
+      "key": "bpm.button.close",
+      "value": "إغلاق"
+    },
+    {
+      "key": "bpm.tooltip.close",
+      "value": "أغلق هذه النافذة."
+    },
+    {
+      "key": "bpm.plan.heading",
+      "value": "نقل {0} إلى {1} يغيّر Assets وProjectSettings"
+    },
+    {
+      "key": "bpm.plan.intro",
+      "value": "يتبع Assets وProjectSettings في هذا المشروع Basis. الملفات التي لم تلمسها تُحدَّث أو تُضاف أو تُزال. أما الملفات التي غيّرتها فتُترك لك لتقارنها."
+    },
+    {
+      "key": "bpm.button.cancelPlan",
+      "value": "الإبقاء على التثبيت القديم"
+    },
+    {
+      "key": "bpm.tooltip.cancelPlan",
+      "value": "أعد التثبيت إلى موضعه السابق. لن يتغير شيء في Assets أو ProjectSettings."
+    },
+    {
+      "key": "bpm.button.applyPlan",
+      "value": "تطبيق"
+    },
+    {
+      "key": "bpm.tooltip.applyPlan",
+      "value": "انقل التثبيت، واستعد النسخة المستنسخة، وطبّق هذه التغييرات على Assets وProjectSettings، ثم ركّب من جديد. بعد ذلك تُفحص Assets بحثًا عن GUID مكرّرة."
+    },
+    {
+      "key": "bpm.setup.heading",
+      "value": "استخدام Basis من .basisdev"
+    },
+    {
+      "key": "bpm.setup.intro",
+      "value": "لا يحتوي هذا المشروع على bpm-manifest.json بعد. إعداده يثبّت Basis على التزام، وينزّل الأجزاء التي تحتاجها فقط إلى .basisdev، ويركّبها بأسطر file:."
+    },
+    {
+      "key": "bpm.setup.game",
+      "value": "لعبة"
+    },
+    {
+      "key": "bpm.setup.gameText",
+      "value": "Assets وProjectSettings ملكك. اختر حزم Basis التي تريدها وستأتي تبعياتها معها."
+    },
+    {
+      "key": "bpm.tooltip.setupGame",
+      "value": "للعبتك أو تطبيقك الخاص. لا يكتب BPM أبدًا في Assets أو ProjectSettings، ويكتفي بإخبارك بالطبقات والوسوم التي يتوقعها Basis."
+    },
+    {
+      "key": "bpm.setup.content",
+      "value": "صور رمزية وعوالم وعناصر"
+    },
+    {
+      "key": "bpm.setup.contentText",
+      "value": "تُركَّب كل حزم Basis، ويُنسخ Assets وProjectSettings من Basis ويستمران في اتباعه."
+    },
+    {
+      "key": "bpm.tooltip.setupContent",
+      "value": "للمحتوى المصنوع باستخدام Basis SDK. عندما يتحرك التثبيت، يعرض BPM ما يتغير في Assets وProjectSettings ويسألك أولًا."
+    },
+    {
+      "key": "bpm.setup.packages",
+      "value": "حزم Basis المراد استخدامها، مفصولة بفواصل"
+    },
+    {
+      "key": "bpm.tooltip.setupPackages",
+      "value": "معرّفات حزم مثل com.basis.sdk. تُضاف الحزم التي تعتمد عليها إلى القفل تلقائيًا."
+    },
+    {
+      "key": "bpm.setup.at",
+      "value": "فرع Basis أو وسمه أو التزامه المراد التثبيت عليه"
+    },
+    {
+      "key": "bpm.tooltip.setupAt",
+      "value": "يسجّل البيان دائمًا تجزئة الالتزام، لذا لا يتحرك التثبيت إلا عندما تحرّكه أنت."
+    },
+    {
+      "key": "bpm.button.setup",
+      "value": "إعداد"
+    },
+    {
+      "key": "bpm.tooltip.setup",
+      "value": "اكتب bpm-manifest.json وbpm-lock.json، ونزّل Basis إلى .basisdev، وركّب الحزم. يُضاف .basisdev إلى قائمة التجاهل عندما يستخدم المشروع git أو Plastic أو Perforce."
+    },
+    {
+      "key": "bpm.section.checkouts",
+      "value": "النسخ المستنسخة في .basisdev"
+    },
+    {
+      "key": "bpm.checkouts.none",
+      "value": "لا توجد نسخ مستنسخة. تأتي الحزم من مستودعات git الخاصة بها أو من مجلّدات محلية."
+    },
+    {
+      "key": "bpm.tooltip.held",
+      "value": "النسخ المثبّتة ملك BPM وتبقى على الالتزام المقفل. شجرة العمل ملكك: على فرع، تُحرَّر ويُلتزم بها في مكانها. المجلّد المضمّن يُقرأ فقط."
+    },
+    {
+      "key": "bpm.tooltip.openCheckout",
+      "value": "افتح مجلّد هذه النسخة المستنسخة."
+    },
+    {
+      "key": "bpm.pin.watermark",
+      "value": "فرع أو وسم أو التزام"
+    },
+    {
+      "key": "bpm.tooltip.pinTarget",
+      "value": "الموضع الذي يُنقل إليه التثبيت. يُبحث عن الفرع أو الوسم مرة واحدة وتُسجَّل تجزئة الالتزام."
+    },
+    {
+      "key": "bpm.button.pin",
+      "value": "نقل التثبيت"
+    },
+    {
+      "key": "bpm.tooltip.pin",
+      "value": "اجلب، وثبّت على الالتزام الجديد، واقفل، واستعد، وركّب، ثم اعرض الحزم التي تغيرت لتعرف ما يجب إعادة اختباره."
+    },
+    {
+      "key": "bpm.section.packages",
+      "value": "الحزم"
+    },
+    {
+      "key": "bpm.packages.none",
+      "value": "لا يسرد bpm-manifest.json أي حزم بعد."
+    },
+    {
+      "key": "bpm.button.override",
+      "value": "استخدام مجلّد محلي"
+    },
+    {
+      "key": "bpm.tooltip.override",
+      "value": "ركّب هذه الحزمة من مجلّد على هذا الكمبيوتر، مثل نسختك المستنسخة من إضافة. يُسجَّل ذلك في .basisdev على هذا الجهاز فقط، فلا يتغير مشروع أي شخص آخر. لا تودِع السطر المتغيّر في Packages/manifest.json."
+    },
+    {
+      "key": "bpm.button.clearOverride",
+      "value": "التوقف عن استخدام المجلّد"
+    },
+    {
+      "key": "bpm.tooltip.clearOverride",
+      "value": "أزل التجاوز المحلي وركّب الحزمة من القفل مرة أخرى."
+    },
+    {
+      "key": "bpm.button.embed",
+      "value": "نسخ إلى Packages"
+    },
+    {
+      "key": "bpm.tooltip.embed",
+      "value": "انسخ هذه الحزمة إلى Packages/ لتعديلها. يسجّل نظام التحكم في الإصدارات النسخة، ويدوّن bpm-manifest.json الالتزام الذي جاءت منه لتمكن مقارنتها بالمصدر وإرسالها لاحقًا."
+    },
+    {
+      "key": "bpm.tooltip.toggle",
+      "value": "أوقف الحزمة للإبقاء على نسختها المستنسخة مع إيقاف تركيبها، لاستكشاف الأخطاء أو للتبديل بين مصدرين للحزمة نفسها. شغّلها لتركيبها مرة أخرى."
+    },
+    {
+      "key": "bpm.package.turnOff",
+      "value": "إيقاف"
+    },
+    {
+      "key": "bpm.package.turnOn",
+      "value": "تشغيل"
+    },
+    {
+      "key": "bpm.package.dependency",
+      "value": "تحتاجها حزمة أخرى (العمق {0})"
+    },
+    {
+      "key": "bpm.package.notLocked",
+      "value": "غير مقفلة بعد"
+    },
+    {
+      "key": "bpm.package.off",
+      "value": "متوقفة"
+    },
+    {
+      "key": "bpm.package.lockedVersion",
+      "value": "مقفلة {0}"
+    },
+    {
+      "key": "bpm.package.override",
+      "value": "مجلّد محلي: {0}"
+    },
+    {
+      "key": "bpm.package.embedded",
+      "value": "مضمّنة في Packages/"
+    },
+    {
+      "key": "bpm.package.copiedFrom",
+      "value": "منسوخة من {0}"
+    },
+    {
+      "key": "bpm.held.pinned",
+      "value": "مثبّتة"
+    },
+    {
+      "key": "bpm.held.workingTree",
+      "value": "شجرة عمل"
+    },
+    {
+      "key": "bpm.held.inline",
+      "value": "مجلّد"
+    },
+    {
+      "key": "bpm.checkout.missing",
+      "value": "لم تُنزَّل بعد. الاستعادة تعيدها."
+    },
+    {
+      "key": "bpm.checkout.onBranch",
+      "value": "{0} عند {1}"
+    },
+    {
+      "key": "bpm.checkout.locked",
+      "value": "القفل: {0}"
+    },
+    {
+      "key": "bpm.checkout.changes",
+      "value": "{0} ملف (ملفات) متغيّرة"
+    },
+    {
+      "key": "bpm.status.locking",
+      "value": "جارٍ القفل…"
+    },
+    {
+      "key": "bpm.status.restoring",
+      "value": "جارٍ الاستعادة…"
+    },
+    {
+      "key": "bpm.status.mounting",
+      "value": "جارٍ التركيب…"
+    },
+    {
+      "key": "bpm.status.settingUp",
+      "value": "جارٍ إعداد المشروع…"
+    },
+    {
+      "key": "bpm.status.pinning",
+      "value": "جارٍ نقل التثبيت…"
+    },
+    {
+      "key": "bpm.status.embedding",
+      "value": "جارٍ نسخ {0} إلى Packages…"
+    },
+    {
+      "key": "bpm.status.failed",
+      "value": "لم تكتمل بعض الخطوات. راجع الرسائل أدناه."
+    },
+    {
+      "key": "bpm.override.set",
+      "value": "يُحمَّل {0} من {1} على هذا الكمبيوتر."
+    },
+    {
+      "key": "bpm.override.cleared",
+      "value": "رُكّب {0} من القفل مرة أخرى."
+    },
+    {
+      "key": "bpm.override.noPackage",
+      "value": "لا يحتوي {0} على package.json، لذا لا يمكن تركيبه."
+    },
+    {
+      "key": "bpm.pin.badRef",
+      "value": "“{0}” ليس فرعًا أو وسمًا أو التزامًا صالحًا."
+    },
+    {
+      "key": "bpm.plan.cancelled",
+      "value": "لم يتغير شيء. يبقى {0} عند {1}."
+    },
+    {
+      "key": "bpm.picker.override",
+      "value": "المجلّد الذي يُحمَّل منه {0}"
+    },
+    {
+      "key": "shell.status.fix",
+      "value": "إصلاح"
+    },
+    {
+      "key": "shell.status.fixTooltip",
+      "value": "افتح الملفات المتعارضة واختر النسخة التي تريد الاحتفاظ بها لكل ملف. عند حلها جميعًا، تكتمل الخطوة المتوقفة وتعمل المزامنة من جديد."
+    },
+    {
+      "key": "installs.status.fixingConflicts",
+      "value": "جارٍ فتح التعارضات في {0}…"
+    },
+    {
+      "key": "installs.status.conflictsOutsideUpdate",
+      "value": "في {0} تعارضات دمج لم تأتِ من تحديث Basis. احلّها في أداة git لديك، ثم زامن مرة أخرى."
+    },
+    {
+      "key": "installs.updateAll.fixTooltip",
+      "value": "مرّ على المشاريع التي تحتاجك واحدًا تلو الآخر. يفتح كل منها تحديث Basis الخاص به، حيث تراجع التغييرات وتختار ما تفعله بالملفات المتعارضة أو تُكمل تحديثًا متوقفًا."
+    },
+    {
+      "key": "installs.updateAll.fixOneTooltip",
+      "value": "يفتح تحديث Basis لهذا المشروع، حيث تراجع التغييرات وتختار ما تفعله بالملفات المتعارضة أو تُكمل تحديثًا متوقفًا."
+    },
+    {
+      "key": "dialog.needsYou.title",
+      "value": "مشاريع تحتاج إليك"
+    },
+    {
+      "key": "dialog.needsYou.heading",
+      "value": "عدد المشاريع التي تحتاج إلى قرار قبل أن يتمكن Basis من تحديثها: {0}"
+    },
+    {
+      "key": "dialog.needsYou.headingOne",
+      "value": "يحتاج {0} إلى قرار قبل أن يتمكن Basis من تحديثه"
+    },
+    {
+      "key": "dialog.needsYou.intro",
+      "value": "لم يُغيَّر أي شيء في هذه المشاريع. اختر واحدًا لفتح تحديث Basis الخاص به. عند الانتهاء منه، تعود إلى هنا مع المشاريع المتبقية."
+    },
+    {
+      "key": "dialog.needsYou.close",
+      "value": "لاحقًا"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.close",
+      "value": "أغلق هذه القائمة. يعيد زر “إصلاح” في شريط الحالة وقائمة “النشاط” فتحها."
+    },
+    {
+      "key": "dialog.needsYou.tooltip.fix",
+      "value": "افتح تحديث Basis لهذا المشروع. سترى ما سيتغير قبل كتابة أي شيء، ويمكنك الإلغاء."
+    },
+    {
+      "key": "dialog.needsYou.action.finish",
+      "value": "إنهاء التحديث"
+    },
+    {
+      "key": "dialog.needsYou.action.review",
+      "value": "مراجعة التحديث"
+    },
+    {
+      "key": "dialog.needsYou.action.open",
+      "value": "فتح التحديث"
+    },
+    {
+      "key": "dialog.needsYou.hint.paused",
+      "value": "توقف تحديث سابق في منتصفه، ولا تزال بعض الملفات في تعارض. اختر النسخة التي تريد الاحتفاظ بها من كل ملف، وسيكتمل التحديث."
+    },
+    {
+      "key": "dialog.needsYou.hint.conflicts",
+      "value": "بعض تعديلاتك تمس الأسطر نفسها التي غيّرها Basis. راجع تلك الملفات واختر ما تحتفظ به قبل تطبيق التحديث."
+    },
+    {
+      "key": "dialog.needsYou.hint.other",
+      "value": "افتح التحديث لمعرفة ما يحتاج إليه."
+    },
+    {
+      "key": "dialog.needsYou.allDone",
+      "value": "تمت معالجة كل المشاريع التي كانت تحتاج إليك."
+    },
+    {
+      "key": "dialog.needsYou.titleResults",
+      "value": "نتائج تحديث Basis"
+    },
+    {
+      "key": "dialog.needsYou.results",
+      "value": "تم تحديث {0}، و{1} تحتاج إليك"
+    },
+    {
+      "key": "dialog.needsYou.resultsAllDone",
+      "value": "تم تحديث {0}، ولم يتبقَّ شيء"
+    },
+    {
+      "key": "dialog.needsYou.introDone",
+      "value": "كل المشاريع على أحدث إصدار من Basis. تحقّق من محرّر Unity الذي يحتاجه كل مشروع قبل فتحه."
+    },
+    {
+      "key": "dialog.needsYou.section.updated",
+      "value": "تم التحديث ({0})"
+    },
+    {
+      "key": "dialog.needsYou.section.needsYou",
+      "value": "تحتاج إليك ({0})"
+    },
+    {
+      "key": "dialog.needsYou.updated.done",
+      "value": "أصبح على أحدث إصدار من Basis."
+    },
+    {
+      "key": "dialog.needsYou.updated.unity",
+      "value": "أصبح على أحدث إصدار من Basis، الذي يستخدم Unity {0}."
+    },
+    {
+      "key": "dialog.needsYou.updated.unityMissing",
+      "value": "Unity {0} غير مثبّت بعد، لذا لن يُفتح المشروع حتى يتم تثبيته."
+    },
+    {
+      "key": "dialog.needsYou.action.getUnity",
+      "value": "احصل على Unity {0}"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.getUnity",
+      "value": "انتقل إلى تبويب محرّرات Unity مع تحديد هذا الإصدار، لتختار وحداته وتثبّته."
+    },
+    {
+      "key": "dialog.syncBlocked.title",
+      "value": "ملفات معدّلة تمنع المزامنة"
+    },
+    {
+      "key": "dialog.syncBlocked.heading",
+      "value": "{0}: تغيّر {1} من ملفاتك المعدّلة في المستودع البعيد أيضًا"
+    },
+    {
+      "key": "dialog.syncBlocked.headingOne",
+      "value": "{0}: تغيّر أحد ملفاتك المعدّلة في المستودع البعيد أيضًا"
+    },
+    {
+      "key": "dialog.syncBlocked.intro",
+      "value": "لن يسحب Git من {0} ما دام ذلك سيكتب فوق هذه التعديلات غير المودَعة. اختر طريقة التعامل معها. تُحفظ نسخة احتياطية من نسخك أولًا داخل مجلد .git الخاص بالمشروع، فلا يضيع شيء في أي حال."
+    },
+    {
+      "key": "dialog.syncBlocked.files",
+      "value": "ملفات عُدّلت هنا وتغيّرت في المستودع البعيد"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.title",
+      "value": "الاحتفاظ بنسخي"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.text",
+      "value": "يسحب ثم يعيد نسختك من كل ملف فوقها. يعرضها Git كتعديلات على الالتزام الجديد، لتتمكن من المقارنة وإيداع ما تريد."
+    },
+    {
+      "key": "dialog.syncBlocked.keep.button",
+      "value": "سحب والاحتفاظ بنسخي"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.title",
+      "value": "اعتماد نسخ المستودع البعيد"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.text",
+      "value": "يسحب ويستخدم النسخة الواردة من كل ملف. الأفضل عندما تكون تعديلاتك أشياء أعاد Unity كتابتها من تلقاء نفسه. تبقى نسخك في مجلد النسخ الاحتياطي."
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.button",
+      "value": "سحب واعتماد نسخهم"
+    },
+    {
+      "key": "dialog.syncBlocked.cancel",
+      "value": "ليس الآن"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.keep",
+      "value": "ينسخ هذه الملفات احتياطيًا، ثم يسحب، ثم ينسخ نسخك فوق الملفات الجديدة."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.theirs",
+      "value": "ينسخ هذه الملفات احتياطيًا، ثم يسحب ويحتفظ بنسخة المستودع البعيد من كل ملف."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.cancel",
+      "value": "إغلاق دون تغيير أي شيء. يعيد زر “إصلاح” إظهار هذا."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.fix",
+      "value": "يعرض الملفات المعدّلة التي تمنع السحب ويتيح لك اختيار الاحتفاظ بنسخك أو اعتماد نسخ المستودع البعيد. تُنسخ نسخك احتياطيًا أولًا."
     }
   ]
 }

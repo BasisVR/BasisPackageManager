@@ -153,7 +153,9 @@ deletes anything there.
 `.basisdev` is found by walking up from the project, so `Basis/` and `Basis Server/` in a Basis
 clone share the one at the clone root. It holds the checkouts and `bpm-local.json`, this machine's
 local overrides and the mount lines BPM wrote. A working tree in it can hold unpushed commits, so
-BPM never removes one without checking first.
+BPM never removes one without checking first. `init-project` adds `.basisdev/` to the project's
+`.gitignore`, Plastic `ignore.conf` or `.p4ignore` when it finds one of those version controls, and
+`manifest` warns when nothing ignores it.
 
 Packages are mounted with `file:` lines in `Packages/manifest.json`, never symlinks. Each package
 says what it needs from other packages in `bpmDependencies` in its `package.json` (id to version);
@@ -163,13 +165,15 @@ git URL. Unity's own `dependencies` are left to Unity.
 | Command | What it does |
 |---|---|
 | `init-project <folder> --game` | Pin Basis, use the Basis packages you list with `--packages`, and leave `Assets` and `ProjectSettings` to you. In an existing project it says which layers and tags Basis expects. |
-| `init-project <folder> --content` | Avatar, world and prop projects. Every Basis package is mounted, and `Assets` and `ProjectSettings` are copied from Basis and keep following it. |
+| `init-project <folder> --content` | Avatar, world and prop projects. Every Basis package is mounted, and `Assets` and `ProjectSettings` are copied from Basis and keep following it. The Android and desktop app ids in `ProjectSettings.asset` become `org.` ids, so a build doesn't replace Basis Labs on a headset. |
+| `init-project <folder> --contributor` | A full clone of Basis (or your fork with `--basis`) to work on Basis itself, the same as `clone-basis`. |
 | `lock` | Write `bpm-lock.json` from `bpm-manifest.json`. Locked commits only move with `--refresh` or `pin`. |
 | `restore` | Rebuild whatever is missing in `.basisdev` from the lock, then mount. Safe to run twice, needs no git in the project, and is what CI runs before Unity starts. |
 | `mount` | Rewrite the mount lines from the lock. |
-| `pin <checkout> <rev>` | Move a pinned checkout, list the packages that changed, and for a content project show the `Assets`/`ProjectSettings` changes and ask before applying them. Files you changed are left for you. |
+| `pin [checkout] <rev>` | Move a pinned checkout (the default one when you leave the name out), list the packages that changed, and for a content project show the `Assets`/`ProjectSettings` changes and ask before applying them. Files you changed are left for you. |
 | `override <id> <folder>` | Mount a package from a folder on this machine only, the Unity side of `server-link`. |
-| `enable-package`, `disable-package` | Flip `enabled` and mount again. |
+| `enable-package`, `disable-package` | Set `enabled` to `yes` or `no` and mount again. |
+| `embed-package <id>` | Copy a locked package into `Packages/` to patch it in a game project. `bpm-manifest.json` points at the copy and records the commit it came from in `copiedFrom`, so it can be diffed against upstream and sent back. |
 | `manifest` | Show the checkouts and mounts, and anything out of date: a stale lock, edits in a pinned checkout, a fork that isn't rebased onto the pin, or client and Basis Server locks that disagree. |
 
 A project that still has `Packages/basispackages.json` keeps working; the first change writes the

@@ -220,14 +220,42 @@ public sealed partial class InstallsViewModel : ObservableObject
         var activity = _shell.BeginActivity(L.Tr("installs.status.syncing", row.Name), row.Name);
         try
         {
-            var result = await _shell.PackagesVM.SyncProjectAsync(row.Install, line => ReportActivity(activity, line));
-            if (result.Ok) _shell.SetStatus(L.Tr("installs.status.synced", row.Name, result.Message), StatusKind.Success, row.Name, key: key);
-            else _shell.SetStatus(L.Tr("installs.status.syncFailed", row.Name, result.Message), StatusKind.Error, row.Name, () => SyncQueuedAsync(row), key);
+            ReportSync(row, await _shell.PackagesVM.SyncProjectAsync(row.Install, line => ReportActivity(activity, line)));
         }
         catch (Exception ex)
         {
             DiagnosticLog.Write($"Syncing {row.RepoRoot}", ex);
             _shell.SetStatus(L.Tr("installs.status.syncFailed", row.Name, ex.Message), StatusKind.Error, row.Name, () => SyncQueuedAsync(row), key);
+        }
+        finally { _shell.EndActivity(activity); }
+        await RefreshGitInfoAsync(row, fetch: false);
+    }
+
+    private void ReportSync(InstallRow row, ProjectSyncResult result)
+    {
+        var key = "sync|" + row.RepoRoot;
+        if (result.Ok) { _shell.SetStatus(L.Tr("installs.status.synced", row.Name, result.Message), StatusKind.Success, row.Name, key: key); return; }
+        Func<Task>? fix = result.HasConflicts ? () => Queued(row, L.Tr("installs.status.fixingConflicts", row.Name), () => FixSyncConflictsAsync(row))
+            : result.IsBlocked ? () => Queued(row, L.Tr("installs.status.syncing", row.Name), () => FixBlockedSyncAsync(row, result))
+            : null;
+        _shell.SetStatus(L.Tr("installs.status.syncFailed", row.Name, result.Message), StatusKind.Error, row.Name, () => SyncQueuedAsync(row), key, fix,
+            result.IsBlocked ? L.Tr("dialog.syncBlocked.tooltip.fix") : null);
+    }
+
+    private async Task FixBlockedSyncAsync(InstallRow row, ProjectSyncResult blocked)
+    {
+        var keepMine = await BasisPM.App.Services.Dialogs.ShowSyncBlockedAsync(new SyncBlockedViewModel(row.Name, blocked.Upstream ?? "", blocked.Blocking));
+        if (keepMine is null)
+        {
+            ReportSync(row, blocked);
+            return;
+        }
+        var activity = _shell.BeginActivity(L.Tr("installs.status.syncing", row.Name), row.Name);
+        try { ReportSync(row, await _shell.PackagesVM.SyncProjectSettingAsideAsync(row.Install, blocked.Blocking, keepMine.Value, line => ReportActivity(activity, line))); }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write($"Syncing {row.RepoRoot} with edits set aside", ex);
+            _shell.SetStatus(L.Tr("installs.status.syncFailed", row.Name, ex.Message), StatusKind.Error, row.Name, () => SyncQueuedAsync(row), "sync|" + row.RepoRoot);
         }
         finally { _shell.EndActivity(activity); }
         await RefreshGitInfoAsync(row, fetch: false);
@@ -568,7 +596,7 @@ public sealed partial class InstallsViewModel : ObservableObject
 
         if (ready.Count == 0)
         {
-            ReportUpdateAll(Array.Empty<string>(), waiting, Array.Empty<string>());
+            await ShowNeedsYouAsync(ReportUpdateAll(Array.Empty<string>(), waiting, Array.Empty<string>()));
             return;
         }
         var lines = new List<string> { L.Tr("installs.updateAll.confirmIntro"), "" };
@@ -582,6 +610,7 @@ public sealed partial class InstallsViewModel : ObservableObject
         if (!await confirm(L.Tr("installs.updateAll.confirmTitle"), string.Join("\n", lines))) return;
 
         var updated = new List<string>();
+        var updatedItems = new List<UpdatedItem>();
         var notes = new List<string>();
         var applying = _shell.BeginActivity(L.Tr("installs.updateAll.confirmTitle"));
         try
@@ -624,8 +653,10 @@ public sealed partial class InstallsViewModel : ObservableObject
                 {
                     updated.Add(row.Name);
                     await ReloadRowAsync(row);
-                    if (row.HasUnityProject && !string.Equals(unityBefore, row.UnityVersion, StringComparison.Ordinal))
-                        notes.Add(L.Tr("installs.updateAll.unityChanged", row.Name, row.UnityVersion));
+                    var unityChanged = row.HasUnityProject && !string.Equals(unityBefore, row.UnityVersion, StringComparison.Ordinal);
+                    if (unityChanged) notes.Add(L.Tr("installs.updateAll.unityChanged", row.Name, row.UnityVersion));
+                    updatedItems.Add(new UpdatedItem(row, unityChanged ? row.UnityVersion : null,
+                        unityChanged && _shell.UnityVM.InstalledEditors.Any(e => string.Equals(e.Version, row.UnityVersion, StringComparison.OrdinalIgnoreCase))));
                 }
                 else waiting.Add((row, BasisUpdateText.DescribeFailure(result.Failure, result.Detail)));
                 await RefreshBasisStateAsync(row, allowFetch: false);
@@ -636,7 +667,7 @@ public sealed partial class InstallsViewModel : ObservableObject
             _shell.EndActivity(applying);
             _shell.RefreshBasisUpdateNotice();
         }
-        ReportUpdateAll(updated, waiting, notes);
+        await ShowNeedsYouAsync(ReportUpdateAll(updated, waiting, notes), updatedItems);
     }
 
     private static string? WhyNotAutomatic(InstallRow row, BasisUpdatePlan plan) => plan.Kind switch
@@ -652,7 +683,7 @@ public sealed partial class InstallsViewModel : ObservableObject
         _ => null,
     };
 
-    private void ReportUpdateAll(IReadOnlyList<string> updated, IReadOnlyList<(InstallRow Row, string Reason)> waiting, IReadOnlyList<string> notes)
+    private IReadOnlyList<NeedsYouItem> ReportUpdateAll(IReadOnlyList<string> updated, IReadOnlyList<(InstallRow Row, string Reason)> waiting, IReadOnlyList<string> notes)
     {
         var needsYou = string.Join("; ", waiting.Select(w => L.Tr("installs.updateAll.waitingShort", w.Row.Name, w.Reason)));
         var message = (updated.Count, waiting.Count) switch
@@ -662,7 +693,69 @@ public sealed partial class InstallsViewModel : ObservableObject
             (_, 0) => L.Tr("installs.updateAll.done", string.Join(", ", updated)),
             _ => L.Tr("installs.updateAll.doneWaiting", string.Join(", ", updated), needsYou),
         };
-        _shell.SetStatus(string.Join(" ", notes.Prepend(message)), waiting.Count == 0 ? StatusKind.Success : StatusKind.Info);
+        var items = waiting.DistinctBy(w => w.Row.RepoRoot).Select(w => NeedsYou(w.Row, w.Reason)).ToList();
+        _shell.SetStatus(string.Join(" ", notes.Prepend(message)), waiting.Count == 0 ? StatusKind.Success : StatusKind.Info, key: "updateall",
+            fix: items.Count == 0 ? null : () => ShowNeedsYouAsync(items), fixTip: L.Tr("installs.updateAll.fixTooltip"));
+        RememberNeedsYou(items);
+        return items;
+    }
+
+    private static NeedsYouItem NeedsYou(InstallRow row, string reason) => new(row, reason,
+        row.BasisUpdateInProgress || reason == L.Tr("installs.updateAll.reason.paused") || reason == L.Tr("installs.updateAll.reason.stopped") ? NeedsYouKind.Paused
+        : reason == L.Tr("installs.updateAll.reason.conflicts") ? NeedsYouKind.Conflicts : NeedsYouKind.Other);
+
+    private void RememberNeedsYou(IReadOnlyList<NeedsYouItem> items)
+    {
+        foreach (var item in items.Where(i => !i.Row.BasisUpdateInProgress))
+            _shell.AddFix("basis|" + item.Row.RepoRoot, item.Project, L.Tr("installs.updateAll.waitingShort", item.Project, item.Reason),
+                () => ShowNeedsYouAsync(new[] { item }), L.Tr("installs.updateAll.fixOneTooltip"));
+    }
+
+    private async Task ShowNeedsYouAsync(IReadOnlyList<NeedsYouItem> items, IReadOnlyList<UpdatedItem>? updated = null)
+    {
+        var pending = items.Where(i => Installs.Contains(i.Row)).ToList();
+        var results = (updated ?? Array.Empty<UpdatedItem>()).ToList();
+        var acted = false;
+        while (pending.Count > 0 || results.Count > 0)
+        {
+            var picked = await BasisPM.App.Services.Dialogs.ShowNeedsYouAsync(new NeedsYouViewModel(pending, results));
+            if (picked is UpdatedItem unity)
+            {
+                _shell.NavigateTo("unity");
+                _shell.UnityVM.SetRequiredVersion(unity.NewUnity);
+                break;
+            }
+            if (picked is not NeedsYouItem chosen) break;
+            acted = true;
+            var at = pending.IndexOf(chosen);
+            pending.RemoveAt(at);
+            _shell.ClearFailure("basis|" + chosen.Row.RepoRoot);
+            await UpdateBasisQueuedAsync(chosen.Row, null);
+            if (await StillNeedsYouAsync(chosen.Row) is { } reason) pending.Insert(Math.Min(at, pending.Count), NeedsYou(chosen.Row, reason));
+        }
+        if (!acted) return;
+        if (pending.Count == 0)
+        {
+            _shell.SetStatus(L.Tr("dialog.needsYou.allDone"), StatusKind.Success, key: "updateall");
+            return;
+        }
+        _shell.SetStatus(L.Tr("installs.updateAll.nothing", string.Join("; ", pending.Select(p => L.Tr("installs.updateAll.waitingShort", p.Project, p.Reason)))),
+            StatusKind.Info, key: "updateall", fix: () => ShowNeedsYouAsync(pending), fixTip: L.Tr("installs.updateAll.fixTooltip"));
+        RememberNeedsYou(pending);
+    }
+
+    private async Task<string?> StillNeedsYouAsync(InstallRow row)
+    {
+        try
+        {
+            var plan = await _shell.Work.RunAsync(row.RepoRoot, L.Tr("installs.updateAll.checking"), () => _updates.PlanAsync(row.RepoRoot, null));
+            return plan.Kind == BasisUpdateKind.UpToDate ? null : WhyNotAutomatic(row, plan);
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write($"Checking {row.RepoRoot} against the latest Basis", ex);
+            return ex.Message;
+        }
     }
 
     private async Task FollowBasisBranchAsync(InstallRow row, string basisBranch)
@@ -725,6 +818,18 @@ public sealed partial class InstallsViewModel : ObservableObject
             _shell.EndActivity(activity);
         }
         await HandleBasisUpdateResultAsync(row, result, unityBefore, OperationInfo.From(plan));
+    }
+
+    private async Task FixSyncConflictsAsync(InstallRow row)
+    {
+        var state = await _updates.LoadStateAsync(row.RepoRoot);
+        if (state is null)
+        {
+            _shell.SetStatus(L.Tr("installs.status.conflictsOutsideUpdate", row.Name), StatusKind.Error, row.Name, () => SyncQueuedAsync(row), "sync|" + row.RepoRoot);
+            return;
+        }
+        await ResolveBasisUpdateAsync(row, OperationInfo.From(state));
+        if (await _updates.LoadStateAsync(row.RepoRoot) is null && (await _updates.GetConflictsAsync(row.RepoRoot)).Count == 0) await SyncAsync(row);
     }
 
     private async Task ResolveBasisUpdateAsync(InstallRow row, OperationInfo info, string? unityVersionBefore = null)

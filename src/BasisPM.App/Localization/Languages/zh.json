@@ -7293,6 +7293,522 @@
     {
       "key": "settings.tooltip.advanced",
       "value": "显示或隐藏面向开发者的设置：包目录 URL 和其他目录、Unity Hub 覆盖、预发布更新、安装后检查包、下载缓存以及已检测到的工具。你的选择会被记住。"
+    },
+    {
+      "key": "packages.button.projectFiles",
+      "value": "项目文件"
+    },
+    {
+      "key": "packages.tooltip.projectFiles",
+      "value": "打开此项目的 bpm-manifest.json：.basisdev 中的 Basis 检出及其固定版本、哪些包已锁定以及各自的挂载方式、本地覆盖，以及在全新检出后还原全部内容。"
+    },
+    {
+      "key": "bpm.title",
+      "value": "项目文件"
+    },
+    {
+      "key": "bpm.heading",
+      "value": "{0}：检出与包"
+    },
+    {
+      "key": "bpm.intro",
+      "value": "bpm-manifest.json 记录此项目使用哪些包及其来源。bpm-lock.json 将每个包固定到一个提交。请提交这两个文件以及 Packages/manifest.json。切勿提交 .basisdev。"
+    },
+    {
+      "key": "bpm.basisdev",
+      "value": ".basisdev：{0}"
+    },
+    {
+      "key": "bpm.tooltip.openBasisDev",
+      "value": "打开 .basisdev 文件夹，即 Basis 检出和包克隆在这台电脑上的存放位置。"
+    },
+    {
+      "key": "bpm.tooltip.refresh",
+      "value": "重新读取 bpm-manifest.json、bpm-lock.json 和各个检出。"
+    },
+    {
+      "key": "bpm.button.restore",
+      "value": "还原"
+    },
+    {
+      "key": "bpm.tooltip.restore",
+      "value": "根据 bpm-lock.json 重建 .basisdev 中缺失的内容，然后挂载包。请在全新检出或拉取新的锁定文件后运行。重复运行也是安全的。"
+    },
+    {
+      "key": "bpm.button.lock",
+      "value": "锁定"
+    },
+    {
+      "key": "bpm.tooltip.lock",
+      "value": "根据 bpm-manifest.json 写入 bpm-lock.json：每个包及其所需的包，各自固定到一个提交。"
+    },
+    {
+      "key": "bpm.button.mount",
+      "value": "挂载"
+    },
+    {
+      "key": "bpm.tooltip.mount",
+      "value": "根据锁定文件重写 Packages/manifest.json 中的 file: 行。不是 BPM 写入的行保持不变。"
+    },
+    {
+      "key": "bpm.button.close",
+      "value": "关闭"
+    },
+    {
+      "key": "bpm.tooltip.close",
+      "value": "关闭此窗口。"
+    },
+    {
+      "key": "bpm.plan.heading",
+      "value": "将 {0} 移到 {1} 会更改 Assets 和 ProjectSettings"
+    },
+    {
+      "key": "bpm.plan.intro",
+      "value": "此项目的 Assets 和 ProjectSettings 跟随 Basis。你未改动的文件会被更新、添加或删除。你改动过的文件会保留，由你自行比较。"
+    },
+    {
+      "key": "bpm.button.cancelPlan",
+      "value": "保留旧的固定版本"
+    },
+    {
+      "key": "bpm.tooltip.cancelPlan",
+      "value": "将固定版本恢复原样。Assets 和 ProjectSettings 中的内容都不会改变。"
+    },
+    {
+      "key": "bpm.button.applyPlan",
+      "value": "应用"
+    },
+    {
+      "key": "bpm.tooltip.applyPlan",
+      "value": "移动固定版本，还原检出，将这些更改应用到 Assets 和 ProjectSettings，然后重新挂载。之后会检查 Assets 中是否有重复的 GUID。"
+    },
+    {
+      "key": "bpm.setup.heading",
+      "value": "从 .basisdev 获取 Basis"
+    },
+    {
+      "key": "bpm.setup.intro",
+      "value": "此项目还没有 bpm-manifest.json。设置后会将 Basis 固定到一个提交，只把你需要的部分下载到 .basisdev，并通过 file: 行挂载它们。"
+    },
+    {
+      "key": "bpm.setup.game",
+      "value": "游戏"
+    },
+    {
+      "key": "bpm.setup.gameText",
+      "value": "Assets 和 ProjectSettings 归你管理。选择你需要的 Basis 包，其依赖项会一并加入。"
+    },
+    {
+      "key": "bpm.tooltip.setupGame",
+      "value": "适用于你自己的游戏或应用。BPM 从不写入 Assets 或 ProjectSettings，只会告诉你 Basis 需要哪些层和标签。"
+    },
+    {
+      "key": "bpm.setup.content",
+      "value": "虚拟形象、世界和道具"
+    },
+    {
+      "key": "bpm.setup.contentText",
+      "value": "挂载所有 Basis 包，Assets 和 ProjectSettings 从 Basis 复制并持续跟随它。"
+    },
+    {
+      "key": "bpm.tooltip.setupContent",
+      "value": "适用于使用 Basis SDK 制作的内容。固定版本移动时，BPM 会显示 Assets 和 ProjectSettings 中的变化，并先征求你的同意。"
+    },
+    {
+      "key": "bpm.setup.packages",
+      "value": "要使用的 Basis 包，用逗号分隔"
+    },
+    {
+      "key": "bpm.tooltip.setupPackages",
+      "value": "包 ID，例如 com.basis.sdk。它们所依赖的包会自动添加到锁定文件中。"
+    },
+    {
+      "key": "bpm.setup.at",
+      "value": "要固定的 Basis 分支、标签或提交"
+    },
+    {
+      "key": "bpm.tooltip.setupAt",
+      "value": "清单始终记录提交哈希，因此只有你移动固定版本时它才会改变。"
+    },
+    {
+      "key": "bpm.button.setup",
+      "value": "设置"
+    },
+    {
+      "key": "bpm.tooltip.setup",
+      "value": "写入 bpm-manifest.json 和 bpm-lock.json，将 Basis 下载到 .basisdev 并挂载包。如果项目使用 git、Plastic 或 Perforce，.basisdev 会被添加到忽略列表。"
+    },
+    {
+      "key": "bpm.section.checkouts",
+      "value": ".basisdev 中的检出"
+    },
+    {
+      "key": "bpm.checkouts.none",
+      "value": "没有检出。包来自各自的 git 仓库或本地文件夹。"
+    },
+    {
+      "key": "bpm.tooltip.held",
+      "value": "已固定的检出归 BPM 管理，停留在锁定的提交上。工作区归你所有：位于某个分支上，可就地编辑和提交。内联文件夹只会被读取。"
+    },
+    {
+      "key": "bpm.tooltip.openCheckout",
+      "value": "打开此检出的文件夹。"
+    },
+    {
+      "key": "bpm.pin.watermark",
+      "value": "分支、标签或提交"
+    },
+    {
+      "key": "bpm.tooltip.pinTarget",
+      "value": "固定版本要移到的位置。分支或标签只解析一次，并记录其提交哈希。"
+    },
+    {
+      "key": "bpm.button.pin",
+      "value": "移动固定版本"
+    },
+    {
+      "key": "bpm.tooltip.pin",
+      "value": "获取、固定到新提交、锁定、还原并挂载，然后列出有变化的包，以便你知道需要重新测试哪些内容。"
+    },
+    {
+      "key": "bpm.section.packages",
+      "value": "包"
+    },
+    {
+      "key": "bpm.packages.none",
+      "value": "bpm-manifest.json 中还没有列出任何包。"
+    },
+    {
+      "key": "bpm.button.override",
+      "value": "使用本地文件夹"
+    },
+    {
+      "key": "bpm.tooltip.override",
+      "value": "从这台电脑上的文件夹挂载此包，例如你自己克隆的某个附加组件。它只记录在本机的 .basisdev 中，不会改变其他人的项目。不要提交 Packages/manifest.json 中被更改的那一行。"
+    },
+    {
+      "key": "bpm.button.clearOverride",
+      "value": "停止使用该文件夹"
+    },
+    {
+      "key": "bpm.tooltip.clearOverride",
+      "value": "移除本地覆盖，并重新从锁定文件挂载该包。"
+    },
+    {
+      "key": "bpm.button.embed",
+      "value": "复制到 Packages"
+    },
+    {
+      "key": "bpm.tooltip.embed",
+      "value": "将此包复制到 Packages/ 以便修补。你的版本控制会记录这份副本，bpm-manifest.json 会记下它来源的提交，以便与上游比较并在之后提交回去。"
+    },
+    {
+      "key": "bpm.tooltip.toggle",
+      "value": "关闭包可保留其检出但停止挂载，用于排查问题或在同一包的两个来源之间切换。打开即可重新挂载。"
+    },
+    {
+      "key": "bpm.package.turnOff",
+      "value": "关闭"
+    },
+    {
+      "key": "bpm.package.turnOn",
+      "value": "打开"
+    },
+    {
+      "key": "bpm.package.dependency",
+      "value": "被其他包需要（深度 {0}）"
+    },
+    {
+      "key": "bpm.package.notLocked",
+      "value": "尚未锁定"
+    },
+    {
+      "key": "bpm.package.off",
+      "value": "已关闭"
+    },
+    {
+      "key": "bpm.package.lockedVersion",
+      "value": "已锁定 {0}"
+    },
+    {
+      "key": "bpm.package.override",
+      "value": "本地文件夹：{0}"
+    },
+    {
+      "key": "bpm.package.embedded",
+      "value": "已嵌入 Packages/"
+    },
+    {
+      "key": "bpm.package.copiedFrom",
+      "value": "复制自 {0}"
+    },
+    {
+      "key": "bpm.held.pinned",
+      "value": "已固定"
+    },
+    {
+      "key": "bpm.held.workingTree",
+      "value": "工作区"
+    },
+    {
+      "key": "bpm.held.inline",
+      "value": "文件夹"
+    },
+    {
+      "key": "bpm.checkout.missing",
+      "value": "尚未下载。还原会将其恢复。"
+    },
+    {
+      "key": "bpm.checkout.onBranch",
+      "value": "{0}，位于 {1}"
+    },
+    {
+      "key": "bpm.checkout.locked",
+      "value": "锁定：{0}"
+    },
+    {
+      "key": "bpm.checkout.changes",
+      "value": "{0} 个已更改的文件"
+    },
+    {
+      "key": "bpm.status.locking",
+      "value": "正在锁定…"
+    },
+    {
+      "key": "bpm.status.restoring",
+      "value": "正在还原…"
+    },
+    {
+      "key": "bpm.status.mounting",
+      "value": "正在挂载…"
+    },
+    {
+      "key": "bpm.status.settingUp",
+      "value": "正在设置项目…"
+    },
+    {
+      "key": "bpm.status.pinning",
+      "value": "正在移动固定版本…"
+    },
+    {
+      "key": "bpm.status.embedding",
+      "value": "正在将 {0} 复制到 Packages…"
+    },
+    {
+      "key": "bpm.status.failed",
+      "value": "部分步骤未完成。请查看下方的消息。"
+    },
+    {
+      "key": "bpm.override.set",
+      "value": "{0} 从这台电脑上的 {1} 加载。"
+    },
+    {
+      "key": "bpm.override.cleared",
+      "value": "{0} 已重新从锁定文件挂载。"
+    },
+    {
+      "key": "bpm.override.noPackage",
+      "value": "{0} 没有 package.json，因此无法挂载。"
+    },
+    {
+      "key": "bpm.pin.badRef",
+      "value": "“{0}”不是有效的分支、标签或提交。"
+    },
+    {
+      "key": "bpm.plan.cancelled",
+      "value": "未做任何更改。{0} 仍停留在 {1}。"
+    },
+    {
+      "key": "bpm.picker.override",
+      "value": "用于加载 {0} 的文件夹"
+    },
+    {
+      "key": "shell.status.fix",
+      "value": "修复"
+    },
+    {
+      "key": "shell.status.fixTooltip",
+      "value": "打开有冲突的文件，为每个文件选择要保留的版本。全部解决后，暂停的步骤会完成，并重新同步。"
+    },
+    {
+      "key": "installs.status.fixingConflicts",
+      "value": "正在打开 {0} 中的冲突…"
+    },
+    {
+      "key": "installs.status.conflictsOutsideUpdate",
+      "value": "{0} 有并非来自 Basis 更新的合并冲突。请在你的 git 工具中解决后再同步。"
+    },
+    {
+      "key": "installs.updateAll.fixTooltip",
+      "value": "逐个处理需要你决定的项目。每个项目会打开自己的 Basis 更新，你可以在其中查看更改、决定如何处理有冲突的文件，或完成暂停的更新。"
+    },
+    {
+      "key": "installs.updateAll.fixOneTooltip",
+      "value": "打开此项目的 Basis 更新，你可以在其中查看更改、决定如何处理有冲突的文件，或完成暂停的更新。"
+    },
+    {
+      "key": "dialog.needsYou.title",
+      "value": "需要你处理的项目"
+    },
+    {
+      "key": "dialog.needsYou.heading",
+      "value": "{0} 个项目需要你做出决定，Basis 才能更新它们"
+    },
+    {
+      "key": "dialog.needsYou.headingOne",
+      "value": "{0} 需要你做出决定，Basis 才能更新它"
+    },
+    {
+      "key": "dialog.needsYou.intro",
+      "value": "这些项目没有任何修改。选择一个以打开它的 Basis 更新。处理完后，你会回到这里继续处理剩下的项目。"
+    },
+    {
+      "key": "dialog.needsYou.close",
+      "value": "稍后"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.close",
+      "value": "关闭此列表。状态栏中的“修复”按钮和“活动”列表可以重新打开它。"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.fix",
+      "value": "打开此项目的 Basis 更新。写入任何内容之前，你都能看到将会修改的内容，并且可以取消。"
+    },
+    {
+      "key": "dialog.needsYou.action.finish",
+      "value": "完成更新"
+    },
+    {
+      "key": "dialog.needsYou.action.review",
+      "value": "查看更新"
+    },
+    {
+      "key": "dialog.needsYou.action.open",
+      "value": "打开更新"
+    },
+    {
+      "key": "dialog.needsYou.hint.paused",
+      "value": "之前的更新中途停止，部分文件仍有冲突。为每个文件选择要保留的版本，更新即可完成。"
+    },
+    {
+      "key": "dialog.needsYou.hint.conflicts",
+      "value": "你的部分编辑涉及 Basis 修改过的相同行。在应用更新之前，请查看这些文件并选择要保留的内容。"
+    },
+    {
+      "key": "dialog.needsYou.hint.other",
+      "value": "打开更新以查看它需要什么。"
+    },
+    {
+      "key": "dialog.needsYou.allDone",
+      "value": "所有需要你处理的项目都已处理完毕。"
+    },
+    {
+      "key": "dialog.needsYou.titleResults",
+      "value": "Basis 更新结果"
+    },
+    {
+      "key": "dialog.needsYou.results",
+      "value": "已更新 {0} 个，{1} 个需要你处理"
+    },
+    {
+      "key": "dialog.needsYou.resultsAllDone",
+      "value": "已更新 {0} 个，没有剩余事项"
+    },
+    {
+      "key": "dialog.needsYou.introDone",
+      "value": "所有项目都已使用最新的 Basis。打开前请检查每个项目需要的 Unity 编辑器。"
+    },
+    {
+      "key": "dialog.needsYou.section.updated",
+      "value": "已更新（{0}）"
+    },
+    {
+      "key": "dialog.needsYou.section.needsYou",
+      "value": "需要你处理（{0}）"
+    },
+    {
+      "key": "dialog.needsYou.updated.done",
+      "value": "现已使用最新的 Basis。"
+    },
+    {
+      "key": "dialog.needsYou.updated.unity",
+      "value": "现已使用最新的 Basis，它使用 Unity {0}。"
+    },
+    {
+      "key": "dialog.needsYou.updated.unityMissing",
+      "value": "尚未安装 Unity {0}，安装之前无法打开该项目。"
+    },
+    {
+      "key": "dialog.needsYou.action.getUnity",
+      "value": "获取 Unity {0}"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.getUnity",
+      "value": "前往已选中此版本的 Unity 编辑器标签页，以便选择模块并安装。"
+    },
+    {
+      "key": "dialog.syncBlocked.title",
+      "value": "已编辑的文件阻止了同步"
+    },
+    {
+      "key": "dialog.syncBlocked.heading",
+      "value": "{0}：你编辑的文件中有 {1} 个在远程也有更改"
+    },
+    {
+      "key": "dialog.syncBlocked.headingOne",
+      "value": "{0}：你编辑的一个文件在远程也有更改"
+    },
+    {
+      "key": "dialog.syncBlocked.intro",
+      "value": "拉取会覆盖这些未提交的编辑，因此 Git 不会从 {0} 拉取。请选择处理方式。你的版本会先备份到项目的 .git 文件夹中，所以无论选择哪种都不会丢失。"
+    },
+    {
+      "key": "dialog.syncBlocked.files",
+      "value": "在此编辑且在远程有更改的文件"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.title",
+      "value": "保留我的版本"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.text",
+      "value": "先拉取，再把你每个文件的版本放回上面。Git 会将它们显示为相对于新提交的编辑，方便你比较并提交想要的内容。"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.button",
+      "value": "拉取并保留我的"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.title",
+      "value": "使用远程版本"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.text",
+      "value": "拉取并使用每个文件的传入版本。适合你的编辑是 Unity 自行重写的内容时。你的副本会保留在备份文件夹中。"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.button",
+      "value": "拉取并使用远程的"
+    },
+    {
+      "key": "dialog.syncBlocked.cancel",
+      "value": "暂不"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.keep",
+      "value": "备份这些文件，拉取，然后把你的版本复制到新文件上。"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.theirs",
+      "value": "备份这些文件，然后拉取并保留每个文件的远程版本。"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.cancel",
+      "value": "关闭且不做任何更改。“修复”按钮可再次打开此窗口。"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.fix",
+      "value": "显示阻止拉取的已编辑文件，并选择保留你的版本还是使用远程版本。你的版本会先备份。"
     }
   ]
 }

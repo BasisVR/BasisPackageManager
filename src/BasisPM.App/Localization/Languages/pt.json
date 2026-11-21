@@ -7293,6 +7293,522 @@
     {
       "key": "settings.tooltip.advanced",
       "value": "Mostra ou oculta as configurações para desenvolvedores: a URL do catálogo de pacotes e os catálogos adicionais, a substituição do Unity Hub, as atualizações de pré-lançamento, a verificação de pacotes após instalações, o cache de downloads e as ferramentas detectadas. Sua escolha é lembrada."
+    },
+    {
+      "key": "packages.button.projectFiles",
+      "value": "Arquivos do projeto"
+    },
+    {
+      "key": "packages.tooltip.projectFiles",
+      "value": "Abra o bpm-manifest.json deste projeto: os checkouts do Basis em .basisdev e seus pins, quais pacotes estão travados e como cada um é montado, os overrides locais e a restauração de tudo após um novo checkout."
+    },
+    {
+      "key": "bpm.title",
+      "value": "Arquivos do projeto"
+    },
+    {
+      "key": "bpm.heading",
+      "value": "{0}: checkouts e pacotes"
+    },
+    {
+      "key": "bpm.intro",
+      "value": "O bpm-manifest.json diz quais pacotes este projeto usa e de onde eles vêm. O bpm-lock.json fixa cada um em um commit. Faça commit dos dois e do Packages/manifest.json. Nunca faça commit do .basisdev."
+    },
+    {
+      "key": "bpm.basisdev",
+      "value": ".basisdev: {0}"
+    },
+    {
+      "key": "bpm.tooltip.openBasisDev",
+      "value": "Abra a pasta .basisdev, onde ficam os checkouts do Basis e os clones de pacotes neste computador."
+    },
+    {
+      "key": "bpm.tooltip.refresh",
+      "value": "Ler novamente bpm-manifest.json, bpm-lock.json e os checkouts."
+    },
+    {
+      "key": "bpm.button.restore",
+      "value": "Restaurar"
+    },
+    {
+      "key": "bpm.tooltip.restore",
+      "value": "Reconstrói o que estiver faltando em .basisdev a partir do bpm-lock.json e depois monta os pacotes. Execute após um novo checkout ou depois de puxar um novo lock. Pode ser executado mais de uma vez sem problemas."
+    },
+    {
+      "key": "bpm.button.lock",
+      "value": "Travar"
+    },
+    {
+      "key": "bpm.tooltip.lock",
+      "value": "Gera o bpm-lock.json a partir do bpm-manifest.json: cada pacote e os pacotes de que ele precisa, cada um fixado em um commit."
+    },
+    {
+      "key": "bpm.button.mount",
+      "value": "Montar"
+    },
+    {
+      "key": "bpm.tooltip.mount",
+      "value": "Reescreve as linhas file: em Packages/manifest.json a partir do lock. Linhas que o BPM não escreveu não são alteradas."
+    },
+    {
+      "key": "bpm.button.close",
+      "value": "Fechar"
+    },
+    {
+      "key": "bpm.tooltip.close",
+      "value": "Fecha esta janela."
+    },
+    {
+      "key": "bpm.plan.heading",
+      "value": "Mover {0} para {1} altera Assets e ProjectSettings"
+    },
+    {
+      "key": "bpm.plan.intro",
+      "value": "Os Assets e ProjectSettings deste projeto acompanham o Basis. Arquivos que você não mexeu são atualizados, adicionados ou removidos. Arquivos que você alterou ficam para você comparar."
+    },
+    {
+      "key": "bpm.button.cancelPlan",
+      "value": "Manter o pin antigo"
+    },
+    {
+      "key": "bpm.tooltip.cancelPlan",
+      "value": "Volta o pin para onde estava. Nada em Assets ou ProjectSettings muda."
+    },
+    {
+      "key": "bpm.button.applyPlan",
+      "value": "Aplicar"
+    },
+    {
+      "key": "bpm.tooltip.applyPlan",
+      "value": "Move o pin, restaura o checkout, aplica estas alterações em Assets e ProjectSettings e monta novamente. Depois, os Assets são verificados em busca de GUIDs duplicados."
+    },
+    {
+      "key": "bpm.setup.heading",
+      "value": "Usar o Basis a partir do .basisdev"
+    },
+    {
+      "key": "bpm.setup.intro",
+      "value": "Este projeto ainda não tem um bpm-manifest.json. Configurar um fixa o Basis em um commit, baixa para o .basisdev apenas as partes necessárias e as monta com linhas file:."
+    },
+    {
+      "key": "bpm.setup.game",
+      "value": "Jogo"
+    },
+    {
+      "key": "bpm.setup.gameText",
+      "value": "Assets e ProjectSettings são seus. Escolha os pacotes do Basis que quiser e as dependências deles vêm junto."
+    },
+    {
+      "key": "bpm.tooltip.setupGame",
+      "value": "Para seu próprio jogo ou aplicativo. O BPM nunca escreve em Assets ou ProjectSettings e só informa quais layers e tags o Basis espera."
+    },
+    {
+      "key": "bpm.setup.content",
+      "value": "Avatares, mundos e props"
+    },
+    {
+      "key": "bpm.setup.contentText",
+      "value": "Todos os pacotes do Basis são montados, e Assets e ProjectSettings são copiados do Basis e continuam acompanhando-o."
+    },
+    {
+      "key": "bpm.tooltip.setupContent",
+      "value": "Para conteúdo feito com o Basis SDK. Quando o pin muda, o BPM mostra o que muda em Assets e ProjectSettings e pergunta antes."
+    },
+    {
+      "key": "bpm.setup.packages",
+      "value": "Pacotes do Basis a usar, separados por vírgulas"
+    },
+    {
+      "key": "bpm.tooltip.setupPackages",
+      "value": "IDs de pacotes como com.basis.sdk. Os pacotes dos quais eles dependem são adicionados ao lock automaticamente."
+    },
+    {
+      "key": "bpm.setup.at",
+      "value": "Branch, tag ou commit do Basis a fixar"
+    },
+    {
+      "key": "bpm.tooltip.setupAt",
+      "value": "O manifest sempre registra o hash do commit, então o pin só muda quando você o move."
+    },
+    {
+      "key": "bpm.button.setup",
+      "value": "Configurar"
+    },
+    {
+      "key": "bpm.tooltip.setup",
+      "value": "Gera o bpm-manifest.json e o bpm-lock.json, baixa o Basis para o .basisdev e monta os pacotes. O .basisdev é adicionado à sua lista de ignorados quando o projeto usa git, Plastic ou Perforce."
+    },
+    {
+      "key": "bpm.section.checkouts",
+      "value": "Checkouts em .basisdev"
+    },
+    {
+      "key": "bpm.checkouts.none",
+      "value": "Nenhum checkout. Os pacotes vêm dos próprios repositórios git ou de pastas locais."
+    },
+    {
+      "key": "bpm.tooltip.held",
+      "value": "Checkouts fixados pertencem ao BPM e ficam no commit travado. Uma working tree é sua: em um branch, editada e com commits feitos ali mesmo. Uma pasta inline é apenas lida."
+    },
+    {
+      "key": "bpm.tooltip.openCheckout",
+      "value": "Abra a pasta deste checkout."
+    },
+    {
+      "key": "bpm.pin.watermark",
+      "value": "Branch, tag ou commit"
+    },
+    {
+      "key": "bpm.tooltip.pinTarget",
+      "value": "Para onde mover o pin. Um branch ou tag é consultado uma vez e o hash do commit é registrado."
+    },
+    {
+      "key": "bpm.button.pin",
+      "value": "Mover pin"
+    },
+    {
+      "key": "bpm.tooltip.pin",
+      "value": "Faz fetch, fixa no novo commit, trava, restaura e monta, depois lista os pacotes que mudaram para você saber o que testar novamente."
+    },
+    {
+      "key": "bpm.section.packages",
+      "value": "Pacotes"
+    },
+    {
+      "key": "bpm.packages.none",
+      "value": "O bpm-manifest.json ainda não lista nenhum pacote."
+    },
+    {
+      "key": "bpm.button.override",
+      "value": "Usar uma pasta local"
+    },
+    {
+      "key": "bpm.tooltip.override",
+      "value": "Monta este pacote a partir de uma pasta neste computador, como seu próprio clone de um add-on. Isso fica registrado em .basisdev apenas nesta máquina, então o projeto de mais ninguém muda. Não faça commit da linha alterada em Packages/manifest.json."
+    },
+    {
+      "key": "bpm.button.clearOverride",
+      "value": "Parar de usar a pasta"
+    },
+    {
+      "key": "bpm.tooltip.clearOverride",
+      "value": "Remove o override local e monta o pacote a partir do lock novamente."
+    },
+    {
+      "key": "bpm.button.embed",
+      "value": "Copiar para Packages"
+    },
+    {
+      "key": "bpm.tooltip.embed",
+      "value": "Copia este pacote para Packages/ para que você possa modificá-lo. Seu controle de versão registra a cópia, e o bpm-manifest.json anota o commit de origem para que ela possa ser comparada com o upstream e enviada de volta depois."
+    },
+    {
+      "key": "bpm.tooltip.toggle",
+      "value": "Desative o pacote para manter o checkout, mas parar de montá-lo, para solucionar problemas ou alternar entre duas fontes do mesmo pacote. Ative-o para montá-lo novamente."
+    },
+    {
+      "key": "bpm.package.turnOff",
+      "value": "Desativar"
+    },
+    {
+      "key": "bpm.package.turnOn",
+      "value": "Ativar"
+    },
+    {
+      "key": "bpm.package.dependency",
+      "value": "Necessário para outro pacote (profundidade {0})"
+    },
+    {
+      "key": "bpm.package.notLocked",
+      "value": "ainda não travado"
+    },
+    {
+      "key": "bpm.package.off",
+      "value": "desativado"
+    },
+    {
+      "key": "bpm.package.lockedVersion",
+      "value": "travado em {0}"
+    },
+    {
+      "key": "bpm.package.override",
+      "value": "Pasta local: {0}"
+    },
+    {
+      "key": "bpm.package.embedded",
+      "value": "Incorporado em Packages/"
+    },
+    {
+      "key": "bpm.package.copiedFrom",
+      "value": "Copiado de {0}"
+    },
+    {
+      "key": "bpm.held.pinned",
+      "value": "fixado"
+    },
+    {
+      "key": "bpm.held.workingTree",
+      "value": "working tree"
+    },
+    {
+      "key": "bpm.held.inline",
+      "value": "pasta"
+    },
+    {
+      "key": "bpm.checkout.missing",
+      "value": "Ainda não baixado. Restaurar o traz de volta."
+    },
+    {
+      "key": "bpm.checkout.onBranch",
+      "value": "{0} em {1}"
+    },
+    {
+      "key": "bpm.checkout.locked",
+      "value": "lock: {0}"
+    },
+    {
+      "key": "bpm.checkout.changes",
+      "value": "{0} arquivo(s) alterado(s)"
+    },
+    {
+      "key": "bpm.status.locking",
+      "value": "Travando…"
+    },
+    {
+      "key": "bpm.status.restoring",
+      "value": "Restaurando…"
+    },
+    {
+      "key": "bpm.status.mounting",
+      "value": "Montando…"
+    },
+    {
+      "key": "bpm.status.settingUp",
+      "value": "Configurando o projeto…"
+    },
+    {
+      "key": "bpm.status.pinning",
+      "value": "Movendo o pin…"
+    },
+    {
+      "key": "bpm.status.embedding",
+      "value": "Copiando {0} para Packages…"
+    },
+    {
+      "key": "bpm.status.failed",
+      "value": "Algumas etapas não terminaram. Veja as mensagens abaixo."
+    },
+    {
+      "key": "bpm.override.set",
+      "value": "{0} é carregado de {1} neste computador."
+    },
+    {
+      "key": "bpm.override.cleared",
+      "value": "{0} voltou a ser montado a partir do lock."
+    },
+    {
+      "key": "bpm.override.noPackage",
+      "value": "{0} não tem package.json, então não pode ser montado."
+    },
+    {
+      "key": "bpm.pin.badRef",
+      "value": "'{0}' não é um branch, tag ou commit válido."
+    },
+    {
+      "key": "bpm.plan.cancelled",
+      "value": "Nada mudou. {0} continua em {1}."
+    },
+    {
+      "key": "bpm.picker.override",
+      "value": "Pasta de onde carregar {0}"
+    },
+    {
+      "key": "shell.status.fix",
+      "value": "Corrigir"
+    },
+    {
+      "key": "shell.status.fixTooltip",
+      "value": "Abre os ficheiros em conflito e escolhe que versão manter em cada um. Quando estiverem todos resolvidos, o passo em pausa termina e a sincronização volta a correr."
+    },
+    {
+      "key": "installs.status.fixingConflicts",
+      "value": "A abrir os conflitos em {0}…"
+    },
+    {
+      "key": "installs.status.conflictsOutsideUpdate",
+      "value": "{0} tem conflitos de merge que não vieram de uma atualização do Basis. Resolve-os na tua ferramenta git e sincroniza de novo."
+    },
+    {
+      "key": "installs.updateAll.fixTooltip",
+      "value": "Percorre, um de cada vez, os projetos que precisam de ti. Cada um abre a sua própria atualização do Basis, onde revês as alterações, decides o que fazer com ficheiros em conflito ou terminas uma atualização em pausa."
+    },
+    {
+      "key": "installs.updateAll.fixOneTooltip",
+      "value": "Abre a atualização do Basis deste projeto, onde revês as alterações, decides o que fazer com ficheiros em conflito ou terminas uma atualização em pausa."
+    },
+    {
+      "key": "dialog.needsYou.title",
+      "value": "Projetos que precisam de você"
+    },
+    {
+      "key": "dialog.needsYou.heading",
+      "value": "{0} projetos precisam de uma decisão antes que o Basis possa atualizá-los"
+    },
+    {
+      "key": "dialog.needsYou.headingOne",
+      "value": "{0} precisa de uma decisão antes que o Basis possa atualizá-lo"
+    },
+    {
+      "key": "dialog.needsYou.intro",
+      "value": "Nada foi alterado nestes projetos. Escolha um para abrir a atualização do Basis dele. Quando terminar, você volta aqui com os que restarem."
+    },
+    {
+      "key": "dialog.needsYou.close",
+      "value": "Mais tarde"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.close",
+      "value": "Fecha esta lista. O botão Corrigir na barra de status e a lista Atividade a reabrem."
+    },
+    {
+      "key": "dialog.needsYou.tooltip.fix",
+      "value": "Abre a atualização do Basis deste projeto. Você vê o que muda antes de qualquer gravação e pode cancelar."
+    },
+    {
+      "key": "dialog.needsYou.action.finish",
+      "value": "Concluir atualização"
+    },
+    {
+      "key": "dialog.needsYou.action.review",
+      "value": "Revisar atualização"
+    },
+    {
+      "key": "dialog.needsYou.action.open",
+      "value": "Abrir atualização"
+    },
+    {
+      "key": "dialog.needsYou.hint.paused",
+      "value": "Uma atualização anterior parou no meio, com alguns arquivos ainda em conflito. Escolha qual versão de cada arquivo manter, e a atualização é concluída."
+    },
+    {
+      "key": "dialog.needsYou.hint.conflicts",
+      "value": "Algumas das suas edições mexem nas mesmas linhas que o Basis alterou. Revise esses arquivos e escolha o que manter antes de a atualização ser aplicada."
+    },
+    {
+      "key": "dialog.needsYou.hint.other",
+      "value": "Abra a atualização para ver do que ela precisa."
+    },
+    {
+      "key": "dialog.needsYou.allDone",
+      "value": "Todos os projetos que precisavam de você estão resolvidos."
+    },
+    {
+      "key": "dialog.needsYou.titleResults",
+      "value": "Resultados da atualização do Basis"
+    },
+    {
+      "key": "dialog.needsYou.results",
+      "value": "{0} atualizados, {1} precisam de você"
+    },
+    {
+      "key": "dialog.needsYou.resultsAllDone",
+      "value": "{0} atualizados, nada mais a fazer"
+    },
+    {
+      "key": "dialog.needsYou.introDone",
+      "value": "Todos os projetos estão no Basis mais recente. Confira o editor do Unity que cada um precisa antes de abri-lo."
+    },
+    {
+      "key": "dialog.needsYou.section.updated",
+      "value": "Atualizados ({0})"
+    },
+    {
+      "key": "dialog.needsYou.section.needsYou",
+      "value": "Precisam de você ({0})"
+    },
+    {
+      "key": "dialog.needsYou.updated.done",
+      "value": "Agora no Basis mais recente."
+    },
+    {
+      "key": "dialog.needsYou.updated.unity",
+      "value": "Agora no Basis mais recente, que usa o Unity {0}."
+    },
+    {
+      "key": "dialog.needsYou.updated.unityMissing",
+      "value": "O Unity {0} ainda não está instalado, então o projeto não abrirá até que esteja."
+    },
+    {
+      "key": "dialog.needsYou.action.getUnity",
+      "value": "Obter Unity {0}"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.getUnity",
+      "value": "Vai para a aba Editores do Unity com esta versão selecionada, para escolher os módulos e instalá-la."
+    },
+    {
+      "key": "dialog.syncBlocked.title",
+      "value": "Arquivos editados bloqueiam a sincronização"
+    },
+    {
+      "key": "dialog.syncBlocked.heading",
+      "value": "{0}: {1} dos seus arquivos editados também mudaram no remoto"
+    },
+    {
+      "key": "dialog.syncBlocked.headingOne",
+      "value": "{0}: um dos seus arquivos editados também mudou no remoto"
+    },
+    {
+      "key": "dialog.syncBlocked.intro",
+      "value": "O Git não faz pull de {0} enquanto isso sobrescrever estas edições sem commit. Escolha como lidar com elas. Suas versões são salvas antes na pasta .git do projeto, então nada se perde em nenhum caso."
+    },
+    {
+      "key": "dialog.syncBlocked.files",
+      "value": "Arquivos editados aqui e alterados no remoto"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.title",
+      "value": "Manter minhas versões"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.text",
+      "value": "Faz pull e depois coloca sua versão de cada arquivo por cima. O Git as mostra como edições sobre o novo commit, para você comparar e fazer commit do que quiser."
+    },
+    {
+      "key": "dialog.syncBlocked.keep.button",
+      "value": "Pull e manter as minhas"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.title",
+      "value": "Usar as versões do remoto"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.text",
+      "value": "Faz pull e usa a versão recebida de cada arquivo. Melhor quando suas edições são coisas que o Unity reescreveu sozinho. Suas cópias ficam na pasta de backup."
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.button",
+      "value": "Pull e usar as deles"
+    },
+    {
+      "key": "dialog.syncBlocked.cancel",
+      "value": "Agora não"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.keep",
+      "value": "Faz backup destes arquivos, faz pull e depois copia suas versões por cima das novas."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.theirs",
+      "value": "Faz backup destes arquivos, depois faz pull e mantém a versão do remoto de cada um."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.cancel",
+      "value": "Fecha sem alterar nada. O botão Corrigir mostra isto de novo."
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.fix",
+      "value": "Mostra os arquivos editados que bloqueiam o pull e permite escolher entre manter os seus ou usar os do remoto. Suas versões recebem backup antes."
     }
   ]
 }

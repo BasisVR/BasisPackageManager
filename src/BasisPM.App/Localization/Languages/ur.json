@@ -7293,6 +7293,522 @@
     {
       "key": "settings.tooltip.advanced",
       "value": "ڈویلپرز کے لیے ترتیبات دکھائیں یا چھپائیں: پیکج کیٹلاگ URL اور اضافی کیٹلاگ، Unity Hub اوور رائیڈ، پری ریلیز اپڈیٹس، انسٹال کے بعد پیکجز کی جانچ، ڈاؤن لوڈ کیش اور دریافت شدہ ٹولز۔ آپ کا انتخاب یاد رکھا جاتا ہے۔"
+    },
+    {
+      "key": "packages.button.projectFiles",
+      "value": "پروجیکٹ فائلیں"
+    },
+    {
+      "key": "packages.tooltip.projectFiles",
+      "value": "اس پروجیکٹ کی bpm-manifest.json کھولیں: .basisdev میں Basis کے checkouts اور ان کی پنز، کون سے پیکجز لاک ہیں اور ہر ایک کیسے ماؤنٹ ہوتا ہے، مقامی اوور رائیڈز، اور نئے checkout کے بعد سب کچھ بحال کرنا۔"
+    },
+    {
+      "key": "bpm.title",
+      "value": "پروجیکٹ فائلیں"
+    },
+    {
+      "key": "bpm.heading",
+      "value": "{0}: checkouts اور پیکجز"
+    },
+    {
+      "key": "bpm.intro",
+      "value": "bpm-manifest.json بتاتی ہے کہ یہ پروجیکٹ کون سے پیکجز استعمال کرتا ہے اور وہ کہاں سے آتے ہیں۔ bpm-lock.json ہر ایک کو کسی commit پر پن کرتی ہے۔ دونوں کو commit کریں، اور Packages/manifest.json کو بھی۔ .basisdev کو کبھی commit نہ کریں۔"
+    },
+    {
+      "key": "bpm.basisdev",
+      "value": ".basisdev: {0}"
+    },
+    {
+      "key": "bpm.tooltip.openBasisDev",
+      "value": ".basisdev فولڈر کھولیں، جہاں اس کمپیوٹر پر Basis کے checkouts اور پیکج کلونز رکھے جاتے ہیں۔"
+    },
+    {
+      "key": "bpm.tooltip.refresh",
+      "value": "bpm-manifest.json، bpm-lock.json اور checkouts دوبارہ پڑھیں۔"
+    },
+    {
+      "key": "bpm.button.restore",
+      "value": "بحال کریں"
+    },
+    {
+      "key": "bpm.tooltip.restore",
+      "value": ".basisdev میں جو کچھ غائب ہے اسے bpm-lock.json سے دوبارہ بنائیں، پھر پیکجز ماؤنٹ کریں۔ نئے checkout کے بعد یا نیا لاک pull کرنے کے بعد اسے چلائیں۔ دو بار چلانا بھی محفوظ ہے۔"
+    },
+    {
+      "key": "bpm.button.lock",
+      "value": "لاک کریں"
+    },
+    {
+      "key": "bpm.tooltip.lock",
+      "value": "bpm-manifest.json سے bpm-lock.json لکھیں: ہر پیکج اور اس کے درکار پیکجز، ہر ایک کسی commit پر پن شدہ۔"
+    },
+    {
+      "key": "bpm.button.mount",
+      "value": "ماؤنٹ کریں"
+    },
+    {
+      "key": "bpm.tooltip.mount",
+      "value": "لاک سے Packages/manifest.json کی file: سطریں دوبارہ لکھیں۔ جو سطریں BPM نے نہیں لکھیں انہیں نہیں چھیڑا جاتا۔"
+    },
+    {
+      "key": "bpm.button.close",
+      "value": "بند کریں"
+    },
+    {
+      "key": "bpm.tooltip.close",
+      "value": "یہ ونڈو بند کریں۔"
+    },
+    {
+      "key": "bpm.plan.heading",
+      "value": "{0} کو {1} پر منتقل کرنے سے Assets اور ProjectSettings بدل جاتے ہیں"
+    },
+    {
+      "key": "bpm.plan.intro",
+      "value": "اس پروجیکٹ کے Assets اور ProjectSettings، Basis کی پیروی کرتے ہیں۔ جن فائلوں کو آپ نے نہیں چھیڑا وہ اپڈیٹ، شامل یا حذف ہو جاتی ہیں۔ جو فائلیں آپ نے بدلی ہیں وہ آپ کے موازنے کے لیے چھوڑ دی جاتی ہیں۔"
+    },
+    {
+      "key": "bpm.button.cancelPlan",
+      "value": "پرانی پن رکھیں"
+    },
+    {
+      "key": "bpm.tooltip.cancelPlan",
+      "value": "پن کو واپس وہیں رکھیں جہاں وہ تھی۔ Assets یا ProjectSettings میں کچھ نہیں بدلتا۔"
+    },
+    {
+      "key": "bpm.button.applyPlan",
+      "value": "لاگو کریں"
+    },
+    {
+      "key": "bpm.tooltip.applyPlan",
+      "value": "پن منتقل کریں، checkout بحال کریں، یہ تبدیلیاں Assets اور ProjectSettings پر لاگو کریں، اور دوبارہ ماؤنٹ کریں۔ اس کے بعد Assets میں دہرے GUID تلاش کیے جاتے ہیں۔"
+    },
+    {
+      "key": "bpm.setup.heading",
+      "value": "Basis کو .basisdev سے لیں"
+    },
+    {
+      "key": "bpm.setup.intro",
+      "value": "اس پروجیکٹ میں ابھی bpm-manifest.json نہیں ہے۔ اسے سیٹ اپ کرنے سے Basis کسی commit پر پن ہو جاتا ہے، صرف آپ کے درکار حصے .basisdev میں ڈاؤن لوڈ ہوتے ہیں اور file: سطروں کے ذریعے ماؤنٹ ہو جاتے ہیں۔"
+    },
+    {
+      "key": "bpm.setup.game",
+      "value": "گیم"
+    },
+    {
+      "key": "bpm.setup.gameText",
+      "value": "Assets اور ProjectSettings آپ کے ہیں۔ اپنے مطلوبہ Basis پیکجز منتخب کریں، ان کے انحصارات خود ساتھ آ جاتے ہیں۔"
+    },
+    {
+      "key": "bpm.tooltip.setupGame",
+      "value": "آپ کی اپنی گیم یا ایپ کے لیے۔ BPM کبھی Assets یا ProjectSettings میں نہیں لکھتا، صرف یہ بتاتا ہے کہ Basis کن layers اور tags کی توقع رکھتا ہے۔"
+    },
+    {
+      "key": "bpm.setup.content",
+      "value": "اوتار، دنیائیں اور پراپس"
+    },
+    {
+      "key": "bpm.setup.contentText",
+      "value": "ہر Basis پیکج ماؤنٹ ہوتا ہے، اور Assets اور ProjectSettings، Basis سے کاپی ہو کر اس کی پیروی کرتے رہتے ہیں۔"
+    },
+    {
+      "key": "bpm.tooltip.setupContent",
+      "value": "Basis SDK سے بنے مواد کے لیے۔ جب پن منتقل ہوتی ہے تو BPM دکھاتا ہے کہ Assets اور ProjectSettings میں کیا بدلے گا اور پہلے آپ سے پوچھتا ہے۔"
+    },
+    {
+      "key": "bpm.setup.packages",
+      "value": "استعمال کرنے کے لیے Basis پیکجز، کاما سے الگ کیے ہوئے"
+    },
+    {
+      "key": "bpm.tooltip.setupPackages",
+      "value": "پیکج IDs جیسے com.basis.sdk۔ جن پیکجز پر یہ منحصر ہیں وہ آپ کے لیے لاک میں شامل کر دیے جاتے ہیں۔"
+    },
+    {
+      "key": "bpm.setup.at",
+      "value": "پن کرنے کے لیے Basis کی برانچ، ٹیگ یا commit"
+    },
+    {
+      "key": "bpm.tooltip.setupAt",
+      "value": "manifest ہمیشہ commit hash ریکارڈ کرتا ہے، اس لیے پن صرف تب منتقل ہوتی ہے جب آپ اسے منتقل کریں۔"
+    },
+    {
+      "key": "bpm.button.setup",
+      "value": "سیٹ اپ کریں"
+    },
+    {
+      "key": "bpm.tooltip.setup",
+      "value": "bpm-manifest.json اور bpm-lock.json لکھیں، Basis کو .basisdev میں ڈاؤن لوڈ کریں اور پیکجز ماؤنٹ کریں۔ اگر پروجیکٹ git، Plastic یا Perforce استعمال کرتا ہے تو .basisdev کو آپ کی ignore فہرست میں شامل کر دیا جاتا ہے۔"
+    },
+    {
+      "key": "bpm.section.checkouts",
+      "value": ".basisdev میں checkouts"
+    },
+    {
+      "key": "bpm.checkouts.none",
+      "value": "کوئی checkout نہیں۔ پیکجز اپنی git ریپوزٹریز یا مقامی فولڈرز سے آتے ہیں۔"
+    },
+    {
+      "key": "bpm.tooltip.held",
+      "value": "پن شدہ checkouts، BPM کے ہیں اور لاک شدہ commit پر رہتے ہیں۔ ورکنگ ٹری آپ کا ہے: کسی برانچ پر، اسی جگہ ترمیم اور commit کیا جاتا ہے۔ inline فولڈر صرف پڑھا جاتا ہے۔"
+    },
+    {
+      "key": "bpm.tooltip.openCheckout",
+      "value": "اس checkout کا فولڈر کھولیں۔"
+    },
+    {
+      "key": "bpm.pin.watermark",
+      "value": "برانچ، ٹیگ یا commit"
+    },
+    {
+      "key": "bpm.tooltip.pinTarget",
+      "value": "پن کو کہاں منتقل کرنا ہے۔ برانچ یا ٹیگ ایک بار تلاش کیا جاتا ہے اور commit hash ریکارڈ ہو جاتا ہے۔"
+    },
+    {
+      "key": "bpm.button.pin",
+      "value": "پن منتقل کریں"
+    },
+    {
+      "key": "bpm.tooltip.pin",
+      "value": "fetch کریں، نئے commit پر پن کریں، لاک، بحال اور ماؤنٹ کریں، پھر بدلے ہوئے پیکجز کی فہرست دکھائیں تاکہ آپ جان سکیں کہ کیا دوبارہ ٹیسٹ کرنا ہے۔"
+    },
+    {
+      "key": "bpm.section.packages",
+      "value": "پیکجز"
+    },
+    {
+      "key": "bpm.packages.none",
+      "value": "bpm-manifest.json میں ابھی کوئی پیکج درج نہیں۔"
+    },
+    {
+      "key": "bpm.button.override",
+      "value": "مقامی فولڈر استعمال کریں"
+    },
+    {
+      "key": "bpm.tooltip.override",
+      "value": "اس پیکج کو اس کمپیوٹر کے کسی فولڈر سے ماؤنٹ کریں، جیسے کسی ایڈ آن کا آپ کا اپنا کلون۔ یہ صرف اس مشین کے .basisdev میں ریکارڈ ہوتا ہے، اس لیے کسی اور کا پروجیکٹ نہیں بدلتا۔ Packages/manifest.json کی بدلی ہوئی سطر commit نہ کریں۔"
+    },
+    {
+      "key": "bpm.button.clearOverride",
+      "value": "فولڈر کا استعمال بند کریں"
+    },
+    {
+      "key": "bpm.tooltip.clearOverride",
+      "value": "مقامی اوور رائیڈ ہٹائیں اور پیکج کو دوبارہ لاک سے ماؤنٹ کریں۔"
+    },
+    {
+      "key": "bpm.button.embed",
+      "value": "Packages میں کاپی کریں"
+    },
+    {
+      "key": "bpm.tooltip.embed",
+      "value": "اس پیکج میں ترمیم کے لیے اسے Packages/ میں کاپی کریں۔ آپ کا ورژن کنٹرول اس کاپی کو ریکارڈ کرتا ہے، اور bpm-manifest.json وہ commit نوٹ کرتی ہے جس سے یہ آئی تاکہ بعد میں upstream سے موازنہ کر کے واپس بھیجی جا سکے۔"
+    },
+    {
+      "key": "bpm.tooltip.toggle",
+      "value": "پیکج بند کرنے سے اس کا checkout برقرار رہتا ہے لیکن وہ ماؤنٹ نہیں ہوتا، مسائل کی جانچ یا ایک ہی پیکج کے دو ذرائع کے درمیان تبدیلی کے لیے۔ دوبارہ ماؤنٹ کرنے کے لیے اسے آن کریں۔"
+    },
+    {
+      "key": "bpm.package.turnOff",
+      "value": "بند کریں"
+    },
+    {
+      "key": "bpm.package.turnOn",
+      "value": "آن کریں"
+    },
+    {
+      "key": "bpm.package.dependency",
+      "value": "کسی دوسرے پیکج کو درکار (گہرائی {0})"
+    },
+    {
+      "key": "bpm.package.notLocked",
+      "value": "ابھی لاک نہیں"
+    },
+    {
+      "key": "bpm.package.off",
+      "value": "بند ہے"
+    },
+    {
+      "key": "bpm.package.lockedVersion",
+      "value": "لاک شدہ {0}"
+    },
+    {
+      "key": "bpm.package.override",
+      "value": "مقامی فولڈر: {0}"
+    },
+    {
+      "key": "bpm.package.embedded",
+      "value": "Packages/ میں شامل"
+    },
+    {
+      "key": "bpm.package.copiedFrom",
+      "value": "{0} سے کاپی کیا گیا"
+    },
+    {
+      "key": "bpm.held.pinned",
+      "value": "پن شدہ"
+    },
+    {
+      "key": "bpm.held.workingTree",
+      "value": "ورکنگ ٹری"
+    },
+    {
+      "key": "bpm.held.inline",
+      "value": "فولڈر"
+    },
+    {
+      "key": "bpm.checkout.missing",
+      "value": "ابھی ڈاؤن لوڈ نہیں ہوا۔ بحال کرنے سے یہ واپس آ جائے گا۔"
+    },
+    {
+      "key": "bpm.checkout.onBranch",
+      "value": "{0}، {1} پر"
+    },
+    {
+      "key": "bpm.checkout.locked",
+      "value": "لاک: {0}"
+    },
+    {
+      "key": "bpm.checkout.changes",
+      "value": "{0} بدلی ہوئی فائل(یں)"
+    },
+    {
+      "key": "bpm.status.locking",
+      "value": "لاک کیا جا رہا ہے…"
+    },
+    {
+      "key": "bpm.status.restoring",
+      "value": "بحال کیا جا رہا ہے…"
+    },
+    {
+      "key": "bpm.status.mounting",
+      "value": "ماؤنٹ کیا جا رہا ہے…"
+    },
+    {
+      "key": "bpm.status.settingUp",
+      "value": "پروجیکٹ سیٹ اپ کیا جا رہا ہے…"
+    },
+    {
+      "key": "bpm.status.pinning",
+      "value": "پن منتقل کی جا رہی ہے…"
+    },
+    {
+      "key": "bpm.status.embedding",
+      "value": "{0} کو Packages میں کاپی کیا جا رہا ہے…"
+    },
+    {
+      "key": "bpm.status.failed",
+      "value": "کچھ مراحل مکمل نہیں ہوئے۔ نیچے دیے گئے پیغامات دیکھیں۔"
+    },
+    {
+      "key": "bpm.override.set",
+      "value": "{0} اس کمپیوٹر پر {1} سے لوڈ ہوتا ہے۔"
+    },
+    {
+      "key": "bpm.override.cleared",
+      "value": "{0} دوبارہ لاک سے ماؤنٹ ہو گیا ہے۔"
+    },
+    {
+      "key": "bpm.override.noPackage",
+      "value": "{0} میں package.json نہیں ہے، اس لیے اسے ماؤنٹ نہیں کیا جا سکتا۔"
+    },
+    {
+      "key": "bpm.pin.badRef",
+      "value": "'{0}' درست برانچ، ٹیگ یا commit نہیں ہے۔"
+    },
+    {
+      "key": "bpm.plan.cancelled",
+      "value": "کچھ نہیں بدلا۔ {0}، {1} پر ہی ہے۔"
+    },
+    {
+      "key": "bpm.picker.override",
+      "value": "وہ فولڈر جس سے {0} لوڈ کرنا ہے"
+    },
+    {
+      "key": "shell.status.fix",
+      "value": "ٹھیک کریں"
+    },
+    {
+      "key": "shell.status.fixTooltip",
+      "value": "ٹکراؤ والی فائلیں کھولیں اور ہر ایک کے لیے چنیں کہ کون سا ورژن رکھنا ہے۔ سب حل ہونے پر رکا ہوا مرحلہ مکمل ہوگا اور سنک دوبارہ چلے گا۔"
+    },
+    {
+      "key": "installs.status.fixingConflicts",
+      "value": "{0} میں ٹکراؤ کھولے جا رہے ہیں…"
+    },
+    {
+      "key": "installs.status.conflictsOutsideUpdate",
+      "value": "{0} میں ایسے مرج ٹکراؤ ہیں جو Basis اپ ڈیٹ سے نہیں آئے۔ انہیں اپنے git ٹول میں حل کریں، پھر دوبارہ سنک کریں۔"
+    },
+    {
+      "key": "installs.updateAll.fixTooltip",
+      "value": "جن پروجیکٹس کو آپ کی ضرورت ہے انہیں ایک ایک کر کے دیکھیں۔ ہر ایک اپنا Basis اپ ڈیٹ کھولتا ہے، جہاں آپ تبدیلیاں دیکھتے ہیں، ٹکراؤ والی فائلوں کا فیصلہ کرتے ہیں، یا رکا ہوا اپ ڈیٹ مکمل کرتے ہیں۔"
+    },
+    {
+      "key": "installs.updateAll.fixOneTooltip",
+      "value": "اس پروجیکٹ کا Basis اپ ڈیٹ کھولتا ہے، جہاں آپ تبدیلیاں دیکھتے ہیں، ٹکراؤ والی فائلوں کا فیصلہ کرتے ہیں، یا رکا ہوا اپ ڈیٹ مکمل کرتے ہیں۔"
+    },
+    {
+      "key": "dialog.needsYou.title",
+      "value": "وہ پروجیکٹس جنہیں آپ کی ضرورت ہے"
+    },
+    {
+      "key": "dialog.needsYou.heading",
+      "value": "{0} پروجیکٹس کو Basis کے اپڈیٹ کرنے سے پہلے ایک فیصلے کی ضرورت ہے"
+    },
+    {
+      "key": "dialog.needsYou.headingOne",
+      "value": "{0} کو Basis کے اپڈیٹ کرنے سے پہلے ایک فیصلے کی ضرورت ہے"
+    },
+    {
+      "key": "dialog.needsYou.intro",
+      "value": "ان پروجیکٹس میں کچھ بھی تبدیل نہیں کیا گیا۔ کسی ایک کا Basis اپڈیٹ کھولنے کے لیے اسے چنیں۔ اس سے فارغ ہونے پر آپ باقی پروجیکٹس کے ساتھ یہاں واپس آ جاتے ہیں۔"
+    },
+    {
+      "key": "dialog.needsYou.close",
+      "value": "بعد میں"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.close",
+      "value": "یہ فہرست بند کریں۔ اسٹیٹس بار میں “ٹھیک کریں” بٹن اور “سرگرمی” فہرست اسے دوبارہ کھولتے ہیں۔"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.fix",
+      "value": "اس پروجیکٹ کا Basis اپڈیٹ کھولیں۔ کچھ بھی لکھے جانے سے پہلے آپ دیکھتے ہیں کہ کیا بدلے گا، اور آپ منسوخ کر سکتے ہیں۔"
+    },
+    {
+      "key": "dialog.needsYou.action.finish",
+      "value": "اپڈیٹ مکمل کریں"
+    },
+    {
+      "key": "dialog.needsYou.action.review",
+      "value": "اپڈیٹ کا جائزہ لیں"
+    },
+    {
+      "key": "dialog.needsYou.action.open",
+      "value": "اپڈیٹ کھولیں"
+    },
+    {
+      "key": "dialog.needsYou.hint.paused",
+      "value": "پچھلا اپڈیٹ درمیان میں رک گیا تھا، اور کچھ فائلوں میں ابھی بھی تصادم ہے۔ ہر فائل کا کون سا ورژن رکھنا ہے چنیں، اور اپڈیٹ مکمل ہو جائے گا۔"
+    },
+    {
+      "key": "dialog.needsYou.hint.conflicts",
+      "value": "آپ کی کچھ ترامیم انہی لائنوں کو چھوتی ہیں جو Basis نے بدلی ہیں۔ اپڈیٹ لاگو ہونے سے پہلے ان فائلوں کا جائزہ لیں اور چنیں کہ کیا رکھنا ہے۔"
+    },
+    {
+      "key": "dialog.needsYou.hint.other",
+      "value": "یہ دیکھنے کے لیے اپڈیٹ کھولیں کہ اسے کیا چاہیے۔"
+    },
+    {
+      "key": "dialog.needsYou.allDone",
+      "value": "جن پروجیکٹس کو آپ کی ضرورت تھی، وہ سب نمٹ گئے۔"
+    },
+    {
+      "key": "dialog.needsYou.titleResults",
+      "value": "Basis اپڈیٹ کے نتائج"
+    },
+    {
+      "key": "dialog.needsYou.results",
+      "value": "{0} اپڈیٹ ہوئے، {1} کو آپ کی ضرورت ہے"
+    },
+    {
+      "key": "dialog.needsYou.resultsAllDone",
+      "value": "{0} اپڈیٹ ہوئے، کرنے کو کچھ باقی نہیں"
+    },
+    {
+      "key": "dialog.needsYou.introDone",
+      "value": "ہر پروجیکٹ تازہ ترین Basis پر ہے۔ کھولنے سے پہلے دیکھ لیں کہ ہر ایک کو کون سا Unity ایڈیٹر چاہیے۔"
+    },
+    {
+      "key": "dialog.needsYou.section.updated",
+      "value": "اپڈیٹ ہوئے ({0})"
+    },
+    {
+      "key": "dialog.needsYou.section.needsYou",
+      "value": "آپ کی ضرورت ہے ({0})"
+    },
+    {
+      "key": "dialog.needsYou.updated.done",
+      "value": "اب تازہ ترین Basis پر ہے۔"
+    },
+    {
+      "key": "dialog.needsYou.updated.unity",
+      "value": "اب تازہ ترین Basis پر ہے، جو Unity {0} استعمال کرتا ہے۔"
+    },
+    {
+      "key": "dialog.needsYou.updated.unityMissing",
+      "value": "Unity {0} ابھی انسٹال نہیں ہے، اس لیے انسٹال ہونے تک پروجیکٹ نہیں کھلے گا۔"
+    },
+    {
+      "key": "dialog.needsYou.action.getUnity",
+      "value": "Unity {0} حاصل کریں"
+    },
+    {
+      "key": "dialog.needsYou.tooltip.getUnity",
+      "value": "یہ ورژن منتخب کر کے Unity ایڈیٹرز ٹیب پر جائیں، تاکہ آپ اس کے ماڈیولز چن کر اسے انسٹال کر سکیں۔"
+    },
+    {
+      "key": "dialog.syncBlocked.title",
+      "value": "ترمیم شدہ فائلیں سنک روک رہی ہیں"
+    },
+    {
+      "key": "dialog.syncBlocked.heading",
+      "value": "{0}: آپ کی ترمیم شدہ فائلوں میں سے {1} ریموٹ پر بھی تبدیل ہوئیں"
+    },
+    {
+      "key": "dialog.syncBlocked.headingOne",
+      "value": "{0}: آپ کی ترمیم شدہ فائلوں میں سے ایک ریموٹ پر بھی تبدیل ہوئی"
+    },
+    {
+      "key": "dialog.syncBlocked.intro",
+      "value": "Git {0} سے pull نہیں کرے گا جب تک وہ ان غیر commit شدہ ترامیم کو اوور رائٹ کر دے۔ منتخب کریں کہ انہیں کیسے سنبھالنا ہے۔ آپ کے ورژن پہلے پروجیکٹ کے .git فولڈر میں بیک اپ ہو جاتے ہیں، اس لیے کسی بھی صورت میں کچھ ضائع نہیں ہوتا۔"
+    },
+    {
+      "key": "dialog.syncBlocked.files",
+      "value": "یہاں ترمیم شدہ اور ریموٹ پر تبدیل شدہ فائلیں"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.title",
+      "value": "میرے ورژن رکھیں"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.text",
+      "value": "Pull کریں، پھر ہر فائل کا آپ کا ورژن اوپر واپس رکھ دیں۔ Git انہیں نئے commit کے مقابلے میں ترامیم کے طور پر دکھاتا ہے، تاکہ آپ موازنہ کر کے جو چاہیں commit کر سکیں۔"
+    },
+    {
+      "key": "dialog.syncBlocked.keep.button",
+      "value": "Pull کریں اور میرے رکھیں"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.title",
+      "value": "ریموٹ کے ورژن لیں"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.text",
+      "value": "Pull کریں اور ہر فائل کا آنے والا ورژن استعمال کریں۔ یہ تب بہتر ہے جب آپ کی ترامیم وہ چیزیں ہوں جو Unity نے خود دوبارہ لکھیں۔ آپ کی کاپیاں بیک اپ فولڈر میں رہتی ہیں۔"
+    },
+    {
+      "key": "dialog.syncBlocked.theirs.button",
+      "value": "Pull کریں اور ان کے لیں"
+    },
+    {
+      "key": "dialog.syncBlocked.cancel",
+      "value": "ابھی نہیں"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.keep",
+      "value": "ان فائلوں کا بیک اپ لیں، pull کریں، پھر اپنے ورژن نئی فائلوں کے اوپر کاپی کریں۔"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.theirs",
+      "value": "ان فائلوں کا بیک اپ لیں، پھر pull کریں اور ہر ایک کا ریموٹ ورژن رکھیں۔"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.cancel",
+      "value": "کچھ تبدیل کیے بغیر بند کریں۔ “ٹھیک کریں” بٹن اسے دوبارہ دکھاتا ہے۔"
+    },
+    {
+      "key": "dialog.syncBlocked.tooltip.fix",
+      "value": "وہ ترمیم شدہ فائلیں دکھائیں جو pull کو روک رہی ہیں اور منتخب کریں کہ اپنی رکھیں یا ریموٹ کی لیں۔ آپ کے ورژن کا پہلے بیک اپ لیا جاتا ہے۔"
     }
   ]
 }

@@ -50,6 +50,9 @@ public sealed class UpdateAllProjectsTests
             await vm.UpdateAllAsync((_, message) => { asked = message; return Task.FromResult(true); });
             Assert.Null(asked);
             Assert.Equal("Nothing was updated. Needs you: Edited (would conflict with your changes)", shell.StatusMessage);
+            Assert.True(shell.CanFixStatus);
+            Assert.False(shell.CanRetryStatus);
+            Assert.Contains(shell.Blockers, b => b.Project == "Edited" && b.HasAction && b.ActionLabel == "Fix");
         }
         finally
         {

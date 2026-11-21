@@ -42,10 +42,10 @@ internal sealed partial class ConsoleApplication
         {
             Name = "clone-basis", Group = ProjectsGroup, Aliases = new[] { "clone" },
             Summary = "Clone BasisVR/Basis and add it to your projects",
-            Usage = new[] { "clone-basis <empty-folder> [branch] [--name <name>] [--without <part>[,<part>]]" },
+            Usage = new[] { "clone-basis <empty-folder> [branch] [--name <name>] [--without <part>[,<part>]] [--basis <git-url>]" },
             Details = "Downloads Basis with its full history (a few GB), checks out the branch (developer unless you name another) and saves the clone as a project, like New project in the app. "
                 + "--without leaves parts out of the folder (server: the Basis Server folder, images: Basis/Images). Git still has them, so updates keep working, and 'parts add' brings them back.",
-            Options = new[] { new CliOption("--name", "Display name for the new project", "<name>"), new CliOption("--without", "Parts to leave out: server, images", "<parts>", ValueKind: ArgKind.Part) },
+            Options = new[] { new CliOption("--name", "Display name for the new project", "<name>"), new CliOption("--without", "Parts to leave out: server, images", "<parts>", ValueKind: ArgKind.Part), new CliOption("--basis", "Clone your fork instead of BasisVR/Basis", "<git-url>") },
             Args = new[] { ArgKind.Path, ArgKind.BasisBranch },
             Examples = new[]
             {

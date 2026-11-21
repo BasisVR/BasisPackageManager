@@ -79,6 +79,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public RelayCommand DismissBasisUpdateCommand { get; }
     public RelayCommand ShowActivitiesCommand { get; }
     public RelayCommand RetryStatusCommand { get; }
+    public RelayCommand FixStatusCommand { get; }
     public ProjectWork Work { get; } = new();
 
     public MainWindowViewModel()
@@ -127,6 +128,7 @@ public sealed class MainWindowViewModel : ObservableObject
         DismissBasisUpdateCommand = new RelayCommand(DismissBasisUpdateAsync);
         ShowActivitiesCommand = new RelayCommand(ShowActivities);
         RetryStatusCommand = new RelayCommand(() => Retry(_statusFailure));
+        FixStatusCommand = new RelayCommand(() => Fix(_statusFailure));
         ServerVM.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(ServerViewModel.NeedsDotNet10Sdk)) RefreshBlockers(); };
         PackagesVM.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(PackagesViewModel.IsInstalling)) OnPropertyChanged(nameof(IsAnythingRunning)); };
         CrashReporter.BreadcrumbProvider = () => string.Join("\n", _breadcrumbs);
@@ -287,12 +289,25 @@ public sealed class MainWindowViewModel : ObservableObject
             Blockers.Add(new BlockerItem(ActiveInstall?.DisplayName, L.Tr("settings.activity.blocker.dotnet"), L.Tr("settings.activity.blocker.getDotNet"),
                 ServerVM.OpenDotNetDownloadCommand, ActionTip: L.Tr("settings.tooltip.blockerGetDotNet")));
         foreach (var failure in Enumerable.Reverse(_failures))
-            Blockers.Add(new BlockerItem(failure.Project, failure.Message, L.Tr("shell.status.retry"), new RelayCommand(() => Retry(failure)),
-                new RelayCommand(() => DismissFailure(failure)), L.Tr("shell.status.retryTooltip")));
+            Blockers.Add(failure.Fix is null
+                ? new BlockerItem(failure.Project, failure.Message, L.Tr("shell.status.retry"), new RelayCommand(() => Retry(failure)),
+                    new RelayCommand(() => DismissFailure(failure)), L.Tr("shell.status.retryTooltip"))
+                : new BlockerItem(failure.Project, failure.Message, L.Tr("shell.status.fix"), new RelayCommand(() => Fix(failure)),
+                    new RelayCommand(() => DismissFailure(failure)), failure.FixTip ?? L.Tr("shell.status.fixTooltip")));
         OnPropertyChanged(nameof(HasBlockers));
     }
 
-    public bool CanRetryStatus => _statusFailure is not null;
+    public bool CanRetryStatus => _statusFailure is { Fix: null };
+    public bool CanFixStatus => _statusFailure is { Fix: not null };
+    public string FixStatusTooltip => _statusFailure?.FixTip ?? L.Tr("shell.status.fixTooltip");
+
+    public void AddFix(string key, string? project, string message, Func<Task> fix, string? fixTip = null)
+    {
+        _failures.RemoveAll(f => f.Key == key);
+        _failures.Add(new Failure(key, project, message, fix, fix, fixTip));
+        if (_failures.Count > MaxFailures) _failures.RemoveAt(0);
+        RefreshBlockers();
+    }
 
     public void ClearFailure(string key)
     {
@@ -301,10 +316,10 @@ public sealed class MainWindowViewModel : ObservableObject
         RefreshBlockers();
     }
 
-    private void RecordFailure(string key, string? project, string message, Func<Task> retry)
+    private void RecordFailure(string key, string? project, string message, Func<Task> retry, Func<Task>? fix = null, string? fixTip = null)
     {
         _failures.RemoveAll(f => f.Key == key);
-        var failure = new Failure(key, project, message, retry);
+        var failure = new Failure(key, project, message, retry, fix, fixTip);
         _failures.Add(failure);
         if (_failures.Count > MaxFailures) _failures.RemoveAt(0);
         SetStatusFailure(failure);
@@ -318,6 +333,21 @@ public sealed class MainWindowViewModel : ObservableObject
         if (ReferenceEquals(_statusFailure, failure)) SetStatus(L.Tr("shell.status.retrying"), StatusKind.Info, failure.Project);
         RefreshBlockers();
         _ = RunRetryAsync(failure);
+    }
+
+    private void Fix(Failure? failure)
+    {
+        if (failure?.Fix is not { } fix) return;
+        _failures.Remove(failure);
+        if (ReferenceEquals(_statusFailure, failure)) SetStatusFailure(null);
+        RefreshBlockers();
+        _ = RunFixAsync(failure, fix);
+    }
+
+    private static async Task RunFixAsync(Failure failure, Func<Task> fix)
+    {
+        try { await fix(); }
+        catch (Exception ex) { DiagnosticLog.Write($"Fixing: {failure.Message}", ex); }
     }
 
     private static async Task RunRetryAsync(Failure failure)
@@ -337,9 +367,11 @@ public sealed class MainWindowViewModel : ObservableObject
     {
         _statusFailure = failure;
         OnPropertyChanged(nameof(CanRetryStatus));
+        OnPropertyChanged(nameof(CanFixStatus));
+        OnPropertyChanged(nameof(FixStatusTooltip));
     }
 
-    private sealed record Failure(string Key, string? Project, string Message, Func<Task> Retry);
+    private sealed record Failure(string Key, string? Project, string Message, Func<Task> Retry, Func<Task>? Fix = null, string? FixTip = null);
 
     public void ShowActivities()
     {
@@ -403,12 +435,12 @@ public sealed class MainWindowViewModel : ObservableObject
 
     public bool HasStatusProject => !string.IsNullOrWhiteSpace(_statusProject);
 
-    public void SetStatus(string message, StatusKind kind = StatusKind.Info, string? project = null, Func<Task>? retry = null, string? key = null)
+    public void SetStatus(string message, StatusKind kind = StatusKind.Info, string? project = null, Func<Task>? retry = null, string? key = null, Func<Task>? fix = null, string? fixTip = null)
     {
         StatusMessage = message;
         StatusKind = kind;
         StatusProject = string.IsNullOrWhiteSpace(project) ? null : project.Trim();
-        if (kind == StatusKind.Error && retry is not null) RecordFailure(key ?? $"{StatusProject}|{message}", StatusProject, message, retry);
+        if (fix is not null || kind == StatusKind.Error && retry is not null) RecordFailure(key ?? $"{StatusProject}|{message}", StatusProject, message, (retry ?? fix)!, fix, fixTip);
         else
         {
             SetStatusFailure(null);

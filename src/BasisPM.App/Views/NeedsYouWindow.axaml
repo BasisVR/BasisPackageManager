@@ -1,0 +1,79 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BasisPM.App.ViewModels"
+        xmlns:loc="using:BasisPM.App.Localization"
+        x:Class="BasisPM.App.Views.NeedsYouWindow"
+        x:DataType="vm:NeedsYouViewModel"
+        Title="{Binding Title}"
+        Width="720" Height="640" MinWidth="520" MinHeight="380"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <DockPanel Margin="26,24">
+        <StackPanel DockPanel.Dock="Top" Spacing="8" Margin="0,0,0,16">
+            <TextBlock Text="{Binding Heading}" Classes="h3" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding Intro}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Click="OnClose" ToolTip.Tip="{loc:Tr dialog.needsYou.tooltip.close}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{loc:Tr dialog.needsYou.close}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="10">
+                <TextBlock Text="{Binding ItemsHeading}" FontWeight="SemiBold" FontSize="14" IsVisible="{Binding HasItems}"/>
+                <ItemsControl ItemsSource="{Binding Items}" IsVisible="{Binding HasItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:NeedsYouItem">
+                            <Border Classes="card" Padding="16,14" Margin="0,0,0,10" Background="#1AF59E0B" BorderBrush="#80F59E0B">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <PathIcon Width="18" Height="18" Margin="0,2,12,0" VerticalAlignment="Top"
+                                              Data="{StaticResource IconWarning}" Foreground="{StaticResource BasisWarningBrush}"/>
+                                    <StackPanel Grid.Column="1" Spacing="4" Margin="0,0,16,0">
+                                        <TextBlock Text="{Binding Project}" FontWeight="SemiBold" FontSize="14"/>
+                                        <TextBlock Text="{Binding Reason}" Foreground="{StaticResource BasisWarningBrush}" FontSize="12" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding Hint}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding Folder}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="2" Classes="primary" VerticalAlignment="Center" Click="OnFix" ToolTip.Tip="{loc:Tr dialog.needsYou.tooltip.fix}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconCheck}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding ActionLabel}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="{Binding UpdatedHeading}" FontWeight="SemiBold" FontSize="14" IsVisible="{Binding HasUpdated}" Margin="0,6,0,0"/>
+                <ItemsControl ItemsSource="{Binding Updated}" IsVisible="{Binding HasUpdated}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:UpdatedItem">
+                            <Border Classes="card" Padding="16,12" Margin="0,0,0,10">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <PathIcon Width="18" Height="18" Margin="0,2,12,0" VerticalAlignment="Top"
+                                              Data="{StaticResource IconCheck}" Foreground="{StaticResource BasisSuccessBrush}"/>
+                                    <StackPanel Grid.Column="1" Spacing="4" Margin="0,0,16,0">
+                                        <TextBlock Text="{Binding Project}" FontWeight="SemiBold" FontSize="14"/>
+                                        <TextBlock Text="{Binding Summary}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding UnityHint}" Foreground="{StaticResource BasisWarningBrush}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding NeedsUnity}"/>
+                                    </StackPanel>
+                                    <Button Grid.Column="2" VerticalAlignment="Center" Click="OnGetUnity" IsVisible="{Binding NeedsUnity}" ToolTip.Tip="{loc:Tr dialog.needsYou.tooltip.getUnity}">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconDownload}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding ActionLabel}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>
