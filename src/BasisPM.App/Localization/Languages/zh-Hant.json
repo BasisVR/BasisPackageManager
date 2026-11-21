@@ -6483,6 +6483,10 @@
       "value": "從磁碟重新載入你的專案，然後檢查每個專案在 github.com/BasisVR/Basis 上是否有新的 Basis 提交。"
     },
     {
+      "key": "installs.button.remove",
+      "value": "移除"
+    },
+    {
       "key": "installs.tooltip.remove",
       "value": "將此專案從清單中移除，或從磁碟刪除其資料夾。你會在下一步做選擇，且刪除後無法復原。"
     },

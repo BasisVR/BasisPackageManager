@@ -6483,6 +6483,10 @@
       "value": "Lädt deine Projekte neu von der Festplatte und prüft dann jedes auf neue Basis-Commits auf github.com/BasisVR/Basis."
     },
     {
+      "key": "installs.button.remove",
+      "value": "Entfernen"
+    },
+    {
       "key": "installs.tooltip.remove",
       "value": "Entfernt dieses Projekt aus deiner Liste oder löscht seinen Ordner von der Festplatte. Du wählst im nächsten Schritt, und das Löschen kann nicht rückgängig gemacht werden."
     },

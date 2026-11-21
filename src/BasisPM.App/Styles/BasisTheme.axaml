@@ -31,8 +31,16 @@
             <Color x:Key="BasisBlue">#3B82F6</Color>
             <Color x:Key="BasisPink">#EC4899</Color>
 
+            <Color x:Key="BasisAction">#4F46E5</Color>
+            <Color x:Key="BasisActionHover">#6366F1</Color>
+            <Color x:Key="BasisActionPressed">#4338CA</Color>
+            <Color x:Key="BasisActionText">#818CF8</Color>
+            <Color x:Key="BasisActionTextHover">#A5B4FC</Color>
+
             <Color x:Key="BasisDanger">#EF1237</Color>
-            <Color x:Key="BasisSuccess">#22C55E</Color>
+            <Color x:Key="BasisDangerHover">#FF2C50</Color>
+            <Color x:Key="BasisDangerPressed">#C81030</Color>
+            <Color x:Key="BasisSuccess">#10B981</Color>
             <Color x:Key="BasisWarning">#F59E0B</Color>
 
             <SolidColorBrush x:Key="BasisBackgroundBrush" Color="{StaticResource BasisBackground}"/>
@@ -57,11 +65,18 @@
             <SolidColorBrush x:Key="BasisPurpleBrush" Color="{StaticResource BasisPurple}"/>
             <SolidColorBrush x:Key="BasisBlueBrush" Color="{StaticResource BasisBlue}"/>
             <SolidColorBrush x:Key="BasisPinkBrush" Color="{StaticResource BasisPink}"/>
+            <SolidColorBrush x:Key="BasisActionBrush" Color="{StaticResource BasisAction}"/>
+            <SolidColorBrush x:Key="BasisActionHoverBrush" Color="{StaticResource BasisActionHover}"/>
+            <SolidColorBrush x:Key="BasisActionPressedBrush" Color="{StaticResource BasisActionPressed}"/>
+            <SolidColorBrush x:Key="BasisActionTextBrush" Color="{StaticResource BasisActionText}"/>
+            <SolidColorBrush x:Key="BasisActionTextHoverBrush" Color="{StaticResource BasisActionTextHover}"/>
             <SolidColorBrush x:Key="BasisDangerBrush" Color="{StaticResource BasisDanger}"/>
+            <SolidColorBrush x:Key="BasisDangerHoverBrush" Color="{StaticResource BasisDangerHover}"/>
+            <SolidColorBrush x:Key="BasisDangerPressedBrush" Color="{StaticResource BasisDangerPressed}"/>
             <SolidColorBrush x:Key="BasisSuccessBrush" Color="{StaticResource BasisSuccess}"/>
             <SolidColorBrush x:Key="BasisWarningBrush" Color="{StaticResource BasisWarning}"/>
 
-            <SolidColorBrush x:Key="BasisAccentBrush" Color="{StaticResource BasisBrand}"/>
+            <SolidColorBrush x:Key="BasisAccentBrush" Color="{StaticResource BasisActionText}"/>
 
             <!-- Monospace stack for code / logs / git URLs / diffs. Avalonia doesn't resolve the CSS
                  generic "monospace", so real family names for all three desktop OSes are listed: Windows
@@ -92,6 +107,16 @@
                 <GradientStop Offset="1" Color="#A855F7"/>
             </LinearGradientBrush>
 
+            <LinearGradientBrush x:Key="BasisActionGradient" StartPoint="0%,50%" EndPoint="100%,50%">
+                <GradientStop Offset="0" Color="#4F46E5"/>
+                <GradientStop Offset="1" Color="#9333EA"/>
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="BasisActionGradientHover" StartPoint="0%,50%" EndPoint="100%,50%">
+                <GradientStop Offset="0" Color="#6366F1"/>
+                <GradientStop Offset="1" Color="#A855F7"/>
+            </LinearGradientBrush>
+
             <!-- Expander reskin: the Fluent defaults (opaque header surface, blue-grey chevron)
                  clash with the glass theme. Override its theme resources to match the cards. -->
             <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="{StaticResource BasisGlassStrong}"/>
@@ -109,8 +134,8 @@
             <SolidColorBrush x:Key="ExpanderContentBackground" Color="{StaticResource BasisGlassStrong}"/>
             <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="{StaticResource BasisBorderStrong}"/>
             <SolidColorBrush x:Key="ExpanderChevronForeground" Color="{StaticResource BasisTextMuted}"/>
-            <SolidColorBrush x:Key="ExpanderChevronForegroundPointerOver" Color="{StaticResource BasisBrand}"/>
-            <SolidColorBrush x:Key="ExpanderChevronForegroundPressed" Color="{StaticResource BasisBrand}"/>
+            <SolidColorBrush x:Key="ExpanderChevronForegroundPointerOver" Color="{StaticResource BasisActionText}"/>
+            <SolidColorBrush x:Key="ExpanderChevronForegroundPressed" Color="{StaticResource BasisActionText}"/>
             <SolidColorBrush x:Key="ExpanderChevronForegroundDisabled" Color="{StaticResource BasisTextDim}"/>
             <SolidColorBrush x:Key="ExpanderChevronBackground" Color="Transparent"/>
             <SolidColorBrush x:Key="ExpanderChevronBackgroundPointerOver" Color="Transparent"/>
@@ -179,7 +204,7 @@
     </Style>
 
     <Style Selector="TextBlock.brand">
-        <Setter Property="Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisActionTextBrush}"/>
     </Style>
 
     <!-- Frosted "glass" card: a translucent film that lets the animated background wash through,
@@ -253,25 +278,25 @@
 
     <Style Selector="Button:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
-        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionTextBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisActionTextBrush}"/>
     </Style>
 
     <Style Selector="Button.primary">
-        <Setter Property="Background" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="Background" Value="{StaticResource BasisActionBrush}"/>
         <Setter Property="Foreground" Value="#FFFFFF"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionBrush}"/>
     </Style>
 
     <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource BasisBrandHoverBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandHoverBrush}"/>
+        <Setter Property="Background" Value="{StaticResource BasisActionHoverBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionHoverBrush}"/>
         <Setter Property="TextElement.Foreground" Value="#FFFFFF"/>
     </Style>
 
     <Style Selector="Button.primary:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource BasisBrandPressedBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandPressedBrush}"/>
+        <Setter Property="Background" Value="{StaticResource BasisActionPressedBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionPressedBrush}"/>
         <Setter Property="TextElement.Foreground" Value="#FFFFFF"/>
     </Style>
 
@@ -286,18 +311,18 @@
 
     <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionTextBrush}"/>
         <Setter Property="TextElement.Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
     </Style>
 
     <Style Selector="Button.secondary:pressed /template/ ContentPresenter">
         <Setter Property="Background" Value="{StaticResource BasisSurfaceMutedBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionTextBrush}"/>
         <Setter Property="TextElement.Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
     </Style>
 
     <Style Selector="Button.cta">
-        <Setter Property="Background" Value="{StaticResource BasisBrandGradient}"/>
+        <Setter Property="Background" Value="{StaticResource BasisActionGradient}"/>
         <Setter Property="Foreground" Value="#FFFFFF"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Padding" Value="22,11"/>
@@ -308,20 +333,20 @@
     </Style>
 
     <Style Selector="Button.cta:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource BasisBrandGradientHover}"/>
+        <Setter Property="Background" Value="{StaticResource BasisActionGradientHover}"/>
         <Setter Property="TextElement.Foreground" Value="#FFFFFF"/>
     </Style>
 
     <Style Selector="Button.danger">
-        <!-- Idle = brand-red at zero alpha (not the inherited navy) so hover fades in cleanly as red. -->
+        <!-- Idle = danger-red at zero alpha (not the inherited navy) so hover fades in cleanly as red. -->
         <Setter Property="Background" Value="#00EF1237"/>
-        <Setter Property="Foreground" Value="{StaticResource BasisBrandBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisDangerBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisDangerBrush}"/>
     </Style>
 
     <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource BasisBrandBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="Background" Value="{StaticResource BasisDangerBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisDangerBrush}"/>
         <Setter Property="TextElement.Foreground" Value="#FFFFFF"/>
     </Style>
 
@@ -362,7 +387,7 @@
 
     <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisActionTextBrush}"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
     </Style>
 
@@ -382,7 +407,7 @@
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="10"/>
         <Setter Property="Padding" Value="12,9"/>
-        <Setter Property="SelectionBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="SelectionBrush" Value="{StaticResource BasisActionBrush}"/>
     </Style>
 
     <!-- Ease the focus-ring colour in/out instead of snapping. -->
@@ -394,7 +419,7 @@
         </Setter>
     </Style>
     <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionTextBrush}"/>
     </Style>
 
     <Style Selector="ListBox">
@@ -419,7 +444,7 @@
     </Style>
 
     <Style Selector="TextBlock.statusError">
-        <Setter Property="Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisDangerBrush}"/>
     </Style>
 
     <Style Selector="TextBlock.statusSuccess">
@@ -442,7 +467,7 @@
         </Setter>
     </Style>
     <Style Selector="ComboBox:pointerover /template/ Border#Background">
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionTextBrush}"/>
     </Style>
 
     <Style Selector="ComboBoxItem">
@@ -475,7 +500,7 @@
     </Style>
 
     <Style Selector="Border.brandBadge">
-        <Setter Property="Background" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="Background" Value="{StaticResource BasisActionBrush}"/>
         <Setter Property="CornerRadius" Value="999"/>
         <Setter Property="Padding" Value="10,3"/>
     </Style>
@@ -497,24 +522,24 @@
         <Setter Property="Padding" Value="10,3"/>
     </Style>
 
-    <!-- Buttons that sit on the brand-gradient update banner -->
+    <!-- Buttons that sit on the action-gradient update banner -->
     <Style Selector="Button.bannerPrimary">
         <Setter Property="Background" Value="#FFFFFF"/>
-        <Setter Property="Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisActionBrush}"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
     <Style Selector="Button.bannerPrimary /template/ ContentPresenter">
-        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisActionBrush}"/>
     </Style>
     <Style Selector="Button.bannerPrimary:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="#F1EAF7"/>
-        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandPressedBrush}"/>
+        <Setter Property="Background" Value="#EEF0FF"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisActionPressedBrush}"/>
     </Style>
     <Style Selector="Button.bannerPrimary TextBlock, Button.bannerPrimary PathIcon">
-        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisActionBrush}"/>
     </Style>
     <Style Selector="Button.bannerPrimary:pointerover TextBlock, Button.bannerPrimary:pointerover PathIcon">
-        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandPressedBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisActionPressedBrush}"/>
     </Style>
     <Style Selector="ProgressBar.bannerProgress /template/ TextBlock">
         <Setter Property="Foreground" Value="{StaticResource BasisBackgroundBrush}"/>
@@ -533,23 +558,23 @@
         <Setter Property="TextElement.Foreground" Value="#FFFFFF"/>
     </Style>
 
-    <!-- Small inline text link (brand-coloured, no chrome) -->
+    <!-- Small inline text link (action-coloured, no chrome) -->
     <Style Selector="Button.link">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="FontSize" Value="11"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisActionTextBrush}"/>
         <Setter Property="Cursor" Value="Hand"/>
     </Style>
     <Style Selector="Button.link /template/ ContentPresenter">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisActionTextBrush}"/>
     </Style>
     <Style Selector="Button.link:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandHoverBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisActionTextHoverBrush}"/>
     </Style>
 
     <!-- Expander: a collapsible foldout (e.g. the Clone-Basis section). The Fluent template only
@@ -604,11 +629,11 @@
         <Setter Property="TextElement.Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.menuItem.destructive">
-        <Setter Property="Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource BasisDangerBrush}"/>
     </Style>
     <Style Selector="Button.menuItem.destructive:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
-        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisDangerBrush}"/>
     </Style>
 
     <!-- Hover-lift for genuinely clickable cards/rows (package rows, install cards): a gentle rise +
@@ -669,7 +694,7 @@
         <Setter Property="Foreground" Value="{StaticResource BasisWarningBrush}"/>
     </Style>
     <Style Selector="Border.diffAdded">
-        <Setter Property="Background" Value="#2622C55E"/>
+        <Setter Property="Background" Value="#2610B981"/>
     </Style>
     <Style Selector="Border.diffRemoved">
         <Setter Property="Background" Value="#26EF1237"/>
@@ -723,28 +748,28 @@
     </Style>
     <Style Selector="ToggleButton.advanced:pointerover /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{StaticResource BasisSurfaceHoverBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionTextBrush}"/>
     </Style>
     <Style Selector="ToggleButton.advanced:pressed /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{StaticResource BasisSurfaceMutedBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionTextBrush}"/>
     </Style>
     <Style Selector="ToggleButton.advanced:checked /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="#3FEF1237"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+        <Setter Property="Background" Value="#3F4F46E5"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionTextBrush}"/>
     </Style>
     <Style Selector="ToggleButton.advanced:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="#59EF1237"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandHoverBrush}"/>
+        <Setter Property="Background" Value="#594F46E5"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionTextHoverBrush}"/>
     </Style>
     <Style Selector="ToggleButton.advanced:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="#3FEF1237"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BasisBrandPressedBrush}"/>
+        <Setter Property="Background" Value="#3F4F46E5"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BasisActionTextBrush}"/>
     </Style>
     <Style Selector="ToggleButton.advanced TextBlock, ToggleButton.advanced PathIcon">
         <Setter Property="TextElement.Foreground" Value="{StaticResource BasisTextPrimaryBrush}"/>
     </Style>
     <Style Selector="ToggleButton.advanced:checked PathIcon">
-        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisBrandHoverBrush}"/>
+        <Setter Property="TextElement.Foreground" Value="{StaticResource BasisActionTextHoverBrush}"/>
     </Style>
 </Styles>

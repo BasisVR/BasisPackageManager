@@ -500,10 +500,10 @@
                                                             </StackPanel>
                                                         </Border>
                                                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding UpdateAvailable}"
-                                                                Background="#26EF1237" BorderBrush="#80EF1237" ToolTip.Tip="{Binding UpdateTooltip}">
+                                                                Background="#264F46E5" BorderBrush="#806366F1" ToolTip.Tip="{Binding UpdateTooltip}">
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
-                                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconUpdate}" Foreground="{StaticResource BasisBrandHoverBrush}" VerticalAlignment="Center"/>
-                                                                <TextBlock Text="{Binding UpdateBadge}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource BasisBrandHoverBrush}" VerticalAlignment="Center"/>
+                                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconUpdate}" Foreground="{StaticResource BasisActionTextHoverBrush}" VerticalAlignment="Center"/>
+                                                                <TextBlock Text="{Binding UpdateBadge}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource BasisActionTextHoverBrush}" VerticalAlignment="Center"/>
                                                             </StackPanel>
                                                         </Border>
                                                         <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasDependencyGaps}"
@@ -621,10 +621,10 @@
                                                         </StackPanel>
                                                     </Border>
                                                     <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding UpdateAvailable}"
-                                                            Background="#26EF1237" BorderBrush="#80EF1237" ToolTip.Tip="{Binding UpdateTooltip}">
+                                                            Background="#264F46E5" BorderBrush="#806366F1" ToolTip.Tip="{Binding UpdateTooltip}">
                                                         <StackPanel Orientation="Horizontal" Spacing="5">
-                                                            <PathIcon Width="10" Height="10" Data="{StaticResource IconUpdate}" Foreground="{StaticResource BasisBrandHoverBrush}" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="{Binding UpdateBadge}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource BasisBrandHoverBrush}" VerticalAlignment="Center" MaxWidth="150" TextTrimming="CharacterEllipsis"/>
+                                                            <PathIcon Width="10" Height="10" Data="{StaticResource IconUpdate}" Foreground="{StaticResource BasisActionTextHoverBrush}" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding UpdateBadge}" FontSize="10" FontWeight="SemiBold" Foreground="{StaticResource BasisActionTextHoverBrush}" VerticalAlignment="Center" MaxWidth="150" TextTrimming="CharacterEllipsis"/>
                                                         </StackPanel>
                                                     </Border>
                                                     <Border Classes="versionPill" VerticalAlignment="Center" IsVisible="{Binding HasDependencyGaps}"

@@ -6483,6 +6483,10 @@
       "value": "プロジェクトをディスクから再読み込みし、それぞれについて github.com/BasisVR/Basis の新しい Basis のコミットを確認します。"
     },
     {
+      "key": "installs.button.remove",
+      "value": "削除"
+    },
+    {
       "key": "installs.tooltip.remove",
       "value": "このプロジェクトを一覧から削除するか、フォルダーをディスクから削除します。どちらにするかは次の手順で選び、ディスクからの削除は取り消せません。"
     },

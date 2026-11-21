@@ -29,7 +29,7 @@
         </Style>
         <Style Selector="TextBox.inlineName:focus /template/ Border#PART_BorderElement">
             <Setter Property="Background" Value="{StaticResource BasisSurfaceMutedBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BasisBrandBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BasisActionTextBrush}"/>
         </Style>
     </UserControl.Styles>
 
@@ -148,7 +148,7 @@
                                                 ToolTip.Tip="{loc:Tr installs.team.tooltip}">
                                             <StackPanel Orientation="Horizontal" Spacing="6">
                                                 <PathIcon Width="11" Height="11" Data="{StaticResource IconDownload}"
-                                                          Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                                                          Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
                                                 <TextBlock Text="{Binding TeamPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
                                             </StackPanel>
                                         </Border>
@@ -156,7 +156,7 @@
                                                 ToolTip.Tip="{Binding BasisPillTooltip}">
                                             <StackPanel Orientation="Horizontal" Spacing="6">
                                                 <PathIcon Width="11" Height="11" Data="{StaticResource IconUpdate}"
-                                                          Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                                                          Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
                                                 <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
                                             </StackPanel>
                                         </Border>
@@ -262,11 +262,14 @@
                                             <TextBlock Text="{loc:Tr installs.button.storage}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Classes="iconBtn danger"
+                                    <Button Classes="danger"
                                             Command="{Binding #Root.((vm:InstallsViewModel)DataContext).RemoveCommand}"
                                             CommandParameter="{Binding}"
                                             ToolTip.Tip="{loc:Tr installs.tooltip.remove}">
-                                        <PathIcon Width="16" Height="16" Data="{StaticResource IconDelete}"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconDelete}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{loc:Tr installs.button.remove}" VerticalAlignment="Center"/>
+                                        </StackPanel>
                                     </Button>
                                 </WrapPanel>
                             </StackPanel>
@@ -283,7 +286,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="vm:InstallRow">
-                        <Border Classes="card reveal" Width="356" Height="292" Margin="0,0,14,14">
+                        <Border Classes="card reveal" Width="356" MinHeight="292" Margin="0,0,14,14">
                             <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
                                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
                                     <TextBox Classes="inlineName" Text="{Binding Name, Mode=OneWay}"
@@ -331,7 +334,7 @@
                                             ToolTip.Tip="{loc:Tr installs.team.tooltip}">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                             <PathIcon Width="11" Height="11" Data="{StaticResource IconDownload}"
-                                                      Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                                                      Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding TeamPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
@@ -339,7 +342,7 @@
                                             ToolTip.Tip="{Binding BasisPillTooltip}">
                                         <StackPanel Orientation="Horizontal" Spacing="6">
                                             <PathIcon Width="11" Height="11" Data="{StaticResource IconUpdate}"
-                                                      Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                                                      Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
                                             <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Border>
@@ -354,13 +357,13 @@
                                     </Border>
                                     <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisPillMuted}"
                                             ToolTip.Tip="{Binding BasisPillTooltip}">
-                                        <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="muted"/>
+                                        <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="muted" MaxWidth="300" TextTrimming="CharacterEllipsis"/>
                                     </Border>
                                 </WrapPanel>
                                 <TextBlock Grid.Row="3" Text="{Binding GitSummary}" Classes="muted" FontSize="12" Margin="0,2,0,0"
                                            TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding GitSummary}"
                                            IsVisible="{Binding #AdvancedToggle.IsChecked}"/>
-                                <StackPanel Grid.Row="4" Spacing="10">
+                                <StackPanel Grid.Row="4" Spacing="10" Margin="0,12,0,0">
                                     <Grid ColumnDefinitions="*,8,*">
                                         <Button Grid.Column="0" Classes="primary" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="10,9"
                                                 IsVisible="{Binding HasUnityProject}"
@@ -382,60 +385,97 @@
                                             </StackPanel>
                                         </Button>
                                     </Grid>
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Orientation="Horizontal" Spacing="4">
-                                            <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding #AdvancedToggle.IsChecked}">
-                                                <Button Classes="iconBtn sm" IsVisible="{Binding IsGitRepo}"
-                                                        Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ChangeBranchCommand}"
-                                                        CommandParameter="{Binding}"
-                                                        ToolTip.Tip="{loc:Tr installs.tooltip.changeBranch}">
-                                                    <PathIcon Width="16" Height="16" Data="{StaticResource IconBranch}"/>
-                                                </Button>
-                                                <Button Classes="iconBtn sm" IsVisible="{Binding IsGitRepo}"
-                                                        Command="{Binding #Root.((vm:InstallsViewModel)DataContext).PartsCommand}"
-                                                        CommandParameter="{Binding}"
-                                                        ToolTip.Tip="{loc:Tr installs.tooltip.parts}">
-                                                    <PathIcon Width="16" Height="16" Data="{StaticResource IconParts}"/>
-                                                </Button>
-                                                <Button Classes="iconBtn sm" IsVisible="{Binding HasUnityProject}"
-                                                        Command="{Binding #Root.((vm:InstallsViewModel)DataContext).BasisChangesCommand}"
-                                                        CommandParameter="{Binding}"
-                                                        ToolTip.Tip="{loc:Tr installs.tooltip.basisChanges}">
-                                                    <PathIcon Width="16" Height="16" Data="{StaticResource IconChanges}"/>
-                                                </Button>
+                                    <UniformGrid Columns="2" Margin="-3,0">
+                                        <UniformGrid.Styles>
+                                            <Style Selector="Button"><Setter Property="Margin" Value="3"/><Setter Property="Padding" Value="10,7"/><Setter Property="MinWidth" Value="0"/><Setter Property="HorizontalAlignment" Value="Stretch"/><Setter Property="HorizontalContentAlignment" Value="Left"/></Style>
+                                            <Style Selector="Button TextBlock"><Setter Property="TextTrimming" Value="CharacterEllipsis"/></Style>
+                                        </UniformGrid.Styles>
+                                        <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ChangeBranchCommand}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip.Tip="{loc:Tr installs.tooltip.changeBranch}">
+                                            <Button.IsVisible>
+                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                    <Binding Path="IsGitRepo"/>
+                                                    <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
+                                                </MultiBinding>
+                                            </Button.IsVisible>
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{loc:Tr installs.button.changeBranch}" FontSize="12" VerticalAlignment="Center"/>
                                             </StackPanel>
-                                            <Button Classes="iconBtn sm"
-                                                    Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ManagePackagesCommand}"
-                                                    CommandParameter="{Binding}"
-                                                    ToolTip.Tip="{loc:Tr installs.tooltip.packages}">
-                                                <PathIcon Width="16" Height="16" Data="{StaticResource IconPackages}"/>
-                                            </Button>
-                                            <Button Classes="iconBtn sm"
-                                                    Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenFolderCommand}"
-                                                    CommandParameter="{Binding}"
-                                                    ToolTip.Tip="{loc:Tr installs.tooltip.openFolder}">
-                                                <PathIcon Width="16" Height="16" Data="{StaticResource IconFolderOpen}"/>
-                                            </Button>
-                                            <Button Classes="iconBtn sm" IsVisible="{Binding HasUnityProject}"
-                                                    Command="{Binding #Root.((vm:InstallsViewModel)DataContext).BackupCommand}"
-                                                    CommandParameter="{Binding}"
-                                                    ToolTip.Tip="{loc:Tr installs.tooltip.backup}">
-                                                <PathIcon Width="16" Height="16" Data="{StaticResource IconArchive}"/>
-                                            </Button>
-                                            <Button Classes="iconBtn sm" IsVisible="{Binding HasUnityProject}"
-                                                    Command="{Binding #Root.((vm:InstallsViewModel)DataContext).StorageCommand}"
-                                                    CommandParameter="{Binding}"
-                                                    ToolTip.Tip="{loc:Tr installs.tooltip.storage}">
-                                                <PathIcon Width="16" Height="16" Data="{StaticResource IconStorage}"/>
-                                            </Button>
-                                        </StackPanel>
-                                        <Button Grid.Column="1" Classes="iconBtn sm danger"
+                                        </Button>
+                                        <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).PartsCommand}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip.Tip="{loc:Tr installs.tooltip.parts}">
+                                            <Button.IsVisible>
+                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                    <Binding Path="IsGitRepo"/>
+                                                    <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
+                                                </MultiBinding>
+                                            </Button.IsVisible>
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconParts}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{loc:Tr installs.button.parts}" FontSize="12" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).BasisChangesCommand}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip.Tip="{loc:Tr installs.tooltip.basisChanges}">
+                                            <Button.IsVisible>
+                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                    <Binding Path="HasUnityProject"/>
+                                                    <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
+                                                </MultiBinding>
+                                            </Button.IsVisible>
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconChanges}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{loc:Tr installs.button.basisChanges}" FontSize="12" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ManagePackagesCommand}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip.Tip="{loc:Tr installs.tooltip.packages}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{loc:Tr installs.button.packages}" FontSize="12" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenFolderCommand}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip.Tip="{loc:Tr installs.tooltip.openFolder}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{loc:Tr installs.button.openFolder}" FontSize="12" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button IsVisible="{Binding HasUnityProject}"
+                                                Command="{Binding #Root.((vm:InstallsViewModel)DataContext).BackupCommand}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip.Tip="{loc:Tr installs.tooltip.backup}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconArchive}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{loc:Tr installs.button.backup}" FontSize="12" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button IsVisible="{Binding HasUnityProject}"
+                                                Command="{Binding #Root.((vm:InstallsViewModel)DataContext).StorageCommand}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip.Tip="{loc:Tr installs.tooltip.storage}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconStorage}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{loc:Tr installs.button.storage}" FontSize="12" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Classes="danger"
                                                 Command="{Binding #Root.((vm:InstallsViewModel)DataContext).RemoveCommand}"
                                                 CommandParameter="{Binding}"
                                                 ToolTip.Tip="{loc:Tr installs.tooltip.remove}">
-                                            <PathIcon Width="16" Height="16" Data="{StaticResource IconDelete}"/>
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconDelete}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{loc:Tr installs.button.remove}" FontSize="12" VerticalAlignment="Center"/>
+                                            </StackPanel>
                                         </Button>
-                                    </Grid>
+                                    </UniformGrid>
                                 </StackPanel>
                             </Grid>
                         </Border>

@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -51,7 +52,7 @@ public sealed class ProjectsLayoutTests
     }
 
     [AvaloniaFact]
-    public async Task Grid_card_tools_stay_clear_of_the_remove_button()
+    public async Task Grid_card_tools_show_their_names_without_overlapping()
     {
         Localizer.Instance.SetLanguage("en");
         var root = Path.Combine(Path.GetTempPath(), "basispm-tests", $"projects-grid-{Guid.NewGuid():N}");
@@ -69,14 +70,18 @@ public sealed class ProjectsLayoutTests
             Dispatcher.UIThread.RunJobs();
 
             var remove = window.GetVisualDescendants().OfType<Button>().Single(b => ReferenceEquals(b.Command, vm.RemoveCommand) && b.IsEffectivelyVisible);
-            var toolbar = (Grid)remove.Parent!;
-            var tools = Assert.Single(toolbar.Children.OfType<StackPanel>()).GetVisualDescendants().OfType<Button>().Where(b => b.IsEffectivelyVisible).ToList();
+            var toolbar = (UniformGrid)remove.Parent!;
+            var tools = toolbar.Children.OfType<Button>().Where(b => b.IsEffectivelyVisible).ToList();
             Assert.Contains(tools, b => ReferenceEquals(b.Command, vm.ChangeBranchCommand));
-            Assert.All(tools, tool =>
+            Assert.All(tools, tool => Assert.Contains(tool.GetVisualDescendants().OfType<TextBlock>(), t => !string.IsNullOrWhiteSpace(t.Text) && t.IsEffectivelyVisible));
+            Assert.All(tools, tool => Assert.True(tool.Bounds.Right <= toolbar.Bounds.Width + 0.5, $"{ToolTip.GetTip(tool)} ends at {tool.Bounds.Right:0} past the card width {toolbar.Bounds.Width:0}"));
+            for (var i = 0; i < tools.Count; i++)
             {
-                var right = tool.TranslatePoint(new Point(tool.Bounds.Width, 0), toolbar)!.Value.X;
-                Assert.True(right <= remove.Bounds.X, $"{ToolTip.GetTip(tool)} ends at {right:0} but Remove starts at {remove.Bounds.X:0}");
-            });
+                for (var j = i + 1; j < tools.Count; j++)
+                {
+                    Assert.False(tools[i].Bounds.Intersects(tools[j].Bounds), $"{ToolTip.GetTip(tools[i])} overlaps {ToolTip.GetTip(tools[j])}");
+                }
+            }
         }
         finally
         {

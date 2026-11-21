@@ -39,7 +39,7 @@
             </Border>
 
             <Border CornerRadius="12" Padding="20,14" Background="{StaticResource BasisSurfaceHoverBrush}"
-                    BorderBrush="{StaticResource BasisBrandBrush}" BorderThickness="1"
+                    BorderBrush="{StaticResource BasisActionTextBrush}" BorderThickness="1"
                     IsVisible="{Binding ShowRequiredVersionNote}">
                 <TextBlock Text="{Binding RequiredVersionNote}" Foreground="{StaticResource BasisTextPrimaryBrush}" TextWrapping="Wrap"/>
             </Border>

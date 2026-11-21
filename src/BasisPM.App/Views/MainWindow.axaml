@@ -234,7 +234,7 @@
                 <StackPanel Grid.Row="0">
                 <Border Classes="reveal"
                         IsVisible="{Binding UpdateAvailable}"
-                        Background="{StaticResource BasisBrandGradient}"
+                        Background="{StaticResource BasisActionGradient}"
                         CornerRadius="12"
                         Padding="18,12" Margin="18,16,18,0">
                     <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
@@ -274,7 +274,7 @@
                         Padding="18,12" Margin="18,16,18,0">
                     <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
                         <PathIcon Grid.Column="0" Width="18" Height="18" Data="{StaticResource IconUpdate}"
-                                  Foreground="{StaticResource BasisBrandBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                  Foreground="{StaticResource BasisActionTextBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
                         <TextBlock Grid.Column="1" Text="{Binding BasisBannerText}"
                                    FontWeight="SemiBold" FontSize="13"
                                    TextWrapping="Wrap" VerticalAlignment="Center"/>
@@ -317,7 +317,7 @@
                             </Border>
                             <StackPanel Orientation="Horizontal" Spacing="9">
                                 <PathIcon Width="16" Height="16" Data="{StaticResource IconDownload}"
-                                          Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                                          Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{Binding CurrentActivity.Title}" FontWeight="SemiBold" FontSize="13"
                                            VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>
@@ -347,7 +347,7 @@
                             </Border>
                             <StackPanel Orientation="Horizontal" Spacing="9">
                                 <PathIcon Width="16" Height="16" Data="{StaticResource IconDownload}"
-                                          Foreground="{StaticResource BasisBrandBrush}" VerticalAlignment="Center"/>
+                                          Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{Binding PackagesVM.InstallProgressText}" FontWeight="SemiBold" FontSize="13"
                                            VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                             </StackPanel>

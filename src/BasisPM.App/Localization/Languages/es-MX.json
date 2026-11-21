@@ -6483,6 +6483,10 @@
       "value": "Recarga tus proyectos desde el disco y luego busca en cada uno commits nuevos de Basis en github.com/BasisVR/Basis."
     },
     {
+      "key": "installs.button.remove",
+      "value": "Quitar"
+    },
+    {
       "key": "installs.tooltip.remove",
       "value": "Quita este proyecto de tu lista o elimina su carpeta del disco. Eliges en el siguiente paso, y la eliminación no se puede deshacer."
     },

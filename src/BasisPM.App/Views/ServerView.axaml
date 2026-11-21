@@ -110,7 +110,7 @@
                   <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="vm:ServerConsoleLineRow">
                       <SelectableTextBlock Text="{Binding Text}" Foreground="{Binding Brush}" FontFamily="{StaticResource MonoFontFamily}" FontSize="12"
-                                           TextWrapping="Wrap" Margin="14,1" SelectionBrush="#66EF1237"/>
+                                           TextWrapping="Wrap" Margin="14,1" SelectionBrush="#664F46E5"/>
                     </DataTemplate>
                   </ItemsControl.ItemTemplate>
                 </ItemsControl>

@@ -6483,6 +6483,10 @@
       "value": "Laad je projecten opnieuw van schijf en controleer daarna elk project op nieuwe Basis-commits op github.com/BasisVR/Basis."
     },
     {
+      "key": "installs.button.remove",
+      "value": "Verwijderen"
+    },
+    {
       "key": "installs.tooltip.remove",
       "value": "Verwijder dit project uit je lijst, of verwijder de map ervan van schijf. Je kiest in de volgende stap, en verwijderen van schijf kan niet ongedaan worden gemaakt."
     },

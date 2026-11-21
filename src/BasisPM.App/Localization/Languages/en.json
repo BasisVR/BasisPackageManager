@@ -6483,6 +6483,10 @@
       "value": "Reload your projects from disk, then check each one for new Basis commits on github.com/BasisVR/Basis."
     },
     {
+      "key": "installs.button.remove",
+      "value": "Remove"
+    },
+    {
       "key": "installs.tooltip.remove",
       "value": "Remove this project from your list, or delete its folder from disk. You choose in the next step, and deleting can't be undone."
     },
