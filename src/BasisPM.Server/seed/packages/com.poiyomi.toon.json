@@ -1,0 +1,21 @@
+{
+  "id": "com.poiyomi.toon",
+  "name": "Poiyomi Toon",
+  "description": "Feature-rich toon shaders for avatars and worlds, with URP versions of the main, World, Grab Pass and Lil Fur shaders.",
+  "author": "Poiyomi",
+  "authorUrl": "https://github.com/poiyomi",
+  "category": "Shaders",
+  "tags": [
+    "toon",
+    "shader",
+    "material",
+    "urp"
+  ],
+  "gitUrl": "https://github.com/poiyomi/PoiyomiToonShader.git",
+  "repoUrl": "https://github.com/poiyomi/PoiyomiToonShader",
+  "unity": "2021.3",
+  "license": "MIT",
+  "version": "10.0.30",
+  "icon": "🎨",
+  "discord": "https://discord.gg/poiyomi"
+}

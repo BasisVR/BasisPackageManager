@@ -1,0 +1,21 @@
+{
+  "id": "com.poiyomi.thryeditor",
+  "name": "ThryEditor",
+  "description": "Shader inspector used by Poiyomi Toon, with locking, presets and texture tools.",
+  "author": "Thryrallo",
+  "authorUrl": "https://github.com/Thryrallo",
+  "category": "Developer Tools",
+  "tags": [
+    "shader",
+    "inspector",
+    "editor",
+    "material"
+  ],
+  "gitUrl": "https://github.com/poiyomi/ThryEditor.git",
+  "repoUrl": "https://github.com/poiyomi/ThryEditor",
+  "unity": "2021.3",
+  "license": "MIT",
+  "version": "2.74.4",
+  "icon": "🧰",
+  "discord": "https://discord.gg/poiyomi"
+}
