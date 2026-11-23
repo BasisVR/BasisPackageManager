@@ -7829,6 +7829,222 @@
     {
       "key": "dialog.syncBlocked.tooltip.fix",
       "value": "Afficher les fichiers modifiés qui bloquent la récupération et choisir de garder les vôtres ou de prendre ceux du dépôt distant. Vos versions sont d'abord sauvegardées."
+    },
+    {
+      "key": "installs.tooltip.setup",
+      "value": "Configuration du projet : nom de l'application, identifiant, fonctionnalités Basis, valeurs par défaut des réglages, et les outils Composants, Sauvegarder et Stockage."
+    },
+    {
+      "key": "dialog.setup.title",
+      "value": "Configuration : {0}"
+    },
+    {
+      "key": "dialog.setup.heading",
+      "value": "Configuration de l'app pour {0}"
+    },
+    {
+      "key": "dialog.setup.intro",
+      "value": "Ces valeurs sont dans basis.config.json à côté du projet. Vous pouvez donc les committer et les modifier sans toucher à Basis. L'enregistrement écrit aussi le nom, la société, l'identifiant et la version dans ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.file",
+      "value": "Enregistré dans {0}"
+    },
+    {
+      "key": "dialog.setup.fileNew",
+      "value": "Pas encore enregistré. L'enregistrement crée {0}."
+    },
+    {
+      "key": "dialog.setup.appHeading",
+      "value": "App"
+    },
+    {
+      "key": "dialog.setup.productName",
+      "value": "Nom du produit"
+    },
+    {
+      "key": "dialog.setup.companyName",
+      "value": "Nom de la société"
+    },
+    {
+      "key": "dialog.setup.identifier",
+      "value": "Identifiant"
+    },
+    {
+      "key": "dialog.setup.version",
+      "value": "Version"
+    },
+    {
+      "key": "dialog.setup.suggest",
+      "value": "Suggérer"
+    },
+    {
+      "key": "dialog.setup.featuresHeading",
+      "value": "Fonctionnalités Basis"
+    },
+    {
+      "key": "dialog.setup.featuresIntro",
+      "value": "Désactivez les parties de Basis que cette app n'utilise pas, par exemple si elle a son propre menu. Tout est activé sauf ce que vous désactivez ici."
+    },
+    {
+      "key": "dialog.setup.settingsHeading",
+      "value": "Valeurs par défaut des paramètres"
+    },
+    {
+      "key": "dialog.setup.settingsIntro",
+      "value": "La valeur de départ d'un paramètre Basis, selon sa clé. Une valeur déjà enregistrée par le joueur reste prioritaire."
+    },
+    {
+      "key": "dialog.setup.addSetting",
+      "value": "Ajouter un paramètre"
+    },
+    {
+      "key": "dialog.setup.settingKey",
+      "value": "Clé, par exemple mainvolume"
+    },
+    {
+      "key": "dialog.setup.settingValue",
+      "value": "Valeur, par exemple 50"
+    },
+    {
+      "key": "dialog.setup.settingNoKey",
+      "value": "Un paramètre a une valeur mais pas de clé. Il ne sera pas enregistré."
+    },
+    {
+      "key": "dialog.setup.save",
+      "value": "Enregistrer"
+    },
+    {
+      "key": "dialog.setup.close",
+      "value": "Fermer"
+    },
+    {
+      "key": "dialog.setup.saved",
+      "value": "Enregistré et appliqué à ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.savedUnityOpen",
+      "value": "Enregistré. Unity a ce projet ouvert, Basis l'applique donc à ProjectSettings dans l'éditeur."
+    },
+    {
+      "key": "dialog.setup.savedNoSettings",
+      "value": "Enregistré. Ce projet n'a pas encore de ProjectSettings. Ouvrez-le une fois dans Unity et Basis appliquera le fichier."
+    },
+    {
+      "key": "dialog.setup.saveFailed",
+      "value": "Impossible d'enregistrer : {0}"
+    },
+    {
+      "key": "dialog.setup.serverNote",
+      "value": "Un serveur Basis n'accepte que les clients dont la société et le nom du produit correspondent à CompanyName et ProductName dans son config.xml. Indiquez la même paire sur les serveurs que cette app rejoint."
+    },
+    {
+      "key": "dialog.setup.drift",
+      "value": "ProjectSettings ne correspond pas encore ({0}). Enregistrez pour l'appliquer."
+    },
+    {
+      "key": "dialog.setup.featureCustom",
+      "value": "Fonctionnalité Basis inconnue de cette version. Un paquet à vous peut quand même la lire."
+    },
+    {
+      "key": "dialog.setup.feature.mainMenu",
+      "value": "Menu principal"
+    },
+    {
+      "key": "dialog.setup.featureDetail.mainMenu",
+      "value": "Le menu Basis, sa barre rapide et les invites qui l'ouvrent."
+    },
+    {
+      "key": "dialog.setup.feature.nameplates",
+      "value": "Plaques de nom"
+    },
+    {
+      "key": "dialog.setup.featureDetail.nameplates",
+      "value": "Plaques de nom et bulles de discussion au-dessus des autres joueurs."
+    },
+    {
+      "key": "dialog.setup.feature.loadingBar",
+      "value": "Barre de chargement"
+    },
+    {
+      "key": "dialog.setup.featureDetail.loadingBar",
+      "value": "La barre affichée pendant le téléchargement du contenu."
+    },
+    {
+      "key": "dialog.setup.feature.joinLeaveMessages",
+      "value": "Messages d'arrivée et de départ"
+    },
+    {
+      "key": "dialog.setup.featureDetail.joinLeaveMessages",
+      "value": "Le message affiché quand quelqu'un arrive ou part."
+    },
+    {
+      "key": "dialog.setup.feature.onScreenControls",
+      "value": "Commandes à l'écran"
+    },
+    {
+      "key": "dialog.setup.featureDetail.onScreenControls",
+      "value": "Les commandes tactiles sur téléphones et tablettes."
+    },
+    {
+      "key": "dialog.setup.feature.microphone",
+      "value": "Microphone"
+    },
+    {
+      "key": "dialog.setup.featureDetail.microphone",
+      "value": "La voix de ce joueur. Désactivé, personne ne l'entend."
+    },
+    {
+      "key": "dialog.setup.tooltip.productName",
+      "value": "Le nom de l'app. Avec le nom de la société, il détermine le dossier des paramètres enregistrés."
+    },
+    {
+      "key": "dialog.setup.tooltip.companyName",
+      "value": "Qui fait l'app. Deux apps avec la même société et le même nom de produit partagent leurs paramètres enregistrés."
+    },
+    {
+      "key": "dialog.setup.tooltip.identifier",
+      "value": "Un identifiant en domaine inversé, utilisé sur toutes les plateformes. Deux apps avec le même identifiant s'installent l'une par-dessus l'autre."
+    },
+    {
+      "key": "dialog.setup.tooltip.suggest",
+      "value": "Remplir un identifiant formé à partir de la société et du nom du produit."
+    },
+    {
+      "key": "dialog.setup.tooltip.version",
+      "value": "La version de l'app, par exemple 1.0.0."
+    },
+    {
+      "key": "dialog.setup.tooltip.feature",
+      "value": "Activer ou désactiver cette fonctionnalité Basis pour cette app."
+    },
+    {
+      "key": "dialog.setup.tooltip.addSetting",
+      "value": "Ajouter une valeur de départ pour un paramètre Basis."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingKey",
+      "value": "La clé du paramètre, telle qu'écrite dans BasisSettingsDefaults.cs."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingValue",
+      "value": "true, false, un nombre ou du texte."
+    },
+    {
+      "key": "dialog.setup.tooltip.removeSetting",
+      "value": "Retirer cette valeur par défaut."
+    },
+    {
+      "key": "dialog.setup.tooltip.save",
+      "value": "Écrire basis.config.json et l'appliquer à ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.tooltip.close",
+      "value": "Fermer cette fenêtre. Les modifications non enregistrées sont perdues."
+    },
+    {
+      "key": "dialog.setup.toolsDirty",
+      "value": "Enregistrez vos modifications avant d'ouvrir Composants, Sauvegarder ou Stockage."
     }
   ]
 }

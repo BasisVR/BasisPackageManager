@@ -7829,6 +7829,222 @@
     {
       "key": "dialog.syncBlocked.tooltip.fix",
       "value": "পুল আটকে রাখা সম্পাদিত ফাইলগুলো দেখান এবং আপনারগুলো রাখবেন নাকি রিমোটেরগুলো নেবেন তা বেছে নিন। আপনার সংস্করণগুলোর আগে ব্যাকআপ নেওয়া হয়।"
+    },
+    {
+      "key": "installs.tooltip.setup",
+      "value": "প্রজেক্ট সেটআপ: অ্যাপের নাম, আইডেন্টিফায়ার, Basis ফিচার, সেটিংয়ের ডিফল্ট মান, এবং অংশ, ব্যাকআপ ও স্টোরেজ টুল।"
+    },
+    {
+      "key": "dialog.setup.title",
+      "value": "সেটআপ: {0}"
+    },
+    {
+      "key": "dialog.setup.heading",
+      "value": "{0}-এর অ্যাপ সেটআপ"
+    },
+    {
+      "key": "dialog.setup.intro",
+      "value": "এই মানগুলো প্রকল্পের পাশে basis.config.json-এ থাকে, তাই Basis সম্পাদনা না করেই এগুলো কমিট ও পরিবর্তন করা যায়। সংরক্ষণ করলে নাম, কোম্পানি, আইডেন্টিফায়ার ও সংস্করণ ProjectSettings-এও লেখা হয়।"
+    },
+    {
+      "key": "dialog.setup.file",
+      "value": "{0}-এ সংরক্ষিত"
+    },
+    {
+      "key": "dialog.setup.fileNew",
+      "value": "এখনও সংরক্ষণ করা হয়নি। সংরক্ষণ করলে {0} তৈরি হবে।"
+    },
+    {
+      "key": "dialog.setup.appHeading",
+      "value": "অ্যাপ"
+    },
+    {
+      "key": "dialog.setup.productName",
+      "value": "পণ্যের নাম"
+    },
+    {
+      "key": "dialog.setup.companyName",
+      "value": "কোম্পানির নাম"
+    },
+    {
+      "key": "dialog.setup.identifier",
+      "value": "আইডেন্টিফায়ার"
+    },
+    {
+      "key": "dialog.setup.version",
+      "value": "সংস্করণ"
+    },
+    {
+      "key": "dialog.setup.suggest",
+      "value": "প্রস্তাব করুন"
+    },
+    {
+      "key": "dialog.setup.featuresHeading",
+      "value": "Basis ফিচার"
+    },
+    {
+      "key": "dialog.setup.featuresIntro",
+      "value": "Basis-এর যে অংশগুলো এই অ্যাপ ব্যবহার করে না সেগুলো বন্ধ করুন, যেমন যখন এর নিজস্ব মেনু থাকে। এখানে বন্ধ না করলে সবকিছু চালু থাকে।"
+    },
+    {
+      "key": "dialog.setup.settingsHeading",
+      "value": "সেটিংসের ডিফল্ট মান"
+    },
+    {
+      "key": "dialog.setup.settingsIntro",
+      "value": "কী অনুযায়ী একটি Basis সেটিংয়ের শুরুর মান। খেলোয়াড় আগে কোনো মান সংরক্ষণ করে থাকলে সেটিই কার্যকর থাকে।"
+    },
+    {
+      "key": "dialog.setup.addSetting",
+      "value": "সেটিং যোগ করুন"
+    },
+    {
+      "key": "dialog.setup.settingKey",
+      "value": "কী, যেমন mainvolume"
+    },
+    {
+      "key": "dialog.setup.settingValue",
+      "value": "মান, যেমন 50"
+    },
+    {
+      "key": "dialog.setup.settingNoKey",
+      "value": "একটি সেটিংয়ের মান আছে কিন্তু কী নেই, তাই এটি সংরক্ষিত হবে না।"
+    },
+    {
+      "key": "dialog.setup.save",
+      "value": "সংরক্ষণ"
+    },
+    {
+      "key": "dialog.setup.close",
+      "value": "বন্ধ করুন"
+    },
+    {
+      "key": "dialog.setup.saved",
+      "value": "সংরক্ষিত হয়েছে এবং ProjectSettings-এ প্রয়োগ করা হয়েছে।"
+    },
+    {
+      "key": "dialog.setup.savedUnityOpen",
+      "value": "সংরক্ষিত হয়েছে। Unity-তে এই প্রকল্পটি খোলা আছে, তাই Basis এডিটরে এটি ProjectSettings-এ প্রয়োগ করবে।"
+    },
+    {
+      "key": "dialog.setup.savedNoSettings",
+      "value": "সংরক্ষিত হয়েছে। এই প্রকল্পে এখনও ProjectSettings নেই। একবার Unity-তে খুলুন, তারপর Basis ফাইলটি প্রয়োগ করবে।"
+    },
+    {
+      "key": "dialog.setup.saveFailed",
+      "value": "সংরক্ষণ করা যায়নি: {0}"
+    },
+    {
+      "key": "dialog.setup.serverNote",
+      "value": "একটি Basis সার্ভার কেবল সেই ক্লায়েন্টদের ঢুকতে দেয় যাদের কোম্পানি ও পণ্যের নাম তার config.xml-এর CompanyName ও ProductName-এর সাথে মেলে। এই অ্যাপ যে সার্ভারগুলোতে যোগ দেয় সেগুলোতে একই জোড়া সেট করুন।"
+    },
+    {
+      "key": "dialog.setup.drift",
+      "value": "ProjectSettings এখনও মেলেনি ({0})। প্রয়োগ করতে সংরক্ষণ করুন।"
+    },
+    {
+      "key": "dialog.setup.featureCustom",
+      "value": "এই সংস্করণের জানা কোনো Basis ফিচার নয়। আপনার নিজের কোনো প্যাকেজ তবুও এটি পড়তে পারে।"
+    },
+    {
+      "key": "dialog.setup.feature.mainMenu",
+      "value": "প্রধান মেনু"
+    },
+    {
+      "key": "dialog.setup.featureDetail.mainMenu",
+      "value": "Basis মেনু, এর হটবার এবং যে প্রম্পটগুলো এটি খোলে।"
+    },
+    {
+      "key": "dialog.setup.feature.nameplates",
+      "value": "নামফলক"
+    },
+    {
+      "key": "dialog.setup.featureDetail.nameplates",
+      "value": "অন্য খেলোয়াড়দের উপরে নামফলক ও চ্যাট বাবল।"
+    },
+    {
+      "key": "dialog.setup.feature.loadingBar",
+      "value": "লোডিং বার"
+    },
+    {
+      "key": "dialog.setup.featureDetail.loadingBar",
+      "value": "কনটেন্ট ডাউনলোডের সময় দেখানো বার।"
+    },
+    {
+      "key": "dialog.setup.feature.joinLeaveMessages",
+      "value": "যোগদান ও প্রস্থানের বার্তা"
+    },
+    {
+      "key": "dialog.setup.featureDetail.joinLeaveMessages",
+      "value": "কেউ যোগ দিলে বা চলে গেলে দেখানো বার্তা।"
+    },
+    {
+      "key": "dialog.setup.feature.onScreenControls",
+      "value": "স্ক্রিনের নিয়ন্ত্রণ"
+    },
+    {
+      "key": "dialog.setup.featureDetail.onScreenControls",
+      "value": "ফোন ও ট্যাবলেটে টাচ নিয়ন্ত্রণ।"
+    },
+    {
+      "key": "dialog.setup.feature.microphone",
+      "value": "মাইক্রোফোন"
+    },
+    {
+      "key": "dialog.setup.featureDetail.microphone",
+      "value": "এই খেলোয়াড়ের কণ্ঠ। বন্ধ থাকলে কেউ তাদের শুনতে পায় না।"
+    },
+    {
+      "key": "dialog.setup.tooltip.productName",
+      "value": "অ্যাপের নাম। কোম্পানির নামের সাথে মিলে এটি ঠিক করে সংরক্ষিত সেটিংস কোন ফোল্ডারে যাবে।"
+    },
+    {
+      "key": "dialog.setup.tooltip.companyName",
+      "value": "অ্যাপটি কে তৈরি করে। একই কোম্পানি ও পণ্যের নামের দুটি অ্যাপ সংরক্ষিত সেটিংস ভাগ করে নেয়।"
+    },
+    {
+      "key": "dialog.setup.tooltip.identifier",
+      "value": "উল্টো-ডোমেইন ধরনের একটি আইডি, যা সব প্ল্যাটফর্মে ব্যবহৃত হয়। একই আইডেন্টিফায়ারের দুটি অ্যাপ একটির উপর আরেকটি ইনস্টল হয়।"
+    },
+    {
+      "key": "dialog.setup.tooltip.suggest",
+      "value": "কোম্পানি ও পণ্যের নাম থেকে তৈরি একটি আইডেন্টিফায়ার বসান।"
+    },
+    {
+      "key": "dialog.setup.tooltip.version",
+      "value": "অ্যাপের সংস্করণ, যেমন 1.0.0।"
+    },
+    {
+      "key": "dialog.setup.tooltip.feature",
+      "value": "এই অ্যাপের জন্য এই Basis ফিচারটি চালু বা বন্ধ করুন।"
+    },
+    {
+      "key": "dialog.setup.tooltip.addSetting",
+      "value": "একটি Basis সেটিংয়ের শুরুর মান যোগ করুন।"
+    },
+    {
+      "key": "dialog.setup.tooltip.settingKey",
+      "value": "সেটিংয়ের কী, BasisSettingsDefaults.cs-এ যেভাবে লেখা আছে।"
+    },
+    {
+      "key": "dialog.setup.tooltip.settingValue",
+      "value": "true, false, একটি সংখ্যা বা লেখা।"
+    },
+    {
+      "key": "dialog.setup.tooltip.removeSetting",
+      "value": "এই ডিফল্ট মানটি সরান।"
+    },
+    {
+      "key": "dialog.setup.tooltip.save",
+      "value": "basis.config.json লিখুন এবং ProjectSettings-এ প্রয়োগ করুন।"
+    },
+    {
+      "key": "dialog.setup.tooltip.close",
+      "value": "এই উইন্ডো বন্ধ করুন। অসংরক্ষিত পরিবর্তন হারিয়ে যাবে।"
+    },
+    {
+      "key": "dialog.setup.toolsDirty",
+      "value": "অংশ, ব্যাকআপ বা স্টোরেজ খোলার আগে আপনার পরিবর্তনগুলি সংরক্ষণ করুন।"
     }
   ]
 }

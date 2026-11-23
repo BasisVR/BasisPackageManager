@@ -7829,6 +7829,222 @@
     {
       "key": "dialog.syncBlocked.tooltip.fix",
       "value": "Show the edited files that block the pull and choose whether to keep yours or take the remote's. Your versions are backed up first."
+    },
+    {
+      "key": "installs.tooltip.setup",
+      "value": "Project setup: app name, identifier, Basis features, setting defaults, and the Parts, Backup and Storage tools."
+    },
+    {
+      "key": "dialog.setup.title",
+      "value": "Setup: {0}"
+    },
+    {
+      "key": "dialog.setup.heading",
+      "value": "App setup for {0}"
+    },
+    {
+      "key": "dialog.setup.intro",
+      "value": "These values live in basis.config.json next to the project, so they can be committed and changed without editing Basis. Saving also writes the name, company, identifier and version into ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.file",
+      "value": "Saved in {0}"
+    },
+    {
+      "key": "dialog.setup.fileNew",
+      "value": "Not saved yet. Saving creates {0}."
+    },
+    {
+      "key": "dialog.setup.appHeading",
+      "value": "App"
+    },
+    {
+      "key": "dialog.setup.productName",
+      "value": "Product name"
+    },
+    {
+      "key": "dialog.setup.companyName",
+      "value": "Company name"
+    },
+    {
+      "key": "dialog.setup.identifier",
+      "value": "Identifier"
+    },
+    {
+      "key": "dialog.setup.version",
+      "value": "Version"
+    },
+    {
+      "key": "dialog.setup.suggest",
+      "value": "Suggest"
+    },
+    {
+      "key": "dialog.setup.featuresHeading",
+      "value": "Basis features"
+    },
+    {
+      "key": "dialog.setup.featuresIntro",
+      "value": "Turn off the parts of Basis this app doesn't use, for example when it has its own menu. Everything is on unless you turn it off here."
+    },
+    {
+      "key": "dialog.setup.settingsHeading",
+      "value": "Setting defaults"
+    },
+    {
+      "key": "dialog.setup.settingsIntro",
+      "value": "The starting value of a Basis setting, by its key. A value the player already saved still wins."
+    },
+    {
+      "key": "dialog.setup.addSetting",
+      "value": "Add setting"
+    },
+    {
+      "key": "dialog.setup.settingKey",
+      "value": "Key, such as mainvolume"
+    },
+    {
+      "key": "dialog.setup.settingValue",
+      "value": "Value, such as 50"
+    },
+    {
+      "key": "dialog.setup.settingNoKey",
+      "value": "A setting has a value but no key, so it won't be saved."
+    },
+    {
+      "key": "dialog.setup.save",
+      "value": "Save"
+    },
+    {
+      "key": "dialog.setup.close",
+      "value": "Close"
+    },
+    {
+      "key": "dialog.setup.saved",
+      "value": "Saved and applied to ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.savedUnityOpen",
+      "value": "Saved. Unity has this project open, so Basis applies it to ProjectSettings in the editor."
+    },
+    {
+      "key": "dialog.setup.savedNoSettings",
+      "value": "Saved. This project has no ProjectSettings yet; open it in Unity once and Basis applies the file."
+    },
+    {
+      "key": "dialog.setup.saveFailed",
+      "value": "Couldn't save: {0}"
+    },
+    {
+      "key": "dialog.setup.serverNote",
+      "value": "A Basis server only lets in clients whose company and product name match its CompanyName and ProductName in config.xml. Set the same pair on the servers this app joins."
+    },
+    {
+      "key": "dialog.setup.drift",
+      "value": "ProjectSettings doesn't match yet ({0}). Save to apply it."
+    },
+    {
+      "key": "dialog.setup.featureCustom",
+      "value": "Not a Basis feature this version knows. A package of your own can still read it."
+    },
+    {
+      "key": "dialog.setup.feature.mainMenu",
+      "value": "Main menu"
+    },
+    {
+      "key": "dialog.setup.featureDetail.mainMenu",
+      "value": "The Basis menu, its hotbar and the prompts that open it."
+    },
+    {
+      "key": "dialog.setup.feature.nameplates",
+      "value": "Nameplates"
+    },
+    {
+      "key": "dialog.setup.featureDetail.nameplates",
+      "value": "Nameplates and chat bubbles over other players."
+    },
+    {
+      "key": "dialog.setup.feature.loadingBar",
+      "value": "Loading bar"
+    },
+    {
+      "key": "dialog.setup.featureDetail.loadingBar",
+      "value": "The bar shown while content downloads."
+    },
+    {
+      "key": "dialog.setup.feature.joinLeaveMessages",
+      "value": "Join and leave messages"
+    },
+    {
+      "key": "dialog.setup.featureDetail.joinLeaveMessages",
+      "value": "The message shown when someone joins or leaves."
+    },
+    {
+      "key": "dialog.setup.feature.onScreenControls",
+      "value": "On-screen controls"
+    },
+    {
+      "key": "dialog.setup.featureDetail.onScreenControls",
+      "value": "The touch controls on phones and tablets."
+    },
+    {
+      "key": "dialog.setup.feature.microphone",
+      "value": "Microphone"
+    },
+    {
+      "key": "dialog.setup.featureDetail.microphone",
+      "value": "Voice from this player. When off, nobody hears them."
+    },
+    {
+      "key": "dialog.setup.tooltip.productName",
+      "value": "The app's name. With the company name it picks the folder saved settings go in."
+    },
+    {
+      "key": "dialog.setup.tooltip.companyName",
+      "value": "Who makes the app. Two apps with the same company and product name share saved settings."
+    },
+    {
+      "key": "dialog.setup.tooltip.identifier",
+      "value": "A reverse-domain id used on every platform. Two apps with the same identifier install over each other."
+    },
+    {
+      "key": "dialog.setup.tooltip.suggest",
+      "value": "Fill in an identifier made from the company and product name."
+    },
+    {
+      "key": "dialog.setup.tooltip.version",
+      "value": "The app version, such as 1.0.0."
+    },
+    {
+      "key": "dialog.setup.tooltip.feature",
+      "value": "Turn this Basis feature on or off for this app."
+    },
+    {
+      "key": "dialog.setup.tooltip.addSetting",
+      "value": "Add a starting value for a Basis setting."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingKey",
+      "value": "The setting's key, as written in BasisSettingsDefaults.cs."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingValue",
+      "value": "true, false, a number or text."
+    },
+    {
+      "key": "dialog.setup.tooltip.removeSetting",
+      "value": "Remove this setting default."
+    },
+    {
+      "key": "dialog.setup.tooltip.save",
+      "value": "Write basis.config.json and apply it to ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.tooltip.close",
+      "value": "Close this window. Unsaved changes are lost."
+    },
+    {
+      "key": "dialog.setup.toolsDirty",
+      "value": "Save your changes before opening Parts, Backup or Storage."
     }
   ]
 }

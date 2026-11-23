@@ -7829,6 +7829,222 @@
     {
       "key": "dialog.syncBlocked.tooltip.fix",
       "value": "Zeigt die bearbeiteten Dateien, die den Pull blockieren, und lässt dich wählen, ob du deine behältst oder die aus dem Remote-Repository übernimmst. Deine Versionen werden vorher gesichert."
+    },
+    {
+      "key": "installs.tooltip.setup",
+      "value": "Projekt-Einrichtung: App-Name, Kennung, Basis-Funktionen, Standardwerte für Einstellungen sowie Bestandteile, Sichern und Speicherplatz."
+    },
+    {
+      "key": "dialog.setup.title",
+      "value": "Einrichtung: {0}"
+    },
+    {
+      "key": "dialog.setup.heading",
+      "value": "App-Einrichtung für {0}"
+    },
+    {
+      "key": "dialog.setup.intro",
+      "value": "Diese Werte stehen in basis.config.json neben dem Projekt. Du kannst sie committen und ändern, ohne Basis zu bearbeiten. Beim Speichern werden auch Name, Firma, Kennung und Version in ProjectSettings geschrieben."
+    },
+    {
+      "key": "dialog.setup.file",
+      "value": "Gespeichert in {0}"
+    },
+    {
+      "key": "dialog.setup.fileNew",
+      "value": "Noch nicht gespeichert. Beim Speichern wird {0} erstellt."
+    },
+    {
+      "key": "dialog.setup.appHeading",
+      "value": "App"
+    },
+    {
+      "key": "dialog.setup.productName",
+      "value": "Produktname"
+    },
+    {
+      "key": "dialog.setup.companyName",
+      "value": "Firmenname"
+    },
+    {
+      "key": "dialog.setup.identifier",
+      "value": "Kennung"
+    },
+    {
+      "key": "dialog.setup.version",
+      "value": "Version"
+    },
+    {
+      "key": "dialog.setup.suggest",
+      "value": "Vorschlagen"
+    },
+    {
+      "key": "dialog.setup.featuresHeading",
+      "value": "Basis-Funktionen"
+    },
+    {
+      "key": "dialog.setup.featuresIntro",
+      "value": "Schalte die Teile von Basis aus, die diese App nicht nutzt, zum Beispiel wenn sie ein eigenes Menü hat. Alles ist an, solange du es hier nicht ausschaltest."
+    },
+    {
+      "key": "dialog.setup.settingsHeading",
+      "value": "Standardwerte für Einstellungen"
+    },
+    {
+      "key": "dialog.setup.settingsIntro",
+      "value": "Der Startwert einer Basis-Einstellung, nach ihrem Schlüssel. Ein Wert, den der Spieler schon gespeichert hat, hat weiterhin Vorrang."
+    },
+    {
+      "key": "dialog.setup.addSetting",
+      "value": "Einstellung hinzufügen"
+    },
+    {
+      "key": "dialog.setup.settingKey",
+      "value": "Schlüssel, z. B. mainvolume"
+    },
+    {
+      "key": "dialog.setup.settingValue",
+      "value": "Wert, z. B. 50"
+    },
+    {
+      "key": "dialog.setup.settingNoKey",
+      "value": "Eine Einstellung hat einen Wert, aber keinen Schlüssel. Sie wird nicht gespeichert."
+    },
+    {
+      "key": "dialog.setup.save",
+      "value": "Speichern"
+    },
+    {
+      "key": "dialog.setup.close",
+      "value": "Schließen"
+    },
+    {
+      "key": "dialog.setup.saved",
+      "value": "Gespeichert und auf ProjectSettings angewendet."
+    },
+    {
+      "key": "dialog.setup.savedUnityOpen",
+      "value": "Gespeichert. Unity hat dieses Projekt geöffnet, daher wendet Basis es im Editor auf ProjectSettings an."
+    },
+    {
+      "key": "dialog.setup.savedNoSettings",
+      "value": "Gespeichert. Dieses Projekt hat noch keine ProjectSettings. Öffne es einmal in Unity, dann wendet Basis die Datei an."
+    },
+    {
+      "key": "dialog.setup.saveFailed",
+      "value": "Speichern fehlgeschlagen: {0}"
+    },
+    {
+      "key": "dialog.setup.serverNote",
+      "value": "Ein Basis-Server lässt nur Clients herein, deren Firmen- und Produktname mit CompanyName und ProductName in seiner config.xml übereinstimmen. Trage dasselbe Paar auf den Servern ein, denen diese App beitritt."
+    },
+    {
+      "key": "dialog.setup.drift",
+      "value": "ProjectSettings stimmt noch nicht überein ({0}). Speichere, um es anzuwenden."
+    },
+    {
+      "key": "dialog.setup.featureCustom",
+      "value": "Keine Basis-Funktion, die diese Version kennt. Ein eigenes Paket kann sie trotzdem auslesen."
+    },
+    {
+      "key": "dialog.setup.feature.mainMenu",
+      "value": "Hauptmenü"
+    },
+    {
+      "key": "dialog.setup.featureDetail.mainMenu",
+      "value": "Das Basis-Menü, seine Schnellleiste und die Hinweise, die es öffnen."
+    },
+    {
+      "key": "dialog.setup.feature.nameplates",
+      "value": "Namensschilder"
+    },
+    {
+      "key": "dialog.setup.featureDetail.nameplates",
+      "value": "Namensschilder und Chatblasen über anderen Spielern."
+    },
+    {
+      "key": "dialog.setup.feature.loadingBar",
+      "value": "Ladebalken"
+    },
+    {
+      "key": "dialog.setup.featureDetail.loadingBar",
+      "value": "Der Balken, der beim Herunterladen von Inhalten angezeigt wird."
+    },
+    {
+      "key": "dialog.setup.feature.joinLeaveMessages",
+      "value": "Beitritts- und Verlassensmeldungen"
+    },
+    {
+      "key": "dialog.setup.featureDetail.joinLeaveMessages",
+      "value": "Die Meldung, wenn jemand beitritt oder geht."
+    },
+    {
+      "key": "dialog.setup.feature.onScreenControls",
+      "value": "Bildschirmsteuerung"
+    },
+    {
+      "key": "dialog.setup.featureDetail.onScreenControls",
+      "value": "Die Touch-Steuerung auf Handys und Tablets."
+    },
+    {
+      "key": "dialog.setup.feature.microphone",
+      "value": "Mikrofon"
+    },
+    {
+      "key": "dialog.setup.featureDetail.microphone",
+      "value": "Die Stimme dieses Spielers. Wenn aus, hört ihn niemand."
+    },
+    {
+      "key": "dialog.setup.tooltip.productName",
+      "value": "Der Name der App. Zusammen mit dem Firmennamen bestimmt er den Ordner für gespeicherte Einstellungen."
+    },
+    {
+      "key": "dialog.setup.tooltip.companyName",
+      "value": "Wer die App macht. Zwei Apps mit gleichem Firmen- und Produktnamen teilen sich gespeicherte Einstellungen."
+    },
+    {
+      "key": "dialog.setup.tooltip.identifier",
+      "value": "Eine Kennung in umgekehrter Domain-Schreibweise, auf jeder Plattform verwendet. Zwei Apps mit derselben Kennung installieren sich übereinander."
+    },
+    {
+      "key": "dialog.setup.tooltip.suggest",
+      "value": "Eine Kennung aus Firmen- und Produktname eintragen."
+    },
+    {
+      "key": "dialog.setup.tooltip.version",
+      "value": "Die App-Version, z. B. 1.0.0."
+    },
+    {
+      "key": "dialog.setup.tooltip.feature",
+      "value": "Diese Basis-Funktion für diese App ein- oder ausschalten."
+    },
+    {
+      "key": "dialog.setup.tooltip.addSetting",
+      "value": "Einen Startwert für eine Basis-Einstellung hinzufügen."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingKey",
+      "value": "Der Schlüssel der Einstellung, wie in BasisSettingsDefaults.cs geschrieben."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingValue",
+      "value": "true, false, eine Zahl oder Text."
+    },
+    {
+      "key": "dialog.setup.tooltip.removeSetting",
+      "value": "Diesen Standardwert entfernen."
+    },
+    {
+      "key": "dialog.setup.tooltip.save",
+      "value": "basis.config.json schreiben und auf ProjectSettings anwenden."
+    },
+    {
+      "key": "dialog.setup.tooltip.close",
+      "value": "Dieses Fenster schließen. Ungespeicherte Änderungen gehen verloren."
+    },
+    {
+      "key": "dialog.setup.toolsDirty",
+      "value": "Speichere deine Änderungen, bevor du Bestandteile, Sichern oder Speicherplatz öffnest."
     }
   ]
 }

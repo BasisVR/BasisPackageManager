@@ -7829,6 +7829,222 @@
     {
       "key": "dialog.syncBlocked.tooltip.fix",
       "value": "وہ ترمیم شدہ فائلیں دکھائیں جو pull کو روک رہی ہیں اور منتخب کریں کہ اپنی رکھیں یا ریموٹ کی لیں۔ آپ کے ورژن کا پہلے بیک اپ لیا جاتا ہے۔"
+    },
+    {
+      "key": "installs.tooltip.setup",
+      "value": "پروجیکٹ سیٹ اپ: ایپ کا نام، شناخت کنندہ، Basis خصوصیات، سیٹنگز کی ڈیفالٹ قدریں، اور حصے، بیک اپ و اسٹوریج کے ٹولز۔"
+    },
+    {
+      "key": "dialog.setup.title",
+      "value": "سیٹ اپ: {0}"
+    },
+    {
+      "key": "dialog.setup.heading",
+      "value": "{0} کے لیے ایپ سیٹ اپ"
+    },
+    {
+      "key": "dialog.setup.intro",
+      "value": "یہ قدریں پروجیکٹ کے ساتھ basis.config.json میں رہتی ہیں، اس لیے انہیں Basis میں ترمیم کیے بغیر commit اور تبدیل کیا جا سکتا ہے۔ محفوظ کرنے سے نام، کمپنی، شناخت کنندہ اور ورژن ProjectSettings میں بھی لکھ دیے جاتے ہیں۔"
+    },
+    {
+      "key": "dialog.setup.file",
+      "value": "{0} میں محفوظ"
+    },
+    {
+      "key": "dialog.setup.fileNew",
+      "value": "ابھی محفوظ نہیں ہوا۔ محفوظ کرنے سے {0} بن جائے گی۔"
+    },
+    {
+      "key": "dialog.setup.appHeading",
+      "value": "ایپ"
+    },
+    {
+      "key": "dialog.setup.productName",
+      "value": "پروڈکٹ کا نام"
+    },
+    {
+      "key": "dialog.setup.companyName",
+      "value": "کمپنی کا نام"
+    },
+    {
+      "key": "dialog.setup.identifier",
+      "value": "شناخت کنندہ"
+    },
+    {
+      "key": "dialog.setup.version",
+      "value": "ورژن"
+    },
+    {
+      "key": "dialog.setup.suggest",
+      "value": "تجویز کریں"
+    },
+    {
+      "key": "dialog.setup.featuresHeading",
+      "value": "Basis فیچرز"
+    },
+    {
+      "key": "dialog.setup.featuresIntro",
+      "value": "Basis کے وہ حصے بند کریں جو یہ ایپ استعمال نہیں کرتی، مثلاً جب اس کا اپنا مینو ہو۔ جب تک آپ یہاں بند نہ کریں، سب کچھ آن رہتا ہے۔"
+    },
+    {
+      "key": "dialog.setup.settingsHeading",
+      "value": "ترتیبات کی ڈیفالٹ قدریں"
+    },
+    {
+      "key": "dialog.setup.settingsIntro",
+      "value": "کسی Basis ترتیب کی ابتدائی قدر، اس کی key کے ذریعے۔ کھلاڑی کی پہلے سے محفوظ کردہ قدر پھر بھی ترجیح پاتی ہے۔"
+    },
+    {
+      "key": "dialog.setup.addSetting",
+      "value": "ترتیب شامل کریں"
+    },
+    {
+      "key": "dialog.setup.settingKey",
+      "value": "key، مثلاً mainvolume"
+    },
+    {
+      "key": "dialog.setup.settingValue",
+      "value": "قدر، مثلاً 50"
+    },
+    {
+      "key": "dialog.setup.settingNoKey",
+      "value": "ایک ترتیب کی قدر ہے لیکن key نہیں، اس لیے وہ محفوظ نہیں ہوگی۔"
+    },
+    {
+      "key": "dialog.setup.save",
+      "value": "محفوظ کریں"
+    },
+    {
+      "key": "dialog.setup.close",
+      "value": "بند کریں"
+    },
+    {
+      "key": "dialog.setup.saved",
+      "value": "محفوظ ہو گیا اور ProjectSettings پر لاگو کر دیا گیا۔"
+    },
+    {
+      "key": "dialog.setup.savedUnityOpen",
+      "value": "محفوظ ہو گیا۔ Unity میں یہ پروجیکٹ کھلا ہے، اس لیے Basis اسے ایڈیٹر میں ProjectSettings پر لاگو کرتا ہے۔"
+    },
+    {
+      "key": "dialog.setup.savedNoSettings",
+      "value": "محفوظ ہو گیا۔ اس پروجیکٹ میں ابھی ProjectSettings نہیں ہیں؛ اسے ایک بار Unity میں کھولیں اور Basis فائل لاگو کر دے گا۔"
+    },
+    {
+      "key": "dialog.setup.saveFailed",
+      "value": "محفوظ نہیں ہو سکا: {0}"
+    },
+    {
+      "key": "dialog.setup.serverNote",
+      "value": "Basis سرور صرف ان کلائنٹس کو آنے دیتا ہے جن کی کمپنی اور پروڈکٹ کا نام اس کی config.xml میں موجود CompanyName اور ProductName سے ملتا ہو۔ جن سرورز سے یہ ایپ جڑتی ہے ان پر یہی جوڑا سیٹ کریں۔"
+    },
+    {
+      "key": "dialog.setup.drift",
+      "value": "ProjectSettings ابھی میل نہیں کھاتیں ({0})۔ لاگو کرنے کے لیے محفوظ کریں۔"
+    },
+    {
+      "key": "dialog.setup.featureCustom",
+      "value": "یہ کوئی ایسا Basis فیچر نہیں جسے یہ ورژن جانتا ہو۔ آپ کا اپنا پیکج پھر بھی اسے پڑھ سکتا ہے۔"
+    },
+    {
+      "key": "dialog.setup.feature.mainMenu",
+      "value": "مین مینو"
+    },
+    {
+      "key": "dialog.setup.featureDetail.mainMenu",
+      "value": "Basis مینو، اس کا ہاٹ بار اور وہ پرامپٹس جو اسے کھولتے ہیں۔"
+    },
+    {
+      "key": "dialog.setup.feature.nameplates",
+      "value": "نیم پلیٹس"
+    },
+    {
+      "key": "dialog.setup.featureDetail.nameplates",
+      "value": "دوسرے کھلاڑیوں کے اوپر نیم پلیٹس اور چیٹ ببلز۔"
+    },
+    {
+      "key": "dialog.setup.feature.loadingBar",
+      "value": "لوڈنگ بار"
+    },
+    {
+      "key": "dialog.setup.featureDetail.loadingBar",
+      "value": "مواد ڈاؤن لوڈ ہوتے وقت دکھایا جانے والا بار۔"
+    },
+    {
+      "key": "dialog.setup.feature.joinLeaveMessages",
+      "value": "شامل ہونے اور جانے کے پیغامات"
+    },
+    {
+      "key": "dialog.setup.featureDetail.joinLeaveMessages",
+      "value": "جب کوئی شامل ہو یا چلا جائے تو دکھایا جانے والا پیغام۔"
+    },
+    {
+      "key": "dialog.setup.feature.onScreenControls",
+      "value": "آن اسکرین کنٹرولز"
+    },
+    {
+      "key": "dialog.setup.featureDetail.onScreenControls",
+      "value": "فونز اور ٹیبلٹس پر ٹچ کنٹرولز۔"
+    },
+    {
+      "key": "dialog.setup.feature.microphone",
+      "value": "مائیکروفون"
+    },
+    {
+      "key": "dialog.setup.featureDetail.microphone",
+      "value": "اس کھلاڑی کی آواز۔ بند ہونے پر کوئی انہیں نہیں سنتا۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.productName",
+      "value": "ایپ کا نام۔ کمپنی کے نام کے ساتھ یہ طے کرتا ہے کہ محفوظ کردہ ترتیبات کس فولڈر میں جائیں۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.companyName",
+      "value": "ایپ کون بناتا ہے۔ ایک جیسے کمپنی اور پروڈکٹ نام والی دو ایپس محفوظ کردہ ترتیبات شیئر کرتی ہیں۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.identifier",
+      "value": "ہر پلیٹ فارم پر استعمال ہونے والی ریورس ڈومین id۔ ایک جیسے شناخت کنندہ والی دو ایپس ایک دوسرے کے اوپر انسٹال ہوتی ہیں۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.suggest",
+      "value": "کمپنی اور پروڈکٹ کے نام سے بنا شناخت کنندہ بھر دیں۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.version",
+      "value": "ایپ کا ورژن، مثلاً 1.0.0۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.feature",
+      "value": "اس ایپ کے لیے یہ Basis فیچر آن یا آف کریں۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.addSetting",
+      "value": "کسی Basis ترتیب کے لیے ابتدائی قدر شامل کریں۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.settingKey",
+      "value": "ترتیب کی key، جیسا کہ BasisSettingsDefaults.cs میں لکھی ہے۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.settingValue",
+      "value": "true، false، کوئی نمبر یا متن۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.removeSetting",
+      "value": "ترتیب کی یہ ڈیفالٹ قدر ہٹائیں۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.save",
+      "value": "basis.config.json لکھیں اور اسے ProjectSettings پر لاگو کریں۔"
+    },
+    {
+      "key": "dialog.setup.tooltip.close",
+      "value": "یہ ونڈو بند کریں۔ غیر محفوظ تبدیلیاں ضائع ہو جائیں گی۔"
+    },
+    {
+      "key": "dialog.setup.toolsDirty",
+      "value": "حصے، بیک اپ یا اسٹوریج کھولنے سے پہلے اپنی تبدیلیاں محفوظ کریں۔"
     }
   ]
 }

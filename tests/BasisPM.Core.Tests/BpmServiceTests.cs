@@ -80,7 +80,9 @@ public sealed class BpmServiceTests
         Assert.False(mounts.ContainsKey("com.local.thing"));
 
         var status = await w.Bpm.StatusAsync(w.Project);
-        Assert.DoesNotContain(status.Issues, i => i.Level != BpmIssueLevel.Info);
+        Assert.Equal("com.example.project", BasisConfigService.Read(w.Project)!.Identifier);
+        Assert.Contains(status.Issues, i => i.Subject == "identifier" && i.Message.Contains("placeholder"));
+        Assert.DoesNotContain(status.Issues, i => i.Level != BpmIssueLevel.Info && i.Subject != "identifier");
     }
 
     [GitFact]

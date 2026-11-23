@@ -7829,6 +7829,222 @@
     {
       "key": "dialog.syncBlocked.tooltip.fix",
       "value": "يعرض الملفات المعدّلة التي تمنع السحب ويتيح لك اختيار الاحتفاظ بنسخك أو اعتماد نسخ المستودع البعيد. تُنسخ نسخك احتياطيًا أولًا."
+    },
+    {
+      "key": "installs.tooltip.setup",
+      "value": "إعداد المشروع: اسم التطبيق والمعرّف وميزات Basis والقيم الافتراضية للإعدادات، وأدوات الأجزاء والنسخ الاحتياطي والتخزين."
+    },
+    {
+      "key": "dialog.setup.title",
+      "value": "الإعداد: {0}"
+    },
+    {
+      "key": "dialog.setup.heading",
+      "value": "إعداد التطبيق لـ {0}"
+    },
+    {
+      "key": "dialog.setup.intro",
+      "value": "تُحفظ هذه القيم في basis.config.json بجوار المشروع، لذا يمكن إيداعها وتغييرها دون تعديل Basis. يكتب الحفظ أيضًا الاسم والشركة والمعرّف والإصدار في ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.file",
+      "value": "محفوظ في {0}"
+    },
+    {
+      "key": "dialog.setup.fileNew",
+      "value": "لم يُحفظ بعد. سيُنشئ الحفظ {0}."
+    },
+    {
+      "key": "dialog.setup.appHeading",
+      "value": "التطبيق"
+    },
+    {
+      "key": "dialog.setup.productName",
+      "value": "اسم المنتج"
+    },
+    {
+      "key": "dialog.setup.companyName",
+      "value": "اسم الشركة"
+    },
+    {
+      "key": "dialog.setup.identifier",
+      "value": "المعرّف"
+    },
+    {
+      "key": "dialog.setup.version",
+      "value": "الإصدار"
+    },
+    {
+      "key": "dialog.setup.suggest",
+      "value": "اقتراح"
+    },
+    {
+      "key": "dialog.setup.featuresHeading",
+      "value": "ميزات Basis"
+    },
+    {
+      "key": "dialog.setup.featuresIntro",
+      "value": "أوقف أجزاء Basis التي لا يستخدمها هذا التطبيق، مثلًا عندما تكون له قائمته الخاصة. كل شيء مفعّل ما لم توقفه هنا."
+    },
+    {
+      "key": "dialog.setup.settingsHeading",
+      "value": "القيم الافتراضية للإعدادات"
+    },
+    {
+      "key": "dialog.setup.settingsIntro",
+      "value": "القيمة الأولية لإعداد في Basis، حسب مفتاحه. القيمة التي حفظها اللاعب مسبقًا تبقى هي المعتمدة."
+    },
+    {
+      "key": "dialog.setup.addSetting",
+      "value": "إضافة إعداد"
+    },
+    {
+      "key": "dialog.setup.settingKey",
+      "value": "المفتاح، مثل mainvolume"
+    },
+    {
+      "key": "dialog.setup.settingValue",
+      "value": "القيمة، مثل 50"
+    },
+    {
+      "key": "dialog.setup.settingNoKey",
+      "value": "يوجد إعداد له قيمة بلا مفتاح، لذا لن يُحفظ."
+    },
+    {
+      "key": "dialog.setup.save",
+      "value": "حفظ"
+    },
+    {
+      "key": "dialog.setup.close",
+      "value": "إغلاق"
+    },
+    {
+      "key": "dialog.setup.saved",
+      "value": "تم الحفظ والتطبيق على ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.savedUnityOpen",
+      "value": "تم الحفظ. المشروع مفتوح في Unity، لذا سيطبّقه Basis على ProjectSettings داخل المحرّر."
+    },
+    {
+      "key": "dialog.setup.savedNoSettings",
+      "value": "تم الحفظ. لا يحتوي هذا المشروع على ProjectSettings بعد. افتحه مرة واحدة في Unity وسيطبّق Basis الملف."
+    },
+    {
+      "key": "dialog.setup.saveFailed",
+      "value": "تعذّر الحفظ: {0}"
+    },
+    {
+      "key": "dialog.setup.serverNote",
+      "value": "لا يسمح خادم Basis إلا للعملاء الذين يطابق اسم شركتهم واسم منتجهم قيمتي CompanyName وProductName في config.xml الخاص به. اضبط الزوج نفسه على الخوادم التي ينضم إليها هذا التطبيق."
+    },
+    {
+      "key": "dialog.setup.drift",
+      "value": "لا يتطابق ProjectSettings بعد ({0}). احفظ لتطبيقه."
+    },
+    {
+      "key": "dialog.setup.featureCustom",
+      "value": "ليست ميزة من ميزات Basis التي يعرفها هذا الإصدار. لا يزال بإمكان حزمة خاصة بك قراءتها."
+    },
+    {
+      "key": "dialog.setup.feature.mainMenu",
+      "value": "القائمة الرئيسية"
+    },
+    {
+      "key": "dialog.setup.featureDetail.mainMenu",
+      "value": "قائمة Basis وشريطها السريع والتنبيهات التي تفتحها."
+    },
+    {
+      "key": "dialog.setup.feature.nameplates",
+      "value": "لافتات الأسماء"
+    },
+    {
+      "key": "dialog.setup.featureDetail.nameplates",
+      "value": "لافتات الأسماء وفقاعات الدردشة فوق اللاعبين الآخرين."
+    },
+    {
+      "key": "dialog.setup.feature.loadingBar",
+      "value": "شريط التحميل"
+    },
+    {
+      "key": "dialog.setup.featureDetail.loadingBar",
+      "value": "الشريط الذي يظهر أثناء تنزيل المحتوى."
+    },
+    {
+      "key": "dialog.setup.feature.joinLeaveMessages",
+      "value": "رسائل الانضمام والمغادرة"
+    },
+    {
+      "key": "dialog.setup.featureDetail.joinLeaveMessages",
+      "value": "الرسالة التي تظهر عندما ينضم أحد أو يغادر."
+    },
+    {
+      "key": "dialog.setup.feature.onScreenControls",
+      "value": "عناصر التحكم على الشاشة"
+    },
+    {
+      "key": "dialog.setup.featureDetail.onScreenControls",
+      "value": "عناصر التحكم باللمس على الهواتف والأجهزة اللوحية."
+    },
+    {
+      "key": "dialog.setup.feature.microphone",
+      "value": "الميكروفون"
+    },
+    {
+      "key": "dialog.setup.featureDetail.microphone",
+      "value": "صوت هذا اللاعب. عند إيقافه لا يسمعه أحد."
+    },
+    {
+      "key": "dialog.setup.tooltip.productName",
+      "value": "اسم التطبيق. مع اسم الشركة يحدد المجلّد الذي تُحفظ فيه الإعدادات."
+    },
+    {
+      "key": "dialog.setup.tooltip.companyName",
+      "value": "الجهة التي تصنع التطبيق. التطبيقان اللذان لهما نفس اسم الشركة واسم المنتج يتشاركان الإعدادات المحفوظة."
+    },
+    {
+      "key": "dialog.setup.tooltip.identifier",
+      "value": "معرّف بصيغة النطاق المعكوس يُستخدم على كل المنصات. التطبيقان اللذان لهما نفس المعرّف يُثبَّت أحدهما فوق الآخر."
+    },
+    {
+      "key": "dialog.setup.tooltip.suggest",
+      "value": "ملء معرّف مكوّن من اسم الشركة واسم المنتج."
+    },
+    {
+      "key": "dialog.setup.tooltip.version",
+      "value": "إصدار التطبيق، مثل 1.0.0."
+    },
+    {
+      "key": "dialog.setup.tooltip.feature",
+      "value": "تشغيل ميزة Basis هذه أو إيقافها لهذا التطبيق."
+    },
+    {
+      "key": "dialog.setup.tooltip.addSetting",
+      "value": "إضافة قيمة أولية لإعداد في Basis."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingKey",
+      "value": "مفتاح الإعداد كما هو مكتوب في BasisSettingsDefaults.cs."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingValue",
+      "value": "true أو false أو رقم أو نص."
+    },
+    {
+      "key": "dialog.setup.tooltip.removeSetting",
+      "value": "إزالة هذه القيمة الافتراضية."
+    },
+    {
+      "key": "dialog.setup.tooltip.save",
+      "value": "كتابة basis.config.json وتطبيقه على ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.tooltip.close",
+      "value": "إغلاق هذه النافذة. ستضيع التغييرات غير المحفوظة."
+    },
+    {
+      "key": "dialog.setup.toolsDirty",
+      "value": "احفظ تغييراتك قبل فتح الأجزاء أو النسخ الاحتياطي أو التخزين."
     }
   ]
 }

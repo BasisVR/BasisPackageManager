@@ -598,6 +598,7 @@ public sealed class BpmService
         foreach (var (id, package) in manifest.Packages.Where(p => !string.IsNullOrWhiteSpace(p.Value.CopiedFrom)))
             issues.Add(new(BpmIssueLevel.Info, id, $"{id} is your copy in {BpmVersion.Parse(package.Version).Value}, taken from {package.CopiedFrom}. Diff it against that commit to send changes back."));
         issues.AddRange(SharedBranchIssues(manifest));
+        issues.AddRange(BasisConfigService.Check(projectPath).Where(i => i.Subject != "server"));
         if (Directory.Exists(root))
             foreach (var file in BpmIgnore.Files(root).Where(f => !f.Covered))
                 issues.Add(new(BpmIssueLevel.Warning, BasisDevStore.FolderName, $"{file.Vcs} doesn't ignore {BasisDevStore.FolderName}. Add \"{file.Line}\" to {file.Path}, or anything in it gets committed."));
@@ -694,6 +695,7 @@ public sealed class BpmService
         var prefixes = TemplateFolders(checkout).Select(f => f + "/").ToList();
         var projectFolder = ProjectFolderOf(checkout);
         var plan = new List<BpmTemplateChange>();
+        var config = BasisConfigService.TryRead(projectPath);
         foreach (var change in changes)
         {
             if (!prefixes.Any(p => change.Path.StartsWith(p, StringComparison.Ordinal))) continue;
@@ -701,7 +703,7 @@ public sealed class BpmService
             var local = Path.Combine(projectPath, relative.Replace('/', Path.DirectorySeparatorChar));
             var basePath = Path.Combine(folder, change.Path.Replace('/', Path.DirectorySeparatorChar));
             var localExists = File.Exists(local);
-            var same = localExists && File.Exists(basePath) && SameTemplateBytes(local, basePath, relative);
+            var same = localExists && File.Exists(basePath) && SameTemplateBytes(local, basePath, relative, config);
             plan.Add(change.Status switch
             {
                 'A' => !localExists ? new(relative, BpmTemplateChangeKind.Add, "new in Basis") : new(relative, BpmTemplateChangeKind.Conflict, "new in Basis, and the project already has a different file there"),
@@ -717,6 +719,7 @@ public sealed class BpmService
         var done = new List<string>();
         var issues = new List<BpmIssue>();
         int added = 0, updated = 0, deleted = 0;
+        var config = BasisConfigService.TryRead(projectPath);
         foreach (var change in plan.Changes)
         {
             var local = Path.Combine(projectPath, change.Path.Replace('/', Path.DirectorySeparatorChar));
@@ -727,7 +730,7 @@ public sealed class BpmService
                 {
                     case BpmTemplateChangeKind.Add or BpmTemplateChangeKind.Update:
                         Directory.CreateDirectory(Path.GetDirectoryName(local)!);
-                        File.WriteAllBytes(local, TemplateBytes(change.Path, File.ReadAllBytes(source)));
+                        File.WriteAllBytes(local, TemplateBytes(change.Path, File.ReadAllBytes(source), config));
                         if (change.Kind == BpmTemplateChangeKind.Add) added++; else updated++;
                         break;
                     case BpmTemplateChangeKind.Delete:
@@ -871,6 +874,13 @@ public sealed class BpmService
         }
         else if (Directory.Exists(Path.Combine(projectPath, "ProjectSettings")))
             issues.AddRange(CompareProjectSettings(projectPath, await _git.ShowFileAsync(bare, commit, Join(ProjectFolderOf(checkout), "ProjectSettings/TagManager.asset"), ct).ConfigureAwait(false)));
+        if (!followsTemplate && !BasisConfigService.Exists(projectPath))
+        {
+            var config = BasisConfigService.Starter(projectPath);
+            BasisConfigService.Write(projectPath, config);
+            done.Add($"Wrote {BasisConfigService.FileName}: {config.ProductName}, {config.Identifier}. Give it an identifier of your own before you ship, so the app doesn't install over another.");
+            if (copyTemplate) foreach (var line in BasisConfigService.ApplyToProject(projectPath, false).Done) done.Add(line);
+        }
 
         var packagesManifest = Path.Combine(projectPath, "Packages", "manifest.json");
         if (!File.Exists(packagesManifest))
@@ -1075,17 +1085,18 @@ public sealed class BpmService
         ("com.Basis-Unity.Basis-Unity", "org.Basis-Unity.Basis-Unity"),
     };
 
-    public static byte[] TemplateBytes(string relativePath, byte[] bytes)
+    public static byte[] TemplateBytes(string relativePath, byte[] bytes, BasisConfig? config = null)
     {
-        if (!string.Equals(relativePath, "ProjectSettings/ProjectSettings.asset", StringComparison.Ordinal)) return bytes;
+        if (!string.Equals(relativePath, BasisConfigService.ProjectSettingsFile, StringComparison.Ordinal)) return bytes;
         var text = System.Text.Encoding.UTF8.GetString(bytes);
         var renamed = ProjectSettingsRenames.Aggregate(text, (t, r) => t.Replace(r.From, r.To, StringComparison.Ordinal));
-        return ReferenceEquals(renamed, text) || renamed == text ? bytes : System.Text.Encoding.UTF8.GetBytes(renamed);
+        if (config is { HasIdentity: true } && BasisConfigService.Validate(config).All(i => i.Level != BpmIssueLevel.Error)) renamed = BasisConfigService.Apply(renamed, config);
+        return renamed == text ? bytes : System.Text.Encoding.UTF8.GetBytes(renamed);
     }
 
-    private static bool SameTemplateBytes(string local, string template, string relativePath)
+    private static bool SameTemplateBytes(string local, string template, string relativePath, BasisConfig? config)
     {
-        var expected = TemplateBytes(relativePath, File.ReadAllBytes(template));
+        var expected = TemplateBytes(relativePath, File.ReadAllBytes(template), config);
         return new FileInfo(local).Length == expected.Length && File.ReadAllBytes(local).AsSpan().SequenceEqual(expected);
     }
 

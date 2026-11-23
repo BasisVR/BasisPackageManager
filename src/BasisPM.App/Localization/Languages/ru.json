@@ -7829,6 +7829,222 @@
     {
       "key": "dialog.syncBlocked.tooltip.fix",
       "value": "Показать изменённые файлы, блокирующие получение, и выбрать, оставить ваши или взять удалённые. Сначала ваши версии сохраняются."
+    },
+    {
+      "key": "installs.tooltip.setup",
+      "value": "Настройка проекта: название приложения, идентификатор, функции Basis, значения настроек по умолчанию, а также «Компоненты», «Резервная копия» и «Место на диске»."
+    },
+    {
+      "key": "dialog.setup.title",
+      "value": "Настройка: {0}"
+    },
+    {
+      "key": "dialog.setup.heading",
+      "value": "Настройка приложения {0}"
+    },
+    {
+      "key": "dialog.setup.intro",
+      "value": "Эти значения хранятся в basis.config.json рядом с проектом, поэтому их можно коммитить и менять, не редактируя Basis. При сохранении название, компания, идентификатор и версия также записываются в ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.file",
+      "value": "Сохранено в {0}"
+    },
+    {
+      "key": "dialog.setup.fileNew",
+      "value": "Ещё не сохранено. При сохранении будет создан {0}."
+    },
+    {
+      "key": "dialog.setup.appHeading",
+      "value": "Приложение"
+    },
+    {
+      "key": "dialog.setup.productName",
+      "value": "Название продукта"
+    },
+    {
+      "key": "dialog.setup.companyName",
+      "value": "Название компании"
+    },
+    {
+      "key": "dialog.setup.identifier",
+      "value": "Идентификатор"
+    },
+    {
+      "key": "dialog.setup.version",
+      "value": "Версия"
+    },
+    {
+      "key": "dialog.setup.suggest",
+      "value": "Предложить"
+    },
+    {
+      "key": "dialog.setup.featuresHeading",
+      "value": "Функции Basis"
+    },
+    {
+      "key": "dialog.setup.featuresIntro",
+      "value": "Отключите части Basis, которые это приложение не использует, например если у него своё меню. Всё включено, пока вы не отключите это здесь."
+    },
+    {
+      "key": "dialog.setup.settingsHeading",
+      "value": "Настройки по умолчанию"
+    },
+    {
+      "key": "dialog.setup.settingsIntro",
+      "value": "Начальное значение настройки Basis по её ключу. Значение, которое игрок уже сохранил, всё равно имеет приоритет."
+    },
+    {
+      "key": "dialog.setup.addSetting",
+      "value": "Добавить настройку"
+    },
+    {
+      "key": "dialog.setup.settingKey",
+      "value": "Ключ, например mainvolume"
+    },
+    {
+      "key": "dialog.setup.settingValue",
+      "value": "Значение, например 50"
+    },
+    {
+      "key": "dialog.setup.settingNoKey",
+      "value": "У настройки есть значение, но нет ключа, поэтому она не будет сохранена."
+    },
+    {
+      "key": "dialog.setup.save",
+      "value": "Сохранить"
+    },
+    {
+      "key": "dialog.setup.close",
+      "value": "Закрыть"
+    },
+    {
+      "key": "dialog.setup.saved",
+      "value": "Сохранено и применено к ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.savedUnityOpen",
+      "value": "Сохранено. Этот проект открыт в Unity, поэтому Basis применит изменения к ProjectSettings в редакторе."
+    },
+    {
+      "key": "dialog.setup.savedNoSettings",
+      "value": "Сохранено. У этого проекта ещё нет ProjectSettings; откройте его один раз в Unity, и Basis применит файл."
+    },
+    {
+      "key": "dialog.setup.saveFailed",
+      "value": "Не удалось сохранить: {0}"
+    },
+    {
+      "key": "dialog.setup.serverNote",
+      "value": "Сервер Basis пускает только клиентов, у которых название компании и продукта совпадают с CompanyName и ProductName в config.xml. Укажите ту же пару на серверах, к которым подключается это приложение."
+    },
+    {
+      "key": "dialog.setup.drift",
+      "value": "ProjectSettings пока не совпадает ({0}). Сохраните, чтобы применить."
+    },
+    {
+      "key": "dialog.setup.featureCustom",
+      "value": "Эта версия не знает такой функции Basis. Ваш собственный пакет всё равно может её прочитать."
+    },
+    {
+      "key": "dialog.setup.feature.mainMenu",
+      "value": "Главное меню"
+    },
+    {
+      "key": "dialog.setup.featureDetail.mainMenu",
+      "value": "Меню Basis, его панель быстрого доступа и подсказки, которые его открывают."
+    },
+    {
+      "key": "dialog.setup.feature.nameplates",
+      "value": "Таблички с именами"
+    },
+    {
+      "key": "dialog.setup.featureDetail.nameplates",
+      "value": "Таблички с именами и облачка чата над другими игроками."
+    },
+    {
+      "key": "dialog.setup.feature.loadingBar",
+      "value": "Полоса загрузки"
+    },
+    {
+      "key": "dialog.setup.featureDetail.loadingBar",
+      "value": "Полоса, которая показывается во время загрузки контента."
+    },
+    {
+      "key": "dialog.setup.feature.joinLeaveMessages",
+      "value": "Сообщения о входе и выходе"
+    },
+    {
+      "key": "dialog.setup.featureDetail.joinLeaveMessages",
+      "value": "Сообщение, которое показывается, когда кто-то входит или выходит."
+    },
+    {
+      "key": "dialog.setup.feature.onScreenControls",
+      "value": "Экранное управление"
+    },
+    {
+      "key": "dialog.setup.featureDetail.onScreenControls",
+      "value": "Сенсорное управление на телефонах и планшетах."
+    },
+    {
+      "key": "dialog.setup.feature.microphone",
+      "value": "Микрофон"
+    },
+    {
+      "key": "dialog.setup.featureDetail.microphone",
+      "value": "Голос этого игрока. Если выключено, его никто не слышит."
+    },
+    {
+      "key": "dialog.setup.tooltip.productName",
+      "value": "Название приложения. Вместе с названием компании определяет папку, в которой хранятся сохранённые настройки."
+    },
+    {
+      "key": "dialog.setup.tooltip.companyName",
+      "value": "Кто делает приложение. Два приложения с одинаковыми названиями компании и продукта используют общие сохранённые настройки."
+    },
+    {
+      "key": "dialog.setup.tooltip.identifier",
+      "value": "Идентификатор в формате обратного домена, используется на всех платформах. Два приложения с одинаковым идентификатором устанавливаются поверх друг друга."
+    },
+    {
+      "key": "dialog.setup.tooltip.suggest",
+      "value": "Заполнить идентификатор на основе названий компании и продукта."
+    },
+    {
+      "key": "dialog.setup.tooltip.version",
+      "value": "Версия приложения, например 1.0.0."
+    },
+    {
+      "key": "dialog.setup.tooltip.feature",
+      "value": "Включить или выключить эту функцию Basis для этого приложения."
+    },
+    {
+      "key": "dialog.setup.tooltip.addSetting",
+      "value": "Добавить начальное значение для настройки Basis."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingKey",
+      "value": "Ключ настройки, как он записан в BasisSettingsDefaults.cs."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingValue",
+      "value": "true, false, число или текст."
+    },
+    {
+      "key": "dialog.setup.tooltip.removeSetting",
+      "value": "Удалить это значение по умолчанию."
+    },
+    {
+      "key": "dialog.setup.tooltip.save",
+      "value": "Записать basis.config.json и применить его к ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.tooltip.close",
+      "value": "Закрыть это окно. Несохранённые изменения будут потеряны."
+    },
+    {
+      "key": "dialog.setup.toolsDirty",
+      "value": "Сохраните изменения, прежде чем открывать «Компоненты», «Резервная копия» или «Место на диске»."
     }
   ]
 }

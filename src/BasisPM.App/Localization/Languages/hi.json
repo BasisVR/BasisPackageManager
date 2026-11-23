@@ -7829,6 +7829,222 @@
     {
       "key": "dialog.syncBlocked.tooltip.fix",
       "value": "पुल रोकने वाली संपादित फ़ाइलें दिखाएँ और चुनें कि अपनी रखें या रिमोट की लें। आपके संस्करणों का पहले बैकअप लिया जाता है।"
+    },
+    {
+      "key": "installs.tooltip.setup",
+      "value": "प्रोजेक्ट सेटअप: ऐप का नाम, आइडेंटिफ़ायर, Basis सुविधाएँ, सेटिंग के डिफ़ॉल्ट मान, और भाग, बैकअप व स्टोरेज टूल।"
+    },
+    {
+      "key": "dialog.setup.title",
+      "value": "सेटअप: {0}"
+    },
+    {
+      "key": "dialog.setup.heading",
+      "value": "{0} के लिए ऐप सेटअप"
+    },
+    {
+      "key": "dialog.setup.intro",
+      "value": "ये मान प्रोजेक्ट के पास basis.config.json में रहते हैं, इसलिए इन्हें Basis को एडिट किए बिना कमिट किया और बदला जा सकता है। सहेजने पर नाम, कंपनी, आइडेंटिफ़ायर और संस्करण ProjectSettings में भी लिखे जाते हैं।"
+    },
+    {
+      "key": "dialog.setup.file",
+      "value": "{0} में सहेजा गया"
+    },
+    {
+      "key": "dialog.setup.fileNew",
+      "value": "अभी सहेजा नहीं गया। सहेजने पर {0} बनेगा।"
+    },
+    {
+      "key": "dialog.setup.appHeading",
+      "value": "ऐप"
+    },
+    {
+      "key": "dialog.setup.productName",
+      "value": "प्रोडक्ट का नाम"
+    },
+    {
+      "key": "dialog.setup.companyName",
+      "value": "कंपनी का नाम"
+    },
+    {
+      "key": "dialog.setup.identifier",
+      "value": "आइडेंटिफ़ायर"
+    },
+    {
+      "key": "dialog.setup.version",
+      "value": "संस्करण"
+    },
+    {
+      "key": "dialog.setup.suggest",
+      "value": "सुझाएँ"
+    },
+    {
+      "key": "dialog.setup.featuresHeading",
+      "value": "Basis फ़ीचर"
+    },
+    {
+      "key": "dialog.setup.featuresIntro",
+      "value": "Basis के जो हिस्से यह ऐप इस्तेमाल नहीं करता, उन्हें बंद करें, जैसे जब इसका अपना मेनू हो। जब तक आप यहाँ बंद न करें, सब कुछ चालू रहता है।"
+    },
+    {
+      "key": "dialog.setup.settingsHeading",
+      "value": "सेटिंग्स के डिफ़ॉल्ट मान"
+    },
+    {
+      "key": "dialog.setup.settingsIntro",
+      "value": "किसी Basis सेटिंग का शुरुआती मान, उसकी कुंजी के आधार पर। खिलाड़ी का पहले से सहेजा गया मान ही लागू रहता है।"
+    },
+    {
+      "key": "dialog.setup.addSetting",
+      "value": "सेटिंग जोड़ें"
+    },
+    {
+      "key": "dialog.setup.settingKey",
+      "value": "कुंजी, जैसे mainvolume"
+    },
+    {
+      "key": "dialog.setup.settingValue",
+      "value": "मान, जैसे 50"
+    },
+    {
+      "key": "dialog.setup.settingNoKey",
+      "value": "एक सेटिंग का मान है पर कुंजी नहीं है, इसलिए वह सहेजी नहीं जाएगी।"
+    },
+    {
+      "key": "dialog.setup.save",
+      "value": "सहेजें"
+    },
+    {
+      "key": "dialog.setup.close",
+      "value": "बंद करें"
+    },
+    {
+      "key": "dialog.setup.saved",
+      "value": "सहेजा गया और ProjectSettings पर लागू किया गया।"
+    },
+    {
+      "key": "dialog.setup.savedUnityOpen",
+      "value": "सहेजा गया। यह प्रोजेक्ट Unity में खुला है, इसलिए Basis इसे एडिटर में ProjectSettings पर लागू करेगा।"
+    },
+    {
+      "key": "dialog.setup.savedNoSettings",
+      "value": "सहेजा गया। इस प्रोजेक्ट में अभी ProjectSettings नहीं है; इसे एक बार Unity में खोलें और Basis फ़ाइल लागू कर देगा।"
+    },
+    {
+      "key": "dialog.setup.saveFailed",
+      "value": "सहेजा नहीं जा सका: {0}"
+    },
+    {
+      "key": "dialog.setup.serverNote",
+      "value": "Basis सर्वर केवल उन्हीं क्लाइंट को आने देता है जिनका कंपनी और प्रोडक्ट नाम config.xml में उसके CompanyName और ProductName से मेल खाता है। यह ऐप जिन सर्वरों से जुड़ता है, उन पर भी यही जोड़ी सेट करें।"
+    },
+    {
+      "key": "dialog.setup.drift",
+      "value": "ProjectSettings अभी मेल नहीं खाता ({0})। लागू करने के लिए सहेजें।"
+    },
+    {
+      "key": "dialog.setup.featureCustom",
+      "value": "यह ऐसा Basis फ़ीचर नहीं है जिसे यह संस्करण जानता हो। आपका अपना पैकेज फिर भी इसे पढ़ सकता है।"
+    },
+    {
+      "key": "dialog.setup.feature.mainMenu",
+      "value": "मुख्य मेनू"
+    },
+    {
+      "key": "dialog.setup.featureDetail.mainMenu",
+      "value": "Basis मेनू, उसका हॉटबार और उसे खोलने वाले प्रॉम्प्ट।"
+    },
+    {
+      "key": "dialog.setup.feature.nameplates",
+      "value": "नेमप्लेट"
+    },
+    {
+      "key": "dialog.setup.featureDetail.nameplates",
+      "value": "दूसरे खिलाड़ियों के ऊपर नेमप्लेट और चैट बबल।"
+    },
+    {
+      "key": "dialog.setup.feature.loadingBar",
+      "value": "लोडिंग बार"
+    },
+    {
+      "key": "dialog.setup.featureDetail.loadingBar",
+      "value": "कंटेंट डाउनलोड होते समय दिखने वाला बार।"
+    },
+    {
+      "key": "dialog.setup.feature.joinLeaveMessages",
+      "value": "आने और जाने के संदेश"
+    },
+    {
+      "key": "dialog.setup.featureDetail.joinLeaveMessages",
+      "value": "किसी के आने या जाने पर दिखने वाला संदेश।"
+    },
+    {
+      "key": "dialog.setup.feature.onScreenControls",
+      "value": "ऑन-स्क्रीन कंट्रोल"
+    },
+    {
+      "key": "dialog.setup.featureDetail.onScreenControls",
+      "value": "फ़ोन और टैबलेट पर टच कंट्रोल।"
+    },
+    {
+      "key": "dialog.setup.feature.microphone",
+      "value": "माइक्रोफ़ोन"
+    },
+    {
+      "key": "dialog.setup.featureDetail.microphone",
+      "value": "इस खिलाड़ी की आवाज़। बंद होने पर कोई उन्हें नहीं सुनता।"
+    },
+    {
+      "key": "dialog.setup.tooltip.productName",
+      "value": "ऐप का नाम। कंपनी के नाम के साथ मिलकर यह तय करता है कि सहेजी गई सेटिंग्स किस फ़ोल्डर में जाएँगी।"
+    },
+    {
+      "key": "dialog.setup.tooltip.companyName",
+      "value": "ऐप कौन बनाता है। एक ही कंपनी और प्रोडक्ट नाम वाले दो ऐप सहेजी गई सेटिंग्स साझा करते हैं।"
+    },
+    {
+      "key": "dialog.setup.tooltip.identifier",
+      "value": "हर प्लेटफ़ॉर्म पर इस्तेमाल होने वाली रिवर्स-डोमेन id। एक ही आइडेंटिफ़ायर वाले दो ऐप एक-दूसरे के ऊपर इंस्टॉल होते हैं।"
+    },
+    {
+      "key": "dialog.setup.tooltip.suggest",
+      "value": "कंपनी और प्रोडक्ट नाम से बना आइडेंटिफ़ायर भरें।"
+    },
+    {
+      "key": "dialog.setup.tooltip.version",
+      "value": "ऐप का संस्करण, जैसे 1.0.0।"
+    },
+    {
+      "key": "dialog.setup.tooltip.feature",
+      "value": "इस ऐप के लिए यह Basis फ़ीचर चालू या बंद करें।"
+    },
+    {
+      "key": "dialog.setup.tooltip.addSetting",
+      "value": "किसी Basis सेटिंग के लिए शुरुआती मान जोड़ें।"
+    },
+    {
+      "key": "dialog.setup.tooltip.settingKey",
+      "value": "सेटिंग की कुंजी, जैसी BasisSettingsDefaults.cs में लिखी है।"
+    },
+    {
+      "key": "dialog.setup.tooltip.settingValue",
+      "value": "true, false, कोई संख्या या टेक्स्ट।"
+    },
+    {
+      "key": "dialog.setup.tooltip.removeSetting",
+      "value": "यह सेटिंग डिफ़ॉल्ट हटाएँ।"
+    },
+    {
+      "key": "dialog.setup.tooltip.save",
+      "value": "basis.config.json लिखें और इसे ProjectSettings पर लागू करें।"
+    },
+    {
+      "key": "dialog.setup.tooltip.close",
+      "value": "यह विंडो बंद करें। बिना सहेजे बदलाव खो जाएँगे।"
+    },
+    {
+      "key": "dialog.setup.toolsDirty",
+      "value": "भाग, बैकअप या स्टोरेज खोलने से पहले अपने बदलाव सहेजें।"
     }
   ]
 }

@@ -1,0 +1,172 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BasisPM.App.ViewModels"
+        xmlns:loc="using:BasisPM.App.Localization"
+        x:Class="BasisPM.App.Views.ProjectSetupWindow"
+        x:Name="Root"
+        x:DataType="vm:ProjectSetupViewModel"
+        Title="{Binding Title}"
+        Width="720" Height="760" MinWidth="520" MinHeight="480"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <DockPanel Margin="26,24">
+        <StackPanel DockPanel.Dock="Top" Spacing="8" Margin="0,0,0,12">
+            <TextBlock Text="{Binding Heading}" Classes="h3" TextWrapping="Wrap"/>
+            <TextBlock Text="{loc:Tr dialog.setup.intro}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding FileText}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+            <WrapPanel IsVisible="{Binding HasTools}" Margin="0,4,0,0">
+                <Button IsVisible="{Binding HasParts}" Command="{Binding PartsCommand}" Margin="0,0,8,0" ToolTip.ShowOnDisabled="True"
+                        ToolTip.Tip="{loc:Tr installs.tooltip.parts}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconParts}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr installs.button.parts}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button IsVisible="{Binding HasBackup}" Command="{Binding BackupCommand}" Margin="0,0,8,0" ToolTip.ShowOnDisabled="True"
+                        ToolTip.Tip="{loc:Tr installs.tooltip.backup}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconArchive}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr installs.button.backup}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button IsVisible="{Binding HasStorage}" Command="{Binding StorageCommand}" Margin="0,0,8,0" ToolTip.ShowOnDisabled="True"
+                        ToolTip.Tip="{loc:Tr installs.tooltip.storage}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconStorage}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr installs.button.storage}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </WrapPanel>
+            <TextBlock Text="{loc:Tr dialog.setup.toolsDirty}" IsVisible="{Binding IsDirty}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Spacing="10" Margin="0,14,0,0">
+            <TextBlock Text="{Binding StatusText}" IsVisible="{Binding HasInfoStatus}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding StatusText}" IsVisible="{Binding HasErrorStatus}" Foreground="{StaticResource BasisDangerBrush}" FontSize="12" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                <Button Click="OnClose" ToolTip.Tip="{loc:Tr dialog.setup.tooltip.close}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr dialog.setup.close}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Classes="primary" Command="{Binding SaveCommand}" ToolTip.Tip="{loc:Tr dialog.setup.tooltip.save}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Classes="leadingIcon" Data="{StaticResource IconSave}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr dialog.setup.save}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="18" Margin="0,0,10,0">
+                <Border Classes="card" Padding="14,12" IsVisible="{Binding HasIssues}">
+                    <ItemsControl ItemsSource="{Binding Issues}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SetupIssueRow">
+                                <Grid ColumnDefinitions="Auto,*" Margin="0,3">
+                                    <PathIcon Width="14" Height="14" Margin="0,1,8,0" VerticalAlignment="Top" Data="{StaticResource IconWarning}"
+                                              Foreground="{StaticResource BasisDangerBrush}" IsVisible="{Binding IsError}"/>
+                                    <PathIcon Width="14" Height="14" Margin="0,1,8,0" VerticalAlignment="Top" Data="{StaticResource IconWarning}" IsVisible="{Binding IsWarning}"/>
+                                    <PathIcon Width="14" Height="14" Margin="0,1,8,0" VerticalAlignment="Top" Data="{StaticResource IconInfo}" IsVisible="{Binding IsInfo}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Message}" FontSize="12" TextWrapping="Wrap"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+
+                <StackPanel Spacing="10">
+                    <TextBlock Text="{loc:Tr dialog.setup.appHeading}" FontWeight="SemiBold"/>
+                    <Grid ColumnDefinitions="*,14,*">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{loc:Tr dialog.setup.productName}" Classes="muted" FontSize="11"/>
+                            <TextBox Text="{Binding ProductName}" ToolTip.Tip="{loc:Tr dialog.setup.tooltip.productName}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="{loc:Tr dialog.setup.companyName}" Classes="muted" FontSize="11"/>
+                            <TextBox Text="{Binding CompanyName}" ToolTip.Tip="{loc:Tr dialog.setup.tooltip.companyName}"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,14,160">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{loc:Tr dialog.setup.identifier}" Classes="muted" FontSize="11"/>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBox Text="{Binding Identifier}" FontFamily="{StaticResource MonoFontFamily}" Watermark="com.myapp.app"
+                                         ToolTip.Tip="{loc:Tr dialog.setup.tooltip.identifier}"/>
+                                <Button Grid.Column="1" Margin="8,0,0,0" Command="{Binding SuggestIdentifierCommand}" Content="{loc:Tr dialog.setup.suggest}"
+                                        ToolTip.Tip="{loc:Tr dialog.setup.tooltip.suggest}"/>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Spacing="4">
+                            <TextBlock Text="{loc:Tr dialog.setup.version}" Classes="muted" FontSize="11"/>
+                            <TextBox Text="{Binding Version}" FontFamily="{StaticResource MonoFontFamily}" Watermark="1.0.0"
+                                     ToolTip.Tip="{loc:Tr dialog.setup.tooltip.version}"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                    <TextBlock Text="{loc:Tr dialog.setup.featuresHeading}" FontWeight="SemiBold"/>
+                    <TextBlock Text="{loc:Tr dialog.setup.featuresIntro}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                    <Border Classes="card" Padding="0" ClipToBounds="True">
+                        <ItemsControl ItemsSource="{Binding Features}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:SetupFeatureRow">
+                                    <Border Padding="14,8" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Spacing="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Label}" FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding Detail}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                            <ToggleSwitch Grid.Column="1" Margin="12,0,0,0" IsChecked="{Binding IsOn}" OnContent="" OffContent=""
+                                                          VerticalAlignment="Center" ToolTip.Tip="{loc:Tr dialog.setup.tooltip.feature}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="{loc:Tr dialog.setup.settingsHeading}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{loc:Tr dialog.setup.settingsIntro}" Classes="dim" FontSize="11" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center" Command="{Binding AddSettingCommand}"
+                                ToolTip.Tip="{loc:Tr dialog.setup.tooltip.addSetting}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconAdd}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr dialog.setup.addSetting}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <Border Classes="card" Padding="0" ClipToBounds="True" IsVisible="{Binding HasSettings}">
+                        <ItemsControl ItemsSource="{Binding Settings}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:SetupSettingRow">
+                                    <Border Padding="14,8" BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+                                        <Grid ColumnDefinitions="*,10,*,Auto">
+                                            <TextBox Text="{Binding Key}" FontFamily="{StaticResource MonoFontFamily}" Watermark="{loc:Tr dialog.setup.settingKey}"
+                                                     ToolTip.Tip="{loc:Tr dialog.setup.tooltip.settingKey}"/>
+                                            <TextBox Grid.Column="2" Text="{Binding Value}" Watermark="{loc:Tr dialog.setup.settingValue}"
+                                                     ToolTip.Tip="{loc:Tr dialog.setup.tooltip.settingValue}"/>
+                                            <Button Grid.Column="3" Classes="iconBtn" Margin="8,0,0,0"
+                                                    Command="{Binding #Root.((vm:ProjectSetupViewModel)DataContext).RemoveSettingCommand}" CommandParameter="{Binding}"
+                                                    ToolTip.Tip="{loc:Tr dialog.setup.tooltip.removeSetting}">
+                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconDelete}"/>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

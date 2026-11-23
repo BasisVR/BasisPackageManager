@@ -174,10 +174,40 @@ git URL. Unity's own `dependencies` are left to Unity.
 | `override <id> <folder>` | Mount a package from a folder on this machine only, the Unity side of `server-link`. |
 | `enable-package`, `disable-package` | Set `enabled` to `yes` or `no` and mount again. |
 | `embed-package <id>` | Copy a locked package into `Packages/` to patch it in a game project. `bpm-manifest.json` points at the copy and records the commit it came from in `copiedFrom`, so it can be diffed against upstream and sent back. |
+| `app-config` | Show or change `basis.config.json`, the app name, company, identifier, version, Basis features and setting defaults for the project. `app-config apply` writes them into `ProjectSettings` with Unity closed. |
 | `manifest` | Show the checkouts and mounts, and anything out of date: a stale lock, edits in a pinned checkout, a fork that isn't rebased onto the pin, or client and Basis Server locks that disagree. |
 
 A project that still has `Packages/basispackages.json` keeps working; the first change writes the
 two new files and removes it.
+
+### basis.config.json
+
+One file next to `bpm-manifest.json` for what makes a project its own app. Commit it.
+
+```json
+{
+  "productName": "MyApp",
+  "companyName": "MyApp",
+  "identifier": "com.myapp.app",
+  "version": "1.0.0",
+  "features": { "mainMenu": false, "nameplates": false },
+  "settings": { "mainvolume": 50, "microphonemode": "pushtotalk" }
+}
+```
+
+- `identifier` is used for every platform (Standalone, Android, iOS). Two apps with the same
+  identifier install over each other, and two apps with the same company and product name share one
+  save folder, so they read each other's settings. `app-config` and `manifest` warn while either is
+  still Basis's own or a `com.example` placeholder. `init-project --game` writes a starter file.
+- `features` turns Basis parts off without a fork or a scripting define: `mainMenu`, `nameplates`,
+  `loadingBar`, `joinLeaveMessages`, `onScreenControls` and `microphone`. Anything left out stays on.
+- `settings` sets the starting value of a Basis setting by its key (the keys in
+  `BasisSettingsDefaults.cs`). A value the player already saved still wins.
+- Unity applies the name, company, identifier and version to `ProjectSettings` when the file
+  changes, and builds carry the file with them, so features and settings work in the player too.
+- When `ProjectSettings` follows the Basis template, template updates keep the values from this file.
+- A Basis server only lets in clients whose company and product name match the server's
+  `CompanyName` and `ProductName` in `config.xml`, so set the same pair on your servers.
 
 ## Package registry server
 

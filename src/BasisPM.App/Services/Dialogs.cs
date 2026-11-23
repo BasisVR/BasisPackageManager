@@ -200,6 +200,12 @@ public static class Dialogs
         if (owner is not null) await new LicensesWindow { DataContext = model }.ShowDialog(owner);
     }
 
+    public static async Task ShowSetupAsync(ProjectSetupViewModel model)
+    {
+        var owner = Owner;
+        if (owner is not null) await new ProjectSetupWindow { DataContext = model }.ShowDialog(owner);
+    }
+
     public static async Task ShowStorageAsync(ProjectStorageViewModel model)
     {
         var owner = Owner;

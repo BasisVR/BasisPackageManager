@@ -7829,6 +7829,222 @@
     {
       "key": "dialog.syncBlocked.tooltip.fix",
       "value": "顯示阻擋拉取的已編輯檔案，並選擇保留你的版本還是使用遠端版本。你的版本會先備份。"
+    },
+    {
+      "key": "installs.tooltip.setup",
+      "value": "專案組態：應用程式名稱、識別碼、Basis 功能、設定預設值，以及元件、備份與儲存空間工具。"
+    },
+    {
+      "key": "dialog.setup.title",
+      "value": "組態：{0}"
+    },
+    {
+      "key": "dialog.setup.heading",
+      "value": "{0} 的應用程式組態"
+    },
+    {
+      "key": "dialog.setup.intro",
+      "value": "這些值儲存在專案旁的 basis.config.json 中，因此可以提交與變更，不必編輯 Basis。儲存時也會將名稱、公司、識別碼與版本寫入 ProjectSettings。"
+    },
+    {
+      "key": "dialog.setup.file",
+      "value": "已儲存於 {0}"
+    },
+    {
+      "key": "dialog.setup.fileNew",
+      "value": "尚未儲存。儲存時會建立 {0}。"
+    },
+    {
+      "key": "dialog.setup.appHeading",
+      "value": "應用程式"
+    },
+    {
+      "key": "dialog.setup.productName",
+      "value": "產品名稱"
+    },
+    {
+      "key": "dialog.setup.companyName",
+      "value": "公司名稱"
+    },
+    {
+      "key": "dialog.setup.identifier",
+      "value": "識別碼"
+    },
+    {
+      "key": "dialog.setup.version",
+      "value": "版本"
+    },
+    {
+      "key": "dialog.setup.suggest",
+      "value": "建議"
+    },
+    {
+      "key": "dialog.setup.featuresHeading",
+      "value": "Basis 功能"
+    },
+    {
+      "key": "dialog.setup.featuresIntro",
+      "value": "關閉此應用程式用不到的 Basis 部分，例如它有自己的選單時。除非你在這裡關閉，否則所有功能都會開啟。"
+    },
+    {
+      "key": "dialog.setup.settingsHeading",
+      "value": "設定預設值"
+    },
+    {
+      "key": "dialog.setup.settingsIntro",
+      "value": "依鍵名指定 Basis 設定的初始值。玩家已儲存的值仍會優先。"
+    },
+    {
+      "key": "dialog.setup.addSetting",
+      "value": "新增設定"
+    },
+    {
+      "key": "dialog.setup.settingKey",
+      "value": "鍵名，例如 mainvolume"
+    },
+    {
+      "key": "dialog.setup.settingValue",
+      "value": "值，例如 50"
+    },
+    {
+      "key": "dialog.setup.settingNoKey",
+      "value": "有一項設定有值但沒有鍵名，因此不會儲存。"
+    },
+    {
+      "key": "dialog.setup.save",
+      "value": "儲存"
+    },
+    {
+      "key": "dialog.setup.close",
+      "value": "關閉"
+    },
+    {
+      "key": "dialog.setup.saved",
+      "value": "已儲存並套用至 ProjectSettings。"
+    },
+    {
+      "key": "dialog.setup.savedUnityOpen",
+      "value": "已儲存。Unity 已開啟此專案，因此 Basis 會在編輯器中將其套用至 ProjectSettings。"
+    },
+    {
+      "key": "dialog.setup.savedNoSettings",
+      "value": "已儲存。此專案還沒有 ProjectSettings；在 Unity 中開啟一次後，Basis 就會套用該檔案。"
+    },
+    {
+      "key": "dialog.setup.saveFailed",
+      "value": "無法儲存：{0}"
+    },
+    {
+      "key": "dialog.setup.serverNote",
+      "value": "Basis 伺服器只允許公司名稱與產品名稱和其 config.xml 中的 CompanyName 與 ProductName 相符的用戶端加入。請在此應用程式要加入的伺服器上設定相同的這兩個值。"
+    },
+    {
+      "key": "dialog.setup.drift",
+      "value": "ProjectSettings 尚不相符（{0}）。儲存即可套用。"
+    },
+    {
+      "key": "dialog.setup.featureCustom",
+      "value": "不是此版本已知的 Basis 功能。你自己的套件仍可讀取它。"
+    },
+    {
+      "key": "dialog.setup.feature.mainMenu",
+      "value": "主選單"
+    },
+    {
+      "key": "dialog.setup.featureDetail.mainMenu",
+      "value": "Basis 選單、它的快捷列，以及開啟它的提示。"
+    },
+    {
+      "key": "dialog.setup.feature.nameplates",
+      "value": "名牌"
+    },
+    {
+      "key": "dialog.setup.featureDetail.nameplates",
+      "value": "其他玩家頭上的名牌與聊天泡泡。"
+    },
+    {
+      "key": "dialog.setup.feature.loadingBar",
+      "value": "載入列"
+    },
+    {
+      "key": "dialog.setup.featureDetail.loadingBar",
+      "value": "下載內容時顯示的進度列。"
+    },
+    {
+      "key": "dialog.setup.feature.joinLeaveMessages",
+      "value": "加入與離開訊息"
+    },
+    {
+      "key": "dialog.setup.featureDetail.joinLeaveMessages",
+      "value": "有人加入或離開時顯示的訊息。"
+    },
+    {
+      "key": "dialog.setup.feature.onScreenControls",
+      "value": "螢幕控制項"
+    },
+    {
+      "key": "dialog.setup.featureDetail.onScreenControls",
+      "value": "手機與平板電腦上的觸控控制項。"
+    },
+    {
+      "key": "dialog.setup.feature.microphone",
+      "value": "麥克風"
+    },
+    {
+      "key": "dialog.setup.featureDetail.microphone",
+      "value": "此玩家的語音。關閉後，沒有人聽得到他們。"
+    },
+    {
+      "key": "dialog.setup.tooltip.productName",
+      "value": "應用程式的名稱。它與公司名稱一起決定已儲存設定所在的資料夾。"
+    },
+    {
+      "key": "dialog.setup.tooltip.companyName",
+      "value": "應用程式的開發者。公司名稱與產品名稱都相同的兩個應用程式會共用已儲存的設定。"
+    },
+    {
+      "key": "dialog.setup.tooltip.identifier",
+      "value": "在所有平台上使用的反向網域 ID。識別碼相同的兩個應用程式會互相覆蓋安裝。"
+    },
+    {
+      "key": "dialog.setup.tooltip.suggest",
+      "value": "根據公司名稱與產品名稱填入一個識別碼。"
+    },
+    {
+      "key": "dialog.setup.tooltip.version",
+      "value": "應用程式版本，例如 1.0.0。"
+    },
+    {
+      "key": "dialog.setup.tooltip.feature",
+      "value": "為此應用程式開啟或關閉這項 Basis 功能。"
+    },
+    {
+      "key": "dialog.setup.tooltip.addSetting",
+      "value": "為 Basis 設定新增一個初始值。"
+    },
+    {
+      "key": "dialog.setup.tooltip.settingKey",
+      "value": "設定的鍵名，與 BasisSettingsDefaults.cs 中的寫法相同。"
+    },
+    {
+      "key": "dialog.setup.tooltip.settingValue",
+      "value": "true、false、數字或文字。"
+    },
+    {
+      "key": "dialog.setup.tooltip.removeSetting",
+      "value": "移除此設定預設值。"
+    },
+    {
+      "key": "dialog.setup.tooltip.save",
+      "value": "寫入 basis.config.json 並將其套用至 ProjectSettings。"
+    },
+    {
+      "key": "dialog.setup.tooltip.close",
+      "value": "關閉此視窗。未儲存的變更將會遺失。"
+    },
+    {
+      "key": "dialog.setup.toolsDirty",
+      "value": "開啟元件、備份或儲存空間之前，請先儲存變更。"
     }
   ]
 }

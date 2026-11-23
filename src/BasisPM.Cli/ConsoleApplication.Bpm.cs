@@ -106,6 +106,30 @@ internal sealed partial class ConsoleApplication
         },
         new()
         {
+            Name = "app-config", Group = BpmGroup, Json = true, Aliases = new[] { "app" }, Summary = "App name, id and Basis features (basis.config.json)",
+            Usage = new[] { "app-config", "app-config init [--name <name>] [--company <name>] [--identifier <id>] [--version <x.y.z>]", "app-config get <key>", "app-config set <key> <value>", "app-config unset <key>", "app-config apply" },
+            Details = "basis.config.json sits next to bpm-manifest.json and holds what makes the project its own app: productName, companyName, identifier (one reverse-domain id for every platform) and version, "
+                + "plus features (Basis parts to turn on or off, such as \"mainMenu\": false) and settings (the starting value of a Basis setting, by its key). Commit it. "
+                + "Without arguments it shows the file and what's wrong with it, such as an identifier still set to Basis's own, which makes two apps install over each other and share saved settings. "
+                + "apply writes the name, company, identifier and version into ProjectSettings with Unity closed; with Unity open, Basis applies the file itself when it changes. "
+                + "When ProjectSettings follows the Basis template, template updates keep your values instead of Basis's.",
+            Options = new[]
+            {
+                new CliOption("--name", "productName for init", "<name>"), new CliOption("--company", "companyName for init", "<name>"),
+                new CliOption("--identifier", "identifier for init", "<id>"), new CliOption("--version", "version for init", "<x.y.z>"),
+            },
+            Examples = new[]
+            {
+                new CliExample("app-config init --name MyApp --identifier com.myapp.app", "Give the project its own name and id"),
+                new CliExample("app-config set features.mainMenu off", "Ship your own UI instead of the Basis menu"),
+                new CliExample("app-config set settings.mainvolume 50", "Start the main volume at 50"),
+                new CliExample("app-config apply", "Write the name and id into ProjectSettings"),
+            },
+            SeeAlso = new[] { "manifest", "init-project" },
+            Run = AppConfigAsync,
+        },
+        new()
+        {
             Name = "manifest", Group = BpmGroup, Json = true, Summary = "Show checkouts, mounts and what's out of date",
             Usage = new[] { "manifest" },
             Details = "Lists the checkouts in .basisdev with how each is held (pinned, working tree or inline) and where it is, the line each locked package is mounted with, and anything that needs doing: "
@@ -191,7 +215,7 @@ internal sealed partial class ConsoleApplication
         await RunOperationAsync(async ct => result = await Bpm.InitAsync(FullPath(options[0]), content, url, at, packages, copy, Out.Progress, ct), "Setting up the project" + Out.Ellipsis);
         Report(result);
         ThrowIfFailed(result);
-        Out.Hint($"Commit {BpmStore.ManifestFileName}, {BpmStore.LockFileName} and Packages/manifest.json. Never commit {BasisDevStore.FolderName}.");
+        Out.Hint($"Commit {BpmStore.ManifestFileName}, {BpmStore.LockFileName}, {BasisConfigService.FileName} and Packages/manifest.json. Never commit {BasisDevStore.FolderName}.");
     }
 
     private async Task LockAsync(List<string> values)
@@ -411,5 +435,112 @@ internal sealed partial class ConsoleApplication
         }
         if (report.Issues.Count == 0) Out.Success("Everything matches bpm-lock.json.");
         Report(report.Issues);
+    }
+
+    private async Task AppConfigAsync(List<string> values)
+    {
+        var options = values.ToList();
+        var name = TakeValue(options, "--name");
+        var company = TakeValue(options, "--company");
+        var identifier = TakeValue(options, "--identifier");
+        var version = TakeValue(options, "--version");
+        var verb = options.Count == 0 ? "show" : options[0].ToLowerInvariant();
+        if (verb != "init" && (name ?? company ?? identifier ?? version) is not null) throw new UsageException("--name, --company, --identifier and --version go with 'app-config init'; use 'app-config set' to change one value.");
+        var project = await BpmProjectAsync();
+        switch (verb)
+        {
+            case "show":
+                Expect(options, 0, 0, "");
+                ShowAppConfig(project);
+                return;
+            case "init":
+            {
+                Expect(options, 1, 1, "");
+                if (BasisConfigService.Exists(project)) throw new UsageException($"{BasisConfigService.FileName} already exists; change it with 'app-config set'.");
+                var config = BasisConfigService.Starter(project, name);
+                if (company is not null) config.CompanyName = company.Trim();
+                config.Identifier = identifier?.Trim() ?? (company is not null ? BasisConfigService.SuggestIdentifier(company, config.ProductName ?? "app") : config.Identifier);
+                if (version is not null) config.Version = version.Trim();
+                BasisConfigService.Write(project, config);
+                Out.Success($"Wrote {BasisConfigService.ConfigPath(project)}.");
+                ShowAppConfig(project);
+                return;
+            }
+            case "get":
+            {
+                Expect(options, 2, 2, "a key");
+                var config = BasisConfigService.Read(project) ?? throw new UsageException($"{project} has no {BasisConfigService.FileName}. Run 'app-config init' first.");
+                string? value;
+                try { value = BasisConfigService.Get(config, options[1]); }
+                catch (ArgumentException ex) { throw new UsageException(ex.Message); }
+                if (Out.JsonMode) Out.Json(new { key = options[1], value });
+                else if (value is null) Out.Hint($"{options[1]} isn't set.");
+                else Console.WriteLine(value);
+                return;
+            }
+            case "set" or "unset":
+            {
+                var unset = verb == "unset";
+                Expect(options, unset ? 2 : 3, unset ? 2 : 3, unset ? "a key" : "a key and a value");
+                try { BasisConfigService.Update(project, c => BasisConfigService.Set(c, options[1], unset ? null : options[2])); }
+                catch (ArgumentException ex) { throw new UsageException(ex.Message); }
+                Out.Success(unset ? $"Removed {options[1]} from {BasisConfigService.FileName}." : $"Set {options[1]} to {options[2]} in {BasisConfigService.FileName}.");
+                Report(BasisConfigService.Check(project).Where(i => i.Subject != "server"));
+                return;
+            }
+            case "apply":
+            {
+                Expect(options, 1, 1, "");
+                var result = BasisConfigService.ApplyToProject(project, UnityOpenProbe.IsOpen(project));
+                Report(result);
+                ThrowIfFailed(result);
+                Report(BasisConfigService.Check(project).Where(i => i.Level != BpmIssueLevel.Info));
+                return;
+            }
+            default: throw new UsageException($"\"{options[0]}\" isn't an app-config action. Use init, get, set, unset or apply, or nothing to show the file.");
+        }
+    }
+
+    private static void ShowAppConfig(string project)
+    {
+        var config = BasisConfigService.Read(project);
+        var issues = BasisConfigService.Check(project);
+        if (Out.JsonMode)
+        {
+            Out.Json(new
+            {
+                path = BasisConfigService.ConfigPath(project),
+                exists = config is not null,
+                productName = config?.ProductName, companyName = config?.CompanyName, identifier = config?.Identifier, version = config?.Version,
+                features = config?.Features, settings = config?.Settings,
+                issues = issues.Select(i => new { level = i.Level.ToString(), subject = i.Subject, message = i.Message }),
+            });
+            return;
+        }
+        if (config is null)
+        {
+            Out.Hint($"{project} has no {BasisConfigService.FileName}. 'app-config init' writes one from ProjectSettings.");
+            return;
+        }
+        Out.Heading(BasisConfigService.ConfigPath(project));
+        Out.Table(new List<Span[]>
+        {
+            new[] { new Span("productName", Tone.Bold), new Span(config.ProductName ?? "(not set)") },
+            new[] { new Span("companyName", Tone.Bold), new Span(config.CompanyName ?? "(not set)") },
+            new[] { new Span("identifier", Tone.Bold), new Span(config.Identifier ?? "(not set)") },
+            new[] { new Span("version", Tone.Bold), new Span(config.Version ?? "(not set)") },
+        });
+        if (config.Features is { Count: > 0 } features)
+        {
+            Out.Heading("Features");
+            Out.Table(features.Select(f => new[] { new Span(f.Key, Tone.Bold), new Span(f.Value ? "on" : "off", f.Value ? Tone.Plain : Tone.Warn) }).ToList());
+        }
+        if (config.Settings is { Count: > 0 } settings)
+        {
+            Out.Heading("Setting defaults");
+            Out.Table(settings.Select(s => new[] { new Span(s.Key, Tone.Bold), new Span(s.Value.ValueKind == System.Text.Json.JsonValueKind.String ? s.Value.GetString() ?? "" : s.Value.GetRawText()) }).ToList());
+        }
+        if (issues.Count == 0) Out.Success("Nothing to fix.");
+        Report(issues);
     }
 }

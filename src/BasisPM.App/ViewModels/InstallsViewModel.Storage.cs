@@ -10,6 +10,18 @@ public sealed partial class InstallsViewModel
 
     public RelayCommand<InstallRow> StorageCommand => _storageCommand ??= new RelayCommand<InstallRow>(OpenStorageAsync);
 
+    private RelayCommand<InstallRow>? _setupCommand;
+
+    public RelayCommand<InstallRow> SetupCommand => _setupCommand ??= new RelayCommand<InstallRow>(OpenSetupAsync);
+
+    private async Task OpenSetupAsync(InstallRow? row)
+    {
+        if (row is null || !row.HasUnityProject) return;
+        var model = new ProjectSetupViewModel(row.UnityProjectPath, row.Name, openParts: row.IsGitRepo ? () => EditPartsAsync(row) : null,
+            openBackup: () => BackupQueuedAsync(row), openStorage: () => OpenStorageAsync(row));
+        await Dialogs.ShowSetupAsync(model);
+    }
+
     private ProjectStorageService Storage => _storage ??= CreateStorage();
 
     private ProjectStorageService CreateStorage()

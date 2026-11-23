@@ -7829,6 +7829,222 @@
     {
       "key": "dialog.syncBlocked.tooltip.fix",
       "value": "Toon de bewerkte bestanden die de pull blokkeren en kies of je de jouwe houdt of die van de remote neemt. Je versies krijgen eerst een back-up."
+    },
+    {
+      "key": "installs.tooltip.setup",
+      "value": "Projectinstellingen: app-naam, identifier, Basis-functies, standaardwaarden van instellingen en de hulpmiddelen Onderdelen, Back-up en Opslag."
+    },
+    {
+      "key": "dialog.setup.title",
+      "value": "Instellen: {0}"
+    },
+    {
+      "key": "dialog.setup.heading",
+      "value": "App instellen voor {0}"
+    },
+    {
+      "key": "dialog.setup.intro",
+      "value": "Deze waarden staan in basis.config.json naast het project, zodat je ze kunt committen en wijzigen zonder Basis aan te passen. Bij opslaan worden ook de naam, het bedrijf, de identifier en de versie in ProjectSettings geschreven."
+    },
+    {
+      "key": "dialog.setup.file",
+      "value": "Opgeslagen in {0}"
+    },
+    {
+      "key": "dialog.setup.fileNew",
+      "value": "Nog niet opgeslagen. Bij opslaan wordt {0} gemaakt."
+    },
+    {
+      "key": "dialog.setup.appHeading",
+      "value": "App"
+    },
+    {
+      "key": "dialog.setup.productName",
+      "value": "Productnaam"
+    },
+    {
+      "key": "dialog.setup.companyName",
+      "value": "Bedrijfsnaam"
+    },
+    {
+      "key": "dialog.setup.identifier",
+      "value": "Identifier"
+    },
+    {
+      "key": "dialog.setup.version",
+      "value": "Versie"
+    },
+    {
+      "key": "dialog.setup.suggest",
+      "value": "Voorstellen"
+    },
+    {
+      "key": "dialog.setup.featuresHeading",
+      "value": "Basis-functies"
+    },
+    {
+      "key": "dialog.setup.featuresIntro",
+      "value": "Zet de onderdelen van Basis uit die deze app niet gebruikt, bijvoorbeeld als de app een eigen menu heeft. Alles staat aan, tenzij je het hier uitzet."
+    },
+    {
+      "key": "dialog.setup.settingsHeading",
+      "value": "Standaardinstellingen"
+    },
+    {
+      "key": "dialog.setup.settingsIntro",
+      "value": "De beginwaarde van een Basis-instelling, op sleutel. Een waarde die de speler al heeft opgeslagen, gaat nog steeds voor."
+    },
+    {
+      "key": "dialog.setup.addSetting",
+      "value": "Instelling toevoegen"
+    },
+    {
+      "key": "dialog.setup.settingKey",
+      "value": "Sleutel, zoals mainvolume"
+    },
+    {
+      "key": "dialog.setup.settingValue",
+      "value": "Waarde, zoals 50"
+    },
+    {
+      "key": "dialog.setup.settingNoKey",
+      "value": "Een instelling heeft een waarde maar geen sleutel, dus die wordt niet opgeslagen."
+    },
+    {
+      "key": "dialog.setup.save",
+      "value": "Opslaan"
+    },
+    {
+      "key": "dialog.setup.close",
+      "value": "Sluiten"
+    },
+    {
+      "key": "dialog.setup.saved",
+      "value": "Opgeslagen en toegepast op ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.savedUnityOpen",
+      "value": "Opgeslagen. Unity heeft dit project open, dus Basis past het toe op ProjectSettings in de editor."
+    },
+    {
+      "key": "dialog.setup.savedNoSettings",
+      "value": "Opgeslagen. Dit project heeft nog geen ProjectSettings; open het één keer in Unity en Basis past het bestand toe."
+    },
+    {
+      "key": "dialog.setup.saveFailed",
+      "value": "Kan niet opslaan: {0}"
+    },
+    {
+      "key": "dialog.setup.serverNote",
+      "value": "Een Basis-server laat alleen clients toe waarvan de bedrijfs- en productnaam overeenkomen met CompanyName en ProductName in config.xml. Stel hetzelfde paar in op de servers waarmee deze app verbindt."
+    },
+    {
+      "key": "dialog.setup.drift",
+      "value": "ProjectSettings komt nog niet overeen ({0}). Sla op om het toe te passen."
+    },
+    {
+      "key": "dialog.setup.featureCustom",
+      "value": "Geen Basis-functie die deze versie kent. Een eigen pakket kan hem nog steeds lezen."
+    },
+    {
+      "key": "dialog.setup.feature.mainMenu",
+      "value": "Hoofdmenu"
+    },
+    {
+      "key": "dialog.setup.featureDetail.mainMenu",
+      "value": "Het Basis-menu, de snelbalk en de meldingen die het openen."
+    },
+    {
+      "key": "dialog.setup.feature.nameplates",
+      "value": "Naambordjes"
+    },
+    {
+      "key": "dialog.setup.featureDetail.nameplates",
+      "value": "Naambordjes en chatballonnen boven andere spelers."
+    },
+    {
+      "key": "dialog.setup.feature.loadingBar",
+      "value": "Laadbalk"
+    },
+    {
+      "key": "dialog.setup.featureDetail.loadingBar",
+      "value": "De balk die wordt getoond terwijl content wordt gedownload."
+    },
+    {
+      "key": "dialog.setup.feature.joinLeaveMessages",
+      "value": "Meldingen bij komen en gaan"
+    },
+    {
+      "key": "dialog.setup.featureDetail.joinLeaveMessages",
+      "value": "De melding die wordt getoond als iemand binnenkomt of vertrekt."
+    },
+    {
+      "key": "dialog.setup.feature.onScreenControls",
+      "value": "Bediening op het scherm"
+    },
+    {
+      "key": "dialog.setup.featureDetail.onScreenControls",
+      "value": "De aanraakbediening op telefoons en tablets."
+    },
+    {
+      "key": "dialog.setup.feature.microphone",
+      "value": "Microfoon"
+    },
+    {
+      "key": "dialog.setup.featureDetail.microphone",
+      "value": "De stem van deze speler. Als dit uit staat, hoort niemand hem."
+    },
+    {
+      "key": "dialog.setup.tooltip.productName",
+      "value": "De naam van de app. Samen met de bedrijfsnaam bepaalt die de map waarin opgeslagen instellingen komen."
+    },
+    {
+      "key": "dialog.setup.tooltip.companyName",
+      "value": "Wie de app maakt. Twee apps met dezelfde bedrijfs- en productnaam delen opgeslagen instellingen."
+    },
+    {
+      "key": "dialog.setup.tooltip.identifier",
+      "value": "Een id in omgekeerde domeinnotatie dat op elk platform wordt gebruikt. Twee apps met dezelfde identifier installeren over elkaar heen."
+    },
+    {
+      "key": "dialog.setup.tooltip.suggest",
+      "value": "Vul een identifier in die is gemaakt van de bedrijfs- en productnaam."
+    },
+    {
+      "key": "dialog.setup.tooltip.version",
+      "value": "De versie van de app, zoals 1.0.0."
+    },
+    {
+      "key": "dialog.setup.tooltip.feature",
+      "value": "Zet deze Basis-functie aan of uit voor deze app."
+    },
+    {
+      "key": "dialog.setup.tooltip.addSetting",
+      "value": "Voeg een beginwaarde toe voor een Basis-instelling."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingKey",
+      "value": "De sleutel van de instelling, zoals geschreven in BasisSettingsDefaults.cs."
+    },
+    {
+      "key": "dialog.setup.tooltip.settingValue",
+      "value": "true, false, een getal of tekst."
+    },
+    {
+      "key": "dialog.setup.tooltip.removeSetting",
+      "value": "Verwijder deze standaardinstelling."
+    },
+    {
+      "key": "dialog.setup.tooltip.save",
+      "value": "Schrijf basis.config.json en pas het toe op ProjectSettings."
+    },
+    {
+      "key": "dialog.setup.tooltip.close",
+      "value": "Sluit dit venster. Niet-opgeslagen wijzigingen gaan verloren."
+    },
+    {
+      "key": "dialog.setup.toolsDirty",
+      "value": "Sla je wijzigingen op voordat je Onderdelen, Back-up of Opslag opent."
     }
   ]
 }

@@ -7829,6 +7829,222 @@
     {
       "key": "dialog.syncBlocked.tooltip.fix",
       "value": "プルをブロックしている編集済みファイルを表示し、自分のものを残すかリモートのものを使うかを選びます。あなたのバージョンは先にバックアップされます。"
+    },
+    {
+      "key": "installs.tooltip.setup",
+      "value": "プロジェクト設定: アプリ名、識別子、Basis の機能、設定の既定値、およびパーツ、バックアップ、ストレージのツール。"
+    },
+    {
+      "key": "dialog.setup.title",
+      "value": "セットアップ: {0}"
+    },
+    {
+      "key": "dialog.setup.heading",
+      "value": "{0} のアプリセットアップ"
+    },
+    {
+      "key": "dialog.setup.intro",
+      "value": "これらの値はプロジェクトの隣にある basis.config.json に保存されるため、Basis を編集せずにコミットや変更ができます。保存すると、名前、会社、識別子、バージョンも ProjectSettings に書き込まれます。"
+    },
+    {
+      "key": "dialog.setup.file",
+      "value": "{0} に保存済み"
+    },
+    {
+      "key": "dialog.setup.fileNew",
+      "value": "まだ保存されていません。保存すると {0} が作成されます。"
+    },
+    {
+      "key": "dialog.setup.appHeading",
+      "value": "アプリ"
+    },
+    {
+      "key": "dialog.setup.productName",
+      "value": "製品名"
+    },
+    {
+      "key": "dialog.setup.companyName",
+      "value": "会社名"
+    },
+    {
+      "key": "dialog.setup.identifier",
+      "value": "識別子"
+    },
+    {
+      "key": "dialog.setup.version",
+      "value": "バージョン"
+    },
+    {
+      "key": "dialog.setup.suggest",
+      "value": "提案"
+    },
+    {
+      "key": "dialog.setup.featuresHeading",
+      "value": "Basis の機能"
+    },
+    {
+      "key": "dialog.setup.featuresIntro",
+      "value": "独自のメニューがある場合など、このアプリで使わない Basis の部分をオフにします。ここでオフにしない限り、すべてオンです。"
+    },
+    {
+      "key": "dialog.setup.settingsHeading",
+      "value": "設定の既定値"
+    },
+    {
+      "key": "dialog.setup.settingsIntro",
+      "value": "キーで指定する Basis の設定の初期値です。プレイヤーがすでに保存した値が優先されます。"
+    },
+    {
+      "key": "dialog.setup.addSetting",
+      "value": "設定を追加"
+    },
+    {
+      "key": "dialog.setup.settingKey",
+      "value": "キー (例: mainvolume)"
+    },
+    {
+      "key": "dialog.setup.settingValue",
+      "value": "値 (例: 50)"
+    },
+    {
+      "key": "dialog.setup.settingNoKey",
+      "value": "値はあるがキーがない設定があるため、その設定は保存されません。"
+    },
+    {
+      "key": "dialog.setup.save",
+      "value": "保存"
+    },
+    {
+      "key": "dialog.setup.close",
+      "value": "閉じる"
+    },
+    {
+      "key": "dialog.setup.saved",
+      "value": "保存して ProjectSettings に適用しました。"
+    },
+    {
+      "key": "dialog.setup.savedUnityOpen",
+      "value": "保存しました。このプロジェクトは Unity で開かれているため、Basis がエディター内で ProjectSettings に適用します。"
+    },
+    {
+      "key": "dialog.setup.savedNoSettings",
+      "value": "保存しました。このプロジェクトにはまだ ProjectSettings がありません。Unity で一度開くと、Basis がファイルを適用します。"
+    },
+    {
+      "key": "dialog.setup.saveFailed",
+      "value": "保存できませんでした: {0}"
+    },
+    {
+      "key": "dialog.setup.serverNote",
+      "value": "Basis サーバーは、会社名と製品名が config.xml の CompanyName と ProductName に一致するクライアントのみを受け入れます。このアプリが参加するサーバーにも同じ組み合わせを設定してください。"
+    },
+    {
+      "key": "dialog.setup.drift",
+      "value": "ProjectSettings がまだ一致していません ({0})。保存すると適用されます。"
+    },
+    {
+      "key": "dialog.setup.featureCustom",
+      "value": "このバージョンが認識していない Basis の機能です。独自のパッケージからは引き続き読み取れます。"
+    },
+    {
+      "key": "dialog.setup.feature.mainMenu",
+      "value": "メインメニュー"
+    },
+    {
+      "key": "dialog.setup.featureDetail.mainMenu",
+      "value": "Basis のメニュー、そのホットバー、メニューを開くプロンプト。"
+    },
+    {
+      "key": "dialog.setup.feature.nameplates",
+      "value": "ネームプレート"
+    },
+    {
+      "key": "dialog.setup.featureDetail.nameplates",
+      "value": "他のプレイヤーの頭上に表示されるネームプレートとチャットの吹き出し。"
+    },
+    {
+      "key": "dialog.setup.feature.loadingBar",
+      "value": "読み込みバー"
+    },
+    {
+      "key": "dialog.setup.featureDetail.loadingBar",
+      "value": "コンテンツのダウンロード中に表示されるバー。"
+    },
+    {
+      "key": "dialog.setup.feature.joinLeaveMessages",
+      "value": "参加と退出のメッセージ"
+    },
+    {
+      "key": "dialog.setup.featureDetail.joinLeaveMessages",
+      "value": "誰かが参加または退出したときに表示されるメッセージ。"
+    },
+    {
+      "key": "dialog.setup.feature.onScreenControls",
+      "value": "画面上のコントロール"
+    },
+    {
+      "key": "dialog.setup.featureDetail.onScreenControls",
+      "value": "スマートフォンやタブレットのタッチ操作。"
+    },
+    {
+      "key": "dialog.setup.feature.microphone",
+      "value": "マイク"
+    },
+    {
+      "key": "dialog.setup.featureDetail.microphone",
+      "value": "このプレイヤーの音声。オフにすると誰にも聞こえません。"
+    },
+    {
+      "key": "dialog.setup.tooltip.productName",
+      "value": "アプリの名前です。会社名と組み合わせて、保存された設定を置くフォルダーが決まります。"
+    },
+    {
+      "key": "dialog.setup.tooltip.companyName",
+      "value": "アプリの制作者です。会社名と製品名が同じ 2 つのアプリは、保存された設定を共有します。"
+    },
+    {
+      "key": "dialog.setup.tooltip.identifier",
+      "value": "すべてのプラットフォームで使われる逆ドメイン形式の ID です。識別子が同じ 2 つのアプリは、互いに上書きしてインストールされます。"
+    },
+    {
+      "key": "dialog.setup.tooltip.suggest",
+      "value": "会社名と製品名から作成した識別子を入力します。"
+    },
+    {
+      "key": "dialog.setup.tooltip.version",
+      "value": "アプリのバージョンです (例: 1.0.0)。"
+    },
+    {
+      "key": "dialog.setup.tooltip.feature",
+      "value": "このアプリでこの Basis の機能をオンまたはオフにします。"
+    },
+    {
+      "key": "dialog.setup.tooltip.addSetting",
+      "value": "Basis の設定に初期値を追加します。"
+    },
+    {
+      "key": "dialog.setup.tooltip.settingKey",
+      "value": "BasisSettingsDefaults.cs に記載されている設定のキーです。"
+    },
+    {
+      "key": "dialog.setup.tooltip.settingValue",
+      "value": "true、false、数値、またはテキスト。"
+    },
+    {
+      "key": "dialog.setup.tooltip.removeSetting",
+      "value": "この設定の既定値を削除します。"
+    },
+    {
+      "key": "dialog.setup.tooltip.save",
+      "value": "basis.config.json を書き込み、ProjectSettings に適用します。"
+    },
+    {
+      "key": "dialog.setup.tooltip.close",
+      "value": "このウィンドウを閉じます。保存していない変更は失われます。"
+    },
+    {
+      "key": "dialog.setup.toolsDirty",
+      "value": "パーツ、バックアップ、ストレージを開く前に変更を保存してください。"
     }
   ]
 }
