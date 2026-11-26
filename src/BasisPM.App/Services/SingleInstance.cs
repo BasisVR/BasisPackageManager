@@ -26,6 +26,15 @@ public static class SingleInstance
         return createdNew;
     }
 
+    /// <summary>Gives up being the primary instance, so the next normal launch opens its window.</summary>
+    public static void Release()
+    {
+        _mutex?.Dispose();
+        _mutex = null;
+        _lock?.Dispose();
+        _lock = null;
+    }
+
     private static bool? TryLockFile()
     {
         try

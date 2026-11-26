@@ -48,6 +48,14 @@ public sealed class UserSettings
     [JsonPropertyName("eventReminders")]
     public Dictionary<string, EventReminder> EventReminders { get; set; } = new();
 
+    // Whether the operating system may show event reminders while the app is closed. Null = not asked yet.
+    [JsonPropertyName("osEventReminders")]
+    public bool? OsEventReminders { get; set; }
+
+    // Event reminders currently registered with the operating system: event id to what each was registered from.
+    [JsonPropertyName("scheduledEventReminders")]
+    public Dictionary<string, string> ScheduledEventReminders { get; set; } = new();
+
     // UI language code (e.g. "en", "ja", "zh-Hans"). Null/blank = English.
     [JsonPropertyName("language")]
     public string? Language { get; set; }

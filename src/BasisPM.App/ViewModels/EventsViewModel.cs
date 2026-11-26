@@ -19,9 +19,14 @@ public sealed class EventsViewModel : ObservableObject
 
     private readonly EventService _service;
     private readonly UserSettingsService _settings;
+    private readonly TimeSpan _dueSlack;
     private List<CommunityEvent> _items = new();
     private Dictionary<string, EventReminder> _reminders = new();
+    private bool? _osAllowed;
     private string _shown = "";
+    private string? _osSynced;
+    private bool _osRegistered;
+    private Task _background = Task.CompletedTask;
     private DispatcherTimer? _clock;
     private bool _isLoading;
     private bool _loaded;
@@ -30,10 +35,15 @@ public sealed class EventsViewModel : ObservableObject
     public ObservableCollection<EventCard> Events { get; } = new();
     public RelayCommand RefreshCommand { get; }
 
-    public EventsViewModel(EventService service, UserSettingsService settings)
+    /// <summary>Raised when the user answers the prompt about reminders while the app is closed.</summary>
+    public event Action<bool>? OsRemindersAnswered;
+
+    /// <param name="dueSlack">How much earlier than its time a reminder may be shown; a start made by the operating system can land a moment early.</param>
+    public EventsViewModel(EventService service, UserSettingsService settings, TimeSpan dueSlack = default)
     {
         _service = service;
         _settings = settings;
+        _dueSlack = dueSlack;
         RefreshCommand = new RelayCommand(() => LoadAsync(force: true));
     }
 
@@ -50,6 +60,9 @@ public sealed class EventsViewModel : ObservableObject
     }
 
     public bool ShowEmpty => _loaded && !IsLoading && Events.Count == 0;
+
+    /// <summary>Completes when every save and operating system registration started so far has finished.</summary>
+    public Task Flush() => _background;
 
     // Concurrent callers share the one in-flight fetch.
     public Task LoadAsync(bool force = false)
@@ -71,7 +84,10 @@ public sealed class EventsViewModel : ObservableObject
         IsLoading = true;
         try
         {
-            _reminders = (await _settings.LoadAsync()).EventReminders;
+            var settings = await _settings.LoadAsync();
+            _reminders = settings.EventReminders;
+            _osAllowed = settings.OsEventReminders;
+            _osRegistered = settings.ScheduledEventReminders.Count > 0;
             _items = await _service.LoadAsync();
             _shown = "";
             Tick(DateTimeOffset.UtcNow);
@@ -103,13 +119,14 @@ public sealed class EventsViewModel : ObservableObject
 
         var changed = false;
         var due = new List<(CommunityEvent Item, DateTimeOffset Start, DateTimeOffset End)>();
+        var os = new List<OsReminder>();
         foreach (var entry in upcoming)
         {
             if (!_reminders.TryGetValue(entry.Item.Id, out var reminder))
             {
                 continue;
             }
-            if (EventReminderPlan.IsDue(reminder, entry.Start, now))
+            if (EventReminderPlan.IsDue(reminder, entry.Start, now + _dueSlack))
             {
                 reminder.Notified = EventReminderPlan.Key(entry.Start);
                 due.Add(entry);
@@ -119,20 +136,28 @@ public sealed class EventsViewModel : ObservableObject
             {
                 _reminders.Remove(entry.Item.Id);
                 changed = true;
+                continue;
             }
-        }
-        // A reminder whose event has left the feed is dropped, but only when the feed has events: an empty list may just mean offline.
-        if (upcoming.Count > 0)
-        {
-            foreach (var id in _reminders.Keys.Where(id => upcoming.All(u => u.Item.Id != id)).ToList())
+            // The operating system is given the next time this reminder has yet to fire.
+            var weekly = reminder.Always && IsWeekly(entry.Item);
+            var fireAt = entry.Start - EventReminderPlan.Lead;
+            if (weekly && (fireAt <= now || reminder.Notified == EventReminderPlan.Key(entry.Start)))
             {
-                _reminders.Remove(id);
-                changed = true;
+                fireAt = fireAt.AddDays(7);
+            }
+            if (fireAt > now)
+            {
+                os.Add(new OsReminder(entry.Item.Id, fireAt, weekly));
             }
         }
         if (changed)
         {
             SaveReminders();
+        }
+        // An empty list while reminders exist may only mean the feed could not be read, so registrations are left as they are.
+        if (upcoming.Count > 0 || _reminders.Count == 0)
+        {
+            SyncOs(os);
         }
 
         // Cards are only rebuilt when something on them would differ, so an open menu or tooltip is left alone.
@@ -156,7 +181,7 @@ public sealed class EventsViewModel : ObservableObject
     }
 
     /// <summary>Sets, changes or clears the reminder on <paramref name="card"/>'s event and saves it.</summary>
-    public void SetReminder(EventCard card, EventReminderMode mode)
+    public async Task SetReminderAsync(EventCard card, EventReminderMode mode)
     {
         if (mode == EventReminderMode.None)
         {
@@ -168,7 +193,45 @@ public sealed class EventsViewModel : ObservableObject
         }
         SaveReminders();
         Tick(DateTimeOffset.UtcNow);
+
+        // The first reminder asks once whether the operating system may show reminders while the app is closed.
+        if (mode != EventReminderMode.None && _osAllowed is null && OsReminderScheduler.IsSupported)
+        {
+            var allowed = await Dialogs.ConfirmAsync(L.Tr("events.dialog.osTitle"), L.Tr("events.dialog.osBody"));
+            SetOsReminders(allowed);
+            OsRemindersAnswered?.Invoke(allowed);
+        }
     }
+
+    /// <summary>Turns reminders through the operating system on or off, saves the choice, and registers or removes them to match.</summary>
+    public void SetOsReminders(bool allowed)
+    {
+        _osAllowed = allowed;
+        Queue(() => _settings.Update(s => s.OsEventReminders = allowed), "Saving the event reminder choice");
+        Tick(DateTimeOffset.UtcNow);
+    }
+
+    private void SyncOs(List<OsReminder> wanted)
+    {
+        if (!OsReminderScheduler.IsSupported || Environment.ProcessPath is not { } exe)
+        {
+            return;
+        }
+        if (_osAllowed != true)
+        {
+            wanted = new List<OsReminder>();
+        }
+        var signature = string.Join("|", wanted.Select(w => w.EventId + "=" + OsReminderScheduler.Signature(w, exe)));
+        if (signature == _osSynced || (wanted.Count == 0 && !_osRegistered))
+        {
+            return;
+        }
+        _osSynced = signature;
+        _osRegistered = wanted.Count > 0;
+        Queue(() => _settings.Update(s => s.ScheduledEventReminders = OsReminderScheduler.Sync(wanted, s.ScheduledEventReminders, exe)), "Registering event reminders with the operating system");
+    }
+
+    private static bool IsWeekly(CommunityEvent item) => string.Equals(item.Repeat?.Trim(), "weekly", StringComparison.OrdinalIgnoreCase);
 
     private EventReminderMode ModeOf(string id) =>
         !_reminders.TryGetValue(id, out var reminder) ? EventReminderMode.None
@@ -177,17 +240,23 @@ public sealed class EventsViewModel : ObservableObject
     private void SaveReminders()
     {
         var snapshot = _reminders.ToDictionary(p => p.Key, p => new EventReminder { Always = p.Value.Always, Occurrence = p.Value.Occurrence, Notified = p.Value.Notified });
-        _ = Task.Run(() =>
+        Queue(() => _settings.Update(s => s.EventReminders = snapshot), "Saving event reminders");
+    }
+
+    // Saves and registrations run one after another off the UI thread, in the order they were asked for.
+    private void Queue(Action work, string what)
+    {
+        _background = _background.ContinueWith(_ =>
         {
             try
             {
-                _settings.Update(s => s.EventReminders = snapshot);
+                work();
             }
             catch (Exception ex)
             {
-                DiagnosticLog.Write("Saving event reminders", ex);
+                DiagnosticLog.Write(what, ex);
             }
-        });
+        }, TaskScheduler.Default);
     }
 
     // The marks and reminders depend on the time of day, so the section is brought up to date a few times a minute.
@@ -290,7 +359,7 @@ public sealed class EventCard
     /// <summary>Everything the card shows that can change between two ticks.</summary>
     public string Signature => string.Join("~", Id, EventReminderPlan.Key(StartsAt), _e.Title, _e.End, IsLive, IsSoon, Reminder);
 
-    public void SetReminder(EventReminderMode mode) => _owner.SetReminder(this, mode);
+    public void SetReminder(EventReminderMode mode) => _ = _owner.SetReminderAsync(this, mode);
 
     private static string Day(DateTimeOffset t) => t.ToString("ddd d MMM", CultureInfo.InvariantCulture);
     private static string Time(DateTimeOffset t) => t.ToString("t", CultureInfo.CurrentCulture);

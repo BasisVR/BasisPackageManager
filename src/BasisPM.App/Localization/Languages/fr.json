@@ -2611,6 +2611,14 @@
       "value": "Rechercher automatiquement les mises à jour de Basis pour les projets"
     },
     {
+      "key": "settings.toggle.osEventReminders",
+      "value": "Afficher les rappels d'événements quand le Package Manager est fermé"
+    },
+    {
+      "key": "settings.toggle.osEventReminders.tip",
+      "value": "Ajoute une tâche planifiée Windows pour chaque rappel d'événement, afin qu'il s'affiche même quand l'application est fermée. Si désactivé, les rappels ne s'affichent que lorsque l'application est ouverte. Prend effet en cliquant sur Enregistrer."
+    },
+    {
       "key": "settings.toggle.autoCheckBasis.tip",
       "value": "Rechercher de nouvelles mises à jour de Basis pour vos projets au démarrage de l'application et toutes les deux heures, et afficher une bannière en haut de la fenêtre quand une mise à jour est disponible. Nécessite Git et une connexion réseau. Prend effet quand vous cliquez sur Enregistrer."
     },
@@ -7956,7 +7964,7 @@
     },
     {
       "key": "events.tooltip.remind",
-      "value": "Recevez une notification 10 minutes avant le début de cet événement. Le Package Manager doit être ouvert."
+      "value": "Recevez une notification 10 minutes avant le début de cet événement."
     },
     {
       "key": "events.tooltip.reminderOnce",
@@ -7973,6 +7981,14 @@
     {
       "key": "events.tooltip.dismissReminder",
       "value": "Fermer ce rappel."
+    },
+    {
+      "key": "events.dialog.osTitle",
+      "value": "Rappels quand l'application est fermée"
+    },
+    {
+      "key": "events.dialog.osBody",
+      "value": "Autoriser Windows à afficher les rappels d'événements même quand le Package Manager est fermé ?\n\nUne tâche planifiée Windows est ajoutée pour chaque rappel. Si vous choisissez Non, les rappels ne s'affichent que lorsque le Package Manager est ouvert. Vous pouvez changer cela dans les Paramètres."
     },
     {
       "key": "events.tooltip.time",

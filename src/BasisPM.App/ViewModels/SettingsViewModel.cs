@@ -17,6 +17,7 @@ public sealed class SettingsViewModel : ObservableObject
     private string _newCatalogUrl = "";
     private string _unityHubPath = "";
     private bool _prereleaseUpdates;
+    private bool _osEventReminders;
     private bool _autoCheckBasisUpdates = true;
     private string _settingsPath = "";
     private string _gitDetected = "";
@@ -36,6 +37,8 @@ public sealed class SettingsViewModel : ObservableObject
     public string UnityHubPath { get => _unityHubPath; set => SetField(ref _unityHubPath, value); }
     public bool PrereleaseUpdates { get => _prereleaseUpdates; set => SetField(ref _prereleaseUpdates, value); }
     public bool AutoCheckBasisUpdates { get => _autoCheckBasisUpdates; set => SetField(ref _autoCheckBasisUpdates, value); }
+    public bool OsEventReminders { get => _osEventReminders; set => SetField(ref _osEventReminders, value); }
+    public bool CanUseOsEventReminders => OsReminderScheduler.IsSupported;
     public string SettingsPath { get => _settingsPath; private set => SetField(ref _settingsPath, value); }
     public string GitDetected { get => _gitDetected; private set => SetField(ref _gitDetected, value); }
     public string HubDetected { get => _hubDetected; private set => SetField(ref _hubDetected, value); }
@@ -111,6 +114,7 @@ public sealed class SettingsViewModel : ObservableObject
         UnityHubPath = settings.UnityHubPath ?? "";
         PrereleaseUpdates = settings.PrereleaseUpdates;
         AutoCheckBasisUpdates = settings.AutoCheckBasisUpdates;
+        OsEventReminders = settings.OsEventReminders == true;
         _useCloneCache = settings.UseCloneCache;
         OnPropertyChanged(nameof(UseCloneCache));
         ApplyCloneCache();
@@ -169,7 +173,13 @@ public sealed class SettingsViewModel : ObservableObject
         settings.UnityHubPath = string.IsNullOrWhiteSpace(UnityHubPath) ? null : UnityHubPath.Trim();
         settings.PrereleaseUpdates = PrereleaseUpdates;
         settings.AutoCheckBasisUpdates = AutoCheckBasisUpdates;
+        // Left alone while unchanged, so a choice never made stays "not asked yet".
+        var osRemindersChanged = OsEventReminders != (settings.OsEventReminders == true);
         await _settingsService.SaveAsync(settings);
+        if (osRemindersChanged)
+        {
+            _shell.EventsVM.SetOsReminders(OsEventReminders);
+        }
 
         await _shell.PackagesVM.LoadCatalogAsync(settings.CatalogUrl, settings.ExtraCatalogUrls);
         _shell.ApplyPrerelease(settings.PrereleaseUpdates);

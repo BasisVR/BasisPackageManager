@@ -2611,6 +2611,14 @@
       "value": "Controlla automaticamente gli aggiornamenti di Basis per i progetti"
     },
     {
+      "key": "settings.toggle.osEventReminders",
+      "value": "Mostra i promemoria degli eventi a Package Manager chiuso"
+    },
+    {
+      "key": "settings.toggle.osEventReminders.tip",
+      "value": "Aggiunge un'attività pianificata di Windows per ogni promemoria di evento, così compare anche ad app chiusa. Se disattivato, i promemoria compaiono solo ad app aperta. Ha effetto quando fai clic su Salva."
+    },
+    {
       "key": "settings.toggle.autoCheckBasis.tip",
       "value": "Controlla se ci sono nuovi aggiornamenti di Basis per i tuoi progetti all'avvio dell'app e ogni due ore, e mostra un banner in cima alla finestra quando ne è disponibile uno. Richiede Git e una connessione di rete. Ha effetto quando fai clic su Salva."
     },
@@ -7956,7 +7964,7 @@
     },
     {
       "key": "events.tooltip.remind",
-      "value": "Ricevi una notifica 10 minuti prima dell'inizio di questo evento. Il Package Manager deve essere aperto."
+      "value": "Ricevi una notifica 10 minuti prima dell'inizio di questo evento."
     },
     {
       "key": "events.tooltip.reminderOnce",
@@ -7973,6 +7981,14 @@
     {
       "key": "events.tooltip.dismissReminder",
       "value": "Chiude questo promemoria."
+    },
+    {
+      "key": "events.dialog.osTitle",
+      "value": "Promemoria ad app chiusa"
+    },
+    {
+      "key": "events.dialog.osBody",
+      "value": "Consentire a Windows di mostrare i promemoria degli eventi anche quando il Package Manager è chiuso?\n\nViene aggiunta un'attività pianificata di Windows per ogni promemoria. Se scegli No, i promemoria compaiono solo con il Package Manager aperto. Puoi cambiarlo nelle Impostazioni."
     },
     {
       "key": "events.tooltip.time",

@@ -2611,6 +2611,14 @@
       "value": "Check projects for Basis updates automatically"
     },
     {
+      "key": "settings.toggle.osEventReminders",
+      "value": "Show event reminders when the Package Manager is closed"
+    },
+    {
+      "key": "settings.toggle.osEventReminders.tip",
+      "value": "Adds a Windows scheduled task for each event reminder, so the reminder shows even when this app is closed. When off, reminders only show while the app is open. Takes effect when you click Save."
+    },
+    {
       "key": "settings.toggle.autoCheckBasis.tip",
       "value": "Check your projects for new Basis updates when the app starts and every two hours, and show a banner at the top of the window when one is available. Needs Git and a network connection. Takes effect when you click Save."
     },
@@ -7956,7 +7964,7 @@
     },
     {
       "key": "events.tooltip.remind",
-      "value": "Get a notification 10 minutes before this event starts. The Package Manager has to be running."
+      "value": "Get a notification 10 minutes before this event starts."
     },
     {
       "key": "events.tooltip.reminderOnce",
@@ -7973,6 +7981,14 @@
     {
       "key": "events.tooltip.dismissReminder",
       "value": "Close this reminder."
+    },
+    {
+      "key": "events.dialog.osTitle",
+      "value": "Reminders while the app is closed"
+    },
+    {
+      "key": "events.dialog.osBody",
+      "value": "Let Windows show event reminders even when the Package Manager is closed?\n\nThis adds a scheduled task to Windows for each reminder you set. If you choose No, reminders only show while the Package Manager is open. You can change this in Settings."
     },
     {
       "key": "events.tooltip.time",

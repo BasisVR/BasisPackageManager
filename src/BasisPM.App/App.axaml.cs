@@ -21,8 +21,41 @@ public partial class App : Application
         ExpanderToolTip.Register();
     }
 
+    /// <summary>True when the operating system started the app only to show event reminders: no main window is opened.</summary>
+    public static bool ReminderRun { get; set; }
+
+    private static async Task ShowDueRemindersAsync(IClassicDesktopStyleApplicationLifetime desktop)
+    {
+        try
+        {
+            var settingsService = new UserSettingsService();
+            Localizer.Instance.SetLanguage(settingsService.Load().Language);
+            var events = new EventsViewModel(new EventService(), settingsService, TimeSpan.FromMinutes(1));
+            await events.LoadAsync();
+            await events.Flush();
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write("Showing due event reminders", ex);
+        }
+        if (desktop.Windows.Count == 0)
+        {
+            desktop.Shutdown();
+        }
+        else
+        {
+            desktop.ShutdownMode = ShutdownMode.OnLastWindowClose;
+        }
+    }
+
     public override void OnFrameworkInitializationCompleted()
     {
+        if (ReminderRun && ApplicationLifetime is IClassicDesktopStyleApplicationLifetime reminders)
+        {
+            _ = ShowDueRemindersAsync(reminders);
+            base.OnFrameworkInitializationCompleted();
+            return;
+        }
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Both operations have explicit fallback behavior: malformed/missing settings return

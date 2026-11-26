@@ -17,15 +17,14 @@ public static class Dialogs
     /// <summary>Shows an event reminder in the corner of the screen. It has no owner, so it appears even while the main window is minimized.</summary>
     public static void ShowEventReminder(EventCard card)
     {
-        if (Owner is not { } main)
-        {
-            return;
-        }
         var window = new EventReminderWindow { DataContext = card };
-        // A reminder left open must not keep the app running after the main window closes.
-        void CloseWithMain(object? sender, EventArgs e) => window.Close();
-        main.Closed += CloseWithMain;
-        window.Closed += (_, _) => main.Closed -= CloseWithMain;
+        // A reminder left open must not keep the app running after the main window closes. A start made only to show reminders has no main window.
+        if (Owner is { } main)
+        {
+            void CloseWithMain(object? sender, EventArgs e) => window.Close();
+            main.Closed += CloseWithMain;
+            window.Closed += (_, _) => main.Closed -= CloseWithMain;
+        }
         window.Show();
     }
 

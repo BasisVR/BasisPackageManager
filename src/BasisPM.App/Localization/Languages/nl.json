@@ -2611,6 +2611,14 @@
       "value": "Projecten automatisch controleren op Basis-updates"
     },
     {
+      "key": "settings.toggle.osEventReminders",
+      "value": "Herinneringen voor evenementen tonen als de Package Manager dicht is"
+    },
+    {
+      "key": "settings.toggle.osEventReminders.tip",
+      "value": "Voegt per herinnering een geplande taak in Windows toe, zodat de herinnering ook verschijnt als de app dicht is. Staat dit uit, dan verschijnen herinneringen alleen als de app open is. Wordt toegepast als je op Opslaan klikt."
+    },
+    {
       "key": "settings.toggle.autoCheckBasis.tip",
       "value": "Controleer je projecten op nieuwe Basis-updates bij het starten van de app en elke twee uur, en toon bovenaan het venster een banner als er een beschikbaar is. Vereist Git en een netwerkverbinding. Wordt van kracht wanneer je op Opslaan klikt."
     },
@@ -7956,7 +7964,7 @@
     },
     {
       "key": "events.tooltip.remind",
-      "value": "Krijg 10 minuten voor het begin van dit evenement een melding. De Package Manager moet dan wel open zijn."
+      "value": "Krijg 10 minuten voor het begin van dit evenement een melding."
     },
     {
       "key": "events.tooltip.reminderOnce",
@@ -7973,6 +7981,14 @@
     {
       "key": "events.tooltip.dismissReminder",
       "value": "Sluit deze herinnering."
+    },
+    {
+      "key": "events.dialog.osTitle",
+      "value": "Herinneringen als de app dicht is"
+    },
+    {
+      "key": "events.dialog.osBody",
+      "value": "Mag Windows herinneringen voor evenementen ook tonen als de Package Manager dicht is?\n\nHiervoor wordt per herinnering een geplande taak in Windows toegevoegd. Kies je Nee, dan verschijnen herinneringen alleen als de Package Manager open is. Je kunt dit wijzigen in Instellingen."
     },
     {
       "key": "events.tooltip.time",

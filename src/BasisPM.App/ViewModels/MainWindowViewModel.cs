@@ -119,6 +119,7 @@ public sealed class MainWindowViewModel : ObservableObject
         FundingVM = new FundingViewModel();
         AnnouncementsVM = new AnnouncementsViewModel(_announcementService);
         EventsVM = new EventsViewModel(new EventService(), _settingsService);
+        EventsVM.OsRemindersAnswered += allowed => SettingsVM.OsEventReminders = allowed;
         DocumentationVM = new DocumentationViewModel();
         CommunityVM = new CommunityViewModel(AnnouncementsVM, EventsVM, DocumentationVM, FundingVM, () => NavigateTo("installs"));
 

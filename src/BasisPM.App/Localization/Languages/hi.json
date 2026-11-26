@@ -2611,6 +2611,14 @@
       "value": "प्रोजेक्ट्स में Basis अपडेट की स्वचालित रूप से जाँच करें"
     },
     {
+      "key": "settings.toggle.osEventReminders",
+      "value": "Package Manager बंद होने पर भी इवेंट रिमाइंडर दिखाएँ"
+    },
+    {
+      "key": "settings.toggle.osEventReminders.tip",
+      "value": "हर इवेंट रिमाइंडर के लिए Windows में एक शेड्यूल्ड टास्क जोड़ता है, ताकि ऐप बंद होने पर भी रिमाइंडर दिखे। बंद होने पर रिमाइंडर केवल ऐप खुला होने पर दिखते हैं। सहेजें पर क्लिक करने पर लागू होता है।"
+    },
+    {
       "key": "settings.toggle.autoCheckBasis.tip",
       "value": "ऐप शुरू होने पर और हर दो घंटे में अपने प्रोजेक्ट्स में नए Basis अपडेट की जाँच करें, और कोई अपडेट उपलब्ध होने पर विंडो के शीर्ष पर एक बैनर दिखाएँ। Git और नेटवर्क कनेक्शन आवश्यक है। ‘सहेजें’ पर क्लिक करने पर लागू होता है।"
     },
@@ -7956,7 +7964,7 @@
     },
     {
       "key": "events.tooltip.remind",
-      "value": "इस इवेंट के शुरू होने से 10 मिनट पहले सूचना पाएँ। Package Manager चालू होना चाहिए।"
+      "value": "इस इवेंट के शुरू होने से 10 मिनट पहले सूचना पाएँ।"
     },
     {
       "key": "events.tooltip.reminderOnce",
@@ -7973,6 +7981,14 @@
     {
       "key": "events.tooltip.dismissReminder",
       "value": "यह रिमाइंडर बंद करें।"
+    },
+    {
+      "key": "events.dialog.osTitle",
+      "value": "ऐप बंद होने पर रिमाइंडर"
+    },
+    {
+      "key": "events.dialog.osBody",
+      "value": "क्या Package Manager बंद होने पर भी Windows इवेंट रिमाइंडर दिखाए?\n\nआपके हर रिमाइंडर के लिए Windows में एक शेड्यूल्ड टास्क जुड़ेगा। नहीं चुनने पर रिमाइंडर केवल Package Manager खुला होने पर दिखेंगे। इसे सेटिंग्स में बदला जा सकता है।"
     },
     {
       "key": "events.tooltip.time",

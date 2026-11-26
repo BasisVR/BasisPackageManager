@@ -2611,6 +2611,14 @@
       "value": "Buscar actualizaciones de Basis en los proyectos automáticamente"
     },
     {
+      "key": "settings.toggle.osEventReminders",
+      "value": "Mostrar recordatorios de eventos con el Package Manager cerrado"
+    },
+    {
+      "key": "settings.toggle.osEventReminders.tip",
+      "value": "Añade una tarea programada de Windows por cada recordatorio de evento, para que aparezca aunque la app esté cerrada. Si está desactivado, los recordatorios solo aparecen con la app abierta. Se aplica al hacer clic en Guardar."
+    },
+    {
       "key": "settings.toggle.autoCheckBasis.tip",
       "value": "Busca nuevas actualizaciones de Basis para tus proyectos al iniciar la aplicación y cada dos horas, y muestra un aviso en la parte superior de la ventana cuando haya una disponible. Requiere Git y conexión de red. Se aplica al hacer clic en Guardar."
     },
@@ -7956,7 +7964,7 @@
     },
     {
       "key": "events.tooltip.remind",
-      "value": "Recibe una notificación 10 minutos antes de que empiece este evento. El Package Manager tiene que estar abierto."
+      "value": "Recibe una notificación 10 minutos antes de que empiece este evento."
     },
     {
       "key": "events.tooltip.reminderOnce",
@@ -7973,6 +7981,14 @@
     {
       "key": "events.tooltip.dismissReminder",
       "value": "Cierra este recordatorio."
+    },
+    {
+      "key": "events.dialog.osTitle",
+      "value": "Recordatorios con la app cerrada"
+    },
+    {
+      "key": "events.dialog.osBody",
+      "value": "¿Permitir que Windows muestre los recordatorios de eventos aunque el Package Manager esté cerrado?\n\nSe añade una tarea programada de Windows por cada recordatorio. Si eliges No, los recordatorios solo aparecen con el Package Manager abierto. Puedes cambiarlo en Ajustes."
     },
     {
       "key": "events.tooltip.time",

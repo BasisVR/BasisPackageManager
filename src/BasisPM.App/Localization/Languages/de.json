@@ -2611,6 +2611,14 @@
       "value": "Projekte automatisch auf Basis-Updates prüfen"
     },
     {
+      "key": "settings.toggle.osEventReminders",
+      "value": "Event-Erinnerungen auch bei geschlossenem Package Manager anzeigen"
+    },
+    {
+      "key": "settings.toggle.osEventReminders.tip",
+      "value": "Legt für jede Event-Erinnerung eine geplante Aufgabe in Windows an, damit sie auch bei geschlossener App erscheint. Wenn aus, erscheinen Erinnerungen nur bei geöffneter App. Wird mit Klick auf Speichern wirksam."
+    },
+    {
       "key": "settings.toggle.autoCheckBasis.tip",
       "value": "Prüft deine Projekte beim Start der App und alle zwei Stunden auf neue Basis-Updates und zeigt oben im Fenster ein Banner an, wenn eines verfügbar ist. Benötigt Git und eine Netzwerkverbindung. Wird wirksam, wenn du auf „Speichern“ klickst."
     },
@@ -7956,7 +7964,7 @@
     },
     {
       "key": "events.tooltip.remind",
-      "value": "Zeigt 10 Minuten vor Beginn dieses Events eine Benachrichtigung. Der Package Manager muss dafür laufen."
+      "value": "Zeigt 10 Minuten vor Beginn dieses Events eine Benachrichtigung."
     },
     {
       "key": "events.tooltip.reminderOnce",
@@ -7973,6 +7981,14 @@
     {
       "key": "events.tooltip.dismissReminder",
       "value": "Schließt diese Erinnerung."
+    },
+    {
+      "key": "events.dialog.osTitle",
+      "value": "Erinnerungen bei geschlossener App"
+    },
+    {
+      "key": "events.dialog.osBody",
+      "value": "Darf Windows Event-Erinnerungen auch dann anzeigen, wenn der Package Manager geschlossen ist?\n\nDafür wird für jede Erinnerung eine geplante Aufgabe in Windows angelegt. Bei Nein erscheinen Erinnerungen nur, solange der Package Manager geöffnet ist. Das lässt sich in den Einstellungen ändern."
     },
     {
       "key": "events.tooltip.time",

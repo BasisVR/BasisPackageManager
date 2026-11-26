@@ -2611,6 +2611,14 @@
       "value": "自動檢查專案的 Basis 更新"
     },
     {
+      "key": "settings.toggle.osEventReminders",
+      "value": "Package Manager 關閉時也顯示活動提醒"
+    },
+    {
+      "key": "settings.toggle.osEventReminders.tip",
+      "value": "為每個活動提醒新增一個 Windows 排程工作,這樣即使應用程式已關閉也會顯示提醒。關閉後,提醒只在應用程式開啟時顯示。按一下「儲存」後生效。"
+    },
+    {
       "key": "settings.toggle.autoCheckBasis.tip",
       "value": "在應用程式啟動時及每兩小時檢查你的專案是否有新的 Basis 更新，有可用更新時會在視窗頂端顯示橫幅。需要 Git 與網路連線。按下「儲存」後生效。"
     },
@@ -7956,7 +7964,7 @@
     },
     {
       "key": "events.tooltip.remind",
-      "value": "在此活動開始前 10 分鐘收到通知。Package Manager 必須保持執行。"
+      "value": "在此活動開始前 10 分鐘收到通知。"
     },
     {
       "key": "events.tooltip.reminderOnce",
@@ -7973,6 +7981,14 @@
     {
       "key": "events.tooltip.dismissReminder",
       "value": "關閉此提醒。"
+    },
+    {
+      "key": "events.dialog.osTitle",
+      "value": "應用程式關閉時的提醒"
+    },
+    {
+      "key": "events.dialog.osBody",
+      "value": "是否允許 Windows 在 Package Manager 關閉時也顯示活動提醒?\n\n這會為你設定的每個提醒在 Windows 中新增一個排程工作。如果選擇「否」,提醒只會在 Package Manager 開啟時顯示。可以在設定中變更。"
     },
     {
       "key": "events.tooltip.time",

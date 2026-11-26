@@ -2611,6 +2611,14 @@
       "value": "プロジェクトの Basis の更新を自動的に確認する"
     },
     {
+      "key": "settings.toggle.osEventReminders",
+      "value": "Package Manager を閉じているときもイベントのリマインドを表示"
+    },
+    {
+      "key": "settings.toggle.osEventReminders.tip",
+      "value": "イベントのリマインドごとに Windows のスケジュールされたタスクを追加し、アプリを閉じていてもリマインドを表示します。オフの場合、リマインドはアプリを開いている間だけ表示されます。「保存」をクリックすると反映されます。"
+    },
+    {
       "key": "settings.toggle.autoCheckBasis.tip",
       "value": "アプリの起動時と 2 時間ごとにプロジェクトの新しい Basis の更新を確認し、利用可能な場合はウィンドウ上部にバナーを表示します。Git とネットワーク接続が必要です。「保存」をクリックすると反映されます。"
     },
@@ -7956,7 +7964,7 @@
     },
     {
       "key": "events.tooltip.remind",
-      "value": "このイベントの開始 10 分前に通知します。Package Manager が起動している必要があります。"
+      "value": "このイベントの開始 10 分前に通知します。"
     },
     {
       "key": "events.tooltip.reminderOnce",
@@ -7973,6 +7981,14 @@
     {
       "key": "events.tooltip.dismissReminder",
       "value": "この通知を閉じます。"
+    },
+    {
+      "key": "events.dialog.osTitle",
+      "value": "アプリ終了中のリマインド"
+    },
+    {
+      "key": "events.dialog.osBody",
+      "value": "Package Manager を閉じているときも、Windows にイベントのリマインドを表示させますか?\n\nリマインドごとに Windows のスケジュールされたタスクが追加されます。「いいえ」を選ぶと、リマインドは Package Manager を開いている間だけ表示されます。設定で変更できます。"
     },
     {
       "key": "events.tooltip.time",

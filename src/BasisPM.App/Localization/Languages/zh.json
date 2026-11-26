@@ -2611,6 +2611,14 @@
       "value": "自动检查项目的 Basis 更新"
     },
     {
+      "key": "settings.toggle.osEventReminders",
+      "value": "包管理器关闭时也显示活动提醒"
+    },
+    {
+      "key": "settings.toggle.osEventReminders.tip",
+      "value": "为每个活动提醒添加一个 Windows 计划任务,这样即使应用已关闭也会显示提醒。关闭后,提醒只在应用打开时显示。点击“保存”后生效。"
+    },
+    {
       "key": "settings.toggle.autoCheckBasis.tip",
       "value": "在应用启动时及每两小时检查一次你的项目是否有新的 Basis 更新，有可用更新时在窗口顶部显示横幅。需要 Git 和网络连接。点击“保存”后生效。"
     },
@@ -7956,7 +7964,7 @@
     },
     {
       "key": "events.tooltip.remind",
-      "value": "在此活动开始前 10 分钟收到通知。需要包管理器保持运行。"
+      "value": "在此活动开始前 10 分钟收到通知。"
     },
     {
       "key": "events.tooltip.reminderOnce",
@@ -7973,6 +7981,14 @@
     {
       "key": "events.tooltip.dismissReminder",
       "value": "关闭此提醒。"
+    },
+    {
+      "key": "events.dialog.osTitle",
+      "value": "应用关闭时的提醒"
+    },
+    {
+      "key": "events.dialog.osBody",
+      "value": "是否允许 Windows 在包管理器关闭时也显示活动提醒?\n\n这会为你设置的每个提醒在 Windows 中添加一个计划任务。如果选择“否”,提醒只会在包管理器打开时显示。可以在设置中更改。"
     },
     {
       "key": "events.tooltip.time",

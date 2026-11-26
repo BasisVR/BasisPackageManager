@@ -2611,6 +2611,14 @@
       "value": "Verificar atualizações do Basis nos projetos automaticamente"
     },
     {
+      "key": "settings.toggle.osEventReminders",
+      "value": "Mostrar lembretes de eventos com o Package Manager fechado"
+    },
+    {
+      "key": "settings.toggle.osEventReminders.tip",
+      "value": "Adiciona uma tarefa agendada do Windows para cada lembrete de evento, para que ele apareça mesmo com o app fechado. Quando desativado, os lembretes só aparecem com o app aberto. Entra em vigor ao clicar em Salvar."
+    },
+    {
       "key": "settings.toggle.autoCheckBasis.tip",
       "value": "Verifica se há novas atualizações do Basis nos seus projetos quando o aplicativo inicia e a cada duas horas, e mostra um banner no topo da janela quando há uma disponível. Requer o Git e uma conexão de rede. Entra em vigor quando você clica em Salvar."
     },
@@ -7956,7 +7964,7 @@
     },
     {
       "key": "events.tooltip.remind",
-      "value": "Receba uma notificação 10 minutos antes de este evento começar. O Package Manager precisa estar aberto."
+      "value": "Receba uma notificação 10 minutos antes de este evento começar."
     },
     {
       "key": "events.tooltip.reminderOnce",
@@ -7973,6 +7981,14 @@
     {
       "key": "events.tooltip.dismissReminder",
       "value": "Fecha este lembrete."
+    },
+    {
+      "key": "events.dialog.osTitle",
+      "value": "Lembretes com o app fechado"
+    },
+    {
+      "key": "events.dialog.osBody",
+      "value": "Permitir que o Windows mostre lembretes de eventos mesmo com o Package Manager fechado?\n\nIsso adiciona uma tarefa agendada do Windows para cada lembrete. Se escolher Não, os lembretes só aparecem com o Package Manager aberto. Você pode mudar isso nas Configurações."
     },
     {
       "key": "events.tooltip.time",
