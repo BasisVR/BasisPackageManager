@@ -7875,8 +7875,112 @@
       "value": "Sla je wijzigingen op voordat je Onderdelen, Back-up of Opslag opent."
     },
     {
+      "key": "community.events.heading",
+      "value": "Evenementen"
+    },
+    {
+      "key": "community.events.loading",
+      "value": "Evenementen laden…"
+    },
+    {
+      "key": "community.events.emptyTitle",
+      "value": "Geen aankomende evenementen"
+    },
+    {
+      "key": "community.events.emptyBody",
+      "value": "Evenementen van de Basis Labs-community verschijnen hier."
+    },
+    {
+      "key": "community.events.live",
+      "value": "NU LIVE"
+    },
+    {
+      "key": "community.events.hostedBy",
+      "value": "Georganiseerd door {0}"
+    },
+    {
+      "key": "events.card.details",
+      "value": "Evenementdetails"
+    },
+    {
+      "key": "events.tooltip.refresh",
+      "value": "Laadt de evenementen opnieuw van basisvr.org."
+    },
+    {
+      "key": "events.tooltip.openLink",
+      "value": "Opent de pagina van dit evenement in je webbrowser."
+    },
+    {
+      "key": "events.tooltip.live",
+      "value": "Dit evenement is nu bezig."
+    },
+    {
+      "key": "community.events.soon",
+      "value": "BEGINT BINNENKORT"
+    },
+    {
+      "key": "events.tooltip.soon",
+      "value": "Dit evenement begint binnen een uur."
+    },
+    {
+      "key": "events.button.remind",
+      "value": "Herinner mij"
+    },
+    {
+      "key": "events.button.reminderOnce",
+      "value": "Herinnering ingesteld"
+    },
+    {
+      "key": "events.button.reminderAlways",
+      "value": "Herinnering: elke keer"
+    },
+    {
+      "key": "events.reminder.once",
+      "value": "Alleen deze keer"
+    },
+    {
+      "key": "events.reminder.always",
+      "value": "Elke keer"
+    },
+    {
+      "key": "events.reminder.off",
+      "value": "Herinnering uitzetten"
+    },
+    {
+      "key": "events.reminder.title",
+      "value": "Evenement begint binnenkort"
+    },
+    {
+      "key": "events.reminder.dismiss",
+      "value": "Sluiten"
+    },
+    {
+      "key": "events.tooltip.remind",
+      "value": "Krijg 10 minuten voor het begin van dit evenement een melding. De Package Manager moet dan wel open zijn."
+    },
+    {
+      "key": "events.tooltip.reminderOnce",
+      "value": "Herinner mij alleen voor de eerstvolgende keer."
+    },
+    {
+      "key": "events.tooltip.reminderAlways",
+      "value": "Herinner mij voor elke keer dat dit evenement plaatsvindt."
+    },
+    {
+      "key": "events.tooltip.reminderOff",
+      "value": "Herinner mij niet meer aan dit evenement."
+    },
+    {
+      "key": "events.tooltip.dismissReminder",
+      "value": "Sluit deze herinnering."
+    },
+    {
+      "key": "events.tooltip.time",
+      "value": "Wanneer het evenement begint, in je lokale tijd."
+    },
+    {
       "key": "community.hero.title",
-      "value": "Welkom bij Basis"
+      "value": "Welkom bij Basis Package Manager"
     },
     {
       "key": "community.hero.subtitle",

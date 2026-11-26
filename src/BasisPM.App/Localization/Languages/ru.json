@@ -7875,8 +7875,112 @@
       "value": "Сохраните изменения, прежде чем открывать «Компоненты», «Резервная копия» или «Место на диске»."
     },
     {
+      "key": "community.events.heading",
+      "value": "События"
+    },
+    {
+      "key": "community.events.loading",
+      "value": "Загрузка событий…"
+    },
+    {
+      "key": "community.events.emptyTitle",
+      "value": "Нет предстоящих событий"
+    },
+    {
+      "key": "community.events.emptyBody",
+      "value": "Здесь появятся события, которые проводит сообщество Basis Labs."
+    },
+    {
+      "key": "community.events.live",
+      "value": "СЕЙЧАС В ЭФИРЕ"
+    },
+    {
+      "key": "community.events.hostedBy",
+      "value": "Организатор: {0}"
+    },
+    {
+      "key": "events.card.details",
+      "value": "Подробнее о событии"
+    },
+    {
+      "key": "events.tooltip.refresh",
+      "value": "Перезагрузить события с basisvr.org."
+    },
+    {
+      "key": "events.tooltip.openLink",
+      "value": "Открыть страницу этого события в веб-браузере."
+    },
+    {
+      "key": "events.tooltip.live",
+      "value": "Это событие идёт прямо сейчас."
+    },
+    {
+      "key": "community.events.soon",
+      "value": "СКОРО НАЧАЛО"
+    },
+    {
+      "key": "events.tooltip.soon",
+      "value": "Это событие начнётся в течение часа."
+    },
+    {
+      "key": "events.button.remind",
+      "value": "Напомнить"
+    },
+    {
+      "key": "events.button.reminderOnce",
+      "value": "Напоминание включено"
+    },
+    {
+      "key": "events.button.reminderAlways",
+      "value": "Напоминать каждый раз"
+    },
+    {
+      "key": "events.reminder.once",
+      "value": "Только в этот раз"
+    },
+    {
+      "key": "events.reminder.always",
+      "value": "Каждый раз"
+    },
+    {
+      "key": "events.reminder.off",
+      "value": "Отключить напоминание"
+    },
+    {
+      "key": "events.reminder.title",
+      "value": "Событие скоро начнётся"
+    },
+    {
+      "key": "events.reminder.dismiss",
+      "value": "Закрыть"
+    },
+    {
+      "key": "events.tooltip.remind",
+      "value": "Получите уведомление за 10 минут до начала этого события. Package Manager должен быть запущен."
+    },
+    {
+      "key": "events.tooltip.reminderOnce",
+      "value": "Напомнить только перед ближайшим разом."
+    },
+    {
+      "key": "events.tooltip.reminderAlways",
+      "value": "Напоминать перед каждым проведением этого события."
+    },
+    {
+      "key": "events.tooltip.reminderOff",
+      "value": "Больше не напоминать об этом событии."
+    },
+    {
+      "key": "events.tooltip.dismissReminder",
+      "value": "Закрыть это напоминание."
+    },
+    {
+      "key": "events.tooltip.time",
+      "value": "Когда начинается событие, по вашему местному времени."
+    },
+    {
       "key": "community.hero.title",
-      "value": "Добро пожаловать в Basis"
+      "value": "Добро пожаловать в Basis Package Manager"
     },
     {
       "key": "community.hero.subtitle",

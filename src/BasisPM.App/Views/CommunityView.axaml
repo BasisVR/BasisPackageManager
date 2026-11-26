@@ -30,6 +30,37 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
         </Style>
+
+        <!-- The reminder menu: the app's own surface instead of the stock grey flyout. -->
+        <Style Selector="FlyoutPresenter">
+            <Setter Property="Background" Value="{StaticResource BasisSurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BasisBorderStrongBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="6"/>
+        </Style>
+
+        <!-- An event that is about to start is amber; one that is underway is green. -->
+        <Style Selector="Border.eventCard.soon">
+            <Setter Property="Background" Value="#26F59E0B"/>
+            <Setter Property="BorderBrush" Value="#99F59E0B"/>
+        </Style>
+        <Style Selector="Border.eventCard.live">
+            <Setter Property="Background" Value="#2610B981"/>
+            <Setter Property="BorderBrush" Value="#9910B981"/>
+        </Style>
+        <Style Selector="Border.eventCard.soon Border.eventDate">
+            <Setter Property="BorderBrush" Value="#99F59E0B"/>
+        </Style>
+        <Style Selector="Border.eventCard.live Border.eventDate">
+            <Setter Property="BorderBrush" Value="#9910B981"/>
+        </Style>
+        <Style Selector="Border.eventCard.soon TextBlock.eventAccent">
+            <Setter Property="Foreground" Value="{StaticResource BasisWarningBrush}"/>
+        </Style>
+        <Style Selector="Border.eventCard.live TextBlock.eventAccent">
+            <Setter Property="Foreground" Value="{StaticResource BasisSuccessBrush}"/>
+        </Style>
     </UserControl.Styles>
 
     <ScrollViewer>
@@ -59,8 +90,127 @@
             </Border>
 
             <Grid ColumnDefinitions="*,24,300">
+                <StackPanel Grid.Column="0" Spacing="24">
+                <!-- What the Basis Labs community is running next, in the viewer's local time. -->
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto" Height="32" Margin="4,0,0,0">
+                        <TextBlock Grid.Column="0" Text="{loc:Tr community.events.heading}" Classes="h3" VerticalAlignment="Center"/>
+                        <Button Grid.Column="1" Classes="iconBtn sm" VerticalAlignment="Center" Command="{Binding Events.RefreshCommand}"
+                                ToolTip.Tip="{loc:Tr events.tooltip.refresh}">
+                            <PathIcon Width="15" Height="15" Data="{StaticResource IconRefresh}"/>
+                        </Button>
+                    </Grid>
+                    <TextBlock Text="{loc:Tr community.events.loading}" Classes="dim" FontSize="12" Margin="4,0,0,0"
+                               IsVisible="{Binding Events.IsLoading}"/>
+                    <ItemsControl ItemsSource="{Binding Events.Events}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="12"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:EventCard">
+                                <Border Classes="card eventCard" Classes.soon="{Binding IsSoon}" Classes.live="{Binding IsLive}" Padding="18,16">
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Border Grid.Column="0" Classes="eventDate" Width="56" Height="60" CornerRadius="12" VerticalAlignment="Top"
+                                                Background="{StaticResource BasisSurfaceMutedBrush}"
+                                                BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1"
+                                                ToolTip.Tip="{loc:Tr events.tooltip.time}">
+                                            <StackPanel VerticalAlignment="Center" Spacing="-2">
+                                                <TextBlock Text="{Binding MonthLabel}" FontSize="10" FontWeight="Bold" Classes="brand eventAccent" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="{Binding DayLabel}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Margin="16,0" Spacing="5" VerticalAlignment="Center">
+                                            <WrapPanel>
+                                                <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"
+                                                           Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                                <Border CornerRadius="999" Padding="10,3" Background="{StaticResource BasisSuccessBrush}" VerticalAlignment="Center"
+                                                        IsVisible="{Binding IsLive}" ToolTip.Tip="{loc:Tr events.tooltip.live}">
+                                                    <TextBlock Text="{loc:Tr community.events.live}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                                </Border>
+                                                <Border CornerRadius="999" Padding="10,3" Background="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"
+                                                        IsVisible="{Binding IsSoon}" ToolTip.Tip="{loc:Tr events.tooltip.soon}">
+                                                    <TextBlock Text="{loc:Tr community.events.soon}" FontSize="10" FontWeight="Bold" Foreground="#1A1530"/>
+                                                </Border>
+                                            </WrapPanel>
+                                            <WrapPanel>
+                                                <TextBlock Text="{Binding TimeLabel}" Classes="brand eventAccent" FontSize="12" FontWeight="SemiBold" Margin="0,0,14,0"
+                                                           ToolTip.Tip="{loc:Tr events.tooltip.time}"/>
+                                                <TextBlock Text="{Binding HostLabel}" Classes="dim" FontSize="12" Margin="0,0,14,0" IsVisible="{Binding HasHost}"/>
+                                                <TextBlock Text="{Binding Location}" Classes="dim" FontSize="12" IsVisible="{Binding HasLocation}"/>
+                                            </WrapPanel>
+                                            <TextBlock Text="{Binding Description}" Classes="muted" FontSize="13" TextWrapping="Wrap"
+                                                       IsVisible="{Binding HasDescription}"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2" Spacing="6" VerticalAlignment="Center">
+                                            <Button Content="{Binding LinkText}" FontSize="12" Padding="12,6"
+                                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                                    IsVisible="{Binding HasLink}"
+                                                    Command="{Binding OpenLinkCommand}"
+                                                    ToolTip.Tip="{loc:Tr events.tooltip.openLink}"/>
+                                            <!-- A one-off event: the button turns its reminder on and off. -->
+                                            <Button FontSize="12" Padding="12,6" Classes.primary="{Binding HasReminder}"
+                                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                                    IsVisible="{Binding ShowReminderToggle}"
+                                                    Command="{Binding ToggleReminderCommand}"
+                                                    ToolTip.Tip="{loc:Tr events.tooltip.remind}">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <PathIcon Width="12" Height="12" Data="{StaticResource IconBell}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding ReminderLabel}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <!-- A repeating event: the button opens the choice between this occurrence and every one. -->
+                                            <Button FontSize="12" Padding="12,6" Classes.primary="{Binding HasReminder}"
+                                                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                                    IsVisible="{Binding ShowReminderMenu}"
+                                                    ToolTip.Tip="{loc:Tr events.tooltip.remind}">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <PathIcon Width="12" Height="12" Data="{StaticResource IconBell}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding ReminderLabel}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                                <Button.Flyout>
+                                                    <Flyout Placement="BottomEdgeAlignedRight">
+                                                        <StackPanel MinWidth="210">
+                                                            <Button Classes="homeLink" Tag="Once" Click="OnReminderChoice" ToolTip.Tip="{loc:Tr events.tooltip.reminderOnce}">
+                                                                <Grid ColumnDefinitions="16,*">
+                                                                    <PathIcon Width="13" Height="13" Data="{StaticResource IconCheck}" VerticalAlignment="Center" IsVisible="{Binding IsReminderOnce}"/>
+                                                                    <TextBlock Grid.Column="1" Text="{loc:Tr events.reminder.once}"/>
+                                                                </Grid>
+                                                            </Button>
+                                                            <Button Classes="homeLink" Tag="Always" Click="OnReminderChoice" ToolTip.Tip="{loc:Tr events.tooltip.reminderAlways}">
+                                                                <Grid ColumnDefinitions="16,*">
+                                                                    <PathIcon Width="13" Height="13" Data="{StaticResource IconCheck}" VerticalAlignment="Center" IsVisible="{Binding IsReminderAlways}"/>
+                                                                    <TextBlock Grid.Column="1" Text="{loc:Tr events.reminder.always}"/>
+                                                                </Grid>
+                                                            </Button>
+                                                            <Button Classes="homeLink" Tag="None" Click="OnReminderChoice" IsVisible="{Binding HasReminder}"
+                                                                    ToolTip.Tip="{loc:Tr events.tooltip.reminderOff}">
+                                                                <Grid ColumnDefinitions="16,*">
+                                                                    <PathIcon Width="12" Height="12" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                                                                    <TextBlock Grid.Column="1" Text="{loc:Tr events.reminder.off}"/>
+                                                                </Grid>
+                                                            </Button>
+                                                        </StackPanel>
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Border Classes="card" Padding="18,16" IsVisible="{Binding Events.ShowEmpty}">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{loc:Tr community.events.emptyTitle}" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="{loc:Tr community.events.emptyBody}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
                 <!-- News from the Basis team. -->
-                <StackPanel Grid.Column="0" Spacing="12">
+                <StackPanel Spacing="12">
                     <Grid ColumnDefinitions="*,Auto" Height="32" Margin="4,0,0,0">
                         <TextBlock Grid.Column="0" Text="{loc:Tr community.announcements.heading}" Classes="h3" VerticalAlignment="Center"/>
                         <Button Grid.Column="1" Classes="iconBtn sm" VerticalAlignment="Center" Command="{Binding Announcements.RefreshCommand}"
@@ -110,6 +260,7 @@
                                        MaxWidth="480" TextWrapping="Wrap"/>
                         </StackPanel>
                     </Border>
+                </StackPanel>
                 </StackPanel>
 
                 <!-- Docs, help, source and funding, one line each. -->

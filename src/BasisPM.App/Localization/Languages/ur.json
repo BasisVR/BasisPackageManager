@@ -7875,8 +7875,112 @@
       "value": "حصے، بیک اپ یا اسٹوریج کھولنے سے پہلے اپنی تبدیلیاں محفوظ کریں۔"
     },
     {
+      "key": "community.events.heading",
+      "value": "ایونٹس"
+    },
+    {
+      "key": "community.events.loading",
+      "value": "ایونٹس لوڈ ہو رہے ہیں…"
+    },
+    {
+      "key": "community.events.emptyTitle",
+      "value": "کوئی آنے والا ایونٹ نہیں"
+    },
+    {
+      "key": "community.events.emptyBody",
+      "value": "Basis Labs کمیونٹی کے منعقد کردہ ایونٹس یہاں نظر آئیں گے۔"
+    },
+    {
+      "key": "community.events.live",
+      "value": "ابھی لائیو"
+    },
+    {
+      "key": "community.events.hostedBy",
+      "value": "میزبان: {0}"
+    },
+    {
+      "key": "events.card.details",
+      "value": "ایونٹ کی تفصیل"
+    },
+    {
+      "key": "events.tooltip.refresh",
+      "value": "basisvr.org سے ایونٹس دوبارہ لوڈ کریں۔"
+    },
+    {
+      "key": "events.tooltip.openLink",
+      "value": "اس ایونٹ کا صفحہ اپنے ویب براؤزر میں کھولیں۔"
+    },
+    {
+      "key": "events.tooltip.live",
+      "value": "یہ ایونٹ ابھی جاری ہے۔"
+    },
+    {
+      "key": "community.events.soon",
+      "value": "جلد شروع"
+    },
+    {
+      "key": "events.tooltip.soon",
+      "value": "یہ ایونٹ ایک گھنٹے کے اندر شروع ہوگا۔"
+    },
+    {
+      "key": "events.button.remind",
+      "value": "یاد دلائیں"
+    },
+    {
+      "key": "events.button.reminderOnce",
+      "value": "یاد دہانی سیٹ ہے"
+    },
+    {
+      "key": "events.button.reminderAlways",
+      "value": "ہر بار یاد دہانی"
+    },
+    {
+      "key": "events.reminder.once",
+      "value": "صرف اس بار"
+    },
+    {
+      "key": "events.reminder.always",
+      "value": "ہر بار"
+    },
+    {
+      "key": "events.reminder.off",
+      "value": "یاد دہانی بند کریں"
+    },
+    {
+      "key": "events.reminder.title",
+      "value": "ایونٹ جلد شروع ہو رہا ہے"
+    },
+    {
+      "key": "events.reminder.dismiss",
+      "value": "بند کریں"
+    },
+    {
+      "key": "events.tooltip.remind",
+      "value": "اس ایونٹ کے شروع ہونے سے 10 منٹ پہلے اطلاع پائیں۔ Package Manager کا چلتے رہنا ضروری ہے۔"
+    },
+    {
+      "key": "events.tooltip.reminderOnce",
+      "value": "صرف اگلی بار سے پہلے یاد دلائیں۔"
+    },
+    {
+      "key": "events.tooltip.reminderAlways",
+      "value": "یہ ایونٹ جب بھی ہو، ہر بار پہلے یاد دلائیں۔"
+    },
+    {
+      "key": "events.tooltip.reminderOff",
+      "value": "اس ایونٹ کی یاد دہانی بند کریں۔"
+    },
+    {
+      "key": "events.tooltip.dismissReminder",
+      "value": "یہ یاد دہانی بند کریں۔"
+    },
+    {
+      "key": "events.tooltip.time",
+      "value": "ایونٹ کب شروع ہوگا، آپ کے مقامی وقت میں۔"
+    },
+    {
       "key": "community.hero.title",
-      "value": "Basis میں خوش آمدید"
+      "value": "Basis Package Manager میں خوش آمدید"
     },
     {
       "key": "community.hero.subtitle",

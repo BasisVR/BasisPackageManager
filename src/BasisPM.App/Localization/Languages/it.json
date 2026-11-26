@@ -7875,8 +7875,112 @@
       "value": "Salva le modifiche prima di aprire Componenti, Backup o Spazio su disco."
     },
     {
+      "key": "community.events.heading",
+      "value": "Eventi"
+    },
+    {
+      "key": "community.events.loading",
+      "value": "Caricamento degli eventi…"
+    },
+    {
+      "key": "community.events.emptyTitle",
+      "value": "Nessun evento in programma"
+    },
+    {
+      "key": "community.events.emptyBody",
+      "value": "Qui compariranno gli eventi organizzati dalla community di Basis Labs."
+    },
+    {
+      "key": "community.events.live",
+      "value": "IN DIRETTA"
+    },
+    {
+      "key": "community.events.hostedBy",
+      "value": "Organizzato da {0}"
+    },
+    {
+      "key": "events.card.details",
+      "value": "Dettagli dell'evento"
+    },
+    {
+      "key": "events.tooltip.refresh",
+      "value": "Ricarica gli eventi da basisvr.org."
+    },
+    {
+      "key": "events.tooltip.openLink",
+      "value": "Apre la pagina di questo evento nel tuo browser web."
+    },
+    {
+      "key": "events.tooltip.live",
+      "value": "Questo evento è in corso adesso."
+    },
+    {
+      "key": "community.events.soon",
+      "value": "INIZIA A BREVE"
+    },
+    {
+      "key": "events.tooltip.soon",
+      "value": "Questo evento inizia entro un'ora."
+    },
+    {
+      "key": "events.button.remind",
+      "value": "Ricordamelo"
+    },
+    {
+      "key": "events.button.reminderOnce",
+      "value": "Promemoria attivo"
+    },
+    {
+      "key": "events.button.reminderAlways",
+      "value": "Promemoria: ogni volta"
+    },
+    {
+      "key": "events.reminder.once",
+      "value": "Solo questa volta"
+    },
+    {
+      "key": "events.reminder.always",
+      "value": "Ogni volta"
+    },
+    {
+      "key": "events.reminder.off",
+      "value": "Disattiva promemoria"
+    },
+    {
+      "key": "events.reminder.title",
+      "value": "L'evento inizia a breve"
+    },
+    {
+      "key": "events.reminder.dismiss",
+      "value": "Chiudi"
+    },
+    {
+      "key": "events.tooltip.remind",
+      "value": "Ricevi una notifica 10 minuti prima dell'inizio di questo evento. Il Package Manager deve essere aperto."
+    },
+    {
+      "key": "events.tooltip.reminderOnce",
+      "value": "Ricordamelo solo prima della prossima volta."
+    },
+    {
+      "key": "events.tooltip.reminderAlways",
+      "value": "Ricordamelo prima di ogni appuntamento di questo evento."
+    },
+    {
+      "key": "events.tooltip.reminderOff",
+      "value": "Smetti di ricordarmi questo evento."
+    },
+    {
+      "key": "events.tooltip.dismissReminder",
+      "value": "Chiude questo promemoria."
+    },
+    {
+      "key": "events.tooltip.time",
+      "value": "Quando inizia l'evento, nella tua ora locale."
+    },
+    {
       "key": "community.hero.title",
-      "value": "Ti diamo il benvenuto in Basis"
+      "value": "Ti diamo il benvenuto in Basis Package Manager"
     },
     {
       "key": "community.hero.subtitle",

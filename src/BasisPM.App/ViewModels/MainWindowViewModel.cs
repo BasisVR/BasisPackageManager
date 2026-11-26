@@ -67,6 +67,7 @@ public sealed class MainWindowViewModel : ObservableObject
     public SettingsViewModel SettingsVM { get; }
     public FundingViewModel FundingVM { get; }
     public AnnouncementsViewModel AnnouncementsVM { get; }
+    public EventsViewModel EventsVM { get; }
     public LogsViewModel LogsVM { get; }
     public DocumentationViewModel DocumentationVM { get; }
     public CommunityViewModel CommunityVM { get; }
@@ -117,8 +118,9 @@ public sealed class MainWindowViewModel : ObservableObject
         SettingsVM = new SettingsViewModel(_settingsService, _gitService, _hubService, this, LogsVM);
         FundingVM = new FundingViewModel();
         AnnouncementsVM = new AnnouncementsViewModel(_announcementService);
+        EventsVM = new EventsViewModel(new EventService(), _settingsService);
         DocumentationVM = new DocumentationViewModel();
-        CommunityVM = new CommunityViewModel(AnnouncementsVM, DocumentationVM, FundingVM, () => NavigateTo("installs"));
+        CommunityVM = new CommunityViewModel(AnnouncementsVM, EventsVM, DocumentationVM, FundingVM, () => NavigateTo("installs"));
 
         InstallUpdateCommand = new RelayCommand(InstallUpdateAsync);
         DismissUpdateCommand = new RelayCommand(() => { UpdateAvailable = false; });
@@ -513,6 +515,7 @@ public sealed class MainWindowViewModel : ObservableObject
 
         // Home opens on the announcements, so they load before the slower Unity refresh.
         _ = LoadAnnouncementsAsync();
+        _ = LoadEventsAsync();
         await UnityVM.RefreshAsync();
 
         if (_updateService.UnfinishedUpdateVersion is { } unfinished)
@@ -909,6 +912,18 @@ public sealed class MainWindowViewModel : ObservableObject
             AnnouncementsUnreadCount = AnnouncementsVM.AllIds.Count(id => !seen.Contains(id));
         }
         catch (Exception ex) { DiagnosticLog.Write("Refreshing the unread announcement count", ex); }
+    }
+
+    private async Task LoadEventsAsync()
+    {
+        try
+        {
+            await EventsVM.LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write("Loading community events", ex);
+        }
     }
 
     /// <summary>Marks every currently-shown announcement as read (persisted) and clears the badge.</summary>

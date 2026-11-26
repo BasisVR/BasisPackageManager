@@ -7875,8 +7875,112 @@
       "value": "打开可选部分、备份或存储之前，请先保存更改。"
     },
     {
+      "key": "community.events.heading",
+      "value": "活动"
+    },
+    {
+      "key": "community.events.loading",
+      "value": "正在加载活动…"
+    },
+    {
+      "key": "community.events.emptyTitle",
+      "value": "暂无即将举行的活动"
+    },
+    {
+      "key": "community.events.emptyBody",
+      "value": "Basis Labs 社区举办的活动会显示在这里。"
+    },
+    {
+      "key": "community.events.live",
+      "value": "正在进行"
+    },
+    {
+      "key": "community.events.hostedBy",
+      "value": "主办：{0}"
+    },
+    {
+      "key": "events.card.details",
+      "value": "活动详情"
+    },
+    {
+      "key": "events.tooltip.refresh",
+      "value": "从 basisvr.org 重新加载活动。"
+    },
+    {
+      "key": "events.tooltip.openLink",
+      "value": "在网页浏览器中打开此活动的页面。"
+    },
+    {
+      "key": "events.tooltip.live",
+      "value": "此活动正在进行中。"
+    },
+    {
+      "key": "community.events.soon",
+      "value": "即将开始"
+    },
+    {
+      "key": "events.tooltip.soon",
+      "value": "此活动将在一小时内开始。"
+    },
+    {
+      "key": "events.button.remind",
+      "value": "提醒我"
+    },
+    {
+      "key": "events.button.reminderOnce",
+      "value": "已设置提醒"
+    },
+    {
+      "key": "events.button.reminderAlways",
+      "value": "每次都提醒"
+    },
+    {
+      "key": "events.reminder.once",
+      "value": "仅此一次"
+    },
+    {
+      "key": "events.reminder.always",
+      "value": "每次"
+    },
+    {
+      "key": "events.reminder.off",
+      "value": "关闭提醒"
+    },
+    {
+      "key": "events.reminder.title",
+      "value": "活动即将开始"
+    },
+    {
+      "key": "events.reminder.dismiss",
+      "value": "关闭"
+    },
+    {
+      "key": "events.tooltip.remind",
+      "value": "在此活动开始前 10 分钟收到通知。需要包管理器保持运行。"
+    },
+    {
+      "key": "events.tooltip.reminderOnce",
+      "value": "仅在下一次开始前提醒我。"
+    },
+    {
+      "key": "events.tooltip.reminderAlways",
+      "value": "此活动每次举行前都提醒我。"
+    },
+    {
+      "key": "events.tooltip.reminderOff",
+      "value": "不再提醒我此活动。"
+    },
+    {
+      "key": "events.tooltip.dismissReminder",
+      "value": "关闭此提醒。"
+    },
+    {
+      "key": "events.tooltip.time",
+      "value": "活动开始时间，按你的本地时间显示。"
+    },
+    {
       "key": "community.hero.title",
-      "value": "欢迎使用 Basis"
+      "value": "欢迎使用 Basis 包管理器"
     },
     {
       "key": "community.hero.subtitle",

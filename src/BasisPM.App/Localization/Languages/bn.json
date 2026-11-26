@@ -7875,8 +7875,112 @@
       "value": "অংশ, ব্যাকআপ বা স্টোরেজ খোলার আগে আপনার পরিবর্তনগুলি সংরক্ষণ করুন।"
     },
     {
+      "key": "community.events.heading",
+      "value": "ইভেন্ট"
+    },
+    {
+      "key": "community.events.loading",
+      "value": "ইভেন্ট লোড হচ্ছে…"
+    },
+    {
+      "key": "community.events.emptyTitle",
+      "value": "কোনো আসন্ন ইভেন্ট নেই"
+    },
+    {
+      "key": "community.events.emptyBody",
+      "value": "Basis Labs কমিউনিটির আয়োজিত ইভেন্টগুলো এখানে দেখা যাবে।"
+    },
+    {
+      "key": "community.events.live",
+      "value": "এখন লাইভ"
+    },
+    {
+      "key": "community.events.hostedBy",
+      "value": "আয়োজক: {0}"
+    },
+    {
+      "key": "events.card.details",
+      "value": "ইভেন্টের বিবরণ"
+    },
+    {
+      "key": "events.tooltip.refresh",
+      "value": "basisvr.org থেকে ইভেন্টগুলো আবার লোড করুন।"
+    },
+    {
+      "key": "events.tooltip.openLink",
+      "value": "এই ইভেন্টের পৃষ্ঠাটি আপনার ওয়েব ব্রাউজারে খুলুন।"
+    },
+    {
+      "key": "events.tooltip.live",
+      "value": "এই ইভেন্টটি এখন চলছে।"
+    },
+    {
+      "key": "community.events.soon",
+      "value": "শীঘ্রই শুরু"
+    },
+    {
+      "key": "events.tooltip.soon",
+      "value": "এই ইভেন্টটি এক ঘণ্টার মধ্যে শুরু হবে।"
+    },
+    {
+      "key": "events.button.remind",
+      "value": "মনে করিয়ে দিন"
+    },
+    {
+      "key": "events.button.reminderOnce",
+      "value": "রিমাইন্ডার সেট আছে"
+    },
+    {
+      "key": "events.button.reminderAlways",
+      "value": "প্রতিবার রিমাইন্ডার"
+    },
+    {
+      "key": "events.reminder.once",
+      "value": "শুধু এইবার"
+    },
+    {
+      "key": "events.reminder.always",
+      "value": "প্রতিবার"
+    },
+    {
+      "key": "events.reminder.off",
+      "value": "রিমাইন্ডার বন্ধ করুন"
+    },
+    {
+      "key": "events.reminder.title",
+      "value": "ইভেন্ট শীঘ্রই শুরু হচ্ছে"
+    },
+    {
+      "key": "events.reminder.dismiss",
+      "value": "বন্ধ করুন"
+    },
+    {
+      "key": "events.tooltip.remind",
+      "value": "এই ইভেন্ট শুরুর 10 মিনিট আগে একটি নোটিফিকেশন পান। Package Manager চালু থাকতে হবে।"
+    },
+    {
+      "key": "events.tooltip.reminderOnce",
+      "value": "শুধু পরের বারের আগে মনে করিয়ে দিন।"
+    },
+    {
+      "key": "events.tooltip.reminderAlways",
+      "value": "এই ইভেন্টটি যতবার হবে, প্রতিবার আগে মনে করিয়ে দিন।"
+    },
+    {
+      "key": "events.tooltip.reminderOff",
+      "value": "এই ইভেন্টের রিমাইন্ডার বন্ধ করুন।"
+    },
+    {
+      "key": "events.tooltip.dismissReminder",
+      "value": "এই রিমাইন্ডারটি বন্ধ করুন।"
+    },
+    {
+      "key": "events.tooltip.time",
+      "value": "ইভেন্ট কখন শুরু হবে, আপনার স্থানীয় সময়ে।"
+    },
+    {
       "key": "community.hero.title",
-      "value": "Basis-এ স্বাগতম"
+      "value": "Basis Package Manager-এ স্বাগতম"
     },
     {
       "key": "community.hero.subtitle",

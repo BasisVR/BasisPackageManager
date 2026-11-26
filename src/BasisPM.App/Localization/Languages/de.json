@@ -7875,8 +7875,112 @@
       "value": "Speichere deine Änderungen, bevor du Bestandteile, Sichern oder Speicherplatz öffnest."
     },
     {
+      "key": "community.events.heading",
+      "value": "Events"
+    },
+    {
+      "key": "community.events.loading",
+      "value": "Events werden geladen…"
+    },
+    {
+      "key": "community.events.emptyTitle",
+      "value": "Keine anstehenden Events"
+    },
+    {
+      "key": "community.events.emptyBody",
+      "value": "Events der Basis-Labs-Community erscheinen hier."
+    },
+    {
+      "key": "community.events.live",
+      "value": "JETZT LIVE"
+    },
+    {
+      "key": "community.events.hostedBy",
+      "value": "Veranstaltet von {0}"
+    },
+    {
+      "key": "events.card.details",
+      "value": "Event-Details"
+    },
+    {
+      "key": "events.tooltip.refresh",
+      "value": "Lädt die Events von basisvr.org neu."
+    },
+    {
+      "key": "events.tooltip.openLink",
+      "value": "Öffnet die Seite dieses Events in deinem Webbrowser."
+    },
+    {
+      "key": "events.tooltip.live",
+      "value": "Dieses Event läuft gerade."
+    },
+    {
+      "key": "community.events.soon",
+      "value": "BEGINNT BALD"
+    },
+    {
+      "key": "events.tooltip.soon",
+      "value": "Dieses Event beginnt innerhalb der nächsten Stunde."
+    },
+    {
+      "key": "events.button.remind",
+      "value": "Erinnern"
+    },
+    {
+      "key": "events.button.reminderOnce",
+      "value": "Erinnerung aktiv"
+    },
+    {
+      "key": "events.button.reminderAlways",
+      "value": "Erinnerung: jedes Mal"
+    },
+    {
+      "key": "events.reminder.once",
+      "value": "Nur dieses Mal"
+    },
+    {
+      "key": "events.reminder.always",
+      "value": "Jedes Mal"
+    },
+    {
+      "key": "events.reminder.off",
+      "value": "Erinnerung ausschalten"
+    },
+    {
+      "key": "events.reminder.title",
+      "value": "Event beginnt bald"
+    },
+    {
+      "key": "events.reminder.dismiss",
+      "value": "Schließen"
+    },
+    {
+      "key": "events.tooltip.remind",
+      "value": "Zeigt 10 Minuten vor Beginn dieses Events eine Benachrichtigung. Der Package Manager muss dafür laufen."
+    },
+    {
+      "key": "events.tooltip.reminderOnce",
+      "value": "Erinnert nur vor dem nächsten Termin."
+    },
+    {
+      "key": "events.tooltip.reminderAlways",
+      "value": "Erinnert vor jedem Termin dieses Events."
+    },
+    {
+      "key": "events.tooltip.reminderOff",
+      "value": "Schaltet die Erinnerung für dieses Event aus."
+    },
+    {
+      "key": "events.tooltip.dismissReminder",
+      "value": "Schließt diese Erinnerung."
+    },
+    {
+      "key": "events.tooltip.time",
+      "value": "Wann das Event beginnt, in deiner Ortszeit."
+    },
+    {
       "key": "community.hero.title",
-      "value": "Willkommen bei Basis"
+      "value": "Willkommen bei Basis Package Manager"
     },
     {
       "key": "community.hero.subtitle",

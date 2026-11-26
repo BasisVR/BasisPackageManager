@@ -7875,8 +7875,112 @@
       "value": "パーツ、バックアップ、ストレージを開く前に変更を保存してください。"
     },
     {
+      "key": "community.events.heading",
+      "value": "イベント"
+    },
+    {
+      "key": "community.events.loading",
+      "value": "イベントを読み込み中…"
+    },
+    {
+      "key": "community.events.emptyTitle",
+      "value": "予定されているイベントはありません"
+    },
+    {
+      "key": "community.events.emptyBody",
+      "value": "Basis Labs コミュニティが開催するイベントがここに表示されます。"
+    },
+    {
+      "key": "community.events.live",
+      "value": "開催中"
+    },
+    {
+      "key": "community.events.hostedBy",
+      "value": "主催: {0}"
+    },
+    {
+      "key": "events.card.details",
+      "value": "イベントの詳細"
+    },
+    {
+      "key": "events.tooltip.refresh",
+      "value": "basisvr.org からイベントを再読み込みします。"
+    },
+    {
+      "key": "events.tooltip.openLink",
+      "value": "このイベントのページをウェブブラウザーで開きます。"
+    },
+    {
+      "key": "events.tooltip.live",
+      "value": "このイベントは現在開催中です。"
+    },
+    {
+      "key": "community.events.soon",
+      "value": "まもなく開始"
+    },
+    {
+      "key": "events.tooltip.soon",
+      "value": "このイベントは 1 時間以内に始まります。"
+    },
+    {
+      "key": "events.button.remind",
+      "value": "リマインド"
+    },
+    {
+      "key": "events.button.reminderOnce",
+      "value": "リマインド設定済み"
+    },
+    {
+      "key": "events.button.reminderAlways",
+      "value": "毎回リマインド"
+    },
+    {
+      "key": "events.reminder.once",
+      "value": "今回のみ"
+    },
+    {
+      "key": "events.reminder.always",
+      "value": "毎回"
+    },
+    {
+      "key": "events.reminder.off",
+      "value": "リマインドをオフ"
+    },
+    {
+      "key": "events.reminder.title",
+      "value": "イベントがまもなく始まります"
+    },
+    {
+      "key": "events.reminder.dismiss",
+      "value": "閉じる"
+    },
+    {
+      "key": "events.tooltip.remind",
+      "value": "このイベントの開始 10 分前に通知します。Package Manager が起動している必要があります。"
+    },
+    {
+      "key": "events.tooltip.reminderOnce",
+      "value": "次回の開始前だけ通知します。"
+    },
+    {
+      "key": "events.tooltip.reminderAlways",
+      "value": "このイベントの開催のたびに通知します。"
+    },
+    {
+      "key": "events.tooltip.reminderOff",
+      "value": "このイベントの通知をやめます。"
+    },
+    {
+      "key": "events.tooltip.dismissReminder",
+      "value": "この通知を閉じます。"
+    },
+    {
+      "key": "events.tooltip.time",
+      "value": "イベントの開始日時 (現地時間)。"
+    },
+    {
       "key": "community.hero.title",
-      "value": "Basis へようこそ"
+      "value": "Basis Package Manager へようこそ"
     },
     {
       "key": "community.hero.subtitle",

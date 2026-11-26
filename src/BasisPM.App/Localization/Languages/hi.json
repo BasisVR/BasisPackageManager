@@ -7875,8 +7875,112 @@
       "value": "भाग, बैकअप या स्टोरेज खोलने से पहले अपने बदलाव सहेजें।"
     },
     {
+      "key": "community.events.heading",
+      "value": "इवेंट"
+    },
+    {
+      "key": "community.events.loading",
+      "value": "इवेंट लोड हो रहे हैं…"
+    },
+    {
+      "key": "community.events.emptyTitle",
+      "value": "कोई आगामी इवेंट नहीं"
+    },
+    {
+      "key": "community.events.emptyBody",
+      "value": "Basis Labs समुदाय के आयोजित इवेंट यहाँ दिखेंगे।"
+    },
+    {
+      "key": "community.events.live",
+      "value": "अभी लाइव"
+    },
+    {
+      "key": "community.events.hostedBy",
+      "value": "आयोजक: {0}"
+    },
+    {
+      "key": "events.card.details",
+      "value": "इवेंट का विवरण"
+    },
+    {
+      "key": "events.tooltip.refresh",
+      "value": "basisvr.org से इवेंट फिर से लोड करें।"
+    },
+    {
+      "key": "events.tooltip.openLink",
+      "value": "इस इवेंट का पेज अपने वेब ब्राउज़र में खोलें।"
+    },
+    {
+      "key": "events.tooltip.live",
+      "value": "यह इवेंट अभी चल रहा है।"
+    },
+    {
+      "key": "community.events.soon",
+      "value": "जल्द शुरू"
+    },
+    {
+      "key": "events.tooltip.soon",
+      "value": "यह इवेंट एक घंटे के भीतर शुरू होगा।"
+    },
+    {
+      "key": "events.button.remind",
+      "value": "याद दिलाएँ"
+    },
+    {
+      "key": "events.button.reminderOnce",
+      "value": "रिमाइंडर सेट है"
+    },
+    {
+      "key": "events.button.reminderAlways",
+      "value": "हर बार रिमाइंडर"
+    },
+    {
+      "key": "events.reminder.once",
+      "value": "सिर्फ़ इस बार"
+    },
+    {
+      "key": "events.reminder.always",
+      "value": "हर बार"
+    },
+    {
+      "key": "events.reminder.off",
+      "value": "रिमाइंडर बंद करें"
+    },
+    {
+      "key": "events.reminder.title",
+      "value": "इवेंट जल्द शुरू हो रहा है"
+    },
+    {
+      "key": "events.reminder.dismiss",
+      "value": "बंद करें"
+    },
+    {
+      "key": "events.tooltip.remind",
+      "value": "इस इवेंट के शुरू होने से 10 मिनट पहले सूचना पाएँ। Package Manager चालू होना चाहिए।"
+    },
+    {
+      "key": "events.tooltip.reminderOnce",
+      "value": "सिर्फ़ अगली बार से पहले याद दिलाएँ।"
+    },
+    {
+      "key": "events.tooltip.reminderAlways",
+      "value": "यह इवेंट जब भी हो, हर बार पहले याद दिलाएँ।"
+    },
+    {
+      "key": "events.tooltip.reminderOff",
+      "value": "इस इवेंट के बारे में याद दिलाना बंद करें।"
+    },
+    {
+      "key": "events.tooltip.dismissReminder",
+      "value": "यह रिमाइंडर बंद करें।"
+    },
+    {
+      "key": "events.tooltip.time",
+      "value": "इवेंट कब शुरू होगा, आपके स्थानीय समय में।"
+    },
+    {
       "key": "community.hero.title",
-      "value": "Basis में आपका स्वागत है"
+      "value": "Basis Package Manager में आपका स्वागत है"
     },
     {
       "key": "community.hero.subtitle",

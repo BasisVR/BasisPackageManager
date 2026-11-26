@@ -7875,8 +7875,112 @@
       "value": "Save your changes before opening Parts, Backup or Storage."
     },
     {
+      "key": "community.events.heading",
+      "value": "Events"
+    },
+    {
+      "key": "community.events.loading",
+      "value": "Loading events…"
+    },
+    {
+      "key": "community.events.emptyTitle",
+      "value": "No upcoming events"
+    },
+    {
+      "key": "community.events.emptyBody",
+      "value": "Events run by the Basis Labs community will show up here."
+    },
+    {
+      "key": "community.events.live",
+      "value": "LIVE NOW"
+    },
+    {
+      "key": "community.events.hostedBy",
+      "value": "Hosted by {0}"
+    },
+    {
+      "key": "events.card.details",
+      "value": "Event details"
+    },
+    {
+      "key": "events.tooltip.refresh",
+      "value": "Reload the events from basisvr.org."
+    },
+    {
+      "key": "events.tooltip.openLink",
+      "value": "Open this event's page in your web browser."
+    },
+    {
+      "key": "events.tooltip.live",
+      "value": "This event is happening right now."
+    },
+    {
+      "key": "community.events.soon",
+      "value": "STARTING SOON"
+    },
+    {
+      "key": "events.tooltip.soon",
+      "value": "This event starts within the hour."
+    },
+    {
+      "key": "events.button.remind",
+      "value": "Remind me"
+    },
+    {
+      "key": "events.button.reminderOnce",
+      "value": "Reminder set"
+    },
+    {
+      "key": "events.button.reminderAlways",
+      "value": "Reminding every time"
+    },
+    {
+      "key": "events.reminder.once",
+      "value": "Just this once"
+    },
+    {
+      "key": "events.reminder.always",
+      "value": "Every time"
+    },
+    {
+      "key": "events.reminder.off",
+      "value": "Turn off reminder"
+    },
+    {
+      "key": "events.reminder.title",
+      "value": "Event starting soon"
+    },
+    {
+      "key": "events.reminder.dismiss",
+      "value": "Dismiss"
+    },
+    {
+      "key": "events.tooltip.remind",
+      "value": "Get a notification 10 minutes before this event starts. The Package Manager has to be running."
+    },
+    {
+      "key": "events.tooltip.reminderOnce",
+      "value": "Remind me before the next one only."
+    },
+    {
+      "key": "events.tooltip.reminderAlways",
+      "value": "Remind me before every time this event runs."
+    },
+    {
+      "key": "events.tooltip.reminderOff",
+      "value": "Stop reminding me about this event."
+    },
+    {
+      "key": "events.tooltip.dismissReminder",
+      "value": "Close this reminder."
+    },
+    {
+      "key": "events.tooltip.time",
+      "value": "When the event starts, shown in your local time."
+    },
+    {
       "key": "community.hero.title",
-      "value": "Welcome to Basis"
+      "value": "Welcome to Basis Package Manager"
     },
     {
       "key": "community.hero.subtitle",

@@ -10,6 +10,7 @@
   <ItemGroup>
     <EmbeddedResource Include="default-catalog.json" />
     <EmbeddedResource Include="announcements.json" />
+    <EmbeddedResource Include="events.json" />
   </ItemGroup>
 
 </Project>

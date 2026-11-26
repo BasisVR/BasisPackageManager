@@ -7875,8 +7875,112 @@
       "value": "احفظ تغييراتك قبل فتح الأجزاء أو النسخ الاحتياطي أو التخزين."
     },
     {
+      "key": "community.events.heading",
+      "value": "الفعاليات"
+    },
+    {
+      "key": "community.events.loading",
+      "value": "جارٍ تحميل الفعاليات…"
+    },
+    {
+      "key": "community.events.emptyTitle",
+      "value": "لا توجد فعاليات قادمة"
+    },
+    {
+      "key": "community.events.emptyBody",
+      "value": "ستظهر هنا الفعاليات التي ينظّمها مجتمع Basis Labs."
+    },
+    {
+      "key": "community.events.live",
+      "value": "مباشر الآن"
+    },
+    {
+      "key": "community.events.hostedBy",
+      "value": "يستضيفها {0}"
+    },
+    {
+      "key": "events.card.details",
+      "value": "تفاصيل الفعالية"
+    },
+    {
+      "key": "events.tooltip.refresh",
+      "value": "أعد تحميل الفعاليات من basisvr.org."
+    },
+    {
+      "key": "events.tooltip.openLink",
+      "value": "افتح صفحة هذه الفعالية في متصفح الويب."
+    },
+    {
+      "key": "events.tooltip.live",
+      "value": "هذه الفعالية جارية الآن."
+    },
+    {
+      "key": "community.events.soon",
+      "value": "تبدأ قريبًا"
+    },
+    {
+      "key": "events.tooltip.soon",
+      "value": "تبدأ هذه الفعالية خلال ساعة."
+    },
+    {
+      "key": "events.button.remind",
+      "value": "ذكّرني"
+    },
+    {
+      "key": "events.button.reminderOnce",
+      "value": "تم ضبط التذكير"
+    },
+    {
+      "key": "events.button.reminderAlways",
+      "value": "تذكير في كل مرة"
+    },
+    {
+      "key": "events.reminder.once",
+      "value": "هذه المرة فقط"
+    },
+    {
+      "key": "events.reminder.always",
+      "value": "في كل مرة"
+    },
+    {
+      "key": "events.reminder.off",
+      "value": "إيقاف التذكير"
+    },
+    {
+      "key": "events.reminder.title",
+      "value": "فعالية تبدأ قريبًا"
+    },
+    {
+      "key": "events.reminder.dismiss",
+      "value": "إغلاق"
+    },
+    {
+      "key": "events.tooltip.remind",
+      "value": "احصل على إشعار قبل 10 دقائق من بدء هذه الفعالية. يجب أن يكون مدير الحزم قيد التشغيل."
+    },
+    {
+      "key": "events.tooltip.reminderOnce",
+      "value": "ذكّرني قبل الموعد القادم فقط."
+    },
+    {
+      "key": "events.tooltip.reminderAlways",
+      "value": "ذكّرني قبل كل مرة تُقام فيها هذه الفعالية."
+    },
+    {
+      "key": "events.tooltip.reminderOff",
+      "value": "أوقف التذكير بهذه الفعالية."
+    },
+    {
+      "key": "events.tooltip.dismissReminder",
+      "value": "أغلق هذا التذكير."
+    },
+    {
+      "key": "events.tooltip.time",
+      "value": "موعد بدء الفعالية بتوقيتك المحلي."
+    },
+    {
       "key": "community.hero.title",
-      "value": "مرحبًا بك في Basis"
+      "value": "مرحبًا بك في مدير حزم Basis"
     },
     {
       "key": "community.hero.subtitle",

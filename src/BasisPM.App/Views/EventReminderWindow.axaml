@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BasisPM.App.ViewModels"
+        xmlns:loc="using:BasisPM.App.Localization"
+        x:Class="BasisPM.App.Views.EventReminderWindow"
+        x:DataType="vm:EventCard"
+        Title="{loc:Tr events.reminder.title}"
+        Icon="/Assets/BasisLogo.png"
+        Width="400" SizeToContent="Height"
+        CanResize="False" Topmost="True" ShowInTaskbar="False" ShowActivated="False"
+        SystemDecorations="None" WindowStartupLocation="Manual"
+        Background="{StaticResource BasisBackgroundBrush}">
+    <!-- A reminder shown in the corner of the screen, over other apps, ten minutes before an event starts. -->
+    <Border BorderBrush="{StaticResource BasisWarningBrush}" BorderThickness="1" Padding="18,16">
+        <StackPanel Spacing="14">
+            <Grid ColumnDefinitions="Auto,*">
+                <Border Grid.Column="0" Width="40" Height="40" CornerRadius="11" VerticalAlignment="Top"
+                        Background="#33F59E0B">
+                    <PathIcon Width="18" Height="18" Data="{StaticResource IconBell}" Foreground="{StaticResource BasisWarningBrush}"/>
+                </Border>
+                <StackPanel Grid.Column="1" Margin="14,0,0,0" Spacing="3">
+                    <TextBlock Text="{loc:Tr events.reminder.title}" FontSize="11" FontWeight="Bold" Foreground="{StaticResource BasisWarningBrush}"/>
+                    <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding TimeLabel}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding Location}" Classes="dim" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding HasLocation}"/>
+                </StackPanel>
+            </Grid>
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                <Button FontSize="12" Padding="12,6" Click="OnDismiss" ToolTip.Tip="{loc:Tr events.tooltip.dismissReminder}">
+                    <TextBlock Text="{loc:Tr events.reminder.dismiss}"/>
+                </Button>
+                <Button Classes="primary" FontSize="12" Padding="12,6" Content="{Binding LinkText}" IsVisible="{Binding HasLink}"
+                        Click="OnOpen" ToolTip.Tip="{loc:Tr events.tooltip.openLink}"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>
