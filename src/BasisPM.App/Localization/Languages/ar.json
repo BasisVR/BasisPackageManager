@@ -52,7 +52,7 @@
     },
     {
       "key": "nav.community",
-      "value": "المجتمع"
+      "value": "الرئيسية"
     },
     {
       "key": "nav.develop",
@@ -63,7 +63,7 @@
       "value": "المشاريع"
     },
     {
-      "key": "nav.packages",
+      "key": "packages.window.title",
       "value": "الحزم"
     },
     {
@@ -357,10 +357,6 @@
     {
       "key": "installs.action.updateCore",
       "value": "يؤدي تحديث النواة إلى تنفيذ 'git pull'، وهو ما قد يغيّر ملفات في مشروع Basis الخاص بك."
-    },
-    {
-      "key": "installs.badge.active",
-      "value": "نشط"
     },
     {
       "key": "installs.button.changeBranch",
@@ -1279,10 +1275,6 @@
       "value": "فتح المجلّد"
     },
     {
-      "key": "installs.button.packages",
-      "value": "الحزم"
-    },
-    {
       "key": "installs.button.updateCore",
       "value": "تحديث النواة"
     },
@@ -1293,6 +1285,14 @@
     {
       "key": "installs.dialog.deleteConfirmBody",
       "value": "سيؤدي هذا إلى حذف “{0}” وكل ما بداخله نهائيًا:\n\n{1}\n\nلا يمكن التراجع عن هذا الإجراء. هل تريد حذفه؟"
+    },
+    {
+      "key": "installs.dialog.removeConfirmTitle",
+      "value": "إزالة المشروع"
+    },
+    {
+      "key": "installs.dialog.removeConfirmHeading",
+      "value": "هل تريد إزالة {0}؟"
     },
     {
       "key": "installs.dialog.deleteConfirmTitle",
@@ -1571,10 +1571,6 @@
       "value": "التراخيص"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "عرض شبكي"
-    },
-    {
       "key": "packages.button.install",
       "value": "تثبيت"
     },
@@ -1591,28 +1587,12 @@
       "value": "{0} أخرى في قائمة الانتظار"
     },
     {
-      "key": "packages.button.listView",
-      "value": "عرض قائمة"
-    },
-    {
-      "key": "packages.button.showInstalled",
-      "value": "إظهار المثبّتة"
-    },
-    {
-      "key": "packages.button.showAll",
-      "value": "إظهار الكل"
-    },
-    {
       "key": "packages.tooltip.showInstalled",
       "value": "يبدّل بين عرض كل الحزم في السجلّ وعرض حزم هذا المشروع فقط."
     },
     {
       "key": "packages.installed.empty",
       "value": "لا توجد حزم مثبّتة في هذا المشروع بعد."
-    },
-    {
-      "key": "packages.button.manage",
-      "value": "إدارة"
     },
     {
       "key": "packages.button.remove",
@@ -1945,10 +1925,6 @@
     {
       "key": "packages.tooltip.chooseVersion",
       "value": "يتيح لك اختيار إصدار أو وسم أو الفرع الافتراضي من مستودع هذه الحزمة والتبديل إليه. تُنقل النسخة المستنسخة الموجودة في مجلّد .basisdev الخاص بالمشروع إلى ذلك الإصدار في مكانها، مع الاحتفاظ بتعديلاتك ما لم تتعارض؛ وإلا تُستنسخ الحزمة هناك. وأي إصدار لم يفحصه سجلّ Basis يُعرض للمراجعة قبل أن يحمّله Unity."
-    },
-    {
-      "key": "packages.tooltip.toggleLayout",
-      "value": "يبدّل بين قائمة من الصفوف وشبكة من البطاقات. يُحفظ اختيارك."
     },
     {
       "key": "packages.tooltip.viewDetails",
@@ -2907,27 +2883,7 @@
       "value": "نعم"
     },
     {
-      "key": "dialog.remove.title",
-      "value": "إزالة المشروع"
-    },
-    {
-      "key": "dialog.remove.heading",
-      "value": "هل تريد إزالة {0}؟"
-    },
-    {
-      "key": "dialog.remove.body",
-      "value": "“إزالة من القائمة” يجعل التطبيق ينسى هذا المشروع هنا فقط، وتبقى ملفاتك في مكانها تمامًا. أما “حذف من القرص” فيحذف مجلّد المشروع المعروض أدناه بالكامل نهائيًا، ولا يمكن التراجع عن ذلك."
-    },
-    {
-      "key": "dialog.remove.cancel",
-      "value": "إلغاء"
-    },
-    {
-      "key": "dialog.remove.removeFromList",
-      "value": "إزالة من القائمة"
-    },
-    {
-      "key": "dialog.remove.deleteFromDisk",
+      "key": "installs.button.delete",
       "value": "حذف من القرص"
     },
     {
@@ -3231,22 +3187,6 @@
       "value": "اختيار إصدار"
     },
     {
-      "key": "community.hero.tagline",
-      "value": "المجتمع"
-    },
-    {
-      "key": "community.hero.title",
-      "value": "الأخبار والوثائق والدعم"
-    },
-    {
-      "key": "community.hero.subtitle",
-      "value": "ما الجديد في Basis، وأين تتعلّمه، وكيف تساعد في استمراره."
-    },
-    {
-      "key": "community.button.openDocs",
-      "value": "فتح الوثائق"
-    },
-    {
       "key": "community.button.joinDiscord",
       "value": "الانضمام إلى Discord"
     },
@@ -3271,36 +3211,8 @@
       "value": "عُد لاحقًا. ستظهر هنا أخبار فريق Basis."
     },
     {
-      "key": "community.docs.heading",
-      "value": "الوثائق"
-    },
-    {
       "key": "community.docs.siteTitle",
       "value": "موقع الوثائق"
-    },
-    {
-      "key": "community.docs.siteBody",
-      "value": "التثبيت والخطوات الأولى والأفاتار والعوالم والشبكات وSDK: تتوفّر الوثائق الكاملة على docs.basisvr.org."
-    },
-    {
-      "key": "community.docs.openSite",
-      "value": "فتح docs.basisvr.org"
-    },
-    {
-      "key": "community.docs.askTitle",
-      "value": "اسأل المجتمع"
-    },
-    {
-      "key": "community.docs.askBody",
-      "value": "هل واجهت مشكلة لا تغطّيها الوثائق؟ Discord هو أسرع وسيلة للحصول على المساعدة من صانعي المحتوى الآخرين والمشرفين."
-    },
-    {
-      "key": "community.docs.sourceTitle",
-      "value": "المصدر والمشكلات"
-    },
-    {
-      "key": "community.docs.sourceBody",
-      "value": "اقرأ الشيفرة، أو أبلِغ عن خطأ، أو افتح طلب سحب. Basis مرخّص بموجب MIT ويُطوَّر بشكل مفتوح."
     },
     {
       "key": "community.docs.basisRepo",
@@ -3311,52 +3223,8 @@
       "value": "Package Manager على GitHub"
     },
     {
-      "key": "community.support.heading",
-      "value": "ادعم Basis"
-    },
-    {
-      "key": "community.support.intro",
-      "value": "Basis مرخّص بموجب MIT ويضع صانعي المحتوى أولًا. وتتيح تبرّعات المجتمع وتعاونات الشركات لأحد المشرفين العمل بدوام كامل، وتسرّع صدور الإصدارات."
-    },
-    {
       "key": "community.support.openCollective",
       "value": "الدعم عبر OpenCollective"
-    },
-    {
-      "key": "community.support.donationsTitle",
-      "value": "تبرّعات المجتمع"
-    },
-    {
-      "key": "community.support.donationsBody",
-      "value": "يدعم الأفراد Basis على OpenCollective، شهريًا أو لمرة واحدة. وتدعم هذه الأموال بالدرجة الأولى الصيانة بدوام كامل وأعمال تحسين تجربة المطوّرين."
-    },
-    {
-      "key": "community.support.backOpenCollective",
-      "value": "الدعم على OpenCollective"
-    },
-    {
-      "key": "community.support.collabTitle",
-      "value": "تعاونات الشركات"
-    },
-    {
-      "key": "community.support.collabBody",
-      "value": "ترعى الشركات عناصر من خارطة الطريق أو تشارك في تمويل ميزات مثل الشبكات وأنظمة الأفاتار والأدوات. ويُدمَج العمل في المستودع المصدر ويبقى مرخّصًا بموجب MIT افتراضيًا."
-    },
-    {
-      "key": "community.support.sponsorFeature",
-      "value": "رعاية ميزة"
-    },
-    {
-      "key": "community.support.moneyTitle",
-      "value": "أين تُصرف الأموال"
-    },
-    {
-      "key": "community.support.moneyBody",
-      "value": "تُجمَّع الأموال لمعالجة مشكلات مشتركة (الشبكات والتجسيد والأدوات) بما يفيد الجميع. ويوجد دفتر حسابات علني على OpenCollective، ويُنسب العمل المموَّل إلى رعاته في ملاحظات الإصدار. لا يتحكم الرعاة في المشروع."
-    },
-    {
-      "key": "community.support.fundingPage",
-      "value": "قراءة صفحة التمويل الكاملة"
     },
     {
       "key": "packages.button.packageLists",
@@ -3647,16 +3515,8 @@
       "value": "يضيف حزم الحزمة المجمّعة المحدّدة إلى مشروع. ستختار المشروع في الخطوة التالية، وتُكتب الحزم في ملف Packages/manifest.json الخاص به."
     },
     {
-      "key": "dialog.remove.tooltip.cancel",
-      "value": "يُبقي هذا المشروع في قائمتك ويُغلق النافذة. لا تتم إزالة أي شيء أو حذفه."
-    },
-    {
-      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "key": "installs.tooltip.delete",
       "value": "يحذف مجلّد المشروع المعروض أعلاه بالكامل نهائيًا، بما في ذلك سجلّ التزامات git الخاص به وأي عمل لم يُدفع أو يُنسخ احتياطيًا في مكان آخر. سيُطلب منك التأكيد مرة أخرى. لا يمكن التراجع عن ذلك. أغلق Unity قبل الحذف."
-    },
-    {
-      "key": "dialog.remove.tooltip.removeFromList",
-      "value": "يزيل هذا المشروع من قائمتك. يبقى مجلّده وملفاته على القرص، ويمكنك إضافته مجددًا لاحقًا عبر “إضافة موجود”."
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
@@ -3739,24 +3599,12 @@
       "value": "يفتح هذا المشروع بإصدار محرّر Unity الذي يستخدمه. وإذا لم يكن ذلك الإصدار مثبّتًا بعد، يُفتح Unity Hub لتتمكن من إضافته."
     },
     {
-      "key": "installs.tooltip.packages",
-      "value": "يجعل هذا المشروع هو النشط ويفتح تبويب الحزم لإدارة حزمه."
-    },
-    {
       "key": "nav.tooltip.community",
-      "value": "ينتقل إلى تبويب المجتمع لأخبار Basis وروابط الوثائق والمساعدة على Discord وطرق دعم المشروع. يشير الرقم على هذا الزر إلى عدد الإعلانات التي لم تطّلع عليها بعد. ويؤدي فتح المجتمع إلى تمييزها كمقروءة."
+      "value": "ينتقل إلى تبويب الرئيسية لأخبار Basis وروابط الوثائق والمساعدة على Discord وطرق دعم المشروع. يشير الرقم على هذا الزر إلى عدد الإعلانات التي لم تطّلع عليها بعد. ويؤدي فتح الرئيسية إلى تمييزها كمقروءة."
     },
     {
       "key": "nav.tooltip.installs",
       "value": "ينتقل إلى مشاريع Basis الخاصة بك، حيث تُنشئ مشروعًا أو تضيفه، وتفتحه في Unity، وتحدّث Basis، وتبدّل الفروع، وتُنشئ نسخًا احتياطية. يشير الرقم على هذا الزر إلى عدد المشاريع التي لديها تحديث Basis متاح أو ينتظر منك إنهاءه."
-    },
-    {
-      "key": "nav.tooltip.packages",
-      "value": "ينتقل إلى مستعرض الحزم، حيث تبحث عن الحزم في السجلّ وتثبّتها أو تحدّثها أو تزيلها في مشروع. وتجد هنا أيضًا الحزم المجمّعة، والحزم من روابط GitHub، وتحرير مصدر الحزم."
-    },
-    {
-      "key": "nav.tooltip.server",
-      "value": "ينتقل إلى خادم Basis للمشروع المحدّد، حيث تبنيه وتشغّله وتوقفه، وتحرّر تهيئته وحزم الخادم والمحتوى الافتراضي. يتطلّب البناء .NET 10 SDK."
     },
     {
       "key": "nav.tooltip.settings",
@@ -3789,10 +3637,6 @@
     {
       "key": "packages.tooltip.installGit",
       "value": "يفتح صفحة تنزيل Git في متصفحك. يلزم Git لاستنساخ الحزم لتحريرها ولإرسال طلبات السحب. بعد تثبيته، استخدم زر “تحديث” أعلى هذه الصفحة."
-    },
-    {
-      "key": "packages.tooltip.manage",
-      "value": "يفتح قائمة لتحديث هذه الحزمة، أو اختيار إصدار آخر، أو تركيبها للتحرير، أو إزالتها. لا تظهر الخيارات إلا عندما تنطبق."
     },
     {
       "key": "packages.tooltip.openFolder",
@@ -5475,18 +5319,6 @@
       "value": "هذا المشروع نسخة مستنسخة من {0}. يوضع طلب السحب على فرع مستقل، لذا لا يُدفع فرعك الحالي ولا يتغيّر."
     },
     {
-      "key": "installs.button.gridView",
-      "value": "عرض شبكي"
-    },
-    {
-      "key": "installs.button.listView",
-      "value": "عرض قائمة"
-    },
-    {
-      "key": "installs.tooltip.toggleLayout",
-      "value": "يبدّل بين عرض مشاريعك كقائمة أو كشبكة من البطاقات. يتذكّر التطبيق اختيارك."
-    },
-    {
       "key": "installs.button.findProjects",
       "value": "البحث عن مشاريع"
     },
@@ -6488,11 +6320,7 @@
     },
     {
       "key": "installs.tooltip.remove",
-      "value": "يزيل هذا المشروع من قائمتك، أو يحذف مجلّده من القرص. تختار في الخطوة التالية، ولا يمكن التراجع عن الحذف."
-    },
-    {
-      "key": "installs.tooltip.activeBadge",
-      "value": "هذا هو المشروع النشط، الذي يعمل عليه تبويبا الحزم والخادم. لتغييره، اضغط “الحزم” في مشروع آخر أو اختر مشروعًا في تبويب الحزم."
+      "value": "يزيل هذا المشروع من قائمتك. يبقى مجلّده وملفاته على القرص، ويمكنك إضافته مجددًا لاحقًا عبر “إضافة موجود”."
     },
     {
       "key": "installs.tooltip.unityVersion",
@@ -8045,6 +7873,46 @@
     {
       "key": "dialog.setup.toolsDirty",
       "value": "احفظ تغييراتك قبل فتح الأجزاء أو النسخ الاحتياطي أو التخزين."
+    },
+    {
+      "key": "community.hero.title",
+      "value": "مرحبًا بك في Basis"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "أخبار Basis، وأين تتعلّمه، وكيف تحصل على المساعدة."
+    },
+    {
+      "key": "community.links.heading",
+      "value": "الموارد"
+    },
+    {
+      "key": "community.tooltip.projects",
+      "value": "ينتقل إلى مشاريعك، حيث تنشئ مشاريع Basis وتفتحها وتحدّثها وتدير حزمها."
+    },
+    {
+      "key": "installs.button.manageProject",
+      "value": "إدارة المشروع"
+    },
+    {
+      "key": "installs.tooltip.manageProject",
+      "value": "يجعل هذا المشروع هو النشط ويفتح صفحته هنا وفيها حزمه وخادمه وأدوات المشروع: تحديث Basis والإعداد والفروع والتغييرات والمجلد."
+    },
+    {
+      "key": "packages.button.uninstall",
+      "value": "إلغاء التثبيت"
+    },
+    {
+      "key": "packages.toggle.installedOnly",
+      "value": "المثبّتة فقط"
+    },
+    {
+      "key": "project.settings.title",
+      "value": "إعدادات المشروع"
+    },
+    {
+      "key": "project.changes.button",
+      "value": "مراجعة التغييرات"
     }
   ]
 }

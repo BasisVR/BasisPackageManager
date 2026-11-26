@@ -52,7 +52,7 @@
     },
     {
       "key": "nav.community",
-      "value": "Сообщество"
+      "value": "Главная"
     },
     {
       "key": "nav.develop",
@@ -63,7 +63,7 @@
       "value": "Проекты"
     },
     {
-      "key": "nav.packages",
+      "key": "packages.window.title",
       "value": "Пакеты"
     },
     {
@@ -357,10 +357,6 @@
     {
       "key": "installs.action.updateCore",
       "value": "«Обновить ядро» выполняет 'git pull', что может изменить файлы в вашем проекте Basis."
-    },
-    {
-      "key": "installs.badge.active",
-      "value": "АКТИВНЫЙ"
     },
     {
       "key": "installs.button.changeBranch",
@@ -1279,10 +1275,6 @@
       "value": "Открыть папку"
     },
     {
-      "key": "installs.button.packages",
-      "value": "Пакеты"
-    },
-    {
       "key": "installs.button.updateCore",
       "value": "Обновить ядро"
     },
@@ -1293,6 +1285,14 @@
     {
       "key": "installs.dialog.deleteConfirmBody",
       "value": "Это безвозвратно удалит «{0}» и всё его содержимое:\n\n{1}\n\nЭто действие нельзя отменить. Удалить?"
+    },
+    {
+      "key": "installs.dialog.removeConfirmTitle",
+      "value": "Удаление проекта"
+    },
+    {
+      "key": "installs.dialog.removeConfirmHeading",
+      "value": "Удалить {0}?"
     },
     {
       "key": "installs.dialog.deleteConfirmTitle",
@@ -1571,10 +1571,6 @@
       "value": "Лицензии"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "Плитка"
-    },
-    {
       "key": "packages.button.install",
       "value": "Установить"
     },
@@ -1591,28 +1587,12 @@
       "value": "Ещё в очереди: {0}"
     },
     {
-      "key": "packages.button.listView",
-      "value": "Список"
-    },
-    {
-      "key": "packages.button.showInstalled",
-      "value": "Показать установленные"
-    },
-    {
-      "key": "packages.button.showAll",
-      "value": "Показать все"
-    },
-    {
       "key": "packages.tooltip.showInstalled",
       "value": "Переключиться между всеми пакетами реестра и только пакетами этого проекта."
     },
     {
       "key": "packages.installed.empty",
       "value": "В этом проекте пока не установлено ни одного пакета."
-    },
-    {
-      "key": "packages.button.manage",
-      "value": "Управление"
     },
     {
       "key": "packages.button.remove",
@@ -1945,10 +1925,6 @@
     {
       "key": "packages.tooltip.chooseVersion",
       "value": "Выбрать релиз, тег или ветку по умолчанию репозитория этого пакета и переключиться на них. Существующий клон в папке .basisdev проекта переводится на эту версию на месте с сохранением ваших правок, если они не конфликтуют; в противном случае пакет клонируется туда. Версия, не проверенная реестром Basis, показывается для проверки до того, как Unity её загрузит."
-    },
-    {
-      "key": "packages.tooltip.toggleLayout",
-      "value": "Переключиться между списком строк и сеткой карточек. Ваш выбор запоминается."
     },
     {
       "key": "packages.tooltip.viewDetails",
@@ -2907,27 +2883,7 @@
       "value": "Да"
     },
     {
-      "key": "dialog.remove.title",
-      "value": "Удаление проекта"
-    },
-    {
-      "key": "dialog.remove.heading",
-      "value": "Удалить {0}?"
-    },
-    {
-      "key": "dialog.remove.body",
-      "value": "«Убрать из списка» просто убирает проект из этого списка: ваши файлы остаются на месте. «Удалить с диска» безвозвратно удаляет всю папку проекта, указанную ниже. Это действие нельзя отменить."
-    },
-    {
-      "key": "dialog.remove.cancel",
-      "value": "Отмена"
-    },
-    {
-      "key": "dialog.remove.removeFromList",
-      "value": "Убрать из списка"
-    },
-    {
-      "key": "dialog.remove.deleteFromDisk",
+      "key": "installs.button.delete",
       "value": "Удалить с диска"
     },
     {
@@ -3231,22 +3187,6 @@
       "value": "Выберите версию"
     },
     {
-      "key": "community.hero.tagline",
-      "value": "СООБЩЕСТВО"
-    },
-    {
-      "key": "community.hero.title",
-      "value": "Новости, документация и поддержка"
-    },
-    {
-      "key": "community.hero.subtitle",
-      "value": "Что нового в Basis, где его освоить и как помочь ему развиваться."
-    },
-    {
-      "key": "community.button.openDocs",
-      "value": "Открыть документацию"
-    },
-    {
       "key": "community.button.joinDiscord",
       "value": "Присоединиться к Discord"
     },
@@ -3271,36 +3211,8 @@
       "value": "Загляните позже: здесь появятся новости от команды Basis."
     },
     {
-      "key": "community.docs.heading",
-      "value": "Документация"
-    },
-    {
       "key": "community.docs.siteTitle",
       "value": "Сайт документации"
-    },
-    {
-      "key": "community.docs.siteBody",
-      "value": "Установка, первые шаги, аватары, миры, сеть и SDK: полная документация находится на docs.basisvr.org."
-    },
-    {
-      "key": "community.docs.openSite",
-      "value": "Открыть docs.basisvr.org"
-    },
-    {
-      "key": "community.docs.askTitle",
-      "value": "Спросить сообщество"
-    },
-    {
-      "key": "community.docs.askBody",
-      "value": "Столкнулись с тем, чего нет в документации? Быстрее всего получить помощь от других авторов и сопровождающих можно в Discord."
-    },
-    {
-      "key": "community.docs.sourceTitle",
-      "value": "Исходный код и обращения"
-    },
-    {
-      "key": "community.docs.sourceBody",
-      "value": "Читайте код, сообщайте об ошибках или открывайте pull request. Basis распространяется под лицензией MIT и разрабатывается открыто."
     },
     {
       "key": "community.docs.basisRepo",
@@ -3311,52 +3223,8 @@
       "value": "Package Manager на GitHub"
     },
     {
-      "key": "community.support.heading",
-      "value": "Поддержать Basis"
-    },
-    {
-      "key": "community.support.intro",
-      "value": "Basis распространяется под лицензией MIT и ставит авторов на первое место. Пожертвования сообщества и сотрудничество с компаниями позволяют сопровождающему работать полный день и ускоряют выпуск релизов."
-    },
-    {
       "key": "community.support.openCollective",
       "value": "Поддержать через OpenCollective"
-    },
-    {
-      "key": "community.support.donationsTitle",
-      "value": "Пожертвования сообщества"
-    },
-    {
-      "key": "community.support.donationsBody",
-      "value": "Люди поддерживают Basis на OpenCollective ежемесячно или разово. Эти средства в первую очередь идут на сопровождение проекта на полный рабочий день и на улучшение опыта разработчиков."
-    },
-    {
-      "key": "community.support.backOpenCollective",
-      "value": "Поддержать на OpenCollective"
-    },
-    {
-      "key": "community.support.collabTitle",
-      "value": "Сотрудничество с компаниями"
-    },
-    {
-      "key": "community.support.collabBody",
-      "value": "Компании спонсируют пункты дорожной карты или совместно финансируют функции: сетевые технологии, системы аватаров, инструменты. Результаты попадают в исходный репозиторий и по умолчанию остаются под лицензией MIT."
-    },
-    {
-      "key": "community.support.sponsorFeature",
-      "value": "Спонсировать функцию"
-    },
-    {
-      "key": "community.support.moneyTitle",
-      "value": "Куда идут деньги"
-    },
-    {
-      "key": "community.support.moneyBody",
-      "value": "Средства объединяются для решения общих задач, полезных всем: сетевые технологии, воплощение, инструменты. На OpenCollective есть публичная бухгалтерия, а спонсируемая работа отмечается в примечаниях к релизам. Спонсоры не управляют проектом."
-    },
-    {
-      "key": "community.support.fundingPage",
-      "value": "Читать полную страницу финансирования"
     },
     {
       "key": "packages.button.packageLists",
@@ -3647,16 +3515,8 @@
       "value": "Добавить пакеты выбранного набора в проект. Затем вы выберете проект, и пакеты будут записаны в его Packages/manifest.json."
     },
     {
-      "key": "dialog.remove.tooltip.cancel",
-      "value": "Оставить проект в списке и закрыть окно. Ничего не убирается и не удаляется."
-    },
-    {
-      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "key": "installs.tooltip.delete",
       "value": "Безвозвратно удалить всю папку проекта, указанную выше, включая историю git и всю работу, которая не отправлена и не сохранена в другом месте. Вас попросят подтвердить ещё раз. Это действие нельзя отменить. Закройте Unity перед удалением."
-    },
-    {
-      "key": "dialog.remove.tooltip.removeFromList",
-      "value": "Убрать проект из списка. Его папка и файлы остаются на диске, и позже его можно снова добавить с помощью «Добавить существующий»."
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
@@ -3739,24 +3599,12 @@
       "value": "Открыть проект в той версии редактора Unity, которую он использует. Если эта версия ещё не установлена, откроется Unity Hub, чтобы вы могли её добавить."
     },
     {
-      "key": "installs.tooltip.packages",
-      "value": "Сделать этот проект активным и открыть вкладку «Пакеты», чтобы управлять его пакетами."
-    },
-    {
       "key": "nav.tooltip.community",
-      "value": "Перейти на вкладку «Сообщество»: новости Basis, ссылки на документацию, помощь в Discord и способы поддержать проект. Число на этой кнопке показывает, сколько объявлений вы ещё не видели. При открытии вкладки «Сообщество» они отмечаются как прочитанные."
+      "value": "Перейти на вкладку «Главная»: новости Basis, ссылки на документацию, помощь в Discord и способы поддержать проект. Число на этой кнопке показывает, сколько объявлений вы ещё не видели. При открытии вкладки «Главная» они отмечаются как прочитанные."
     },
     {
       "key": "nav.tooltip.installs",
       "value": "Перейти к вашим проектам Basis: здесь можно создать или добавить проект, открыть его в Unity, обновить Basis, переключить ветки и создать резервные копии. Число на этой кнопке показывает, у скольких проектов есть доступное обновление Basis или обновление, ожидающее завершения."
-    },
-    {
-      "key": "nav.tooltip.packages",
-      "value": "Перейти к каталогу пакетов: здесь можно найти пакеты в реестре, а также устанавливать, обновлять и удалять их в проекте. Здесь же наборы пакетов, пакеты по ссылкам GitHub и редактирование исходного кода пакетов."
-    },
-    {
-      "key": "nav.tooltip.server",
-      "value": "Перейти к серверу Basis выбранного проекта: здесь его можно собрать, запустить и остановить, а также изменить конфигурацию, серверные пакеты и контент по умолчанию. Для сборки нужен .NET 10 SDK."
     },
     {
       "key": "nav.tooltip.settings",
@@ -3789,10 +3637,6 @@
     {
       "key": "packages.tooltip.installGit",
       "value": "Открыть в браузере страницу загрузки Git. Git нужен, чтобы клонировать пакеты для редактирования и отправлять pull request. После установки нажмите «Обновить» вверху этой страницы."
-    },
-    {
-      "key": "packages.tooltip.manage",
-      "value": "Открыть меню, чтобы обновить пакет, выбрать другую версию, подключить его для редактирования или удалить. Пункты появляются, только когда они применимы."
     },
     {
       "key": "packages.tooltip.openFolder",
@@ -5475,18 +5319,6 @@
       "value": "Этот проект является клоном {0}. Pull request создаётся в отдельной ветке, поэтому ваша текущая ветка не отправляется и не изменяется."
     },
     {
-      "key": "installs.button.gridView",
-      "value": "Плитка"
-    },
-    {
-      "key": "installs.button.listView",
-      "value": "Список"
-    },
-    {
-      "key": "installs.tooltip.toggleLayout",
-      "value": "Переключить отображение проектов: списком или сеткой карточек. Приложение запоминает ваш выбор."
-    },
-    {
       "key": "installs.button.findProjects",
       "value": "Найти проекты"
     },
@@ -6488,11 +6320,7 @@
     },
     {
       "key": "installs.tooltip.remove",
-      "value": "Убрать проект из списка или удалить его папку с диска. Выбор делается на следующем шаге, и удаление нельзя отменить."
-    },
-    {
-      "key": "installs.tooltip.activeBadge",
-      "value": "Активный проект, с которым работают вкладки «Пакеты» и «Сервер». Чтобы сменить его, нажмите «Пакеты» у другого проекта или выберите проект на вкладке «Пакеты»."
+      "value": "Убрать проект из списка. Его папка и файлы остаются на диске, и позже его можно снова добавить с помощью «Добавить существующий»."
     },
     {
       "key": "installs.tooltip.unityVersion",
@@ -8045,6 +7873,46 @@
     {
       "key": "dialog.setup.toolsDirty",
       "value": "Сохраните изменения, прежде чем открывать «Компоненты», «Резервная копия» или «Место на диске»."
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Добро пожаловать в Basis"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Новости Basis, где его изучить и где получить помощь."
+    },
+    {
+      "key": "community.links.heading",
+      "value": "Ресурсы"
+    },
+    {
+      "key": "community.tooltip.projects",
+      "value": "Перейти к проектам, где вы создаёте, открываете и обновляете проекты Basis и управляете их пакетами."
+    },
+    {
+      "key": "installs.button.manageProject",
+      "value": "Управление проектом"
+    },
+    {
+      "key": "installs.tooltip.manageProject",
+      "value": "Сделать этот проект активным и открыть здесь его страницу с пакетами, сервером и инструментами проекта: обновление Basis, настройка, ветка, изменения и папка."
+    },
+    {
+      "key": "packages.button.uninstall",
+      "value": "Удалить"
+    },
+    {
+      "key": "packages.toggle.installedOnly",
+      "value": "Только установленные"
+    },
+    {
+      "key": "project.settings.title",
+      "value": "Настройки проекта"
+    },
+    {
+      "key": "project.changes.button",
+      "value": "Просмотреть изменения"
     }
   ]
 }

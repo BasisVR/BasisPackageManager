@@ -25,7 +25,7 @@
                         </Button>
                         <Button Command="{Binding DiscordCommand}" ToolTip.Tip="{loc:Tr docs.tooltip.discord}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconChat}" VerticalAlignment="Center"/>
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconDiscord}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr docs.button.askDiscord}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
@@ -54,7 +54,7 @@
                                    Classes="muted" FontSize="13" TextWrapping="Wrap"/>
                         <Button Command="{Binding DiscordCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr docs.tooltip.discord}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconChat}" VerticalAlignment="Center"/>
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconDiscord}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr docs.button.joinDiscord}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
@@ -70,13 +70,13 @@
                     <StackPanel Orientation="Horizontal" Spacing="12">
                         <Button Command="{Binding BasisRepoCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr docs.tooltip.basisGithub}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconGitHub}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr docs.button.basisGithub}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                         <Button Command="{Binding PackageManagerRepoCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr docs.tooltip.packageManagerGithub}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconGitHub}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr docs.button.packageManagerGithub}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>

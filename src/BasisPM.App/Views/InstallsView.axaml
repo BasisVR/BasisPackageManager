@@ -10,7 +10,7 @@
     <UserControl.Styles>
         <!-- A card's name reads as its heading until hovered or clicked, then edits in place. -->
         <Style Selector="TextBox.inlineName">
-            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
@@ -34,7 +34,7 @@
     </UserControl.Styles>
 
     <ScrollViewer>
-        <StackPanel Margin="40,32" Spacing="24">
+        <StackPanel Margin="28,20,28,28" Spacing="18">
 
             <Border CornerRadius="14" Padding="32,28" Background="{StaticResource BasisHeroGradient}"
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
@@ -46,13 +46,7 @@
                             <TextBlock Text="{loc:Tr installs.hero.subtitle}"
                                        Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                         </StackPanel>
-                        <ToggleButton Grid.Column="1" Name="AdvancedToggle" Classes="advanced" views:SectionState.Key="projects.advanced" VerticalAlignment="Top"
-                                      Margin="16,0,0,0" ToolTip.Tip="{loc:Tr installs.tooltip.advanced}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconCode}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr shell.button.advanced}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </ToggleButton>
+                        <CheckBox Grid.Column="1" Name="AdvancedToggle" views:SectionState.Key="projects.advanced" VerticalAlignment="Top" Margin="16,0,0,0" ToolTip.Tip="{loc:Tr installs.tooltip.advanced}" Content="{loc:Tr shell.button.advanced}"/>
                     </Grid>
                     <WrapPanel Margin="0,0,0,-10">
                         <WrapPanel.Styles>
@@ -70,22 +64,25 @@
                                 <TextBlock Text="{loc:Tr installs.button.addExisting}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding FindProjectsCommand}" ToolTip.Tip="{loc:Tr installs.tooltip.findProjects}">
+                        <Button Command="{Binding FindProjectsCommand}" ToolTip.Tip="{loc:Tr installs.tooltip.findProjects}"
+                                IsVisible="{Binding #AdvancedToggle.IsChecked}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconSearch}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr installs.button.findProjects}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding UpdateAllCommand}" ToolTip.Tip="{loc:Tr installs.tooltip.updateAll}"
-                                IsVisible="{Binding Installs.Count, Converter={x:Static vm:Converters.IntNonZero}}">
+                        <Button Command="{Binding UpdateAllCommand}" ToolTip.Tip="{loc:Tr installs.tooltip.updateAll}">
+                            <Button.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="Installs.Count" Converter="{x:Static vm:Converters.IntNonZero}"/>
+                                    <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
+                                </MultiBinding>
+                            </Button.IsVisible>
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
                                 <TextBlock Text="{loc:Tr installs.button.updateAll}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Content="{Binding LayoutToggleLabel}" Command="{Binding ToggleLayoutCommand}"
-                                IsVisible="{Binding Installs.Count, Converter={x:Static vm:Converters.IntNonZero}}"
-                                ToolTip.Tip="{loc:Tr installs.tooltip.toggleLayout}"/>
                         <Button Classes="iconBtn" Command="{Binding RefreshCommand}" ToolTip.Tip="{loc:Tr installs.tooltip.refresh}">
                             <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
                         </Button>
@@ -93,346 +90,112 @@
                 </StackPanel>
             </Border>
 
-            <ItemsControl ItemsSource="{Binding Installs}" IsVisible="{Binding IsListView}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Spacing="12"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:InstallRow">
-                        <Border Classes="card reveal">
-                            <StackPanel Spacing="14">
-                                <StackPanel Spacing="5">
-                                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                                        <Button Classes="iconBtn" IsVisible="{Binding HasUnityProject}" VerticalAlignment="Center"
-                                                Command="{Binding #Root.((vm:InstallsViewModel)DataContext).SetupCommand}" CommandParameter="{Binding}"
-                                                ToolTip.Tip="{loc:Tr installs.tooltip.setup}">
-                                            <PathIcon Width="16" Height="16" Data="{StaticResource IconSettings}"/>
-                                        </Button>
-                                        <TextBox Classes="inlineName" Text="{Binding Name, Mode=OneWay}" MaxWidth="520"
+            <!-- One compact row per project, sized like a package row. -->
+            <Border Classes="card" Padding="0,6" IsVisible="{Binding Installs.Count, Converter={x:Static vm:Converters.IntNonZero}}">
+                <ItemsControl ItemsSource="{Binding Installs}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="vm:InstallRow">
+                            <Border Classes="glass reveal" Padding="14,8" Margin="16,3">
+                                <StackPanel Spacing="4">
+                                    <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                                        <Border Grid.Column="0" Width="28" Height="28" CornerRadius="8" VerticalAlignment="Center"
+                                                Background="{StaticResource BasisBrandGradient}">
+                                            <PathIcon Width="14" Height="14" Data="{StaticResource IconInstalls}" Foreground="#FFFFFF"/>
+                                        </Border>
+                                        <TextBox Grid.Column="1" Classes="inlineName" Text="{Binding Name, Mode=OneWay}" MaxWidth="260" Margin="4,0,0,0"
                                                  LostFocus="OnNameLostFocus" ToolTip.Tip="{loc:Tr installs.tooltip.rename}"/>
-                                        <Border Classes="brandBadge" IsVisible="{Binding IsActive}" ToolTip.Tip="{loc:Tr installs.tooltip.activeBadge}">
-                                            <TextBlock Text="{loc:Tr installs.badge.active}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
-                                        </Border>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding RepoRoot}" Classes="dim" FontSize="12"
-                                               TextWrapping="Wrap" ToolTip.Tip="{Binding RepoRoot}"/>
-                                    <WrapPanel Margin="0,4,0,0">
-                                        <Border Background="{StaticResource BasisPanelBrush}"
-                                                BorderBrush="{StaticResource BasisBorderBrush}"
-                                                BorderThickness="1" CornerRadius="4" Padding="8,2" Margin="0,0,8,4"
-                                                ToolTip.Tip="{loc:Tr installs.tooltip.unityVersion}">
-                                            <TextBlock Text="{Binding UnityVersionLabel}" FontSize="11"
-                                                       Foreground="{StaticResource BasisAccentBrush}"/>
-                                        </Border>
-                                        <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding #AdvancedToggle.IsChecked}" ToolTip.Tip="{Binding BranchTooltip}">
-                                            <TextBlock Text="{Binding BranchCommit}" FontSize="11" Classes="muted"
-                                                       MaxWidth="300" TextTrimming="CharacterEllipsis"/>
-                                        </Border>
-                                        <Border Classes="versionPill" Margin="0,0,8,4" ToolTip.Tip="{loc:Tr installs.tooltip.localChanges}">
-                                            <Border.IsVisible>
-                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                    <Binding Path="HasLocalChanges"/>
-                                                    <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
-                                                </MultiBinding>
-                                            </Border.IsVisible>
-                                            <TextBlock Text="{Binding ChangeCount, StringFormat='{}{0} changed'}"
-                                                       FontSize="11" Classes="brand" FontWeight="Bold"/>
-                                        </Border>
-                                        <Border Classes="versionPill" Margin="0,0,8,4" ToolTip.Tip="{loc:Tr installs.row.leftOutTip}">
-                                            <Border.IsVisible>
-                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                    <Binding Path="HasLeftOutParts"/>
-                                                    <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
-                                                </MultiBinding>
-                                            </Border.IsVisible>
-                                            <TextBlock Text="{Binding LeftOutText}" FontSize="11" Classes="muted"/>
-                                        </Border>
-                                        <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding TeamHasUpdates}"
-                                                ToolTip.Tip="{loc:Tr installs.team.tooltip}">
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconDownload}"
-                                                          Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{Binding TeamPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
-                                            </StackPanel>
-                                        </Border>
-                                        <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisUpdateAvailable}"
-                                                ToolTip.Tip="{Binding BasisPillTooltip}">
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconUpdate}"
-                                                          Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
-                                            </StackPanel>
-                                        </Border>
-                                        <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisUpdateInProgress}"
-                                                ToolTip.Tip="{Binding UpdateButtonTooltip}">
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <PathIcon Width="11" Height="11" Data="{StaticResource IconWarning}"
-                                                          Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{Binding BasisPillText}" FontSize="11" FontWeight="Bold"
-                                                           Foreground="{StaticResource BasisWarningBrush}"/>
-                                            </StackPanel>
-                                        </Border>
-                                        <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisPillMuted}"
-                                                ToolTip.Tip="{Binding BasisPillTooltip}">
-                                            <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="muted"/>
-                                        </Border>
-                                    </WrapPanel>
-                                    <TextBlock Text="{Binding GitSummary}" Classes="muted" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap"
+                                        <WrapPanel Grid.Column="2" Margin="12,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding RepoRoot}" Classes="dim" FontSize="12" MaxWidth="300" Margin="0,2,10,2"
+                                                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip.Tip="{Binding RepoRoot}"/>
+                                            <Border Background="{StaticResource BasisPanelBrush}"
+                                                    BorderBrush="{StaticResource BasisBorderBrush}"
+                                                    BorderThickness="1" CornerRadius="4" Padding="8,2" Margin="0,2,8,2" VerticalAlignment="Center"
+                                                    ToolTip.Tip="{loc:Tr installs.tooltip.unityVersion}">
+                                                <TextBlock Text="{Binding UnityVersionLabel}" FontSize="11"
+                                                           Foreground="{StaticResource BasisAccentBrush}"/>
+                                            </Border>
+                                            <Border Classes="versionPill" Margin="0,2,8,2" IsVisible="{Binding #AdvancedToggle.IsChecked}" ToolTip.Tip="{Binding BranchTooltip}">
+                                                <TextBlock Text="{Binding BranchCommit}" FontSize="11" Classes="muted"
+                                                           MaxWidth="300" TextTrimming="CharacterEllipsis"/>
+                                            </Border>
+                                            <Border Classes="versionPill" Margin="0,2,8,2" ToolTip.Tip="{loc:Tr installs.tooltip.localChanges}">
+                                                <Border.IsVisible>
+                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                        <Binding Path="HasLocalChanges"/>
+                                                        <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
+                                                    </MultiBinding>
+                                                </Border.IsVisible>
+                                                <TextBlock Text="{Binding ChangeCount, StringFormat='{}{0} changed'}"
+                                                           FontSize="11" Classes="brand" FontWeight="Bold"/>
+                                            </Border>
+                                            <Border Classes="versionPill" Margin="0,2,8,2" ToolTip.Tip="{loc:Tr installs.row.leftOutTip}">
+                                                <Border.IsVisible>
+                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                        <Binding Path="HasLeftOutParts"/>
+                                                        <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
+                                                    </MultiBinding>
+                                                </Border.IsVisible>
+                                                <TextBlock Text="{Binding LeftOutText}" FontSize="11" Classes="muted"/>
+                                            </Border>
+                                            <Border Classes="versionPill" Margin="0,2,8,2" IsVisible="{Binding TeamHasUpdates}"
+                                                    ToolTip.Tip="{loc:Tr installs.team.tooltip}">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <PathIcon Width="11" Height="11" Data="{StaticResource IconDownload}"
+                                                              Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding TeamPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Classes="versionPill" Margin="0,2,8,2" IsVisible="{Binding BasisUpdateAvailable}"
+                                                    ToolTip.Tip="{Binding BasisPillTooltip}">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <PathIcon Width="11" Height="11" Data="{StaticResource IconUpdate}"
+                                                              Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Classes="versionPill" Margin="0,2,8,2" IsVisible="{Binding BasisUpdateInProgress}"
+                                                    ToolTip.Tip="{Binding UpdateButtonTooltip}">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <PathIcon Width="11" Height="11" Data="{StaticResource IconWarning}"
+                                                              Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding BasisPillText}" FontSize="11" FontWeight="Bold"
+                                                               Foreground="{StaticResource BasisWarningBrush}"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Classes="versionPill" Margin="0,2,8,2" IsVisible="{Binding BasisPillMuted}"
+                                                    ToolTip.Tip="{Binding BasisPillTooltip}">
+                                                <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="muted"/>
+                                            </Border>
+                                        </WrapPanel>
+                                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8" Margin="12,0,0,0" VerticalAlignment="Center">
+                                            <Button Classes="primary" FontSize="12" Padding="12,6" IsVisible="{Binding HasUnityProject}"
+                                                    Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenInUnityCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip.Tip="{loc:Tr installs.tooltip.openInUnity}">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <PathIcon Width="12" Height="12" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button FontSize="12" Padding="12,6"
+                                                    Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ManagePackagesCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip.Tip="{loc:Tr installs.tooltip.manageProject}">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <PathIcon Width="12" Height="12" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{loc:Tr installs.button.manageProject}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                    <TextBlock Text="{Binding GitSummary}" Classes="muted" FontSize="12" Margin="38,0,0,0" TextWrapping="Wrap"
                                                IsVisible="{Binding #AdvancedToggle.IsChecked}"/>
                                 </StackPanel>
-                                <WrapPanel>
-                                    <WrapPanel.Styles>
-                                        <Style Selector="Button"><Setter Property="Margin" Value="0,0,8,8"/></Style>
-                                    </WrapPanel.Styles>
-                                    <Button Classes="primary" IsVisible="{Binding HasUnityProject}"
-                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenInUnityCommand}"
-                                            CommandParameter="{Binding}"
-                                            ToolTip.Tip="{loc:Tr installs.tooltip.openInUnity}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Classes.cta="{Binding HighlightUpdates}"
-                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).UpdateBasisCommand}"
-                                            CommandParameter="{Binding}"
-                                            ToolTip.Tip="{Binding UpdateButtonTooltip}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding UpdateButtonLabel}" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <StackPanel Orientation="Horizontal" IsVisible="{Binding #AdvancedToggle.IsChecked}">
-                                        <Button IsVisible="{Binding IsGitRepo}"
-                                                Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ChangeBranchCommand}"
-                                                CommandParameter="{Binding}"
-                                                ToolTip.Tip="{loc:Tr installs.tooltip.changeBranch}">
-                                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{loc:Tr installs.button.changeBranch}" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button IsVisible="{Binding HasUnityProject}"
-                                                Command="{Binding #Root.((vm:InstallsViewModel)DataContext).BasisChangesCommand}"
-                                                CommandParameter="{Binding}"
-                                                ToolTip.Tip="{loc:Tr installs.tooltip.basisChanges}">
-                                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconChanges}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{loc:Tr installs.button.basisChanges}" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                    </StackPanel>
-                                    <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ManagePackagesCommand}"
-                                            CommandParameter="{Binding}"
-                                            ToolTip.Tip="{loc:Tr installs.tooltip.packages}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{loc:Tr installs.button.packages}" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenFolderCommand}"
-                                            CommandParameter="{Binding}"
-                                            ToolTip.Tip="{loc:Tr installs.tooltip.openFolder}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{loc:Tr installs.button.openFolder}" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Classes="danger"
-                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).RemoveCommand}"
-                                            CommandParameter="{Binding}"
-                                            ToolTip.Tip="{loc:Tr installs.tooltip.remove}">
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconDelete}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{loc:Tr installs.button.remove}" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                </WrapPanel>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-            <ItemsControl ItemsSource="{Binding Installs}" IsVisible="{Binding IsGridView}" Margin="0,0,-14,-14">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:InstallRow">
-                        <Border Classes="card reveal" Width="356" MinHeight="292" Margin="0,0,14,14">
-                            <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
-                                <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,*,Auto">
-                                    <TextBox Grid.Column="1" Classes="inlineName" Text="{Binding Name, Mode=OneWay}" MaxWidth="250"
-                                             LostFocus="OnNameLostFocus" ToolTip.Tip="{loc:Tr installs.tooltip.rename}"/>
-                                    <Button Grid.Column="0" Classes="iconBtn" Margin="0,0,6,0" IsVisible="{Binding HasUnityProject}" VerticalAlignment="Center"
-                                            Command="{Binding #Root.((vm:InstallsViewModel)DataContext).SetupCommand}" CommandParameter="{Binding}"
-                                            ToolTip.Tip="{loc:Tr installs.tooltip.setup}">
-                                        <PathIcon Width="16" Height="16" Data="{StaticResource IconSettings}"/>
-                                    </Button>
-                                    <Border Grid.Column="3" Classes="brandBadge" IsVisible="{Binding IsActive}" VerticalAlignment="Center" Margin="8,0,0,0"
-                                            ToolTip.Tip="{loc:Tr installs.tooltip.activeBadge}">
-                                        <TextBlock Text="{loc:Tr installs.badge.active}" FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"/>
-                                    </Border>
-                                </Grid>
-                                <TextBlock Grid.Row="1" Text="{Binding RepoRoot}" Classes="dim" FontSize="11" Margin="0,4,0,0"
-                                           TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding RepoRoot}"/>
-                                <WrapPanel Grid.Row="2" Margin="0,10,0,0">
-                                    <Border Background="{StaticResource BasisPanelBrush}"
-                                            BorderBrush="{StaticResource BasisBorderBrush}"
-                                            BorderThickness="1" CornerRadius="4" Padding="8,2" Margin="0,0,8,4"
-                                            ToolTip.Tip="{loc:Tr installs.tooltip.unityVersion}">
-                                        <TextBlock Text="{Binding UnityVersionLabel}" FontSize="11"
-                                                   Foreground="{StaticResource BasisAccentBrush}"/>
-                                    </Border>
-                                    <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding #AdvancedToggle.IsChecked}" ToolTip.Tip="{Binding BranchTooltip}">
-                                        <TextBlock Text="{Binding BranchCommit}" FontSize="11" Classes="muted"
-                                                   MaxWidth="210" TextTrimming="CharacterEllipsis"/>
-                                    </Border>
-                                    <Border Classes="versionPill" Margin="0,0,8,4" ToolTip.Tip="{loc:Tr installs.tooltip.localChanges}">
-                                        <Border.IsVisible>
-                                            <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                <Binding Path="HasLocalChanges"/>
-                                                <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
-                                            </MultiBinding>
-                                        </Border.IsVisible>
-                                        <TextBlock Text="{Binding ChangeCount, StringFormat='{}{0} changed'}"
-                                                   FontSize="11" Classes="brand" FontWeight="Bold"/>
-                                    </Border>
-                                    <Border Classes="versionPill" Margin="0,0,8,4" ToolTip.Tip="{loc:Tr installs.row.leftOutTip}">
-                                        <Border.IsVisible>
-                                            <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                <Binding Path="HasLeftOutParts"/>
-                                                <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
-                                            </MultiBinding>
-                                        </Border.IsVisible>
-                                        <TextBlock Text="{Binding LeftOutText}" FontSize="11" Classes="muted"
-                                                   MaxWidth="210" TextTrimming="CharacterEllipsis"/>
-                                    </Border>
-                                    <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding TeamHasUpdates}"
-                                            ToolTip.Tip="{loc:Tr installs.team.tooltip}">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <PathIcon Width="11" Height="11" Data="{StaticResource IconDownload}"
-                                                      Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding TeamPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisUpdateAvailable}"
-                                            ToolTip.Tip="{Binding BasisPillTooltip}">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <PathIcon Width="11" Height="11" Data="{StaticResource IconUpdate}"
-                                                      Foreground="{StaticResource BasisActionTextBrush}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="brand" FontWeight="Bold"/>
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisUpdateInProgress}"
-                                            ToolTip.Tip="{Binding UpdateButtonTooltip}">
-                                        <StackPanel Orientation="Horizontal" Spacing="6">
-                                            <PathIcon Width="11" Height="11" Data="{StaticResource IconWarning}"
-                                                      Foreground="{StaticResource BasisWarningBrush}" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding BasisPillText}" FontSize="11" FontWeight="Bold"
-                                                       Foreground="{StaticResource BasisWarningBrush}"/>
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Classes="versionPill" Margin="0,0,8,4" IsVisible="{Binding BasisPillMuted}"
-                                            ToolTip.Tip="{Binding BasisPillTooltip}">
-                                        <TextBlock Text="{Binding BasisPillText}" FontSize="11" Classes="muted" MaxWidth="300" TextTrimming="CharacterEllipsis"/>
-                                    </Border>
-                                </WrapPanel>
-                                <TextBlock Grid.Row="3" Text="{Binding GitSummary}" Classes="muted" FontSize="12" Margin="0,2,0,0"
-                                           TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding GitSummary}"
-                                           IsVisible="{Binding #AdvancedToggle.IsChecked}"/>
-                                <StackPanel Grid.Row="4" Spacing="10" Margin="0,12,0,0">
-                                    <Grid ColumnDefinitions="*,8,*">
-                                        <Button Grid.Column="0" Classes="primary" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="10,9"
-                                                IsVisible="{Binding HasUnityProject}"
-                                                Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenInUnityCommand}"
-                                                CommandParameter="{Binding}"
-                                                ToolTip.Tip="{loc:Tr installs.tooltip.openInUnity}">
-                                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Grid.Column="2" Classes.cta="{Binding HighlightUpdates}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="10,9"
-                                                Command="{Binding #Root.((vm:InstallsViewModel)DataContext).UpdateBasisCommand}"
-                                                CommandParameter="{Binding}"
-                                                ToolTip.Tip="{Binding UpdateButtonTooltip}">
-                                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{Binding UpdateButtonLabel}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                            </StackPanel>
-                                        </Button>
-                                    </Grid>
-                                    <UniformGrid Columns="2" Margin="-3,0">
-                                        <UniformGrid.Styles>
-                                            <Style Selector="Button"><Setter Property="Margin" Value="3"/><Setter Property="Padding" Value="10,7"/><Setter Property="MinWidth" Value="0"/><Setter Property="HorizontalAlignment" Value="Stretch"/><Setter Property="HorizontalContentAlignment" Value="Left"/></Style>
-                                            <Style Selector="Button TextBlock"><Setter Property="TextTrimming" Value="CharacterEllipsis"/></Style>
-                                        </UniformGrid.Styles>
-                                        <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ChangeBranchCommand}"
-                                                CommandParameter="{Binding}"
-                                                ToolTip.Tip="{loc:Tr installs.tooltip.changeBranch}">
-                                            <Button.IsVisible>
-                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                    <Binding Path="IsGitRepo"/>
-                                                    <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
-                                                </MultiBinding>
-                                            </Button.IsVisible>
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{loc:Tr installs.button.changeBranch}" FontSize="12" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).BasisChangesCommand}"
-                                                CommandParameter="{Binding}"
-                                                ToolTip.Tip="{loc:Tr installs.tooltip.basisChanges}">
-                                            <Button.IsVisible>
-                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                    <Binding Path="HasUnityProject"/>
-                                                    <Binding ElementName="AdvancedToggle" Path="IsChecked"/>
-                                                </MultiBinding>
-                                            </Button.IsVisible>
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconChanges}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{loc:Tr installs.button.basisChanges}" FontSize="12" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).ManagePackagesCommand}"
-                                                CommandParameter="{Binding}"
-                                                ToolTip.Tip="{loc:Tr installs.tooltip.packages}">
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{loc:Tr installs.button.packages}" FontSize="12" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Command="{Binding #Root.((vm:InstallsViewModel)DataContext).OpenFolderCommand}"
-                                                CommandParameter="{Binding}"
-                                                ToolTip.Tip="{loc:Tr installs.tooltip.openFolder}">
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{loc:Tr installs.button.openFolder}" FontSize="12" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                        <Button Classes="danger"
-                                                Command="{Binding #Root.((vm:InstallsViewModel)DataContext).RemoveCommand}"
-                                                CommandParameter="{Binding}"
-                                                ToolTip.Tip="{loc:Tr installs.tooltip.remove}">
-                                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <PathIcon Width="14" Height="14" Data="{StaticResource IconDelete}" VerticalAlignment="Center"/>
-                                                <TextBlock Text="{loc:Tr installs.button.remove}" FontSize="12" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Button>
-                                    </UniformGrid>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
 
             <Border Classes="card" IsVisible="{Binding Installs.Count, Converter={x:Static vm:Converters.IntZero}}">
                 <StackPanel Spacing="8" HorizontalAlignment="Center" Margin="0,40">

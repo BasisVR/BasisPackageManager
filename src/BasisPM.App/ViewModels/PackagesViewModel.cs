@@ -29,7 +29,6 @@ public sealed partial class PackagesViewModel : ObservableObject
     private readonly PackageListService _packageListService;
     private readonly BasisUpdateService _basisUpdates;
     private readonly MainWindowViewModel _shell;
-    private bool _isGridView;
     private bool _compileAfterInstall = true;
 
     private Catalog _catalog = new();
@@ -148,13 +147,11 @@ public sealed partial class PackagesViewModel : ObservableObject
         set
         {
             if (!SetField(ref _showInstalledOnly, value)) return;
-            OnPropertyChanged(nameof(InstalledToggleLabel));
             OnPropertyChanged(nameof(ListHeaderLabel));
             OnPropertyChanged(nameof(ShowInstalledEmptyHint));
             Refilter();
         }
     }
-    public string InstalledToggleLabel => _showInstalledOnly ? L.Tr("packages.button.showAll") : L.Tr("packages.button.showInstalled");
     public string ListHeaderLabel => _showInstalledOnly ? L.Tr("packages.header.installed") : _install is null ? L.Tr("packages.header.available") : L.Tr("packages.header.packagesFor", _install.DisplayName);
     public bool ShowInstalledEmptyHint => _showInstalledOnly && Available.Count == 0;
 
@@ -177,21 +174,6 @@ public sealed partial class PackagesViewModel : ObservableObject
     private RelayCommand? _openInUnityCommand;
     public RelayCommand OpenInUnityCommand => _openInUnityCommand ??= new RelayCommand(() => _install is null ? Task.CompletedTask : _shell.OpenProjectInUnityAsync(_install));
 
-    // Packages "Available" list layout: false = rows (default), true = a grid of cards. Persisted.
-    public bool IsGridView
-    {
-        get => _isGridView;
-        set
-        {
-            if (!SetField(ref _isGridView, value)) return;
-            OnPropertyChanged(nameof(IsListView));
-            OnPropertyChanged(nameof(LayoutToggleLabel));
-            _ = PersistGridViewAsync(value);
-        }
-    }
-    public bool IsListView => !_isGridView;
-    public string LayoutToggleLabel => _isGridView ? L.Tr("packages.button.listView") : L.Tr("packages.button.gridView");
-
     // The package whose detail panel is open (null = closed). Clicking a row opens it.
     private PackageRow? _selectedPackage;
     public PackageRow? SelectedPackage
@@ -210,7 +192,6 @@ public sealed partial class PackagesViewModel : ObservableObject
 
     public RelayCommand<CatalogPackageVersion> InstallCommand { get; }
     public RelayCommand<CatalogPackageVersion> RemoveCommand { get; }
-    public RelayCommand ToggleInstalledCommand { get; }
     public RelayCommand UpdateAllCommand { get; }
     public RelayCommand RefreshCommand { get; }
     public RelayCommand AddFromGitHubCommand { get; }
@@ -218,7 +199,6 @@ public sealed partial class PackagesViewModel : ObservableObject
     public RelayCommand InstallPackageListFromRegistryCommand { get; }
     public RelayCommand InstallPackageListFromFileCommand { get; }
     public RelayCommand<CatalogPackageVersion> ChooseVersionCommand { get; }
-    public RelayCommand ToggleLayoutCommand { get; }
     public RelayCommand<string> OpenLinkCommand { get; }
     public RelayCommand CloseDetailCommand { get; }
     // Mount workflow (formerly the Develop tab): act on a package straight from its row/detail.
@@ -251,7 +231,6 @@ public sealed partial class PackagesViewModel : ObservableObject
 
         InstallCommand = new RelayCommand<CatalogPackageVersion>(EnqueueInstall);
         RemoveCommand = new RelayCommand<CatalogPackageVersion>(RemoveAvailable);
-        ToggleInstalledCommand = new RelayCommand(() => ShowInstalledOnly = !ShowInstalledOnly);
         UpdateAllCommand = new RelayCommand(UpdateAll);
         RefreshCommand = new RelayCommand(RefreshAsync);
         AddFromGitHubCommand = new RelayCommand(AddFromGitHubAsync);
@@ -259,7 +238,6 @@ public sealed partial class PackagesViewModel : ObservableObject
         InstallPackageListFromRegistryCommand = new RelayCommand(InstallPackageListFromRegistryAsync);
         InstallPackageListFromFileCommand = new RelayCommand(InstallPackageListFromFileAsync);
         ChooseVersionCommand = new RelayCommand<CatalogPackageVersion>(ChooseVersionAsync);
-        ToggleLayoutCommand = new RelayCommand(() => IsGridView = !IsGridView);
         SortOptions = BuildSortOptions();
         _selectedSort = SortOptions[0];
         Localizer.Instance.LanguageChanged += _ => ApplyLanguage();
@@ -288,9 +266,7 @@ public sealed partial class PackagesViewModel : ObservableObject
         OnPropertyChanged(nameof(SortOptions));
         _selectedSort = SortOptions.FirstOrDefault(o => o.Key == sortKey) ?? SortOptions[0];
         OnPropertyChanged(nameof(SelectedSort));
-        OnPropertyChanged(nameof(InstalledToggleLabel));
         OnPropertyChanged(nameof(ListHeaderLabel));
-        OnPropertyChanged(nameof(LayoutToggleLabel));
         OnPropertyChanged(nameof(InstallQueueLabel));
         OnPropertyChanged(nameof(InstallName));
         BuildFacets();
@@ -324,27 +300,6 @@ public sealed partial class PackagesViewModel : ObservableObject
             await _settingsService.SaveAsync(settings);
         }
         catch (Exception ex) { DiagnosticLog.Write("Saving the compile-after-install preference", ex); }
-    }
-
-    /// <summary>Applies the persisted layout choice at startup without re-saving it.</summary>
-    public void SetInitialGridView(bool grid)
-    {
-        if (_isGridView == grid) return;
-        _isGridView = grid;
-        OnPropertyChanged(nameof(IsGridView));
-        OnPropertyChanged(nameof(IsListView));
-        OnPropertyChanged(nameof(LayoutToggleLabel));
-    }
-
-    private async Task PersistGridViewAsync(bool grid)
-    {
-        try
-        {
-            var settings = await _settingsService.LoadAsync();
-            settings.PackagesGridView = grid;
-            await _settingsService.SaveAsync(settings);
-        }
-        catch (Exception ex) { DiagnosticLog.Write("Saving the package view preference", ex); /* a view preference isn't worth surfacing a settings-write error */ }
     }
 
     public void SetActiveInstall(BasisInstall install)

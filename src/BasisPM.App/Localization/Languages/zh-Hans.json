@@ -52,7 +52,7 @@
     },
     {
       "key": "nav.community",
-      "value": "社区"
+      "value": "主页"
     },
     {
       "key": "nav.develop",
@@ -63,7 +63,7 @@
       "value": "项目"
     },
     {
-      "key": "nav.packages",
+      "key": "packages.window.title",
       "value": "软件包"
     },
     {
@@ -357,10 +357,6 @@
     {
       "key": "installs.action.updateCore",
       "value": "“更新核心”会运行 'git pull'，这可能会更改你 Basis 项目中的文件。"
-    },
-    {
-      "key": "installs.badge.active",
-      "value": "当前"
     },
     {
       "key": "installs.button.changeBranch",
@@ -1279,10 +1275,6 @@
       "value": "打开文件夹"
     },
     {
-      "key": "installs.button.packages",
-      "value": "软件包"
-    },
-    {
       "key": "installs.button.updateCore",
       "value": "更新核心"
     },
@@ -1293,6 +1285,14 @@
     {
       "key": "installs.dialog.deleteConfirmBody",
       "value": "这将永久删除“{0}”及其中的所有内容：\n\n{1}\n\n此操作无法撤消。确定删除吗？"
+    },
+    {
+      "key": "installs.dialog.removeConfirmTitle",
+      "value": "移除项目"
+    },
+    {
+      "key": "installs.dialog.removeConfirmHeading",
+      "value": "移除 {0} 吗？"
     },
     {
       "key": "installs.dialog.deleteConfirmTitle",
@@ -1571,10 +1571,6 @@
       "value": "许可证"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "网格视图"
-    },
-    {
       "key": "packages.button.install",
       "value": "安装"
     },
@@ -1591,28 +1587,12 @@
       "value": "另有 {0} 个正在排队"
     },
     {
-      "key": "packages.button.listView",
-      "value": "列表视图"
-    },
-    {
-      "key": "packages.button.showInstalled",
-      "value": "显示已安装"
-    },
-    {
-      "key": "packages.button.showAll",
-      "value": "显示全部"
-    },
-    {
       "key": "packages.tooltip.showInstalled",
       "value": "在显示注册表中的所有软件包与仅显示此项目中的软件包之间切换。"
     },
     {
       "key": "packages.installed.empty",
       "value": "此项目中还没有安装任何软件包。"
-    },
-    {
-      "key": "packages.button.manage",
-      "value": "管理"
     },
     {
       "key": "packages.button.remove",
@@ -1945,10 +1925,6 @@
     {
       "key": "packages.tooltip.chooseVersion",
       "value": "选择此软件包仓库的某个发行版、标签或默认分支并切换过去。项目 .basisdev 文件夹中的现有克隆会就地移动到该版本，在不冲突时保留你的编辑；否则会将软件包克隆到那里。Basis 注册表未检查过的版本会在 Unity 加载之前先显示出来供你审查。"
-    },
-    {
-      "key": "packages.tooltip.toggleLayout",
-      "value": "在行列表和卡片网格之间切换。你的选择会被记住。"
     },
     {
       "key": "packages.tooltip.viewDetails",
@@ -2907,27 +2883,7 @@
       "value": "是"
     },
     {
-      "key": "dialog.remove.title",
-      "value": "移除项目"
-    },
-    {
-      "key": "dialog.remove.heading",
-      "value": "移除 {0} 吗？"
-    },
-    {
-      "key": "dialog.remove.body",
-      "value": "“从列表中移除”只会让此处不再记录该项目，你的文件会原样保留在原处。“从磁盘删除”会永久删除下方显示的整个项目文件夹，此操作无法撤消。"
-    },
-    {
-      "key": "dialog.remove.cancel",
-      "value": "取消"
-    },
-    {
-      "key": "dialog.remove.removeFromList",
-      "value": "从列表中移除"
-    },
-    {
-      "key": "dialog.remove.deleteFromDisk",
+      "key": "installs.button.delete",
       "value": "从磁盘删除"
     },
     {
@@ -3231,22 +3187,6 @@
       "value": "选择一个版本"
     },
     {
-      "key": "community.hero.tagline",
-      "value": "社区"
-    },
-    {
-      "key": "community.hero.title",
-      "value": "新闻、文档与支持"
-    },
-    {
-      "key": "community.hero.subtitle",
-      "value": "Basis 的最新动态、在哪里学习它，以及如何帮助它持续发展。"
-    },
-    {
-      "key": "community.button.openDocs",
-      "value": "打开文档"
-    },
-    {
       "key": "community.button.joinDiscord",
       "value": "加入 Discord"
     },
@@ -3271,36 +3211,8 @@
       "value": "请稍后再来，来自 Basis 团队的消息会显示在这里。"
     },
     {
-      "key": "community.docs.heading",
-      "value": "文档"
-    },
-    {
       "key": "community.docs.siteTitle",
       "value": "文档站点"
-    },
-    {
-      "key": "community.docs.siteBody",
-      "value": "涵盖安装、入门、虚拟形象、世界、网络和 SDK 的完整文档位于 docs.basisvr.org。"
-    },
-    {
-      "key": "community.docs.openSite",
-      "value": "打开 docs.basisvr.org"
-    },
-    {
-      "key": "community.docs.askTitle",
-      "value": "向社区提问"
-    },
-    {
-      "key": "community.docs.askBody",
-      "value": "遇到文档未涵盖的问题？Discord 是从其他创作者和维护者那里获得帮助的最快方式。"
-    },
-    {
-      "key": "community.docs.sourceTitle",
-      "value": "源码与 issue"
-    },
-    {
-      "key": "community.docs.sourceBody",
-      "value": "阅读代码、报告缺陷或发起拉取请求。Basis 采用 MIT 许可，并公开开发。"
     },
     {
       "key": "community.docs.basisRepo",
@@ -3311,52 +3223,8 @@
       "value": "GitHub 上的 Package Manager"
     },
     {
-      "key": "community.support.heading",
-      "value": "支持 Basis"
-    },
-    {
-      "key": "community.support.intro",
-      "value": "Basis 采用 MIT 许可，以创作者为先。社区捐助和公司合作让维护者得以全职工作并加快版本发布。"
-    },
-    {
       "key": "community.support.openCollective",
       "value": "通过 OpenCollective 支持"
-    },
-    {
-      "key": "community.support.donationsTitle",
-      "value": "社区捐助"
-    },
-    {
-      "key": "community.support.donationsBody",
-      "value": "个人可在 OpenCollective 上按月或一次性支持 Basis。这些资金主要用于全职维护和开发者体验方面的工作。"
-    },
-    {
-      "key": "community.support.backOpenCollective",
-      "value": "在 OpenCollective 上支持"
-    },
-    {
-      "key": "community.support.collabTitle",
-      "value": "公司合作"
-    },
-    {
-      "key": "community.support.collabBody",
-      "value": "公司可赞助路线图项目或共同资助功能，例如网络、虚拟形象系统、工具。成果会合入上游，并默认保持 MIT 许可。"
-    },
-    {
-      "key": "community.support.sponsorFeature",
-      "value": "赞助一项功能"
-    },
-    {
-      "key": "community.support.moneyTitle",
-      "value": "资金去向"
-    },
-    {
-      "key": "community.support.moneyBody",
-      "value": "资金汇集起来，用于解决惠及所有人的共同问题，例如网络、化身、工具。OpenCollective 上有公开账本，受赞助的工作会在发行说明中注明。赞助者不会控制项目。"
-    },
-    {
-      "key": "community.support.fundingPage",
-      "value": "阅读完整的资助页面"
     },
     {
       "key": "packages.button.packageLists",
@@ -3647,16 +3515,8 @@
       "value": "将所选捆绑包中的软件包添加到项目。接下来你需要选择项目，这些软件包会被写入其 Packages/manifest.json。"
     },
     {
-      "key": "dialog.remove.tooltip.cancel",
-      "value": "将此项目保留在列表中并关闭。不会移除或删除任何内容。"
-    },
-    {
-      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "key": "installs.tooltip.delete",
       "value": "永久删除上方显示的整个项目文件夹，包括其 git 历史记录以及任何未推送或未在别处备份的工作。系统会再次请你确认。此操作无法撤消。删除前请关闭 Unity。"
-    },
-    {
-      "key": "dialog.remove.tooltip.removeFromList",
-      "value": "将此项目从列表中移除。其文件夹和文件会保留在磁盘上，之后你可以通过“添加现有”重新添加。"
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
@@ -3739,24 +3599,12 @@
       "value": "使用此项目所用的 Unity 编辑器版本打开它。如果尚未安装该版本，会打开 Unity Hub 以便你添加它。"
     },
     {
-      "key": "installs.tooltip.packages",
-      "value": "将此项目设为当前项目，并打开“软件包”选项卡以管理其软件包。"
-    },
-    {
       "key": "nav.tooltip.community",
-      "value": "前往“社区”选项卡，查看 Basis 新闻、文档链接、Discord 上的帮助以及支持本项目的方式。此按钮上的数字表示你尚未查看的公告数。打开“社区”会将它们标记为已读。"
+      "value": "前往“主页”选项卡，查看 Basis 新闻、文档链接、Discord 上的帮助以及支持本项目的方式。此按钮上的数字表示你尚未查看的公告数。打开“主页”会将它们标记为已读。"
     },
     {
       "key": "nav.tooltip.installs",
       "value": "前往你的 Basis 项目，你可以在此创建或添加项目、在 Unity 中打开项目、更新 Basis、切换分支以及进行备份。此按钮上的数字表示有可用的 Basis 更新或有更新等待你完成的项目数。"
-    },
-    {
-      "key": "nav.tooltip.packages",
-      "value": "前往软件包浏览器，你可以在此查找注册表中的软件包，并在项目中安装、更新或移除它们。捆绑包、来自 GitHub 链接的软件包以及软件包源代码编辑功能也都在这里。"
-    },
-    {
-      "key": "nav.tooltip.server",
-      "value": "前往所选项目的 Basis 服务器，你可以在此构建、运行和停止服务器，并编辑其配置、服务器软件包和默认内容。构建需要 .NET 10 SDK。"
     },
     {
       "key": "nav.tooltip.settings",
@@ -3789,10 +3637,6 @@
     {
       "key": "packages.tooltip.installGit",
       "value": "在浏览器中打开 Git 下载页面。克隆软件包以进行编辑以及提交拉取请求都需要 Git。安装后，请使用此页面顶部的“刷新”。"
-    },
-    {
-      "key": "packages.tooltip.manage",
-      "value": "打开菜单以更新此软件包、选择其他版本、挂载以编辑或移除它。仅在适用时才会显示相应选项。"
     },
     {
       "key": "packages.tooltip.openFolder",
@@ -5475,18 +5319,6 @@
       "value": "此项目是 {0} 的克隆。拉取请求会使用一个单独的分支，因此你当前检出的分支不会被推送或更改。"
     },
     {
-      "key": "installs.button.gridView",
-      "value": "网格视图"
-    },
-    {
-      "key": "installs.button.listView",
-      "value": "列表视图"
-    },
-    {
-      "key": "installs.tooltip.toggleLayout",
-      "value": "在以列表或卡片网格形式显示项目之间切换。应用会记住你的选择。"
-    },
-    {
       "key": "installs.button.findProjects",
       "value": "查找项目"
     },
@@ -6488,11 +6320,7 @@
     },
     {
       "key": "installs.tooltip.remove",
-      "value": "从列表中移除此项目，或从磁盘删除其文件夹。你将在下一步中进行选择，删除操作无法撤消。"
-    },
-    {
-      "key": "installs.tooltip.activeBadge",
-      "value": "当前项目，即“软件包”和“服务器”选项卡所操作的项目。要更改它，请在其他项目上单击“软件包”，或在“软件包”选项卡中选择一个项目。"
+      "value": "将此项目从列表中移除。其文件夹和文件会保留在磁盘上，之后你可以通过“添加现有”重新添加。"
     },
     {
       "key": "installs.tooltip.unityVersion",
@@ -8045,6 +7873,46 @@
     {
       "key": "dialog.setup.toolsDirty",
       "value": "打开组件、备份或存储空间之前，请先保存更改。"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "欢迎使用 Basis"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Basis 的最新动态、学习资料和求助渠道。"
+    },
+    {
+      "key": "community.links.heading",
+      "value": "资源"
+    },
+    {
+      "key": "community.tooltip.projects",
+      "value": "前往你的项目，在这里创建、打开和更新 Basis 项目并管理它们的软件包。"
+    },
+    {
+      "key": "installs.button.manageProject",
+      "value": "管理项目"
+    },
+    {
+      "key": "installs.tooltip.manageProject",
+      "value": "将此项目设为当前项目，并在此处打开它的页面，其中有它的软件包、服务器和项目工具：更新 Basis、设置、分支、更改和文件夹。"
+    },
+    {
+      "key": "packages.button.uninstall",
+      "value": "卸载"
+    },
+    {
+      "key": "packages.toggle.installedOnly",
+      "value": "仅已安装"
+    },
+    {
+      "key": "project.settings.title",
+      "value": "项目设置"
+    },
+    {
+      "key": "project.changes.button",
+      "value": "查看更改"
     }
   ]
 }

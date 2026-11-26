@@ -52,7 +52,7 @@
     },
     {
       "key": "nav.community",
-      "value": "کمیونٹی"
+      "value": "ہوم"
     },
     {
       "key": "nav.develop",
@@ -63,7 +63,7 @@
       "value": "پروجیکٹس"
     },
     {
-      "key": "nav.packages",
+      "key": "packages.window.title",
       "value": "پیکجز"
     },
     {
@@ -357,10 +357,6 @@
     {
       "key": "installs.action.updateCore",
       "value": "کور اپڈیٹ کرنا 'git pull' چلاتا ہے، جو آپ کے Basis پروجیکٹ میں فائلیں تبدیل کر سکتا ہے۔"
-    },
-    {
-      "key": "installs.badge.active",
-      "value": "فعال"
     },
     {
       "key": "installs.button.changeBranch",
@@ -1279,10 +1275,6 @@
       "value": "فولڈر کھولیں"
     },
     {
-      "key": "installs.button.packages",
-      "value": "پیکجز"
-    },
-    {
       "key": "installs.button.updateCore",
       "value": "کور اپڈیٹ کریں"
     },
@@ -1293,6 +1285,14 @@
     {
       "key": "installs.dialog.deleteConfirmBody",
       "value": "یہ “{0}” اور اس کے اندر موجود ہر چیز کو مستقل طور پر حذف کر دیتا ہے:\n\n{1}\n\nاسے واپس نہیں کیا جا سکتا۔ حذف کریں؟"
+    },
+    {
+      "key": "installs.dialog.removeConfirmTitle",
+      "value": "پروجیکٹ ہٹائیں"
+    },
+    {
+      "key": "installs.dialog.removeConfirmHeading",
+      "value": "{0} ہٹائیں؟"
     },
     {
       "key": "installs.dialog.deleteConfirmTitle",
@@ -1571,10 +1571,6 @@
       "value": "لائسنس"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "گرڈ ویو"
-    },
-    {
       "key": "packages.button.install",
       "value": "انسٹال کریں"
     },
@@ -1591,28 +1587,12 @@
       "value": "{0} مزید قطار میں"
     },
     {
-      "key": "packages.button.listView",
-      "value": "فہرست ویو"
-    },
-    {
-      "key": "packages.button.showInstalled",
-      "value": "انسٹال شدہ دکھائیں"
-    },
-    {
-      "key": "packages.button.showAll",
-      "value": "سب دکھائیں"
-    },
-    {
       "key": "packages.tooltip.showInstalled",
       "value": "رجسٹری کے تمام پیکجز اور صرف اس پروجیکٹ کے پیکجز کے درمیان سوئچ کریں۔"
     },
     {
       "key": "packages.installed.empty",
       "value": "اس پروجیکٹ میں ابھی تک کوئی پیکج انسٹال نہیں۔"
-    },
-    {
-      "key": "packages.button.manage",
-      "value": "منظم کریں"
     },
     {
       "key": "packages.button.remove",
@@ -1945,10 +1925,6 @@
     {
       "key": "packages.tooltip.chooseVersion",
       "value": "اس پیکج کی ریپوزٹری کی کوئی ریلیز، ٹیگ یا ڈیفالٹ برانچ منتخب کریں اور اس پر سوئچ کریں۔ اگر پروجیکٹ کے .basisdev فولڈر میں پہلے سے کلون موجود ہو تو اسے اسی جگہ اس ورژن پر منتقل کیا جاتا ہے، اور جو ترامیم نہ ٹکرائیں وہ برقرار رہتی ہیں؛ بصورت دیگر پیکج وہاں کلون کیا جاتا ہے۔ جس ورژن کو Basis رجسٹری نے نہیں جانچا، اسے Unity کے لوڈ کرنے سے پہلے جائزے کے لیے دکھایا جاتا ہے۔"
-    },
-    {
-      "key": "packages.tooltip.toggleLayout",
-      "value": "قطاروں کی فہرست اور کارڈز کے گرڈ کے درمیان سوئچ کریں۔ آپ کا انتخاب یاد رکھا جاتا ہے۔"
     },
     {
       "key": "packages.tooltip.viewDetails",
@@ -2907,27 +2883,7 @@
       "value": "ہاں"
     },
     {
-      "key": "dialog.remove.title",
-      "value": "پروجیکٹ ہٹائیں"
-    },
-    {
-      "key": "dialog.remove.heading",
-      "value": "{0} ہٹائیں؟"
-    },
-    {
-      "key": "dialog.remove.body",
-      "value": "“فہرست سے ہٹائیں” صرف یہاں اس پروجیکٹ کو بھلا دیتا ہے: آپ کی فائلیں بالکل وہیں رہتی ہیں جہاں ہیں۔ “ڈسک سے حذف کریں” نیچے دکھایا گیا پورا پروجیکٹ فولڈر مستقل طور پر حذف کر دیتا ہے۔ اسے واپس نہیں کیا جا سکتا۔"
-    },
-    {
-      "key": "dialog.remove.cancel",
-      "value": "منسوخ کریں"
-    },
-    {
-      "key": "dialog.remove.removeFromList",
-      "value": "فہرست سے ہٹائیں"
-    },
-    {
-      "key": "dialog.remove.deleteFromDisk",
+      "key": "installs.button.delete",
       "value": "ڈسک سے حذف کریں"
     },
     {
@@ -3231,22 +3187,6 @@
       "value": "ایک ورژن منتخب کریں"
     },
     {
-      "key": "community.hero.tagline",
-      "value": "کمیونٹی"
-    },
-    {
-      "key": "community.hero.title",
-      "value": "خبریں، دستاویزات اور تعاون"
-    },
-    {
-      "key": "community.hero.subtitle",
-      "value": "Basis میں کیا نیا ہے، اسے کہاں سیکھیں، اور اسے جاری رکھنے میں کیسے مدد کریں۔"
-    },
-    {
-      "key": "community.button.openDocs",
-      "value": "دستاویزات کھولیں"
-    },
-    {
       "key": "community.button.joinDiscord",
       "value": "Discord میں شامل ہوں"
     },
@@ -3271,36 +3211,8 @@
       "value": "بعد میں دوبارہ دیکھیں: Basis ٹیم کی خبریں یہاں ظاہر ہوں گی۔"
     },
     {
-      "key": "community.docs.heading",
-      "value": "دستاویزات"
-    },
-    {
       "key": "community.docs.siteTitle",
       "value": "دستاویزات سائٹ"
-    },
-    {
-      "key": "community.docs.siteBody",
-      "value": "انسٹالیشن، پہلے اقدامات، اوتار، دنیائیں، نیٹ ورکنگ اور SDK: مکمل دستاویزات docs.basisvr.org پر موجود ہیں۔"
-    },
-    {
-      "key": "community.docs.openSite",
-      "value": "docs.basisvr.org کھولیں"
-    },
-    {
-      "key": "community.docs.askTitle",
-      "value": "کمیونٹی سے پوچھیں"
-    },
-    {
-      "key": "community.docs.askBody",
-      "value": "کسی ایسی چیز پر اٹکے ہیں جو دستاویزات میں شامل نہیں؟ Discord دیگر تخلیق کاروں اور مینٹینرز سے مدد حاصل کرنے کا تیز ترین طریقہ ہے۔"
-    },
-    {
-      "key": "community.docs.sourceTitle",
-      "value": "سورس اور مسائل"
-    },
-    {
-      "key": "community.docs.sourceBody",
-      "value": "کوڈ پڑھیں، کوئی bug درج کریں یا ایک pull request کھولیں۔ Basis MIT لائسنس یافتہ ہے اور کھلے عام تیار کیا جاتا ہے۔"
     },
     {
       "key": "community.docs.basisRepo",
@@ -3311,52 +3223,8 @@
       "value": "GitHub پر Package Manager"
     },
     {
-      "key": "community.support.heading",
-      "value": "Basis کی مدد کریں"
-    },
-    {
-      "key": "community.support.intro",
-      "value": "Basis MIT لائسنس یافتہ اور تخلیق کار کو ترجیح دینے والا ہے۔ کمیونٹی عطیات اور کمپنی اشتراک ایک مینٹینر کو کل وقتی کام پر رکھتے ہیں اور ریلیزز کو تیز کرتے ہیں۔"
-    },
-    {
       "key": "community.support.openCollective",
       "value": "OpenCollective کے ذریعے تعاون کریں"
-    },
-    {
-      "key": "community.support.donationsTitle",
-      "value": "کمیونٹی عطیات"
-    },
-    {
-      "key": "community.support.donationsBody",
-      "value": "افراد OpenCollective پر ماہانہ یا یک بار Basis کی مدد کرتے ہیں۔ یہ فنڈز بنیادی طور پر کل وقتی دیکھ بھال اور ڈویلپر تجربے کے کام میں مدد دیتے ہیں۔"
-    },
-    {
-      "key": "community.support.backOpenCollective",
-      "value": "OpenCollective پر تعاون کریں"
-    },
-    {
-      "key": "community.support.collabTitle",
-      "value": "کمپنی اشتراک"
-    },
-    {
-      "key": "community.support.collabBody",
-      "value": "کمپنیاں روڈ میپ آئٹمز کی اسپانسرشپ کرتی ہیں یا فیچرز کی مشترکہ فنڈنگ کرتی ہیں، جیسے نیٹ ورکنگ، اوتار سسٹمز اور ٹولنگ۔ کام اپ اسٹریم پہنچتا ہے اور بطور ڈیفالٹ MIT لائسنس یافتہ رہتا ہے۔"
-    },
-    {
-      "key": "community.support.sponsorFeature",
-      "value": "کسی فیچر کی اسپانسرشپ کریں"
-    },
-    {
-      "key": "community.support.moneyTitle",
-      "value": "پیسہ کہاں جاتا ہے"
-    },
-    {
-      "key": "community.support.moneyBody",
-      "value": "فنڈز کو ایسے مشترکہ مسائل حل کرنے کے لیے یکجا کیا جاتا ہے جن سے سب کو فائدہ ہوتا ہے، جیسے نیٹ ورکنگ، ایمبڈیمنٹ اور ٹولنگ۔ OpenCollective پر ایک عوامی کھاتہ موجود ہے، اور اسپانسر شدہ کام کو ریلیز نوٹس میں منسوب کیا جاتا ہے۔ اسپانسرز پروجیکٹ کو کنٹرول نہیں کرتے۔"
-    },
-    {
-      "key": "community.support.fundingPage",
-      "value": "مکمل فنڈنگ صفحہ پڑھیں"
     },
     {
       "key": "packages.button.packageLists",
@@ -3647,16 +3515,8 @@
       "value": "منتخب بنڈل کے پیکجز کسی پروجیکٹ میں شامل کریں۔ اس کے بعد آپ پروجیکٹ منتخب کرتے ہیں، اور پیکجز اس کی Packages/manifest.json میں لکھ دیے جاتے ہیں۔"
     },
     {
-      "key": "dialog.remove.tooltip.cancel",
-      "value": "اس پروجیکٹ کو اپنی فہرست میں رکھیں اور بند کریں۔ کچھ بھی ہٹایا یا حذف نہیں ہوتا۔"
-    },
-    {
-      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "key": "installs.tooltip.delete",
       "value": "اوپر دکھایا گیا پورا پروجیکٹ فولڈر مستقل طور پر حذف کریں، بشمول اس کی git ہسٹری اور ہر وہ کام جو push نہیں ہوا یا کہیں اور بیک اپ نہیں ہوا۔ آپ سے ایک بار پھر تصدیق مانگی جاتی ہے۔ اسے واپس نہیں کیا جا سکتا۔ حذف کرنے سے پہلے Unity بند کریں۔"
-    },
-    {
-      "key": "dialog.remove.tooltip.removeFromList",
-      "value": "اس پروجیکٹ کو اپنی فہرست سے ہٹا دیں۔ اس کا فولڈر اور فائلیں ڈسک پر رہتی ہیں، اور آپ بعد میں “موجودہ شامل کریں” سے اسے دوبارہ شامل کر سکتے ہیں۔"
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
@@ -3739,24 +3599,12 @@
       "value": "اس پروجیکٹ کو اسی Unity ایڈیٹر ورژن میں کھولیں جو یہ استعمال کرتا ہے۔ اگر وہ ورژن ابھی انسٹال نہیں ہے تو Unity Hub کھلتا ہے تاکہ آپ اسے شامل کر سکیں۔"
     },
     {
-      "key": "installs.tooltip.packages",
-      "value": "اسے فعال پروجیکٹ بنائیں اور اس کے پیکجز منظم کرنے کے لیے پیکجز ٹیب کھولیں۔"
-    },
-    {
       "key": "nav.tooltip.community",
-      "value": "Basis کی خبروں، دستاویزات کے لنکس، Discord پر مدد اور پروجیکٹ کی مدد کے طریقوں کے لیے کمیونٹی ٹیب پر جائیں۔ اس بٹن پر موجود نمبر ان اعلانات کی تعداد ہے جو آپ نے ابھی تک نہیں دیکھے۔ کمیونٹی کھولنے پر وہ پڑھے ہوئے نشان زد ہو جاتے ہیں۔"
+      "value": "Basis کی خبروں، دستاویزات کے لنکس، Discord پر مدد اور پروجیکٹ کی مدد کے طریقوں کے لیے ہوم ٹیب پر جائیں۔ اس بٹن پر موجود نمبر ان اعلانات کی تعداد ہے جو آپ نے ابھی تک نہیں دیکھے۔ ہوم کھولنے پر وہ پڑھے ہوئے نشان زد ہو جاتے ہیں۔"
     },
     {
       "key": "nav.tooltip.installs",
       "value": "اپنے Basis پروجیکٹس پر جائیں، جہاں آپ پروجیکٹ بناتے یا شامل کرتے ہیں، اسے Unity میں کھولتے ہیں، Basis اپڈیٹ کرتے ہیں، برانچیں سوئچ کرتے ہیں اور بیک اپ بناتے ہیں۔ اس بٹن پر موجود نمبر ان پروجیکٹس کی تعداد ہے جن کا Basis اپڈیٹ دستیاب ہے یا آپ کے مکمل کرنے کا منتظر ہے۔"
-    },
-    {
-      "key": "nav.tooltip.packages",
-      "value": "پیکج براؤزر پر جائیں، جہاں آپ رجسٹری میں پیکجز تلاش کرتے ہیں اور انہیں کسی پروجیکٹ میں انسٹال، اپڈیٹ یا ہٹاتے ہیں۔ بنڈلز، GitHub لنکس سے پیکجز اور کسی پیکج کے سورس میں ترمیم بھی یہیں ہے۔"
-    },
-    {
-      "key": "nav.tooltip.server",
-      "value": "منتخب پروجیکٹ کے Basis سرور پر جائیں، جہاں آپ اسے بلڈ کرتے، چلاتے اور روکتے ہیں اور اس کی کنفیگریشن، سرور پیکجز اور ڈیفالٹ مواد میں ترمیم کرتے ہیں۔ بلڈ کرنے کے لیے .NET 10 SDK درکار ہے۔"
     },
     {
       "key": "nav.tooltip.settings",
@@ -3789,10 +3637,6 @@
     {
       "key": "packages.tooltip.installGit",
       "value": "اپنے براؤزر میں Git کا ڈاؤن لوڈ صفحہ کھولیں۔ ترمیم کے لیے پیکجز کلون کرنے اور pull requests جمع کرانے کے لیے Git درکار ہے۔ اسے انسٹال کرنے کے بعد اس صفحے کے اوپر “تازہ کریں” استعمال کریں۔"
-    },
-    {
-      "key": "packages.tooltip.manage",
-      "value": "اس پیکج کو اپڈیٹ کرنے، کوئی دوسرا ورژن منتخب کرنے، ترمیم کے لیے ماؤنٹ کرنے یا ہٹانے کے لیے ایک مینو کھولیں۔ اختیارات صرف تب ظاہر ہوتے ہیں جب وہ لاگو ہوں۔"
     },
     {
       "key": "packages.tooltip.openFolder",
@@ -5475,18 +5319,6 @@
       "value": "یہ پروجیکٹ {0} کا ایک کلون ہے۔ pull request اپنی الگ برانچ پر جاتی ہے، اس لیے آپ کی checkout کی ہوئی برانچ نہ push ہوتی ہے نہ تبدیل۔"
     },
     {
-      "key": "installs.button.gridView",
-      "value": "گرڈ ویو"
-    },
-    {
-      "key": "installs.button.listView",
-      "value": "فہرست ویو"
-    },
-    {
-      "key": "installs.tooltip.toggleLayout",
-      "value": "اپنے پروجیکٹس کو فہرست یا کارڈز کے گرڈ کی صورت میں دکھانے کے درمیان سوئچ کریں۔ ایپ آپ کا انتخاب یاد رکھتی ہے۔"
-    },
-    {
       "key": "installs.button.findProjects",
       "value": "پروجیکٹس تلاش کریں"
     },
@@ -6488,11 +6320,7 @@
     },
     {
       "key": "installs.tooltip.remove",
-      "value": "اس پروجیکٹ کو اپنی فہرست سے ہٹائیں، یا اس کا فولڈر ڈسک سے حذف کریں۔ آپ اگلے مرحلے میں انتخاب کرتے ہیں، اور حذف کرنا واپس نہیں ہو سکتا۔"
-    },
-    {
-      "key": "installs.tooltip.activeBadge",
-      "value": "فعال پروجیکٹ، جس پر پیکجز اور سرور ٹیبز کام کرتے ہیں۔ اسے تبدیل کرنے کے لیے کسی دوسرے پروجیکٹ پر “پیکجز” دبائیں یا پیکجز ٹیب پر کوئی پروجیکٹ منتخب کریں۔"
+      "value": "اس پروجیکٹ کو اپنی فہرست سے ہٹا دیں۔ اس کا فولڈر اور فائلیں ڈسک پر رہتی ہیں، اور آپ بعد میں “موجودہ شامل کریں” سے اسے دوبارہ شامل کر سکتے ہیں۔"
     },
     {
       "key": "installs.tooltip.unityVersion",
@@ -8045,6 +7873,46 @@
     {
       "key": "dialog.setup.toolsDirty",
       "value": "حصے، بیک اپ یا اسٹوریج کھولنے سے پہلے اپنی تبدیلیاں محفوظ کریں۔"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Basis میں خوش آمدید"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Basis کی خبریں، اسے کہاں سیکھیں اور مدد کہاں سے ملے۔"
+    },
+    {
+      "key": "community.links.heading",
+      "value": "وسائل"
+    },
+    {
+      "key": "community.tooltip.projects",
+      "value": "اپنے پروجیکٹس پر جائیں، جہاں آپ Basis پروجیکٹ بناتے، کھولتے اور اپڈیٹ کرتے ہیں اور ان کے پیکجز کا انتظام کرتے ہیں۔"
+    },
+    {
+      "key": "installs.button.manageProject",
+      "value": "پروجیکٹ کا انتظام"
+    },
+    {
+      "key": "installs.tooltip.manageProject",
+      "value": "اس پروجیکٹ کو فعال بناتا ہے اور اس کا صفحہ یہیں کھولتا ہے جس میں اس کے پیکجز، سرور اور پروجیکٹ کے ٹولز ہیں: Basis اپڈیٹ، سیٹ اپ، برانچ، تبدیلیاں اور فولڈر۔"
+    },
+    {
+      "key": "packages.button.uninstall",
+      "value": "ان انسٹال"
+    },
+    {
+      "key": "packages.toggle.installedOnly",
+      "value": "صرف انسٹال شدہ"
+    },
+    {
+      "key": "project.settings.title",
+      "value": "پروجیکٹ کی ترتیبات"
+    },
+    {
+      "key": "project.changes.button",
+      "value": "تبدیلیاں دیکھیں"
     }
   ]
 }

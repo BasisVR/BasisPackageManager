@@ -52,7 +52,7 @@
     },
     {
       "key": "nav.community",
-      "value": "কমিউনিটি"
+      "value": "হোম"
     },
     {
       "key": "nav.develop",
@@ -63,7 +63,7 @@
       "value": "প্রকল্প"
     },
     {
-      "key": "nav.packages",
+      "key": "packages.window.title",
       "value": "প্যাকেজ"
     },
     {
@@ -357,10 +357,6 @@
     {
       "key": "installs.action.updateCore",
       "value": "কোর আপডেট করুন 'git pull' চালায়, যা আপনার Basis প্রকল্পের ফাইল পরিবর্তন করতে পারে।"
-    },
-    {
-      "key": "installs.badge.active",
-      "value": "সক্রিয়"
     },
     {
       "key": "installs.button.changeBranch",
@@ -1279,10 +1275,6 @@
       "value": "ফোল্ডার খুলুন"
     },
     {
-      "key": "installs.button.packages",
-      "value": "প্যাকেজ"
-    },
-    {
       "key": "installs.button.updateCore",
       "value": "কোর আপডেট করুন"
     },
@@ -1293,6 +1285,14 @@
     {
       "key": "installs.dialog.deleteConfirmBody",
       "value": "এটি “{0}” এবং এর ভেতরের সবকিছু স্থায়ীভাবে মুছে ফেলবে:\n\n{1}\n\nএটি আর ফেরানো যাবে না। মুছে ফেলবেন?"
+    },
+    {
+      "key": "installs.dialog.removeConfirmTitle",
+      "value": "প্রকল্প সরান"
+    },
+    {
+      "key": "installs.dialog.removeConfirmHeading",
+      "value": "{0} সরাবেন?"
     },
     {
       "key": "installs.dialog.deleteConfirmTitle",
@@ -1571,10 +1571,6 @@
       "value": "লাইসেন্স"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "গ্রিড ভিউ"
-    },
-    {
       "key": "packages.button.install",
       "value": "ইনস্টল"
     },
@@ -1591,28 +1587,12 @@
       "value": "আরও {0}টি সারিতে"
     },
     {
-      "key": "packages.button.listView",
-      "value": "তালিকা ভিউ"
-    },
-    {
-      "key": "packages.button.showInstalled",
-      "value": "ইনস্টলকৃত দেখান"
-    },
-    {
-      "key": "packages.button.showAll",
-      "value": "সব দেখান"
-    },
-    {
       "key": "packages.tooltip.showInstalled",
       "value": "রেজিস্ট্রির সব প্যাকেজ দেখা এবং শুধু এই প্রকল্পের প্যাকেজ দেখার মধ্যে বদল করুন।"
     },
     {
       "key": "packages.installed.empty",
       "value": "এই প্রকল্পে এখনও কোনো প্যাকেজ ইনস্টল করা হয়নি।"
-    },
-    {
-      "key": "packages.button.manage",
-      "value": "পরিচালনা করুন"
     },
     {
       "key": "packages.button.remove",
@@ -1945,10 +1925,6 @@
     {
       "key": "packages.tooltip.chooseVersion",
       "value": "এই প্যাকেজের রিপোজিটরির একটি রিলিজ, ট্যাগ বা ডিফল্ট ব্রাঞ্চ বেছে নিয়ে সেটিতে বদলান। প্রকল্পের .basisdev ফোল্ডারে আগে থেকে ক্লোন থাকলে সেটি সেখানেই ওই সংস্করণে সরানো হয়, এবং আপনার সম্পাদনা সাংঘর্ষিক না হলে সেগুলো রাখা হয়; অন্যথায় প্যাকেজটি সেখানে ক্লোন করা হয়। Basis রেজিস্ট্রি যাচাই করেনি এমন সংস্করণ Unity লোড করার আগে পর্যালোচনার জন্য দেখানো হয়।"
-    },
-    {
-      "key": "packages.tooltip.toggleLayout",
-      "value": "সারির তালিকা এবং কার্ডের গ্রিডের মধ্যে বদল করুন। আপনার পছন্দ মনে রাখা হয়।"
     },
     {
       "key": "packages.tooltip.viewDetails",
@@ -2907,27 +2883,7 @@
       "value": "হ্যাঁ"
     },
     {
-      "key": "dialog.remove.title",
-      "value": "প্রকল্প সরান"
-    },
-    {
-      "key": "dialog.remove.heading",
-      "value": "{0} সরাবেন?"
-    },
-    {
-      "key": "dialog.remove.body",
-      "value": "“তালিকা থেকে সরান” শুধু এখান থেকে প্রকল্পটি ভুলে যায়; আপনার ফাইলগুলো ঠিক যেখানে আছে সেখানেই থাকে। “ডিস্ক থেকে মুছুন” নিচে দেখানো পুরো প্রকল্প ফোল্ডারটি স্থায়ীভাবে মুছে ফেলে। এটি আর ফেরানো যাবে না।"
-    },
-    {
-      "key": "dialog.remove.cancel",
-      "value": "বাতিল"
-    },
-    {
-      "key": "dialog.remove.removeFromList",
-      "value": "তালিকা থেকে সরান"
-    },
-    {
-      "key": "dialog.remove.deleteFromDisk",
+      "key": "installs.button.delete",
       "value": "ডিস্ক থেকে মুছুন"
     },
     {
@@ -3231,22 +3187,6 @@
       "value": "একটি সংস্করণ বেছে নিন"
     },
     {
-      "key": "community.hero.tagline",
-      "value": "কমিউনিটি"
-    },
-    {
-      "key": "community.hero.title",
-      "value": "খবর, ডকুমেন্টেশন ও সমর্থন"
-    },
-    {
-      "key": "community.hero.subtitle",
-      "value": "Basis-এ নতুন কী আছে, কোথায় এটি শিখবেন, এবং কীভাবে এটিকে সচল রাখতে সাহায্য করবেন।"
-    },
-    {
-      "key": "community.button.openDocs",
-      "value": "ডকুমেন্টেশন খুলুন"
-    },
-    {
       "key": "community.button.joinDiscord",
       "value": "Discord-এ যোগ দিন"
     },
@@ -3271,36 +3211,8 @@
       "value": "পরে আবার দেখুন; Basis দলের খবর এখানে দেখানো হবে।"
     },
     {
-      "key": "community.docs.heading",
-      "value": "ডকুমেন্টেশন"
-    },
-    {
       "key": "community.docs.siteTitle",
       "value": "ডকুমেন্টেশন সাইট"
-    },
-    {
-      "key": "community.docs.siteBody",
-      "value": "ইনস্টলেশন, প্রথম ধাপ, অবতার, ওয়ার্ল্ড, নেটওয়ার্কিং এবং SDK: সম্পূর্ণ ডকুমেন্টেশন docs.basisvr.org-এ রয়েছে।"
-    },
-    {
-      "key": "community.docs.openSite",
-      "value": "docs.basisvr.org খুলুন"
-    },
-    {
-      "key": "community.docs.askTitle",
-      "value": "কমিউনিটিকে জিজ্ঞাসা করুন"
-    },
-    {
-      "key": "community.docs.askBody",
-      "value": "ডকুমেন্টেশনে নেই এমন কিছুতে আটকে গেছেন? অন্য নির্মাতা এবং রক্ষণাবেক্ষণকারীদের কাছ থেকে সাহায্য পাওয়ার দ্রুততম উপায় হলো Discord।"
-    },
-    {
-      "key": "community.docs.sourceTitle",
-      "value": "সোর্স ও ইস্যু"
-    },
-    {
-      "key": "community.docs.sourceBody",
-      "value": "কোড পড়ুন, একটি বাগ রিপোর্ট করুন বা একটি পুল রিকোয়েস্ট খুলুন। Basis MIT-লাইসেন্সকৃত এবং উন্মুক্তভাবে ডেভেলপ করা হয়।"
     },
     {
       "key": "community.docs.basisRepo",
@@ -3311,52 +3223,8 @@
       "value": "GitHub-এ Package Manager"
     },
     {
-      "key": "community.support.heading",
-      "value": "Basis-কে সমর্থন করুন"
-    },
-    {
-      "key": "community.support.intro",
-      "value": "Basis MIT-লাইসেন্সকৃত এবং নির্মাতা-কেন্দ্রিক। কমিউনিটি অনুদান এবং কোম্পানি সহযোগিতা একজন রক্ষণাবেক্ষণকারীকে পূর্ণকালীন কাজে রাখে এবং রিলিজ ত্বরান্বিত করে।"
-    },
-    {
       "key": "community.support.openCollective",
       "value": "OpenCollective-এর মাধ্যমে সমর্থন করুন"
-    },
-    {
-      "key": "community.support.donationsTitle",
-      "value": "কমিউনিটি অনুদান"
-    },
-    {
-      "key": "community.support.donationsBody",
-      "value": "ব্যক্তিরা OpenCollective-এ Basis-কে সমর্থন করেন, মাসিক বা এককালীন। এই তহবিল প্রাথমিকভাবে পূর্ণকালীন রক্ষণাবেক্ষণ এবং ডেভেলপার-অভিজ্ঞতার কাজে সহায়তা করে।"
-    },
-    {
-      "key": "community.support.backOpenCollective",
-      "value": "OpenCollective-এ সমর্থন করুন"
-    },
-    {
-      "key": "community.support.collabTitle",
-      "value": "কোম্পানি সহযোগিতা"
-    },
-    {
-      "key": "community.support.collabBody",
-      "value": "কোম্পানিগুলো রোডম্যাপ আইটেম স্পনসর করে বা ফিচারে সহ-অর্থায়ন করে, যেমন নেটওয়ার্কিং, অবতার সিস্টেম, টুলিং। কাজটি আপস্ট্রিমে যুক্ত হয় এবং ডিফল্টভাবে MIT-লাইসেন্সকৃত থাকে।"
-    },
-    {
-      "key": "community.support.sponsorFeature",
-      "value": "একটি ফিচার স্পনসর করুন"
-    },
-    {
-      "key": "community.support.moneyTitle",
-      "value": "অর্থ কোথায় যায়"
-    },
-    {
-      "key": "community.support.moneyBody",
-      "value": "সবার উপকারে আসে এমন ভাগ করা সমস্যা (নেটওয়ার্কিং, এমবডিমেন্ট, টুলিং) সমাধানে তহবিল একত্র করা হয়। OpenCollective-এ একটি সর্বজনীন হিসাবখাতা আছে, এবং স্পনসরকৃত কাজের কৃতিত্ব রিলিজ নোটে দেওয়া হয়। স্পনসররা প্রকল্প নিয়ন্ত্রণ করে না।"
-    },
-    {
-      "key": "community.support.fundingPage",
-      "value": "সম্পূর্ণ ফান্ডিং পৃষ্ঠা পড়ুন"
     },
     {
       "key": "packages.button.packageLists",
@@ -3647,16 +3515,8 @@
       "value": "নির্বাচিত তালিকার প্যাকেজগুলো একটি প্রকল্পে যোগ করুন। এরপর আপনি প্রকল্পটি বেছে নেবেন, এবং প্যাকেজগুলো এর Packages/manifest.json-এ লেখা হবে।"
     },
     {
-      "key": "dialog.remove.tooltip.cancel",
-      "value": "এই প্রকল্পটি আপনার তালিকায় রেখে বন্ধ করুন। কিছুই সরানো বা মোছা হয় না।"
-    },
-    {
-      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "key": "installs.tooltip.delete",
       "value": "উপরে দেখানো পুরো প্রকল্প ফোল্ডারটি স্থায়ীভাবে মুছে ফেলুন, এর git ইতিহাস এবং অন্য কোথাও পুশ বা ব্যাকআপ না করা যেকোনো কাজসহ। আপনাকে আরও একবার নিশ্চিত করতে বলা হবে। এটি আর ফেরানো যাবে না। মোছার আগে Unity বন্ধ করুন।"
-    },
-    {
-      "key": "dialog.remove.tooltip.removeFromList",
-      "value": "এই প্রকল্পটি আপনার তালিকা থেকে সরিয়ে দিন। এর ফোল্ডার ও ফাইলগুলো ডিস্কে থেকে যায়, এবং পরে ‘বিদ্যমান যোগ করুন’ দিয়ে আবার যোগ করতে পারবেন।"
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
@@ -3739,24 +3599,12 @@
       "value": "এই প্রকল্পটি যে Unity এডিটর সংস্করণ ব্যবহার করে সেটিতে খুলুন। সেই সংস্করণটি এখনও ইনস্টল করা না থাকলে Unity Hub খোলে, যাতে আপনি এটি যোগ করতে পারেন।"
     },
     {
-      "key": "installs.tooltip.packages",
-      "value": "এটিকে সক্রিয় প্রকল্প করুন এবং এর প্যাকেজ পরিচালনা করতে প্যাকেজ ট্যাব খুলুন।"
-    },
-    {
       "key": "nav.tooltip.community",
-      "value": "Basis-এর খবর, ডকুমেন্টেশন লিঙ্ক, Discord-এ সাহায্য এবং প্রকল্পটিকে সমর্থন করার উপায় দেখতে কমিউনিটি ট্যাবে যান। এই বোতামের সংখ্যাটি আপনার এখনও না দেখা ঘোষণাগুলো গণনা করে। কমিউনিটি খুললে সেগুলো পঠিত হিসেবে চিহ্নিত হয়।"
+      "value": "Basis-এর খবর, ডকুমেন্টেশন লিঙ্ক, Discord-এ সাহায্য এবং প্রকল্পটিকে সমর্থন করার উপায় দেখতে হোম ট্যাবে যান। এই বোতামের সংখ্যাটি আপনার এখনও না দেখা ঘোষণাগুলো গণনা করে। হোম খুললে সেগুলো পঠিত হিসেবে চিহ্নিত হয়।"
     },
     {
       "key": "nav.tooltip.installs",
       "value": "আপনার Basis প্রকল্পগুলোতে যান, যেখানে আপনি প্রকল্প তৈরি বা যোগ করেন, Unity-তে খোলেন, Basis আপডেট করেন, ব্রাঞ্চ বদলান এবং ব্যাকআপ নেন। এই বোতামের সংখ্যাটি সেই প্রকল্পগুলো গণনা করে যেগুলোর Basis আপডেট উপলব্ধ বা আপনার শেষ করার অপেক্ষায় আছে।"
-    },
-    {
-      "key": "nav.tooltip.packages",
-      "value": "প্যাকেজ ব্রাউজারে যান, যেখানে আপনি রেজিস্ট্রিতে প্যাকেজ খুঁজে কোনো প্রকল্পে সেগুলো ইনস্টল, আপডেট বা সরাতে পারেন। প্যাকেজ তালিকা, GitHub লিঙ্ক থেকে প্যাকেজ এবং প্যাকেজের সোর্স সম্পাদনাও এখানে রয়েছে।"
-    },
-    {
-      "key": "nav.tooltip.server",
-      "value": "নির্বাচিত প্রকল্পের Basis সার্ভারে যান, যেখানে আপনি এটি বিল্ড করেন, চালান ও থামান, এবং এর কনফিগারেশন, সার্ভার প্যাকেজ ও ডিফল্ট কনটেন্ট সম্পাদনা করেন। বিল্ড করতে .NET 10 SDK প্রয়োজন।"
     },
     {
       "key": "nav.tooltip.settings",
@@ -3789,10 +3637,6 @@
     {
       "key": "packages.tooltip.installGit",
       "value": "আপনার ব্রাউজারে Git ডাউনলোড পৃষ্ঠা খুলুন। সম্পাদনার জন্য প্যাকেজ ক্লোন করতে এবং পুল রিকোয়েস্ট জমা দিতে Git প্রয়োজন। এটি ইনস্টল করার পরে এই পৃষ্ঠার উপরের ‘রিফ্রেশ’ ব্যবহার করুন।"
-    },
-    {
-      "key": "packages.tooltip.manage",
-      "value": "এই প্যাকেজটি আপডেট করতে, অন্য সংস্করণ বেছে নিতে, সম্পাদনার জন্য মাউন্ট করতে বা সরাতে একটি মেনু খুলুন। বিকল্পগুলো শুধু প্রযোজ্য হলেই দেখা যায়।"
     },
     {
       "key": "packages.tooltip.openFolder",
@@ -5475,18 +5319,6 @@
       "value": "এই প্রকল্পটি {0}-এর একটি ক্লোন। পুল রিকোয়েস্টটি একটি আলাদা ব্রাঞ্চে যায়, তাই আপনার চেকআউট করা ব্রাঞ্চ পুশ বা পরিবর্তন করা হয় না।"
     },
     {
-      "key": "installs.button.gridView",
-      "value": "গ্রিড ভিউ"
-    },
-    {
-      "key": "installs.button.listView",
-      "value": "তালিকা ভিউ"
-    },
-    {
-      "key": "installs.tooltip.toggleLayout",
-      "value": "আপনার প্রকল্পগুলো তালিকা হিসেবে বা কার্ডের গ্রিড হিসেবে দেখানোর মধ্যে বদল করুন। অ্যাপটি আপনার পছন্দ মনে রাখে।"
-    },
-    {
       "key": "installs.button.findProjects",
       "value": "প্রকল্প খুঁজুন"
     },
@@ -6488,11 +6320,7 @@
     },
     {
       "key": "installs.tooltip.remove",
-      "value": "আপনার তালিকা থেকে এই প্রকল্পটি সরান, অথবা ডিস্ক থেকে এর ফোল্ডার মুছে ফেলুন। পরের ধাপে আপনি বেছে নেবেন, এবং মুছে ফেলা আর ফেরানো যায় না।"
-    },
-    {
-      "key": "installs.tooltip.activeBadge",
-      "value": "এটি সক্রিয় প্রকল্প, যার উপর প্যাকেজ ও সার্ভার ট্যাব কাজ করে। এটি পরিবর্তন করতে অন্য কোনো প্রকল্পের ‘প্যাকেজ’ চাপুন অথবা প্যাকেজ ট্যাবে একটি বেছে নিন।"
+      "value": "এই প্রকল্পটি আপনার তালিকা থেকে সরিয়ে দিন। এর ফোল্ডার ও ফাইলগুলো ডিস্কে থেকে যায়, এবং পরে ‘বিদ্যমান যোগ করুন’ দিয়ে আবার যোগ করতে পারবেন।"
     },
     {
       "key": "installs.tooltip.unityVersion",
@@ -8045,6 +7873,46 @@
     {
       "key": "dialog.setup.toolsDirty",
       "value": "অংশ, ব্যাকআপ বা স্টোরেজ খোলার আগে আপনার পরিবর্তনগুলি সংরক্ষণ করুন।"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Basis-এ স্বাগতম"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Basis-এর খবর, কোথায় শিখবেন এবং কীভাবে সাহায্য পাবেন।"
+    },
+    {
+      "key": "community.links.heading",
+      "value": "রিসোর্স"
+    },
+    {
+      "key": "community.tooltip.projects",
+      "value": "আপনার প্রকল্পগুলোতে যান, যেখানে আপনি Basis প্রকল্প তৈরি করেন, খোলেন, আপডেট করেন এবং সেগুলোর প্যাকেজ পরিচালনা করেন।"
+    },
+    {
+      "key": "installs.button.manageProject",
+      "value": "প্রকল্প পরিচালনা"
+    },
+    {
+      "key": "installs.tooltip.manageProject",
+      "value": "এই প্রকল্পটিকে সক্রিয় করে এবং এখানেই এর পৃষ্ঠা খোলে, যেখানে এর প্যাকেজ, সার্ভার এবং প্রকল্পের টুল আছে: Basis আপডেট, সেটআপ, ব্রাঞ্চ, পরিবর্তন এবং ফোল্ডার।"
+    },
+    {
+      "key": "packages.button.uninstall",
+      "value": "আনইনস্টল"
+    },
+    {
+      "key": "packages.toggle.installedOnly",
+      "value": "শুধু ইনস্টল করা"
+    },
+    {
+      "key": "project.settings.title",
+      "value": "প্রকল্পের সেটিংস"
+    },
+    {
+      "key": "project.changes.button",
+      "value": "পরিবর্তন দেখুন"
     }
   ]
 }

@@ -23,6 +23,9 @@
         <DataTemplate DataType="vm:InstallsViewModel">
             <views:InstallsView />
         </DataTemplate>
+        <DataTemplate DataType="vm:ProjectViewModel">
+            <views:ProjectView />
+        </DataTemplate>
         <DataTemplate DataType="vm:PackagesViewModel">
             <views:PackagesView />
         </DataTemplate>

@@ -52,7 +52,7 @@
     },
     {
       "key": "nav.community",
-      "value": "समुदाय"
+      "value": "होम"
     },
     {
       "key": "nav.develop",
@@ -63,7 +63,7 @@
       "value": "प्रोजेक्ट्स"
     },
     {
-      "key": "nav.packages",
+      "key": "packages.window.title",
       "value": "पैकेज"
     },
     {
@@ -357,10 +357,6 @@
     {
       "key": "installs.action.updateCore",
       "value": "कोर अपडेट करने से 'git pull' चलता है, जो आपके Basis प्रोजेक्ट की फ़ाइलें बदल सकता है।"
-    },
-    {
-      "key": "installs.badge.active",
-      "value": "सक्रिय"
     },
     {
       "key": "installs.button.changeBranch",
@@ -1279,10 +1275,6 @@
       "value": "फ़ोल्डर खोलें"
     },
     {
-      "key": "installs.button.packages",
-      "value": "पैकेज"
-    },
-    {
       "key": "installs.button.updateCore",
       "value": "कोर अपडेट करें"
     },
@@ -1293,6 +1285,14 @@
     {
       "key": "installs.dialog.deleteConfirmBody",
       "value": "यह “{0}” और उसके अंदर की हर चीज़ को स्थायी रूप से हटा देता है:\n\n{1}\n\nइसे पूर्ववत नहीं किया जा सकता। इसे हटाएँ?"
+    },
+    {
+      "key": "installs.dialog.removeConfirmTitle",
+      "value": "प्रोजेक्ट हटाएँ"
+    },
+    {
+      "key": "installs.dialog.removeConfirmHeading",
+      "value": "{0} हटाएँ?"
     },
     {
       "key": "installs.dialog.deleteConfirmTitle",
@@ -1571,10 +1571,6 @@
       "value": "लाइसेंस"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "ग्रिड दृश्य"
-    },
-    {
       "key": "packages.button.install",
       "value": "इंस्टॉल करें"
     },
@@ -1591,28 +1587,12 @@
       "value": "{0} और कतार में"
     },
     {
-      "key": "packages.button.listView",
-      "value": "सूची दृश्य"
-    },
-    {
-      "key": "packages.button.showInstalled",
-      "value": "इंस्टॉल किए गए दिखाएँ"
-    },
-    {
-      "key": "packages.button.showAll",
-      "value": "सभी दिखाएँ"
-    },
-    {
       "key": "packages.tooltip.showInstalled",
       "value": "रजिस्ट्री के हर पैकेज और केवल इस प्रोजेक्ट के पैकेज के बीच स्विच करें।"
     },
     {
       "key": "packages.installed.empty",
       "value": "इस प्रोजेक्ट में अभी तक कोई पैकेज इंस्टॉल नहीं है।"
-    },
-    {
-      "key": "packages.button.manage",
-      "value": "प्रबंधित करें"
     },
     {
       "key": "packages.button.remove",
@@ -1945,10 +1925,6 @@
     {
       "key": "packages.tooltip.chooseVersion",
       "value": "इस पैकेज की रिपॉज़िटरी की कोई रिलीज़, टैग या डिफ़ॉल्ट ब्रांच चुनें और उस पर स्विच करें। प्रोजेक्ट के .basisdev फ़ोल्डर में मौजूद क्लोन को उसी स्थान पर उस संस्करण पर ले जाया जाता है, और टकराव न होने पर आपके संपादन रखे जाते हैं; अन्यथा पैकेज वहाँ क्लोन किया जाता है। जिस संस्करण की Basis रजिस्ट्री ने जाँच नहीं की है, उसे Unity द्वारा लोड किए जाने से पहले समीक्षा के लिए दिखाया जाता है।"
-    },
-    {
-      "key": "packages.tooltip.toggleLayout",
-      "value": "पंक्तियों की सूची और कार्ड के ग्रिड के बीच स्विच करें। आपका चुनाव याद रखा जाता है।"
     },
     {
       "key": "packages.tooltip.viewDetails",
@@ -2907,27 +2883,7 @@
       "value": "हाँ"
     },
     {
-      "key": "dialog.remove.title",
-      "value": "प्रोजेक्ट हटाएँ"
-    },
-    {
-      "key": "dialog.remove.heading",
-      "value": "{0} हटाएँ?"
-    },
-    {
-      "key": "dialog.remove.body",
-      "value": "“सूची से हटाएँ” केवल इस प्रोजेक्ट को यहाँ से भुला देता है: आपकी फ़ाइलें ठीक वहीं रहती हैं जहाँ वे हैं। “डिस्क से हटाएँ” नीचे दिखाए गए पूरे प्रोजेक्ट फ़ोल्डर को स्थायी रूप से हटा देता है। इसे पूर्ववत नहीं किया जा सकता।"
-    },
-    {
-      "key": "dialog.remove.cancel",
-      "value": "रद्द करें"
-    },
-    {
-      "key": "dialog.remove.removeFromList",
-      "value": "सूची से हटाएँ"
-    },
-    {
-      "key": "dialog.remove.deleteFromDisk",
+      "key": "installs.button.delete",
       "value": "डिस्क से हटाएँ"
     },
     {
@@ -3231,22 +3187,6 @@
       "value": "एक संस्करण चुनें"
     },
     {
-      "key": "community.hero.tagline",
-      "value": "समुदाय"
-    },
-    {
-      "key": "community.hero.title",
-      "value": "खबरें, दस्तावेज़ और समर्थन"
-    },
-    {
-      "key": "community.hero.subtitle",
-      "value": "Basis में नया क्या है, इसे कहाँ सीखें, और इसे चलते रहने में कैसे मदद करें।"
-    },
-    {
-      "key": "community.button.openDocs",
-      "value": "दस्तावेज़ खोलें"
-    },
-    {
       "key": "community.button.joinDiscord",
       "value": "Discord से जुड़ें"
     },
@@ -3271,36 +3211,8 @@
       "value": "बाद में फिर देखें। Basis टीम की खबरें यहाँ दिखाई देंगी।"
     },
     {
-      "key": "community.docs.heading",
-      "value": "दस्तावेज़"
-    },
-    {
       "key": "community.docs.siteTitle",
       "value": "दस्तावेज़ साइट"
-    },
-    {
-      "key": "community.docs.siteBody",
-      "value": "इंस्टॉलेशन, पहले कदम, अवतार, दुनिया, नेटवर्किंग और SDK: पूरे दस्तावेज़ docs.basisvr.org पर हैं।"
-    },
-    {
-      "key": "community.docs.openSite",
-      "value": "docs.basisvr.org खोलें"
-    },
-    {
-      "key": "community.docs.askTitle",
-      "value": "समुदाय से पूछें"
-    },
-    {
-      "key": "community.docs.askBody",
-      "value": "किसी ऐसी चीज़ पर अटके हैं जो दस्तावेज़ में नहीं है? अन्य क्रिएटर्स और मेंटेनर्स से मदद पाने का सबसे तेज़ तरीका Discord है।"
-    },
-    {
-      "key": "community.docs.sourceTitle",
-      "value": "स्रोत और इश्यू"
-    },
-    {
-      "key": "community.docs.sourceBody",
-      "value": "कोड पढ़ें, कोई बग दर्ज करें या पुल रिक्वेस्ट खोलें। Basis MIT-लाइसेंस प्राप्त है और खुले में विकसित किया जाता है।"
     },
     {
       "key": "community.docs.basisRepo",
@@ -3311,52 +3223,8 @@
       "value": "GitHub पर Package Manager"
     },
     {
-      "key": "community.support.heading",
-      "value": "Basis का समर्थन करें"
-    },
-    {
-      "key": "community.support.intro",
-      "value": "Basis MIT-लाइसेंस प्राप्त और क्रिएटर-प्रथम है। समुदाय के दान और कंपनी सहयोग से एक मेंटेनर पूर्णकालिक काम कर पाता है और रिलीज़ तेज़ी से आती हैं।"
-    },
-    {
       "key": "community.support.openCollective",
       "value": "OpenCollective के माध्यम से समर्थन करें"
-    },
-    {
-      "key": "community.support.donationsTitle",
-      "value": "समुदाय दान"
-    },
-    {
-      "key": "community.support.donationsBody",
-      "value": "व्यक्ति OpenCollective पर Basis को समर्थन देते हैं, मासिक या एकमुश्त। ये फंड मुख्य रूप से पूर्णकालिक रखरखाव और डेवलपर-अनुभव के काम का समर्थन करते हैं।"
-    },
-    {
-      "key": "community.support.backOpenCollective",
-      "value": "OpenCollective पर समर्थन दें"
-    },
-    {
-      "key": "community.support.collabTitle",
-      "value": "कंपनी सहयोग"
-    },
-    {
-      "key": "community.support.collabBody",
-      "value": "कंपनियाँ रोडमैप आइटम प्रायोजित करती हैं या फ़ीचर्स को सह-वित्तपोषित करती हैं, जैसे नेटवर्किंग, अवतार सिस्टम, टूलिंग। काम अपस्ट्रीम पहुँचता है और डिफ़ॉल्ट रूप से MIT-लाइसेंस प्राप्त रहता है।"
-    },
-    {
-      "key": "community.support.sponsorFeature",
-      "value": "किसी फ़ीचर को प्रायोजित करें"
-    },
-    {
-      "key": "community.support.moneyTitle",
-      "value": "पैसा कहाँ जाता है"
-    },
-    {
-      "key": "community.support.moneyBody",
-      "value": "साझा समस्याओं (नेटवर्किंग, एम्बॉडिमेंट, टूलिंग) से निपटने के लिए फंड एकत्र किए जाते हैं, जिससे सभी को लाभ होता है। OpenCollective पर एक सार्वजनिक बहीखाता है, और प्रायोजित काम का श्रेय रिलीज़ नोट्स में दिया जाता है। प्रायोजक प्रोजेक्ट को नियंत्रित नहीं करते।"
-    },
-    {
-      "key": "community.support.fundingPage",
-      "value": "पूरा फंडिंग पेज पढ़ें"
     },
     {
       "key": "packages.button.packageLists",
@@ -3647,16 +3515,8 @@
       "value": "चयनित सूची के पैकेज किसी प्रोजेक्ट में जोड़ें। इसके बाद आप प्रोजेक्ट चुनते हैं, और पैकेज उसके Packages/manifest.json में लिखे जाते हैं।"
     },
     {
-      "key": "dialog.remove.tooltip.cancel",
-      "value": "इस प्रोजेक्ट को अपनी सूची में रखें और बंद करें। कुछ भी हटाया या मिटाया नहीं जाता।"
-    },
-    {
-      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "key": "installs.tooltip.delete",
       "value": "ऊपर दिखाए गए पूरे प्रोजेक्ट फ़ोल्डर को स्थायी रूप से हटाएँ, जिसमें उसका git इतिहास और ऐसा कोई भी काम शामिल है जो कहीं और पुश या बैकअप नहीं किया गया है। आपसे एक बार फिर पुष्टि माँगी जाती है। इसे पूर्ववत नहीं किया जा सकता। हटाने से पहले Unity बंद करें।"
-    },
-    {
-      "key": "dialog.remove.tooltip.removeFromList",
-      "value": "इस प्रोजेक्ट को अपनी सूची से हटाएँ। इसका फ़ोल्डर और फ़ाइलें डिस्क पर बनी रहती हैं, और आप बाद में ‘मौजूदा जोड़ें’ से इसे वापस जोड़ सकते हैं।"
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
@@ -3739,24 +3599,12 @@
       "value": "इस प्रोजेक्ट को उसी Unity एडिटर संस्करण में खोलें जिसका यह उपयोग करता है। यदि वह संस्करण अभी इंस्टॉल नहीं है, तो Unity Hub खुलता है ताकि आप उसे जोड़ सकें।"
     },
     {
-      "key": "installs.tooltip.packages",
-      "value": "इसे सक्रिय प्रोजेक्ट बनाएँ और इसके पैकेज प्रबंधित करने के लिए पैकेज टैब खोलें।"
-    },
-    {
       "key": "nav.tooltip.community",
-      "value": "Basis की खबरों, दस्तावेज़ लिंक, Discord पर मदद और प्रोजेक्ट का समर्थन करने के तरीकों के लिए समुदाय टैब पर जाएँ। इस बटन पर दिखने वाली संख्या उन घोषणाओं को गिनती है जो आपने अभी तक नहीं देखी हैं। समुदाय खोलने पर वे पढ़ी गई के रूप में चिह्नित हो जाती हैं।"
+      "value": "Basis की खबरों, दस्तावेज़ लिंक, Discord पर मदद और प्रोजेक्ट का समर्थन करने के तरीकों के लिए होम टैब पर जाएँ। इस बटन पर दिखने वाली संख्या उन घोषणाओं को गिनती है जो आपने अभी तक नहीं देखी हैं। होम खोलने पर वे पढ़ी गई के रूप में चिह्नित हो जाती हैं।"
     },
     {
       "key": "nav.tooltip.installs",
       "value": "अपने Basis प्रोजेक्ट्स पर जाएँ, जहाँ आप प्रोजेक्ट बनाते या जोड़ते हैं, उसे Unity में खोलते हैं, Basis अपडेट करते हैं, ब्रांच स्विच करते हैं और बैकअप बनाते हैं। इस बटन पर दिखने वाली संख्या उन प्रोजेक्ट्स को गिनती है जिनके लिए कोई Basis अपडेट उपलब्ध है या आपके द्वारा पूरा किए जाने की प्रतीक्षा में है।"
-    },
-    {
-      "key": "nav.tooltip.packages",
-      "value": "पैकेज ब्राउज़र पर जाएँ, जहाँ आप रजिस्ट्री में पैकेज खोजते हैं और उन्हें किसी प्रोजेक्ट में इंस्टॉल, अपडेट या उससे हटाते हैं। पैकेज सूचियाँ, GitHub लिंक से पैकेज और किसी पैकेज का स्रोत संपादित करना भी यहीं है।"
-    },
-    {
-      "key": "nav.tooltip.server",
-      "value": "चयनित प्रोजेक्ट के Basis सर्वर पर जाएँ, जहाँ आप उसे बिल्ड करते हैं, चलाते और रोकते हैं, और उसका कॉन्फ़िगरेशन, सर्वर पैकेज और डिफ़ॉल्ट सामग्री संपादित करते हैं। बिल्ड करने के लिए .NET 10 SDK आवश्यक है।"
     },
     {
       "key": "nav.tooltip.settings",
@@ -3789,10 +3637,6 @@
     {
       "key": "packages.tooltip.installGit",
       "value": "अपने ब्राउज़र में Git डाउनलोड पेज खोलें। संपादन के लिए पैकेज क्लोन करने और पुल रिक्वेस्ट सबमिट करने के लिए Git आवश्यक है। इसे इंस्टॉल करने के बाद, इस पेज के शीर्ष पर ‘रिफ़्रेश करें’ का उपयोग करें।"
-    },
-    {
-      "key": "packages.tooltip.manage",
-      "value": "इस पैकेज को अपडेट करने, कोई दूसरा संस्करण चुनने, इसे संपादन हेतु माउंट करने या हटाने के लिए एक मेनू खोलें। विकल्प केवल तभी दिखते हैं जब वे लागू होते हैं।"
     },
     {
       "key": "packages.tooltip.openFolder",
@@ -5475,18 +5319,6 @@
       "value": "यह प्रोजेक्ट {0} का एक क्लोन है। पुल रिक्वेस्ट अपनी अलग ब्रांच पर जाता है, इसलिए आपकी चेकआउट की गई ब्रांच न तो पुश होती है और न ही बदलती है।"
     },
     {
-      "key": "installs.button.gridView",
-      "value": "ग्रिड दृश्य"
-    },
-    {
-      "key": "installs.button.listView",
-      "value": "सूची दृश्य"
-    },
-    {
-      "key": "installs.tooltip.toggleLayout",
-      "value": "अपने प्रोजेक्ट्स को सूची के रूप में या कार्ड के ग्रिड के रूप में दिखाने के बीच स्विच करें। ऐप आपका चुनाव याद रखता है।"
-    },
-    {
       "key": "installs.button.findProjects",
       "value": "प्रोजेक्ट्स खोजें"
     },
@@ -6488,11 +6320,7 @@
     },
     {
       "key": "installs.tooltip.remove",
-      "value": "इस प्रोजेक्ट को अपनी सूची से हटाएँ, या इसका फ़ोल्डर डिस्क से मिटाएँ। आप अगले चरण में चुनते हैं, और मिटाना पूर्ववत नहीं किया जा सकता।"
-    },
-    {
-      "key": "installs.tooltip.activeBadge",
-      "value": "सक्रिय प्रोजेक्ट, जिस पर पैकेज और सर्वर टैब काम करते हैं। इसे बदलने के लिए, किसी दूसरे प्रोजेक्ट पर ‘पैकेज’ दबाएँ या पैकेज टैब पर कोई प्रोजेक्ट चुनें।"
+      "value": "इस प्रोजेक्ट को अपनी सूची से हटाएँ। इसका फ़ोल्डर और फ़ाइलें डिस्क पर बनी रहती हैं, और आप बाद में ‘मौजूदा जोड़ें’ से इसे वापस जोड़ सकते हैं।"
     },
     {
       "key": "installs.tooltip.unityVersion",
@@ -8045,6 +7873,46 @@
     {
       "key": "dialog.setup.toolsDirty",
       "value": "भाग, बैकअप या स्टोरेज खोलने से पहले अपने बदलाव सहेजें।"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Basis में आपका स्वागत है"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Basis की खबरें, इसे कहाँ सीखें और मदद कहाँ पाएँ।"
+    },
+    {
+      "key": "community.links.heading",
+      "value": "संसाधन"
+    },
+    {
+      "key": "community.tooltip.projects",
+      "value": "अपने प्रोजेक्ट्स पर जाएँ, जहाँ आप Basis प्रोजेक्ट बनाते, खोलते और अपडेट करते हैं और उनके पैकेज प्रबंधित करते हैं।"
+    },
+    {
+      "key": "installs.button.manageProject",
+      "value": "प्रोजेक्ट प्रबंधित करें"
+    },
+    {
+      "key": "installs.tooltip.manageProject",
+      "value": "इस प्रोजेक्ट को सक्रिय बनाता है और इसका पेज यहीं खोलता है, जिसमें इसके पैकेज, सर्वर और प्रोजेक्ट टूल हैं: Basis अपडेट, सेटअप, ब्रांच, बदलाव और फ़ोल्डर।"
+    },
+    {
+      "key": "packages.button.uninstall",
+      "value": "अनइंस्टॉल करें"
+    },
+    {
+      "key": "packages.toggle.installedOnly",
+      "value": "केवल इंस्टॉल किए गए"
+    },
+    {
+      "key": "project.settings.title",
+      "value": "प्रोजेक्ट सेटिंग्स"
+    },
+    {
+      "key": "project.changes.button",
+      "value": "बदलाव देखें"
     }
   ]
 }

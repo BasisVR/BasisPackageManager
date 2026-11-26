@@ -52,7 +52,7 @@
     },
     {
       "key": "nav.community",
-      "value": "Community"
+      "value": "Start"
     },
     {
       "key": "nav.develop",
@@ -63,7 +63,7 @@
       "value": "Projekte"
     },
     {
-      "key": "nav.packages",
+      "key": "packages.window.title",
       "value": "Pakete"
     },
     {
@@ -357,10 +357,6 @@
     {
       "key": "installs.action.updateCore",
       "value": "„Core aktualisieren“ führt 'git pull' aus, wodurch Dateien in deinem Basis-Projekt geändert werden können."
-    },
-    {
-      "key": "installs.badge.active",
-      "value": "AKTIV"
     },
     {
       "key": "installs.button.changeBranch",
@@ -1279,10 +1275,6 @@
       "value": "Ordner öffnen"
     },
     {
-      "key": "installs.button.packages",
-      "value": "Pakete"
-    },
-    {
       "key": "installs.button.updateCore",
       "value": "Core aktualisieren"
     },
@@ -1293,6 +1285,14 @@
     {
       "key": "installs.dialog.deleteConfirmBody",
       "value": "Dadurch werden „{0}“ und alles darin dauerhaft gelöscht:\n\n{1}\n\nDies kann nicht rückgängig gemacht werden. Löschen?"
+    },
+    {
+      "key": "installs.dialog.removeConfirmTitle",
+      "value": "Projekt entfernen"
+    },
+    {
+      "key": "installs.dialog.removeConfirmHeading",
+      "value": "{0} entfernen?"
     },
     {
       "key": "installs.dialog.deleteConfirmTitle",
@@ -1571,10 +1571,6 @@
       "value": "Lizenzen"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "Rasteransicht"
-    },
-    {
       "key": "packages.button.install",
       "value": "Installieren"
     },
@@ -1591,28 +1587,12 @@
       "value": "{0} weitere in der Warteschlange"
     },
     {
-      "key": "packages.button.listView",
-      "value": "Listenansicht"
-    },
-    {
-      "key": "packages.button.showInstalled",
-      "value": "Installierte anzeigen"
-    },
-    {
-      "key": "packages.button.showAll",
-      "value": "Alle anzeigen"
-    },
-    {
       "key": "packages.tooltip.showInstalled",
       "value": "Wechselt zwischen allen Paketen der Registry und nur den Paketen in diesem Projekt."
     },
     {
       "key": "packages.installed.empty",
       "value": "In diesem Projekt sind noch keine Pakete installiert."
-    },
-    {
-      "key": "packages.button.manage",
-      "value": "Verwalten"
     },
     {
       "key": "packages.button.remove",
@@ -1945,10 +1925,6 @@
     {
       "key": "packages.tooltip.chooseVersion",
       "value": "Wähle ein Release, ein Tag oder den Standard-Branch des Repositorys dieses Pakets und wechsle dorthin. Ein vorhandener Klon im .basisdev-Ordner des Projekts wird direkt auf diese Version umgestellt, wobei deine Änderungen erhalten bleiben, sofern sie nicht kollidieren; andernfalls wird das Paket dort geklont. Eine Version, die die Basis-Registry nicht geprüft hat, wird dir zur Prüfung angezeigt, bevor Unity sie lädt."
-    },
-    {
-      "key": "packages.tooltip.toggleLayout",
-      "value": "Wechselt zwischen einer Liste mit Zeilen und einem Raster mit Karten. Deine Auswahl wird gespeichert."
     },
     {
       "key": "packages.tooltip.viewDetails",
@@ -2907,27 +2883,7 @@
       "value": "Ja"
     },
     {
-      "key": "dialog.remove.title",
-      "value": "Projekt entfernen"
-    },
-    {
-      "key": "dialog.remove.heading",
-      "value": "{0} entfernen?"
-    },
-    {
-      "key": "dialog.remove.body",
-      "value": "„Aus Liste entfernen“ vergisst dieses Projekt nur hier; deine Dateien bleiben genau dort, wo sie sind. „Von Festplatte löschen“ löscht den gesamten unten angezeigten Projektordner dauerhaft. Dies kann nicht rückgängig gemacht werden."
-    },
-    {
-      "key": "dialog.remove.cancel",
-      "value": "Abbrechen"
-    },
-    {
-      "key": "dialog.remove.removeFromList",
-      "value": "Aus Liste entfernen"
-    },
-    {
-      "key": "dialog.remove.deleteFromDisk",
+      "key": "installs.button.delete",
       "value": "Von Festplatte löschen"
     },
     {
@@ -3231,22 +3187,6 @@
       "value": "Version wählen"
     },
     {
-      "key": "community.hero.tagline",
-      "value": "COMMUNITY"
-    },
-    {
-      "key": "community.hero.title",
-      "value": "Neuigkeiten, Doku & Support"
-    },
-    {
-      "key": "community.hero.subtitle",
-      "value": "Was es bei Basis Neues gibt, wo du es lernst und wie du hilfst, es am Laufen zu halten."
-    },
-    {
-      "key": "community.button.openDocs",
-      "value": "Doku öffnen"
-    },
-    {
       "key": "community.button.joinDiscord",
       "value": "Dem Discord beitreten"
     },
@@ -3271,36 +3211,8 @@
       "value": "Schau später wieder vorbei. Neuigkeiten vom Basis-Team erscheinen hier."
     },
     {
-      "key": "community.docs.heading",
-      "value": "Dokumentation"
-    },
-    {
       "key": "community.docs.siteTitle",
       "value": "Dokumentationsseite"
-    },
-    {
-      "key": "community.docs.siteBody",
-      "value": "Installation, erste Schritte, Avatare, Welten, Networking und das SDK: Die vollständige Doku findest du unter docs.basisvr.org."
-    },
-    {
-      "key": "community.docs.openSite",
-      "value": "docs.basisvr.org öffnen"
-    },
-    {
-      "key": "community.docs.askTitle",
-      "value": "Die Community fragen"
-    },
-    {
-      "key": "community.docs.askBody",
-      "value": "Hängst du an etwas, das die Doku nicht abdeckt? Der Discord ist der schnellste Weg, um Hilfe von anderen Creators und den Maintainern zu bekommen."
-    },
-    {
-      "key": "community.docs.sourceTitle",
-      "value": "Quellcode & Issues"
-    },
-    {
-      "key": "community.docs.sourceBody",
-      "value": "Lies den Code, melde einen Fehler oder öffne einen Pull Request. Basis ist MIT-lizenziert und wird offen entwickelt."
     },
     {
       "key": "community.docs.basisRepo",
@@ -3311,52 +3223,8 @@
       "value": "Package Manager auf GitHub"
     },
     {
-      "key": "community.support.heading",
-      "value": "Basis unterstützen"
-    },
-    {
-      "key": "community.support.intro",
-      "value": "Basis ist MIT-lizenziert und stellt Creators an erste Stelle. Community-Spenden und Unternehmenskooperationen ermöglichen einem Maintainer die Vollzeitarbeit und beschleunigen Releases."
-    },
-    {
       "key": "community.support.openCollective",
       "value": "Über OpenCollective unterstützen"
-    },
-    {
-      "key": "community.support.donationsTitle",
-      "value": "Community-Spenden"
-    },
-    {
-      "key": "community.support.donationsBody",
-      "value": "Einzelpersonen unterstützen Basis auf OpenCollective, monatlich oder einmalig. Diese Mittel fließen vor allem in Vollzeit-Wartung und die Verbesserung der Entwicklererfahrung."
-    },
-    {
-      "key": "community.support.backOpenCollective",
-      "value": "Auf OpenCollective unterstützen"
-    },
-    {
-      "key": "community.support.collabTitle",
-      "value": "Unternehmenskooperationen"
-    },
-    {
-      "key": "community.support.collabBody",
-      "value": "Unternehmen sponsern Roadmap-Punkte oder finanzieren Features mit: Networking, Avatar-Systeme, Tools. Die Arbeit fließt in den Upstream und bleibt standardmäßig MIT-lizenziert."
-    },
-    {
-      "key": "community.support.sponsorFeature",
-      "value": "Ein Feature sponsern"
-    },
-    {
-      "key": "community.support.moneyTitle",
-      "value": "Wohin das Geld fließt"
-    },
-    {
-      "key": "community.support.moneyBody",
-      "value": "Die Mittel werden zusammengelegt, um gemeinsame Probleme (Networking, Embodiment, Tools) zu lösen, was allen zugutekommt. Auf OpenCollective gibt es ein öffentliches Hauptbuch, und gesponserte Arbeit wird in den Release Notes ausgewiesen. Sponsoren steuern das Projekt nicht."
-    },
-    {
-      "key": "community.support.fundingPage",
-      "value": "Vollständige Förderseite lesen"
     },
     {
       "key": "packages.button.packageLists",
@@ -3647,16 +3515,8 @@
       "value": "Fügt die Pakete der ausgewählten Liste einem Projekt hinzu. Als Nächstes wählst du das Projekt, und die Pakete werden in dessen Packages/manifest.json eingetragen."
     },
     {
-      "key": "dialog.remove.tooltip.cancel",
-      "value": "Behält dieses Projekt in deiner Liste und schließt. Es wird nichts entfernt oder gelöscht."
-    },
-    {
-      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "key": "installs.tooltip.delete",
       "value": "Löscht den gesamten oben angezeigten Projektordner dauerhaft, einschließlich seines Git-Verlaufs und aller Arbeit, die nicht gepusht oder anderweitig gesichert wurde. Du wirst noch einmal um Bestätigung gebeten. Dies kann nicht rückgängig gemacht werden. Schließe Unity vor dem Löschen."
-    },
-    {
-      "key": "dialog.remove.tooltip.removeFromList",
-      "value": "Nimmt dieses Projekt aus deiner Liste. Sein Ordner und seine Dateien bleiben auf der Festplatte, und du kannst es später mit „Vorhandene hinzufügen“ wieder hinzufügen."
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
@@ -3739,24 +3599,12 @@
       "value": "Öffnet dieses Projekt in der Unity-Editor-Version, die es verwendet. Ist diese Version noch nicht installiert, wird Unity Hub geöffnet, damit du sie hinzufügen kannst."
     },
     {
-      "key": "installs.tooltip.packages",
-      "value": "Macht dieses Projekt zum aktiven Projekt und öffnet den Tab „Pakete“, um seine Pakete zu verwalten."
-    },
-    {
       "key": "nav.tooltip.community",
-      "value": "Wechselt zum Tab „Community“ mit Basis-Neuigkeiten, Links zur Dokumentation, Hilfe auf Discord und Möglichkeiten, das Projekt zu unterstützen. Eine Zahl auf dieser Schaltfläche zeigt Ankündigungen, die du noch nicht gesehen hast. Beim Öffnen von „Community“ werden sie als gelesen markiert."
+      "value": "Wechselt zum Tab „Start“ mit Basis-Neuigkeiten, Links zur Dokumentation, Hilfe auf Discord und Möglichkeiten, das Projekt zu unterstützen. Eine Zahl auf dieser Schaltfläche zeigt Ankündigungen, die du noch nicht gesehen hast. Beim Öffnen von „Start“ werden sie als gelesen markiert."
     },
     {
       "key": "nav.tooltip.installs",
       "value": "Wechselt zu deinen Basis-Projekten. Dort erstellst du Projekte oder fügst sie hinzu, öffnest sie in Unity, aktualisierst Basis, wechselst Branches und erstellst Sicherungen. Eine Zahl auf dieser Schaltfläche zeigt Projekte mit einem Basis-Update, das verfügbar ist oder darauf wartet, dass du es abschließt."
-    },
-    {
-      "key": "nav.tooltip.packages",
-      "value": "Wechselt zum Paket-Browser. Dort findest du Pakete in der Registry und installierst, aktualisierst oder entfernst sie in einem Projekt. Auch Paketlisten, Pakete über GitHub-Links und das Bearbeiten des Quellcodes eines Pakets findest du hier."
-    },
-    {
-      "key": "nav.tooltip.server",
-      "value": "Wechselt zum Basis Server des ausgewählten Projekts. Dort kompilierst, startest und stoppst du ihn und bearbeitest seine Konfiguration, Serverpakete und Standardinhalte. Zum Kompilieren wird das .NET 10 SDK benötigt."
     },
     {
       "key": "nav.tooltip.settings",
@@ -3789,10 +3637,6 @@
     {
       "key": "packages.tooltip.installGit",
       "value": "Öffnet die Git-Downloadseite in deinem Browser. Git wird benötigt, um Pakete zum Bearbeiten zu klonen und Pull Requests einzureichen. Verwende nach der Installation „Aktualisieren“ oben auf dieser Seite."
-    },
-    {
-      "key": "packages.tooltip.manage",
-      "value": "Öffnet ein Menü, um dieses Paket zu aktualisieren, eine andere Version zu wählen, es zum Bearbeiten einzubinden oder es zu entfernen. Optionen werden nur angezeigt, wenn sie zutreffen."
     },
     {
       "key": "packages.tooltip.openFolder",
@@ -5475,18 +5319,6 @@
       "value": "Dieses Projekt ist ein Klon von {0}. Der Pull Request kommt auf einen eigenen Branch, daher wird dein ausgecheckter Branch weder gepusht noch geändert."
     },
     {
-      "key": "installs.button.gridView",
-      "value": "Rasteransicht"
-    },
-    {
-      "key": "installs.button.listView",
-      "value": "Listenansicht"
-    },
-    {
-      "key": "installs.tooltip.toggleLayout",
-      "value": "Wechselt zwischen der Anzeige deiner Projekte als Liste oder als Raster aus Karten. Die App merkt sich deine Auswahl."
-    },
-    {
       "key": "installs.button.findProjects",
       "value": "Projekte suchen"
     },
@@ -6488,11 +6320,7 @@
     },
     {
       "key": "installs.tooltip.remove",
-      "value": "Entfernt dieses Projekt aus deiner Liste oder löscht seinen Ordner von der Festplatte. Du wählst im nächsten Schritt, und das Löschen kann nicht rückgängig gemacht werden."
-    },
-    {
-      "key": "installs.tooltip.activeBadge",
-      "value": "Das aktive Projekt, mit dem die Tabs „Pakete“ und „Server“ arbeiten. Um es zu ändern, klicke bei einem anderen Projekt auf „Pakete“ oder wähle eines im Tab „Pakete“."
+      "value": "Nimmt dieses Projekt aus deiner Liste. Sein Ordner und seine Dateien bleiben auf der Festplatte, und du kannst es später mit „Vorhandene hinzufügen“ wieder hinzufügen."
     },
     {
       "key": "installs.tooltip.unityVersion",
@@ -8045,6 +7873,46 @@
     {
       "key": "dialog.setup.toolsDirty",
       "value": "Speichere deine Änderungen, bevor du Bestandteile, Sichern oder Speicherplatz öffnest."
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Willkommen bei Basis"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Neuigkeiten zu Basis, wo du es lernst und wo du Hilfe bekommst."
+    },
+    {
+      "key": "community.links.heading",
+      "value": "Ressourcen"
+    },
+    {
+      "key": "community.tooltip.projects",
+      "value": "Zu deinen Projekten, wo du Basis-Projekte erstellst, öffnest, aktualisierst und ihre Pakete verwaltest."
+    },
+    {
+      "key": "installs.button.manageProject",
+      "value": "Projekt verwalten"
+    },
+    {
+      "key": "installs.tooltip.manageProject",
+      "value": "Macht dieses Projekt zum aktiven Projekt und öffnet hier seine Seite mit seinen Paketen, seinem Server und den Projektwerkzeugen: Basis aktualisieren, Einrichtung, Branch, Änderungen und Ordner."
+    },
+    {
+      "key": "packages.button.uninstall",
+      "value": "Deinstallieren"
+    },
+    {
+      "key": "packages.toggle.installedOnly",
+      "value": "Nur installierte"
+    },
+    {
+      "key": "project.settings.title",
+      "value": "Projekteinstellungen"
+    },
+    {
+      "key": "project.changes.button",
+      "value": "Änderungen ansehen"
     }
   ]
 }

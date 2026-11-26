@@ -48,13 +48,6 @@ public sealed class UserSettings
     [JsonPropertyName("language")]
     public string? Language { get; set; }
 
-    // Packages tab: show the "Available" list as a grid of cards instead of rows.
-    [JsonPropertyName("packagesGridView")]
-    public bool PackagesGridView { get; set; }
-
-    [JsonPropertyName("projectsGridView")]
-    public bool ProjectsGridView { get; set; }
-
     [JsonPropertyName("autoCheckBasisUpdates")]
     public bool AutoCheckBasisUpdates { get; set; } = true;
 

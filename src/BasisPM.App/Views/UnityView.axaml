@@ -24,12 +24,7 @@
                         <Button Classes="iconBtn" Command="{Binding RefreshCommand}" ToolTip.Tip="{loc:Tr unity.tooltip.refresh}">
                             <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
                         </Button>
-                        <ToggleButton Name="AdvancedToggle" Classes="advanced" views:SectionState.Key="unity.advanced" ToolTip.Tip="{loc:Tr unity.tooltip.advanced}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconCode}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr shell.button.advanced}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </ToggleButton>
+                        <CheckBox Name="AdvancedToggle" VerticalAlignment="Center" views:SectionState.Key="unity.advanced" ToolTip.Tip="{loc:Tr unity.tooltip.advanced}" Content="{loc:Tr shell.button.advanced}"/>
                     </StackPanel>
                 </Grid>
             </Border>

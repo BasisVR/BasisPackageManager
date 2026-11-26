@@ -7,7 +7,7 @@ using Velopack;
 
 namespace BasisPM.App.ViewModels;
 
-public enum NavPage { Installs, Packages, Server, Unity, Settings, Support, Announcements, Documentation, Logs, Community }
+public enum NavPage { Installs, Unity, Settings, Support, Announcements, Documentation, Logs, Community }
 
 public enum StatusKind { Info, Success, Error }
 
@@ -30,7 +30,7 @@ public sealed class MainWindowViewModel : ObservableObject
     private readonly BasisUpdateService _basisUpdates;
     private readonly BasisContributeService _basisContribute;
 
-    private NavPage _currentPage = NavPage.Installs;
+    private NavPage _currentPage = NavPage.Community;
     private object? _currentView;
     private string _statusMessage = "Ready";
     private StatusKind _statusKind = StatusKind.Info;
@@ -118,7 +118,7 @@ public sealed class MainWindowViewModel : ObservableObject
         FundingVM = new FundingViewModel();
         AnnouncementsVM = new AnnouncementsViewModel(_announcementService);
         DocumentationVM = new DocumentationViewModel();
-        CommunityVM = new CommunityViewModel(AnnouncementsVM, DocumentationVM, FundingVM);
+        CommunityVM = new CommunityViewModel(AnnouncementsVM, DocumentationVM, FundingVM, () => NavigateTo("installs"));
 
         InstallUpdateCommand = new RelayCommand(InstallUpdateAsync);
         DismissUpdateCommand = new RelayCommand(() => { UpdateAvailable = false; });
@@ -134,7 +134,7 @@ public sealed class MainWindowViewModel : ObservableObject
         CrashReporter.BreadcrumbProvider = () => string.Join("\n", _breadcrumbs);
         CrashReporter.VersionProvider = () => AppVersion;
 
-        CurrentView = InstallsVM;
+        CurrentView = CommunityVM;
     }
 
     public NavPage CurrentPage
@@ -147,8 +147,6 @@ public sealed class MainWindowViewModel : ObservableObject
                 CurrentView = value switch
                 {
                     NavPage.Installs => InstallsVM,
-                    NavPage.Packages => PackagesVM,
-                    NavPage.Server => ServerVM,
                     NavPage.Unity => UnityVM,
                     NavPage.Settings => SettingsVM,
                     NavPage.Support => FundingVM,
@@ -158,8 +156,6 @@ public sealed class MainWindowViewModel : ObservableObject
                     _ => InstallsVM,
                 };
                 OnPropertyChanged(nameof(IsInstalls));
-                OnPropertyChanged(nameof(IsPackages));
-                OnPropertyChanged(nameof(IsServer));
                 OnPropertyChanged(nameof(IsUnity));
                 OnPropertyChanged(nameof(IsSettings));
                 OnPropertyChanged(nameof(IsSupport));
@@ -176,8 +172,6 @@ public sealed class MainWindowViewModel : ObservableObject
     public object? CurrentView { get => _currentView; private set => SetField(ref _currentView, value); }
 
     public bool IsInstalls => CurrentPage == NavPage.Installs;
-    public bool IsPackages => CurrentPage == NavPage.Packages;
-    public bool IsServer => CurrentPage == NavPage.Server;
     public bool IsUnity => CurrentPage == NavPage.Unity;
     public bool IsSettings => CurrentPage == NavPage.Settings;
     public bool IsSupport => CurrentPage == NavPage.Support;
@@ -517,12 +511,13 @@ public sealed class MainWindowViewModel : ObservableObject
             foreach (var pending in DeepLinkDispatcher.TakePending()) HandleDeepLink(pending);
         }
 
+        // Home opens on the announcements, so they load before the slower Unity refresh.
+        _ = LoadAnnouncementsAsync();
         await UnityVM.RefreshAsync();
 
         if (_updateService.UnfinishedUpdateVersion is { } unfinished)
             SetStatus(L.Tr("shell.status.updateUnfinished", unfinished, AppVersion), StatusKind.Error, null, InstallUpdateAsync, "appupdate");
         _ = CheckForUpdatesAsync(manual: false);
-        _ = LoadAnnouncementsAsync();
         _ = RunFirstRunPromptsAsync();
         StartBasisUpdateTimer();
         if (_autoCheckBasisUpdates) _ = InstallsVM.CheckBasisUpdatesAsync(manual: false);
@@ -538,7 +533,6 @@ public sealed class MainWindowViewModel : ObservableObject
         _dismissedBasisUpdates.Clear();
         _dismissedBasisUpdates.UnionWith(settings.DismissedBasisUpdates);
         SettingsVM.Apply(settings);
-        PackagesVM.SetInitialGridView(settings.PackagesGridView);
         PackagesVM.SetInitialCompileAfterInstall(settings.CompileAfterInstall);
         await InstallsVM.LoadAsync(settings);
         await PackagesVM.LoadCatalogAsync(settings.CatalogUrl, settings.ExtraCatalogUrls);
@@ -643,7 +637,7 @@ public sealed class MainWindowViewModel : ObservableObject
         RefreshBlockers();
         Localizer.Instance.SetLanguage("en");
         BasisPM.App.Views.SectionState.Clear();
-        CurrentPage = NavPage.Installs;
+        CurrentPage = NavPage.Community;
 
         var settings = await _settingsService.LoadAsync();   // the file is gone → default settings
         await ApplySettingsAsync(settings);
@@ -662,7 +656,6 @@ public sealed class MainWindowViewModel : ObservableObject
             return;
         }
         if (!DeepLink.TryParseInstall(uri, out var req)) return;
-        NavigateTo("packages");
 
         var label = string.IsNullOrWhiteSpace(req.Id) ? L.Tr("shell.deeplink.thePackage") : PackagesVM.DeepLinkLabel(req.Id, req.Name);
         if (string.IsNullOrWhiteSpace(req.Git) && PackagesVM.CatalogEntryFor(req.Id) is null)
@@ -675,13 +668,13 @@ public sealed class MainWindowViewModel : ObservableObject
         if (target is null) return;
 
         SetActiveInstall(target);
+        OpenProject();
         await PackagesVM.AddGitPackageAsync(req.Id, req.Name, req.Git, req.Repo);
     }
 
     /// <summary>Handles a <c>basispm://packagelist?id=…</c> link: fetch the package list and add all its packages to a chosen install.</summary>
     private async Task HandlePackageListLinkAsync(string packageListId)
     {
-        NavigateTo("packages");
         SetStatus(L.Tr("shell.status.loadingPackageList"));
         var packageLists = await _packageListService.TryLoadAsync(_catalogUrl);
         if (packageLists is null)
@@ -701,6 +694,7 @@ public sealed class MainWindowViewModel : ObservableObject
         if (target is null) return;
 
         SetActiveInstall(target);
+        OpenProject();
         await PackagesVM.AddPackageListAsync(packageList, target);
     }
 
@@ -939,13 +933,36 @@ public sealed class MainWindowViewModel : ObservableObject
         catch (Exception ex) { DiagnosticLog.Write("Saving the set of read announcements", ex); }
     }
 
+    private ProjectViewModel? _projectVM;
+    public ProjectViewModel ProjectVM => _projectVM ??= new ProjectViewModel(PackagesVM, ServerVM, InstallsVM, () => NavigateTo("installs"));
+
+    /// <summary>Shows the active project's page on <paramref name="tab"/> in place of the project list.</summary>
+    public void OpenProject(int tab = ProjectViewModel.PackagesTab)
+    {
+        ProjectVM.SelectedTab = tab;
+        CurrentPage = NavPage.Installs;
+        CurrentView = ProjectVM;
+    }
+
+    /// <summary>Returns to the project list when the project page is showing.</summary>
+    public void CloseProject()
+    {
+        if (ReferenceEquals(CurrentView, _projectVM))
+        {
+            CurrentView = InstallsVM;
+        }
+    }
+
     public void NavigateTo(string page)
     {
+        if (page is "project" or "packages" or "server")
+        {
+            OpenProject(page == "server" ? ProjectViewModel.ServerTab : ProjectViewModel.PackagesTab);
+            return;
+        }
         CurrentPage = page switch
         {
             "installs" => NavPage.Installs,
-            "packages" => NavPage.Packages,
-            "server" => NavPage.Server,
             "unity" => NavPage.Unity,
             "settings" => NavPage.Settings,
             "support" => NavPage.Support,
@@ -954,5 +971,9 @@ public sealed class MainWindowViewModel : ObservableObject
             "community" => NavPage.Community,
             _ => CurrentPage,
         };
+        if (page == "installs")
+        {
+            CurrentView = InstallsVM;
+        }
     }
 }

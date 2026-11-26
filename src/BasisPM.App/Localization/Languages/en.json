@@ -52,7 +52,7 @@
     },
     {
       "key": "nav.community",
-      "value": "Community"
+      "value": "Home"
     },
     {
       "key": "nav.develop",
@@ -63,7 +63,7 @@
       "value": "Projects"
     },
     {
-      "key": "nav.packages",
+      "key": "packages.window.title",
       "value": "Packages"
     },
     {
@@ -357,10 +357,6 @@
     {
       "key": "installs.action.updateCore",
       "value": "Update Core runs 'git pull', which can change files in your Basis project."
-    },
-    {
-      "key": "installs.badge.active",
-      "value": "ACTIVE"
     },
     {
       "key": "installs.button.changeBranch",
@@ -756,7 +752,7 @@
     },
     {
       "key": "update.failure.ignoredInTheWay",
-      "value": "Files ignored by git are where Basis now adds files: {0}. Move or remove them (installed packages can be removed in the Packages tab), then try again."
+      "value": "Files ignored by git are where Basis now adds files: {0}. Move or remove them (installed packages can be removed in the packages window (Manage Project on the Projects page)), then try again."
     },
     {
       "key": "update.failure.setAside",
@@ -960,7 +956,7 @@
     },
     {
       "key": "dialog.basisUpdate.note.blocking",
-      "value": "These files are ignored by git but sit where Basis now adds files. Move or remove them first (installed packages can be removed in the Packages tab):"
+      "value": "These files are ignored by git but sit where Basis now adds files. Move or remove them first (installed packages can be removed in the packages window (Manage Project on the Projects page)):"
     },
     {
       "key": "dialog.basisUpdate.note.unity",
@@ -1279,10 +1275,6 @@
       "value": "Open folder"
     },
     {
-      "key": "installs.button.packages",
-      "value": "Packages"
-    },
-    {
       "key": "installs.button.updateCore",
       "value": "Update Core"
     },
@@ -1293,6 +1285,14 @@
     {
       "key": "installs.dialog.deleteConfirmBody",
       "value": "This permanently deletes “{0}” and everything inside:\n\n{1}\n\nThis cannot be undone. Delete it?"
+    },
+    {
+      "key": "installs.dialog.removeConfirmTitle",
+      "value": "Remove project"
+    },
+    {
+      "key": "installs.dialog.removeConfirmHeading",
+      "value": "Remove {0}?"
     },
     {
       "key": "installs.dialog.deleteConfirmTitle",
@@ -1571,10 +1571,6 @@
       "value": "Licenses"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "Grid view"
-    },
-    {
       "key": "packages.button.install",
       "value": "Install"
     },
@@ -1591,28 +1587,12 @@
       "value": "{0} more queued"
     },
     {
-      "key": "packages.button.listView",
-      "value": "List view"
-    },
-    {
-      "key": "packages.button.showInstalled",
-      "value": "Show installed"
-    },
-    {
-      "key": "packages.button.showAll",
-      "value": "Show all"
-    },
-    {
       "key": "packages.tooltip.showInstalled",
-      "value": "Switch between every package in the registry and only the packages in this project."
+      "value": "Show only the packages in this project instead of every package in the registry."
     },
     {
       "key": "packages.installed.empty",
       "value": "No packages installed in this project yet."
-    },
-    {
-      "key": "packages.button.manage",
-      "value": "Manage"
     },
     {
       "key": "packages.button.remove",
@@ -1945,10 +1925,6 @@
     {
       "key": "packages.tooltip.chooseVersion",
       "value": "Pick a release, tag or the default branch of this package's repository and switch to it. An existing clone in the project's .basisdev folder is moved to that version in place, keeping your edits when they don't clash; otherwise the package is cloned there. A version the Basis registry hasn't checked is shown for review before Unity loads it."
-    },
-    {
-      "key": "packages.tooltip.toggleLayout",
-      "value": "Switch between a list of rows and a grid of cards. Your choice is remembered."
     },
     {
       "key": "packages.tooltip.viewDetails",
@@ -2907,27 +2883,7 @@
       "value": "Yes"
     },
     {
-      "key": "dialog.remove.title",
-      "value": "Remove project"
-    },
-    {
-      "key": "dialog.remove.heading",
-      "value": "Remove {0}?"
-    },
-    {
-      "key": "dialog.remove.body",
-      "value": "“Remove from list” just forgets this project here — your files stay exactly where they are. “Delete from disk” permanently deletes the whole project folder shown below. This cannot be undone."
-    },
-    {
-      "key": "dialog.remove.cancel",
-      "value": "Cancel"
-    },
-    {
-      "key": "dialog.remove.removeFromList",
-      "value": "Remove from list"
-    },
-    {
-      "key": "dialog.remove.deleteFromDisk",
+      "key": "installs.button.delete",
       "value": "Delete from disk"
     },
     {
@@ -3231,22 +3187,6 @@
       "value": "Choose a version"
     },
     {
-      "key": "community.hero.tagline",
-      "value": "COMMUNITY"
-    },
-    {
-      "key": "community.hero.title",
-      "value": "News, docs & support"
-    },
-    {
-      "key": "community.hero.subtitle",
-      "value": "What's new with Basis, where to learn it, and how to help keep it going."
-    },
-    {
-      "key": "community.button.openDocs",
-      "value": "Open the docs"
-    },
-    {
       "key": "community.button.joinDiscord",
       "value": "Join the Discord"
     },
@@ -3271,36 +3211,8 @@
       "value": "Check back later — news from the Basis team will show up here."
     },
     {
-      "key": "community.docs.heading",
-      "value": "Documentation"
-    },
-    {
       "key": "community.docs.siteTitle",
       "value": "Documentation site"
-    },
-    {
-      "key": "community.docs.siteBody",
-      "value": "Installation, first steps, avatars, worlds, networking and the SDK — the full docs live at docs.basisvr.org."
-    },
-    {
-      "key": "community.docs.openSite",
-      "value": "Open docs.basisvr.org"
-    },
-    {
-      "key": "community.docs.askTitle",
-      "value": "Ask the community"
-    },
-    {
-      "key": "community.docs.askBody",
-      "value": "Stuck on something the docs don't cover? The Discord is the fastest way to get help from other creators and the maintainers."
-    },
-    {
-      "key": "community.docs.sourceTitle",
-      "value": "Source & issues"
-    },
-    {
-      "key": "community.docs.sourceBody",
-      "value": "Read the code, file a bug or open a pull request. Basis is MIT-licensed and developed in the open."
     },
     {
       "key": "community.docs.basisRepo",
@@ -3311,52 +3223,8 @@
       "value": "Package Manager on GitHub"
     },
     {
-      "key": "community.support.heading",
-      "value": "Support Basis"
-    },
-    {
-      "key": "community.support.intro",
-      "value": "Basis is MIT-licensed and creator-first. Community donations and company collaborations keep a maintainer working full-time and speed up releases."
-    },
-    {
       "key": "community.support.openCollective",
       "value": "Support via OpenCollective"
-    },
-    {
-      "key": "community.support.donationsTitle",
-      "value": "Community donations"
-    },
-    {
-      "key": "community.support.donationsBody",
-      "value": "Individuals back Basis on OpenCollective — monthly or one-time. These funds primarily support full-time maintenance and developer-experience work."
-    },
-    {
-      "key": "community.support.backOpenCollective",
-      "value": "Back on OpenCollective"
-    },
-    {
-      "key": "community.support.collabTitle",
-      "value": "Company collaborations"
-    },
-    {
-      "key": "community.support.collabBody",
-      "value": "Companies sponsor roadmap items or co-fund features — networking, avatar systems, tooling. Work lands upstream and stays MIT-licensed by default."
-    },
-    {
-      "key": "community.support.sponsorFeature",
-      "value": "Sponsor a feature"
-    },
-    {
-      "key": "community.support.moneyTitle",
-      "value": "Where the money goes"
-    },
-    {
-      "key": "community.support.moneyBody",
-      "value": "Funds are pooled to tackle shared problems — networking, embodiment, tooling — that benefit everyone. There's a public ledger on OpenCollective, and sponsored work is attributed in release notes. Sponsors don't control the project."
-    },
-    {
-      "key": "community.support.fundingPage",
-      "value": "Read the full funding page"
     },
     {
       "key": "packages.button.packageLists",
@@ -3628,7 +3496,7 @@
     },
     {
       "key": "dialog.createPackageList.tooltip.saveLocal",
-      "value": "Choose where to save this list as a JSON file on this computer. Nothing is uploaded. Anyone you share the file with can install its packages from the Packages tab."
+      "value": "Choose where to save this list as a JSON file on this computer. Nothing is uploaded. Anyone you share the file with can install its packages from the packages window."
     },
     {
       "key": "dialog.installPicker.tooltip.addHere",
@@ -3647,16 +3515,8 @@
       "value": "Add the selected list's packages to a project. Next you choose which project, and the packages are written to its Packages/manifest.json."
     },
     {
-      "key": "dialog.remove.tooltip.cancel",
-      "value": "Keep this project in your list and close. Nothing is removed or deleted."
-    },
-    {
-      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "key": "installs.tooltip.delete",
       "value": "Permanently delete the whole project folder shown above, including its git history and any work not pushed or backed up elsewhere. You are asked to confirm once more. This can't be undone. Close Unity before deleting."
-    },
-    {
-      "key": "dialog.remove.tooltip.removeFromList",
-      "value": "Take this project off your list. Its folder and files stay on disk, and you can add it back later with Add existing."
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
@@ -3739,24 +3599,12 @@
       "value": "Open this project in the Unity editor version it uses. If that version isn't installed yet, Unity Hub opens so you can add it."
     },
     {
-      "key": "installs.tooltip.packages",
-      "value": "Make this the active project and open the Packages tab to manage its packages."
-    },
-    {
       "key": "nav.tooltip.community",
-      "value": "Go to the Community tab for Basis news, documentation links, help on Discord and ways to support the project. A number on this button counts announcements you have not seen yet. Opening Community marks them as read."
+      "value": "Go to Home for Basis news, documentation links, help on Discord and ways to support the project. A number on this button counts announcements you have not seen yet. Opening Home marks them as read."
     },
     {
       "key": "nav.tooltip.installs",
       "value": "Go to your Basis projects, where you create or add a project, open it in Unity, update Basis, switch branches and make backups. A number on this button counts projects with a Basis update that is available or waiting for you to finish it."
-    },
-    {
-      "key": "nav.tooltip.packages",
-      "value": "Go to the package browser, where you find packages in the registry and install, update or remove them in a project. Package lists, packages from GitHub links and editing a package's source are here too."
-    },
-    {
-      "key": "nav.tooltip.server",
-      "value": "Go to the Basis server of the selected project, where you build, run and stop it and edit its configuration, server packages and default content. Building needs the .NET 10 SDK."
     },
     {
       "key": "nav.tooltip.settings",
@@ -3789,10 +3637,6 @@
     {
       "key": "packages.tooltip.installGit",
       "value": "Open the Git download page in your browser. Git is needed to clone packages for editing and to submit pull requests. After installing it, use Refresh at the top of this page."
-    },
-    {
-      "key": "packages.tooltip.manage",
-      "value": "Open a menu to update this package, choose another version, mount it for editing or remove it. Options appear only when they apply."
     },
     {
       "key": "packages.tooltip.openFolder",
@@ -3836,11 +3680,11 @@
     },
     {
       "key": "settings.tooltip.addCatalog",
-      "value": "Add the address typed in the box to the list of extra catalogs. Click Save to load its packages into the Packages tab."
+      "value": "Add the address typed in the box to the list of extra catalogs. Click Save to load its packages into the packages window."
     },
     {
       "key": "settings.tooltip.catalogUrl",
-      "value": "The address of the package catalog listed on the Packages tab. Leave it blank to use the official Basis registry at basisvr.org; if it cannot be reached, a copy bundled with the app is used. Takes effect when you click Save."
+      "value": "The address of the package catalog listed in the packages window. Leave it blank to use the official Basis registry at basisvr.org; if it cannot be reached, a copy bundled with the app is used. Takes effect when you click Save."
     },
     {
       "key": "settings.tooltip.checkUpdates",
@@ -3848,7 +3692,7 @@
     },
     {
       "key": "settings.tooltip.extraCatalogUrl",
-      "value": "An unofficial catalog whose packages are added to the Packages tab and marked unofficial. An official package with the same id always wins. You can edit the address here; changes take effect when you click Save."
+      "value": "An unofficial catalog whose packages are added to the packages window and marked unofficial. An official package with the same id always wins. You can edit the address here; changes take effect when you click Save."
     },
     {
       "key": "settings.tooltip.language",
@@ -5475,18 +5319,6 @@
       "value": "This project is a clone of {0}. The pull request goes on a branch of its own, so your checked-out branch isn't pushed or changed."
     },
     {
-      "key": "installs.button.gridView",
-      "value": "Grid view"
-    },
-    {
-      "key": "installs.button.listView",
-      "value": "List view"
-    },
-    {
-      "key": "installs.tooltip.toggleLayout",
-      "value": "Switch between showing your projects as a list or as a grid of cards. The app remembers your choice."
-    },
-    {
       "key": "installs.button.findProjects",
       "value": "Find projects"
     },
@@ -6488,11 +6320,7 @@
     },
     {
       "key": "installs.tooltip.remove",
-      "value": "Remove this project from your list, or delete its folder from disk. You choose in the next step, and deleting can't be undone."
-    },
-    {
-      "key": "installs.tooltip.activeBadge",
-      "value": "The active project, which the Packages and Server tabs work on. To change it, press Packages on another project or pick one on the Packages tab."
+      "value": "Take this project off your list. Its folder and files stay on disk, and you can add it back later with Add existing."
     },
     {
       "key": "installs.tooltip.unityVersion",
@@ -6696,7 +6524,7 @@
     },
     {
       "key": "settings.tooltip.removeCatalog",
-      "value": "Remove this catalog from the list. Its packages leave the Packages tab when you click Save; packages already installed in your projects stay."
+      "value": "Remove this catalog from the list. Its packages leave the packages window when you click Save; packages already installed in your projects stay."
     },
     {
       "key": "settings.tooltip.detectedSection",
@@ -8045,6 +7873,46 @@
     {
       "key": "dialog.setup.toolsDirty",
       "value": "Save your changes before opening Parts, Backup or Storage."
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Welcome to Basis"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "News from Basis, where to learn it, and where to get help."
+    },
+    {
+      "key": "community.links.heading",
+      "value": "Resources"
+    },
+    {
+      "key": "community.tooltip.projects",
+      "value": "Go to your projects, where you create, open and update Basis projects and manage their packages."
+    },
+    {
+      "key": "installs.button.manageProject",
+      "value": "Manage Project"
+    },
+    {
+      "key": "installs.tooltip.manageProject",
+      "value": "Make this the active project and open its page here with its packages, its server and the project tools: Basis updates, setup, branch, changes and folder."
+    },
+    {
+      "key": "packages.button.uninstall",
+      "value": "Uninstall"
+    },
+    {
+      "key": "packages.toggle.installedOnly",
+      "value": "Installed only"
+    },
+    {
+      "key": "project.settings.title",
+      "value": "Project settings"
+    },
+    {
+      "key": "project.changes.button",
+      "value": "Review changes"
     }
   ]
 }

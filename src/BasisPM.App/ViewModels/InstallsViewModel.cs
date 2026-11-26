@@ -22,9 +22,11 @@ public sealed partial class InstallsViewModel : ObservableObject
     private InstallRow? _activeRow;
     private bool _checkingBasis;
     private bool _recheckBasis;
-    private bool _isGridView;
 
     public ObservableCollection<InstallRow> Installs { get; } = new();
+
+    /// <summary>The project the Manage Project window works on.</summary>
+    public InstallRow? ActiveRow => _activeRow;
 
     public RelayCommand AddExistingCommand { get; }
     public RelayCommand FindProjectsCommand { get; }
@@ -38,25 +40,11 @@ public sealed partial class InstallsViewModel : ObservableObject
     public RelayCommand<InstallRow> OpenFolderCommand { get; }
     public RelayCommand<InstallRow> ManagePackagesCommand { get; }
     public RelayCommand<InstallRow> RemoveCommand { get; }
+    public RelayCommand<InstallRow> DeleteCommand { get; }
     public RelayCommand<InstallRow> SetActiveCommand { get; }
     public RelayCommand<InstallRow> BackupCommand { get; }
     public RelayCommand<InstallRow> BasisChangesCommand { get; }
     public RelayCommand<InstallRow> PartsCommand { get; }
-    public RelayCommand ToggleLayoutCommand { get; }
-
-    public bool IsGridView
-    {
-        get => _isGridView;
-        set
-        {
-            if (!SetField(ref _isGridView, value)) return;
-            RaiseLayout();
-            _ = PersistGridViewAsync(value);
-        }
-    }
-
-    public bool IsListView => !_isGridView;
-    public string LayoutToggleLabel => _isGridView ? L.Tr("installs.button.listView") : L.Tr("installs.button.gridView");
 
     public InstallsViewModel(UserSettingsService settingsService, BasisInstallService installService, GitService git, BasisUpdateService updates, MainWindowViewModel shell)
     {
@@ -77,26 +65,21 @@ public sealed partial class InstallsViewModel : ObservableObject
         CheckUpdatesCommand = new RelayCommand<InstallRow>(r => r is null ? Task.CompletedTask : CheckRemoteQueuedAsync(r));
         OpenInUnityCommand = new RelayCommand<InstallRow>(OpenInUnity);
         OpenFolderCommand = new RelayCommand<InstallRow>(r => { if (r is not null) BasisPM.App.Services.ExternalLink.OpenFolder(r.RepoRoot); });
-        ManagePackagesCommand = new RelayCommand<InstallRow>(r => Activate(r, "packages"));
+        ManagePackagesCommand = new RelayCommand<InstallRow>(r => Activate(r, "project"));
         RemoveCommand = new RelayCommand<InstallRow>(RemoveAsync);
+        DeleteCommand = new RelayCommand<InstallRow>(DeleteAsync);
         SetActiveCommand = new RelayCommand<InstallRow>(r => Activate(r, null));
         BackupCommand = new RelayCommand<InstallRow>(r => r is null ? Task.CompletedTask : BackupQueuedAsync(r));
         BasisChangesCommand = new RelayCommand<InstallRow>(r => r is null ? Task.CompletedTask : _shell.OpenBasisChangesAsync(r.Install));
         PartsCommand = new RelayCommand<InstallRow>(EditPartsAsync);
-        ToggleLayoutCommand = new RelayCommand(() => IsGridView = !IsGridView);
     }
 
     public async Task LoadAsync(UserSettings settings)
     {
-        if (_isGridView != settings.ProjectsGridView)
-        {
-            _isGridView = settings.ProjectsGridView;
-            OnPropertyChanged(nameof(IsGridView));
-            RaiseLayout();
-        }
         var activePath = _activeRow?.RepoRoot;
         Installs.Clear();
         _activeRow = null;
+        OnPropertyChanged(nameof(ActiveRow));
         foreach (var root in settings.Installs.ToList())
         {
             if (!Directory.Exists(root)) continue;
@@ -109,18 +92,6 @@ public sealed partial class InstallsViewModel : ObservableObject
         var next = Installs.FirstOrDefault(r => string.Equals(r.RepoRoot, activePath, StringComparison.OrdinalIgnoreCase)) ?? Installs.FirstOrDefault();
         if (next is not null) Activate(next, null);
         else _shell.ClearActiveInstall();
-    }
-
-    private void RaiseLayout()
-    {
-        OnPropertyChanged(nameof(IsListView));
-        OnPropertyChanged(nameof(LayoutToggleLabel));
-    }
-
-    private async Task PersistGridViewAsync(bool grid)
-    {
-        try { await _settingsService.UpdateAsync(s => s.ProjectsGridView = grid); }
-        catch (Exception ex) { DiagnosticLog.Write("Saving the projects view preference", ex); }
     }
 
     private async Task RefreshAsync()
@@ -150,6 +121,7 @@ public sealed partial class InstallsViewModel : ObservableObject
         if (row is null) return;
         if (_activeRow is not null) _activeRow.IsActive = false;
         _activeRow = row;
+        OnPropertyChanged(nameof(ActiveRow));
         row.IsActive = true;
         _shell.SetActiveInstall(row.Install);
         if (navigateTo is not null) _shell.NavigateTo(navigateTo);
@@ -193,6 +165,7 @@ public sealed partial class InstallsViewModel : ObservableObject
         if (row is null || ReferenceEquals(row, _activeRow)) return;
         if (_activeRow is not null) _activeRow.IsActive = false;
         _activeRow = row;
+        OnPropertyChanged(nameof(ActiveRow));
         row.IsActive = true;
     }
 
@@ -1265,27 +1238,37 @@ public sealed partial class InstallsViewModel : ObservableObject
         _ = _shell.OpenProjectInUnityAsync(row.Install);
     }
 
+    // Takes the project off the list once the user confirms; its files stay on disk.
     private async Task RemoveAsync(InstallRow? row)
     {
-        if (row is null) return;
-        var window = GetMainWindow();
-        if (window is null) return;
-
-        // Confirm first, and let the user choose between forgetting the project (files kept) and
-        // permanently deleting the folder from disk.
-        var choice = await new RemovePromptDialog(row.Name, row.RepoRoot).ShowDialog<RemoveChoice>(window);
-        if (choice == RemoveChoice.Cancel) return;
-
-        if (choice == RemoveChoice.DeleteFromDisk)
+        if (row is null || !Installs.Contains(row))
         {
-            var confirmed = await BasisPM.App.Services.Dialogs.ConfirmAsync(
-                L.Tr("installs.dialog.deleteConfirmTitle"),
-                L.Tr("installs.dialog.deleteConfirmBody", row.Name, row.RepoRoot));
-            if (!confirmed) return;
-            await DeleteFromDiskAsync(row);
+            return;
+        }
+        var confirmed = await BasisPM.App.Services.Dialogs.ConfirmAsync(
+            L.Tr("installs.dialog.removeConfirmTitle"),
+            L.Tr("installs.dialog.removeConfirmHeading", row.Name) + "\n\n" + L.Tr("installs.tooltip.remove"));
+        if (!confirmed || !Installs.Contains(row))
+        {
             return;
         }
         await ForgetAsync(row, deleted: false);
+    }
+
+    private async Task DeleteAsync(InstallRow? row)
+    {
+        if (row is null || !Installs.Contains(row))
+        {
+            return;
+        }
+        var confirmed = await BasisPM.App.Services.Dialogs.ConfirmAsync(
+            L.Tr("installs.dialog.deleteConfirmTitle"),
+            L.Tr("installs.dialog.deleteConfirmBody", row.Name, row.RepoRoot));
+        if (!confirmed)
+        {
+            return;
+        }
+        await DeleteFromDiskAsync(row);
     }
 
     private Task DeleteFromDiskAsync(InstallRow row) =>
@@ -1316,7 +1299,9 @@ public sealed partial class InstallsViewModel : ObservableObject
         SyncPackageProjects();
         if (_activeRow == row)
         {
+            _shell.CloseProject();
             _activeRow = null;
+            OnPropertyChanged(nameof(ActiveRow));
             var next = Installs.FirstOrDefault();
             if (next is not null) Activate(next, null);
             else _shell.ClearActiveInstall();

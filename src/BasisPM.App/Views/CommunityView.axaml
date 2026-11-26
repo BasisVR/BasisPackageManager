@@ -5,180 +5,159 @@
              x:Class="BasisPM.App.Views.CommunityView"
              x:DataType="vm:CommunityViewModel">
 
+    <UserControl.Styles>
+        <!-- One link out of the app: icon, label, and an arrow that says it opens the browser. -->
+        <Style Selector="Button.homeLink">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+        <Style Selector="Button.homeLink PathIcon.linkIcon">
+            <Setter Property="Width" Value="16"/>
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="Button.homeLink PathIcon.linkArrow">
+            <Setter Property="Width" Value="12"/>
+            <Setter Property="Height" Value="12"/>
+            <Setter Property="Opacity" Value="0.5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="Button.homeLink TextBlock">
+            <Setter Property="Margin" Value="12,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+    </UserControl.Styles>
+
     <ScrollViewer>
-        <StackPanel Margin="40,32" Spacing="18">
+        <StackPanel Margin="28,20,28,28" Spacing="24" MaxWidth="1240">
 
-            <!-- Hero -->
-            <Border CornerRadius="14" Padding="32,28"
-                    Background="{StaticResource BasisHeroGradient}"
+            <!-- Welcome, and the way on to your projects. -->
+            <Border CornerRadius="18" Padding="28,24" Background="{StaticResource BasisHeroGradient}"
                     BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="{loc:Tr community.hero.tagline}" Classes="tagline"/>
-                    <TextBlock Text="{loc:Tr community.hero.title}" Classes="h1" TextWrapping="Wrap"/>
-                    <TextBlock Text="{loc:Tr community.hero.subtitle}"
-                               Classes="muted" FontSize="14" TextWrapping="Wrap" MaxWidth="660" HorizontalAlignment="Left"/>
-                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,0">
-                        <Button Classes="primary" Command="{Binding Documentation.DocsCommand}" ToolTip.Tip="{loc:Tr docs.tooltip.openDocs}">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Border Grid.Column="0" Width="56" Height="56" CornerRadius="14" ClipToBounds="True" VerticalAlignment="Center"
+                            BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="1">
+                        <Image Source="/Assets/BasisLogo.png" Stretch="UniformToFill"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="18,0" Spacing="4" VerticalAlignment="Center">
+                        <TextBlock Text="{loc:Tr community.hero.title}" Classes="h1" TextWrapping="Wrap"/>
+                        <TextBlock Text="{loc:Tr community.hero.subtitle}" Classes="muted" FontSize="14" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Button Classes="primary" Command="{Binding OpenProjectsCommand}" ToolTip.Tip="{loc:Tr community.tooltip.projects}">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconBook}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr community.button.openDocs}" VerticalAlignment="Center"/>
+                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconInstalls}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr nav.installs}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
-                </StackPanel>
+                </Grid>
             </Border>
 
-            <!-- ── Announcements ───────────────────────────────── -->
-            <Grid ColumnDefinitions="*,Auto" Margin="4,6,0,0">
-                <TextBlock Grid.Column="0" Text="{loc:Tr community.announcements.heading}" Classes="h2" VerticalAlignment="Center"/>
-                <Button Grid.Column="1" Classes="iconBtn" Command="{Binding Announcements.RefreshCommand}" ToolTip.Tip="{loc:Tr announcements.tooltip.refresh}">
-                    <PathIcon Width="16" Height="16" Data="{StaticResource IconRefresh}"/>
-                </Button>
-            </Grid>
-            <TextBlock Text="{loc:Tr community.announcements.loading}" Classes="dim" FontSize="12"
-                       IsVisible="{Binding Announcements.IsLoading}"/>
-            <ItemsControl ItemsSource="{Binding Announcements.Announcements}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Spacing="14"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:AnnouncementCard">
-                        <Border Classes="card">
-                            <StackPanel Spacing="10">
-                                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                                    <Border CornerRadius="999" Padding="10,3" Background="{Binding LevelBrush}" ToolTip.Tip="{loc:Tr announcements.tooltip.level}">
-                                        <TextBlock Text="{Binding LevelLabel}" FontSize="10"
-                                                   FontWeight="Bold" Foreground="#FFFFFF"/>
-                                    </Border>
-                                    <Border Classes="versionPill" IsVisible="{Binding IsPinned}" ToolTip.Tip="{loc:Tr announcements.tooltip.pinned}">
-                                        <TextBlock Text="{loc:Tr community.announcements.pinned}" FontSize="10" FontWeight="Bold" Classes="muted"/>
-                                    </Border>
-                                    <TextBlock Text="{Binding DateDisplay}" Classes="dim" FontSize="12"
-                                               VerticalAlignment="Center" IsVisible="{Binding HasDate}"/>
-                                </StackPanel>
-                                <TextBlock Text="{Binding Title}" Classes="h3" FontSize="17" TextWrapping="Wrap"/>
-                                <TextBlock Text="{Binding Body}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                                <Button Content="{Binding LinkText}" HorizontalAlignment="Left"
-                                        IsVisible="{Binding HasLink}"
-                                        Command="{Binding OpenLinkCommand}"
-                                        ToolTip.Tip="{loc:Tr announcements.tooltip.openLink}"/>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <Border Classes="card" IsVisible="{Binding Announcements.ShowEmpty}">
-                <StackPanel Spacing="8" HorizontalAlignment="Center" Margin="0,24">
-                    <TextBlock Text="{loc:Tr community.announcements.emptyTitle}" Classes="h3" HorizontalAlignment="Center"/>
-                    <TextBlock Text="{loc:Tr community.announcements.emptyBody}"
-                               Classes="muted" HorizontalAlignment="Center" TextAlignment="Center"
-                               MaxWidth="480" TextWrapping="Wrap"/>
-                </StackPanel>
-            </Border>
-
-            <!-- ── Documentation ───────────────────────────────── -->
-            <TextBlock Text="{loc:Tr community.docs.heading}" Classes="h2" Margin="4,10,0,0"/>
-            <Grid ColumnDefinitions="*,*">
-                <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
-                    <StackPanel Spacing="10">
-                        <TextBlock Text="{loc:Tr community.docs.siteTitle}" Classes="h3" TextWrapping="Wrap"/>
-                        <TextBlock Text="{loc:Tr community.docs.siteBody}"
-                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                        <Button Command="{Binding Documentation.DocsCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr docs.tooltip.openDocs}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr community.docs.openSite}" VerticalAlignment="Center"/>
-                            </StackPanel>
+            <Grid ColumnDefinitions="*,24,300">
+                <!-- News from the Basis team. -->
+                <StackPanel Grid.Column="0" Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto" Height="32" Margin="4,0,0,0">
+                        <TextBlock Grid.Column="0" Text="{loc:Tr community.announcements.heading}" Classes="h3" VerticalAlignment="Center"/>
+                        <Button Grid.Column="1" Classes="iconBtn sm" VerticalAlignment="Center" Command="{Binding Announcements.RefreshCommand}"
+                                ToolTip.Tip="{loc:Tr announcements.tooltip.refresh}">
+                            <PathIcon Width="15" Height="15" Data="{StaticResource IconRefresh}"/>
                         </Button>
-                    </StackPanel>
-                </Border>
-                <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
-                    <StackPanel Spacing="10">
-                        <TextBlock Text="{loc:Tr community.docs.askTitle}" Classes="h3" TextWrapping="Wrap"/>
-                        <TextBlock Text="{loc:Tr community.docs.askBody}"
-                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                        <Button Command="{Binding Documentation.DiscordCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr docs.tooltip.discord}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconChat}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr community.button.joinDiscord}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </Border>
-            </Grid>
-            <Border Classes="card">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="{loc:Tr community.docs.sourceTitle}" Classes="h3" TextWrapping="Wrap"/>
-                    <TextBlock Text="{loc:Tr community.docs.sourceBody}"
-                               Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                    <StackPanel Orientation="Horizontal" Spacing="12">
-                        <Button Command="{Binding Documentation.BasisRepoCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr docs.tooltip.basisGithub}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr community.docs.basisRepo}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{Binding Documentation.PackageManagerRepoCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr docs.tooltip.packageManagerGithub}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr community.docs.pmRepo}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-
-            <!-- ── Support ─────────────────────────────────────── -->
-            <TextBlock Text="{loc:Tr community.support.heading}" Classes="h2" Margin="4,10,0,0"/>
-            <TextBlock Text="{loc:Tr community.support.intro}"
-                       Classes="muted" FontSize="13" TextWrapping="Wrap" MaxWidth="680" HorizontalAlignment="Left"/>
-            <StackPanel Orientation="Horizontal" Spacing="12">
-                <Button Classes="primary" Command="{Binding Support.OpenCollectiveCommand}"
-                        HorizontalAlignment="Left" FontSize="16" Padding="32,17" CornerRadius="14"
-                        ToolTip.Tip="{loc:Tr support.tooltip.openCollective}">
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <PathIcon Data="{StaticResource IconHeart}" Width="20" Height="20" VerticalAlignment="Center"/>
-                        <TextBlock Text="{loc:Tr community.support.openCollective}" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-            <Grid ColumnDefinitions="*,*">
-                <Border Grid.Column="0" Classes="card" Margin="0,0,10,0">
-                    <StackPanel Spacing="10">
-                        <TextBlock Text="{loc:Tr community.support.donationsTitle}" Classes="h3" TextWrapping="Wrap"/>
-                        <TextBlock Text="{loc:Tr community.support.donationsBody}"
-                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                    </StackPanel>
-                </Border>
-                <Border Grid.Column="1" Classes="card" Margin="10,0,0,0">
-                    <StackPanel Spacing="10">
-                        <TextBlock Text="{loc:Tr community.support.collabTitle}" Classes="h3" TextWrapping="Wrap"/>
-                        <TextBlock Text="{loc:Tr community.support.collabBody}"
-                                   Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                        <Button Command="{Binding Support.FundingPageCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr support.tooltip.fundingPage}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <PathIcon Classes="leadingIcon" Data="{StaticResource IconStar}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr community.support.sponsorFeature}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </Border>
-            </Grid>
-            <Border Classes="card">
-                <StackPanel Spacing="10">
-                    <TextBlock Text="{loc:Tr community.support.moneyTitle}" Classes="h3" TextWrapping="Wrap"/>
-                    <TextBlock Text="{loc:Tr community.support.moneyBody}"
-                               Classes="muted" FontSize="13" TextWrapping="Wrap"/>
-                    <Button Command="{Binding Support.FundingPageCommand}" HorizontalAlignment="Left" ToolTip.Tip="{loc:Tr support.tooltip.fundingPage}">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconOpenExternal}" VerticalAlignment="Center"/>
-                            <TextBlock Text="{loc:Tr community.support.fundingPage}" VerticalAlignment="Center"/>
+                    </Grid>
+                    <TextBlock Text="{loc:Tr community.announcements.loading}" Classes="dim" FontSize="12" Margin="4,0,0,0"
+                               IsVisible="{Binding Announcements.IsLoading}"/>
+                    <ItemsControl ItemsSource="{Binding Announcements.Announcements}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="12"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="vm:AnnouncementCard">
+                                <Border Classes="card" Padding="18,16">
+                                    <StackPanel Spacing="8">
+                                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Border CornerRadius="999" Padding="10,3" Background="{Binding LevelBrush}" ToolTip.Tip="{loc:Tr announcements.tooltip.level}">
+                                                <TextBlock Text="{Binding LevelLabel}" FontSize="10"
+                                                           FontWeight="Bold" Foreground="#FFFFFF"/>
+                                            </Border>
+                                            <Border Classes="versionPill" IsVisible="{Binding IsPinned}" ToolTip.Tip="{loc:Tr announcements.tooltip.pinned}">
+                                                <TextBlock Text="{loc:Tr community.announcements.pinned}" FontSize="10" FontWeight="Bold" Classes="muted"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding DateDisplay}" Classes="dim" FontSize="12"
+                                                       VerticalAlignment="Center" IsVisible="{Binding HasDate}"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding Body}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                                        <Button Content="{Binding LinkText}" HorizontalAlignment="Left" FontSize="12" Padding="12,6" Margin="0,2,0,0"
+                                                IsVisible="{Binding HasLink}"
+                                                Command="{Binding OpenLinkCommand}"
+                                                ToolTip.Tip="{loc:Tr announcements.tooltip.openLink}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Border Classes="card" Padding="18,16" IsVisible="{Binding Announcements.ShowEmpty}">
+                        <StackPanel Spacing="6" HorizontalAlignment="Center" Margin="0,16">
+                            <TextBlock Text="{loc:Tr community.announcements.emptyTitle}" Classes="h3" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr community.announcements.emptyBody}"
+                                       Classes="muted" FontSize="13" HorizontalAlignment="Center" TextAlignment="Center"
+                                       MaxWidth="480" TextWrapping="Wrap"/>
                         </StackPanel>
-                    </Button>
+                    </Border>
                 </StackPanel>
-            </Border>
+
+                <!-- Docs, help, source and funding, one line each. -->
+                <StackPanel Grid.Column="2" Spacing="12">
+                    <Grid Height="32" Margin="4,0,0,0">
+                        <TextBlock Text="{loc:Tr community.links.heading}" Classes="h3" VerticalAlignment="Center"/>
+                    </Grid>
+                    <Border Classes="card" Padding="6">
+                        <StackPanel>
+                            <Button Classes="homeLink" Command="{Binding Documentation.DocsCommand}" ToolTip.Tip="{loc:Tr docs.tooltip.openDocs}">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <PathIcon Classes="linkIcon" Data="{StaticResource IconBook}"/>
+                                    <TextBlock Grid.Column="1" Text="{loc:Tr community.docs.siteTitle}"/>
+                                    <PathIcon Grid.Column="2" Classes="linkArrow" Data="{StaticResource IconOpenExternal}"/>
+                                </Grid>
+                            </Button>
+                            <Button Classes="homeLink" Command="{Binding Documentation.DiscordCommand}" ToolTip.Tip="{loc:Tr docs.tooltip.discord}">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <PathIcon Classes="linkIcon" Data="{StaticResource IconDiscord}"/>
+                                    <TextBlock Grid.Column="1" Text="{loc:Tr community.button.joinDiscord}"/>
+                                    <PathIcon Grid.Column="2" Classes="linkArrow" Data="{StaticResource IconOpenExternal}"/>
+                                </Grid>
+                            </Button>
+                            <Button Classes="homeLink" Command="{Binding Documentation.BasisRepoCommand}" ToolTip.Tip="{loc:Tr docs.tooltip.basisGithub}">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <PathIcon Classes="linkIcon" Data="{StaticResource IconGitHub}"/>
+                                    <TextBlock Grid.Column="1" Text="{loc:Tr community.docs.basisRepo}"/>
+                                    <PathIcon Grid.Column="2" Classes="linkArrow" Data="{StaticResource IconOpenExternal}"/>
+                                </Grid>
+                            </Button>
+                            <Button Classes="homeLink" Command="{Binding Documentation.PackageManagerRepoCommand}" ToolTip.Tip="{loc:Tr docs.tooltip.packageManagerGithub}">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <PathIcon Classes="linkIcon" Data="{StaticResource IconGitHub}"/>
+                                    <TextBlock Grid.Column="1" Text="{loc:Tr community.docs.pmRepo}"/>
+                                    <PathIcon Grid.Column="2" Classes="linkArrow" Data="{StaticResource IconOpenExternal}"/>
+                                </Grid>
+                            </Button>
+                            <Button Classes="homeLink" Command="{Binding Support.OpenCollectiveCommand}" ToolTip.Tip="{loc:Tr support.tooltip.openCollective}">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <PathIcon Classes="linkIcon" Data="{StaticResource IconHeart}" Foreground="{StaticResource BasisDangerBrush}"/>
+                                    <TextBlock Grid.Column="1" Text="{loc:Tr community.support.openCollective}"/>
+                                    <PathIcon Grid.Column="2" Classes="linkArrow" Data="{StaticResource IconOpenExternal}"/>
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
 
         </StackPanel>
     </ScrollViewer>

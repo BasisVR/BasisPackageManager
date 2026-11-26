@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:BasisPM.App.ViewModels"
         xmlns:loc="using:BasisPM.App.Localization"
+        xmlns:views="using:BasisPM.App.Views"
         x:Class="BasisPM.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="{loc:Tr shell.window.title}"
@@ -10,115 +11,8 @@
         MinWidth="880" MinHeight="600"
         Background="{StaticResource BasisBackgroundBrush}">
 
-    <Panel ClipToBounds="True" x:Name="BgRoot" Classes="bgLive">
-        <!-- Animated background: an oversized brand gradient that slowly pans on a loop
-             (mirrors the website's .animated-gradient background-position sweep), plus
-             colored blobs that drift on independent loops. The animations are gated on the
-             `bgLive` class (toggled off in code-behind when the window loses focus / minimizes),
-             so a backgrounded app stops repainting and drops to ~no CPU. -->
-        <Panel.Styles>
-            <!-- Pans the oversized gradient horizontally so its diagonal color bands drift across —
-                 the desktop nod to the site's `background-position` sweep, but kept SUBTLE: small,
-                 slow travel so the motion isn't distracting. Canvas.Left is a double (built-in
-                 animator); RenderTransform has none and throws at load —
-                 see project_basispm_avalonia_animation_gotcha. -->
-            <Style Selector="Panel.bgLive Border.flowGradient">
-                <Style.Animations>
-                    <Animation Duration="0:0:9" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
-                        <KeyFrame Cue="0%"><Setter Property="Canvas.Left" Value="0"/></KeyFrame>
-                        <KeyFrame Cue="100%"><Setter Property="Canvas.Left" Value="-160"/></KeyFrame>
-                    </Animation>
-                </Style.Animations>
-            </Style>
-            <!-- Blobs drift by animating their Canvas anchors (double → built-in animator).
-                 RenderTransform has no default animator in Avalonia and throws at load. -->
-            <Style Selector="Panel.bgLive Ellipse.blobA">
-                <Style.Animations>
-                    <Animation Duration="0:0:23" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
-                        <KeyFrame Cue="0%"><Setter Property="Canvas.Left" Value="-60"/><Setter Property="Canvas.Top" Value="-40"/></KeyFrame>
-                        <KeyFrame Cue="100%"><Setter Property="Canvas.Left" Value="20"/><Setter Property="Canvas.Top" Value="30"/></KeyFrame>
-                    </Animation>
-                </Style.Animations>
-            </Style>
-            <Style Selector="Panel.bgLive Ellipse.blobB">
-                <Style.Animations>
-                    <Animation Duration="0:0:29" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
-                        <KeyFrame Cue="0%"><Setter Property="Canvas.Right" Value="-80"/><Setter Property="Canvas.Top" Value="60"/></KeyFrame>
-                        <KeyFrame Cue="100%"><Setter Property="Canvas.Right" Value="-10"/><Setter Property="Canvas.Top" Value="115"/></KeyFrame>
-                    </Animation>
-                </Style.Animations>
-            </Style>
-            <Style Selector="Panel.bgLive Ellipse.blobC">
-                <Style.Animations>
-                    <Animation Duration="0:0:34" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
-                        <KeyFrame Cue="0%"><Setter Property="Canvas.Left" Value="280"/><Setter Property="Canvas.Bottom" Value="-40"/></KeyFrame>
-                        <KeyFrame Cue="100%"><Setter Property="Canvas.Left" Value="210"/><Setter Property="Canvas.Bottom" Value="20"/></KeyFrame>
-                    </Animation>
-                </Style.Animations>
-            </Style>
-            <Style Selector="Panel.bgLive Ellipse.blobD">
-                <Style.Animations>
-                    <Animation Duration="0:0:26" IterationCount="INFINITE" PlaybackDirection="Alternate" Easing="SineEaseInOut">
-                        <KeyFrame Cue="0%"><Setter Property="Canvas.Right" Value="120"/><Setter Property="Canvas.Bottom" Value="-30"/></KeyFrame>
-                        <KeyFrame Cue="100%"><Setter Property="Canvas.Right" Value="55"/><Setter Property="Canvas.Bottom" Value="30"/></KeyFrame>
-                    </Animation>
-                </Style.Animations>
-            </Style>
-        </Panel.Styles>
-
-        <!-- Flowing gradient backdrop: an oversized -45deg gradient (start bottom-right ->
-             end top-left, matching the site's `linear-gradient(-45deg, ...)`) that slides
-             horizontally so the diagonal bands sweep across. Sized far beyond any window
-             (covers up to 3920x2600) so the moving edge never enters view. -->
-        <Canvas ClipToBounds="True" IsHitTestVisible="False">
-            <Border Classes="flowGradient" Width="4400" Height="2600"
-                    Canvas.Left="0" Canvas.Top="0" Opacity="0.13">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="100%,100%" EndPoint="0%,0%">
-                        <GradientStop Offset="0" Color="#EF1237"/>
-                        <GradientStop Offset="0.33" Color="#9333EA"/>
-                        <GradientStop Offset="0.66" Color="#3B82F6"/>
-                        <GradientStop Offset="1" Color="#F43F5E"/>
-                    </LinearGradientBrush>
-                </Border.Background>
-            </Border>
-        </Canvas>
-
-        <Canvas IsHitTestVisible="False" ClipToBounds="True">
-            <Ellipse Classes="blobA" Width="260" Height="260" Canvas.Left="-60" Canvas.Top="-40"
-                     Fill="#26EF1237">
-                <Ellipse.Effect>
-                    <BlurEffect Radius="72"/>
-                </Ellipse.Effect>
-            </Ellipse>
-            <Ellipse Classes="blobB" Width="320" Height="320" Canvas.Right="-80" Canvas.Top="60"
-                     Fill="#269333EA">
-                <Ellipse.Effect>
-                    <BlurEffect Radius="84"/>
-                </Ellipse.Effect>
-            </Ellipse>
-            <Ellipse Classes="blobC" Width="220" Height="220" Canvas.Left="280" Canvas.Bottom="-40"
-                     Fill="#1F3B82F6">
-                <Ellipse.Effect>
-                    <BlurEffect Radius="72"/>
-                </Ellipse.Effect>
-            </Ellipse>
-            <Ellipse Classes="blobD" Width="200" Height="200" Canvas.Right="120" Canvas.Bottom="-30"
-                     Fill="#26F43F5E">
-                <Ellipse.Effect>
-                    <BlurEffect Radius="60"/>
-                </Ellipse.Effect>
-            </Ellipse>
-        </Canvas>
-
-        <!-- Dither overlay: a faint static noise texture that breaks up the 8-bit colour banding
-             in the low-opacity gradient and blurred blobs over the dark background. Not animated. -->
-        <Border IsHitTestVisible="False" Opacity="0.025">
-            <Border.Background>
-                <ImageBrush Source="/Assets/noise.png" TileMode="Tile" Stretch="Fill"
-                            DestinationRect="0,0,256,256"/>
-            </Border.Background>
-        </Border>
+    <Panel ClipToBounds="True">
+        <views:AnimatedBackdrop/>
 
         <Grid ColumnDefinitions="220,*" RowDefinitions="*,Auto">
 
@@ -139,6 +33,22 @@
 
                 <StackPanel Grid.Row="1" Spacing="0" Margin="10,0">
                     <Grid>
+                        <Button Classes="nav" Classes.active="{Binding IsCommunity}" Tag="community" Click="OnNavClick" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr nav.tooltip.community}">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <PathIcon Width="18" Height="18" Data="{StaticResource IconHome}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{loc:Tr nav.community}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Border Classes="brandBadge" Padding="7,1" MinWidth="18"
+                                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding HasUnreadAnnouncements}">
+                            <TextBlock Text="{Binding AnnouncementsUnreadCount}"
+                                       FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+                    <Grid>
                         <Button Classes="nav" Classes.active="{Binding IsInstalls}" Tag="installs" Click="OnNavClick" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr nav.tooltip.installs}">
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <PathIcon Width="18" Height="18" Data="{StaticResource IconInstalls}" VerticalAlignment="Center"/>
@@ -154,44 +64,6 @@
                                        HorizontalAlignment="Center"/>
                         </Border>
                     </Grid>
-                    <Grid>
-                        <Button Classes="nav" Classes.active="{Binding IsPackages}" Tag="packages" Click="OnNavClick" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr nav.tooltip.packages}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <PathIcon Width="18" Height="18" Data="{StaticResource IconPackages}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr nav.packages}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Border Classes="brandBadge" Padding="7,1" MinWidth="18"
-                                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0"
-                                IsHitTestVisible="False"
-                                IsVisible="{Binding PackagesVM.HasPackageUpdates}">
-                            <TextBlock Text="{Binding PackagesVM.PackageUpdateCountText}"
-                                       FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"
-                                       HorizontalAlignment="Center"/>
-                        </Border>
-                    </Grid>
-                    <Grid>
-                        <Button Classes="nav" Classes.active="{Binding IsCommunity}" Tag="community" Click="OnNavClick" HorizontalAlignment="Stretch" ToolTip.Tip="{loc:Tr nav.tooltip.community}">
-                            <StackPanel Orientation="Horizontal" Spacing="12">
-                                <PathIcon Width="18" Height="18" Data="{StaticResource IconCommunity}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{loc:Tr nav.community}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                        <Border Classes="brandBadge" Padding="7,1" MinWidth="18"
-                                HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0"
-                                IsHitTestVisible="False"
-                                IsVisible="{Binding HasUnreadAnnouncements}">
-                            <TextBlock Text="{Binding AnnouncementsUnreadCount}"
-                                       FontSize="10" FontWeight="Bold" Foreground="#FFFFFF"
-                                       HorizontalAlignment="Center"/>
-                        </Border>
-                    </Grid>
-                    <Button Classes="nav" Classes.active="{Binding IsServer}" Tag="server" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.server}">
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <PathIcon Width="18" Height="18" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
-                            <TextBlock Text="{loc:Tr nav.server}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
                     <Button Classes="nav" Classes.active="{Binding IsUnity}" Tag="unity" Click="OnNavClick" ToolTip.Tip="{loc:Tr nav.tooltip.unity}">
                         <StackPanel Orientation="Horizontal" Spacing="12">
                             <PathIcon Width="18" Height="18" Data="{StaticResource IconUnity}" VerticalAlignment="Center"/>

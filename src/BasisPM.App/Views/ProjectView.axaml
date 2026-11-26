@@ -1,0 +1,156 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BasisPM.App.ViewModels"
+             xmlns:loc="using:BasisPM.App.Localization"
+             xmlns:views="using:BasisPM.App.Views"
+             x:Class="BasisPM.App.Views.ProjectView"
+             x:DataType="vm:ProjectViewModel"
+             Name="ProjectRoot">
+
+    <UserControl.Styles>
+        <!-- Header tabs: plain text that lights up with a brand underline, not a color-only button. -->
+        <Style Selector="TabStripItem.projectTab">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="4,10"/>
+            <Setter Property="Margin" Value="0,0,22,0"/>
+            <Setter Property="MinHeight" Value="0"/>
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <!-- The project this page manages, shown once for every tab. -->
+        <Border DockPanel.Dock="Top" Padding="28,16,28,0"
+                BorderBrush="{StaticResource BasisBorderBrush}" BorderThickness="0,0,0,1">
+            <StackPanel Spacing="14">
+                <Button Classes="link" Padding="0" HorizontalAlignment="Left"
+                        Command="{Binding BackCommand}" ToolTip.Tip="{loc:Tr nav.tooltip.installs}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <PathIcon Width="12" Height="12" Data="{StaticResource IconBack}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{loc:Tr nav.installs}" FontSize="12" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Grid ColumnDefinitions="Auto,*">
+                    <Border Grid.Column="0" Width="52" Height="52" CornerRadius="14" VerticalAlignment="Top"
+                            Background="{StaticResource BasisBrandGradient}">
+                        <PathIcon Width="24" Height="24" Data="{StaticResource IconInstalls}" Foreground="#FFFFFF"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="16,0,0,0" Spacing="3" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Projects.ActiveRow.Name, FallbackValue=''}" Classes="h2" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock Text="{Binding Projects.ActiveRow.RepoRoot, FallbackValue=''}" Classes="dim" FontSize="12"
+                                   TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Projects.ActiveRow.RepoRoot, FallbackValue=''}"/>
+                        <WrapPanel Margin="0,5,0,0">
+                            <WrapPanel.Styles>
+                                <Style Selector="WrapPanel > Border"><Setter Property="Margin" Value="0,0,8,0"/></Style>
+                            </WrapPanel.Styles>
+                            <Border Classes="versionPill" ToolTip.Tip="{loc:Tr installs.tooltip.unityVersion}"
+                                    IsVisible="{Binding Projects.ActiveRow, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <TextBlock Text="{Binding Projects.ActiveRow.UnityVersionLabel, FallbackValue=''}" FontSize="11" Foreground="{StaticResource BasisAccentBrush}"/>
+                            </Border>
+                            <Border Classes="versionPill" IsVisible="{Binding Projects.ActiveRow.IsGitRepo, FallbackValue=False}"
+                                    ToolTip.Tip="{Binding Projects.ActiveRow.BranchTooltip, FallbackValue=''}">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <PathIcon Width="11" Height="11" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Projects.ActiveRow.BranchCommit, FallbackValue=''}" FontSize="11" Classes="muted"
+                                               MaxWidth="280" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Classes="versionPill" IsVisible="{Binding Projects.ActiveRow.BasisUpdateAvailable, FallbackValue=False}"
+                                    Background="#264F46E5" BorderBrush="#806366F1"
+                                    ToolTip.Tip="{Binding Projects.ActiveRow.BasisPillTooltip, FallbackValue=''}">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <PathIcon Width="11" Height="11" Data="{StaticResource IconUpdate}" Foreground="{StaticResource BasisActionTextHoverBrush}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Projects.ActiveRow.BasisPillText, FallbackValue=''}" FontSize="11" FontWeight="SemiBold"
+                                               Foreground="{StaticResource BasisActionTextHoverBrush}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
+
+                <!-- The project's own tools, in one row with Open in Unity. -->
+                <WrapPanel DataContext="{Binding Projects.ActiveRow}" Margin="0,0,0,-8"
+                           IsVisible="{Binding $self.DataContext, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <WrapPanel.Styles>
+                        <Style Selector="WrapPanel > Button"><Setter Property="Margin" Value="0,0,8,8"/></Style>
+                    </WrapPanel.Styles>
+                    <Button x:DataType="vm:InstallRow" Classes="primary" IsVisible="{Binding HasUnityProject}"
+                            Command="{Binding #ProjectRoot.((vm:ProjectViewModel)DataContext).Projects.OpenInUnityCommand}"
+                            CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr installs.tooltip.openInUnity}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconPlay}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr develop.button.openInUnity}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:DataType="vm:InstallRow" Classes.primary="{Binding HighlightUpdates}"
+                            Command="{Binding #ProjectRoot.((vm:ProjectViewModel)DataContext).Projects.UpdateBasisCommand}"
+                            CommandParameter="{Binding}" ToolTip.Tip="{Binding UpdateButtonTooltip}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconUpdate}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding UpdateButtonLabel}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:DataType="vm:InstallRow" IsVisible="{Binding HasUnityProject}"
+                            Command="{Binding #ProjectRoot.((vm:ProjectViewModel)DataContext).Projects.SetupCommand}"
+                            CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr installs.tooltip.setup}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconSettings}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr project.settings.title}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:DataType="vm:InstallRow" IsVisible="{Binding IsGitRepo}"
+                            Command="{Binding #ProjectRoot.((vm:ProjectViewModel)DataContext).Projects.ChangeBranchCommand}"
+                            CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr installs.tooltip.changeBranch}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr installs.button.changeBranch}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:DataType="vm:InstallRow" IsVisible="{Binding HasUnityProject}"
+                            Command="{Binding #ProjectRoot.((vm:ProjectViewModel)DataContext).Projects.BasisChangesCommand}"
+                            CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr installs.tooltip.basisChanges}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconChanges}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr project.changes.button}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:DataType="vm:InstallRow"
+                            Command="{Binding #ProjectRoot.((vm:ProjectViewModel)DataContext).Projects.OpenFolderCommand}"
+                            CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr installs.tooltip.openFolder}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconFolderOpen}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr installs.button.openFolder}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:DataType="vm:InstallRow"
+                            Command="{Binding #ProjectRoot.((vm:ProjectViewModel)DataContext).Projects.RemoveCommand}"
+                            CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr installs.tooltip.remove}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconClose}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr installs.button.remove}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:DataType="vm:InstallRow" Classes="danger"
+                            Command="{Binding #ProjectRoot.((vm:ProjectViewModel)DataContext).Projects.DeleteCommand}"
+                            CommandParameter="{Binding}" ToolTip.Tip="{loc:Tr installs.tooltip.delete}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconDelete}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{loc:Tr installs.button.delete}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </WrapPanel>
+
+                <TabStrip SelectedIndex="{Binding SelectedTab}" Margin="-4,0,0,-1">
+                    <TabStripItem Classes="projectTab" Content="{loc:Tr packages.window.title}"/>
+                    <TabStripItem Classes="projectTab" Content="{loc:Tr nav.server}"/>
+                </TabStrip>
+            </StackPanel>
+        </Border>
+
+        <Panel>
+            <views:PackagesView DataContext="{Binding Packages}" IsVisible="{Binding #ProjectRoot.((vm:ProjectViewModel)DataContext).IsPackagesTab}"/>
+            <views:ServerView DataContext="{Binding Server}" IsVisible="{Binding #ProjectRoot.((vm:ProjectViewModel)DataContext).IsServerTab}"/>
+        </Panel>
+    </DockPanel>
+</UserControl>

@@ -52,7 +52,7 @@
     },
     {
       "key": "nav.community",
-      "value": "コミュニティ"
+      "value": "ホーム"
     },
     {
       "key": "nav.develop",
@@ -63,7 +63,7 @@
       "value": "プロジェクト"
     },
     {
-      "key": "nav.packages",
+      "key": "packages.window.title",
       "value": "パッケージ"
     },
     {
@@ -357,10 +357,6 @@
     {
       "key": "installs.action.updateCore",
       "value": "「コアを更新」は 'git pull' を実行し、Basis プロジェクト内のファイルが変更される場合があります。"
-    },
-    {
-      "key": "installs.badge.active",
-      "value": "アクティブ"
     },
     {
       "key": "installs.button.changeBranch",
@@ -1279,10 +1275,6 @@
       "value": "フォルダーを開く"
     },
     {
-      "key": "installs.button.packages",
-      "value": "パッケージ"
-    },
-    {
       "key": "installs.button.updateCore",
       "value": "コアを更新"
     },
@@ -1293,6 +1285,14 @@
     {
       "key": "installs.dialog.deleteConfirmBody",
       "value": "“{0}” とその中のすべてを完全に削除します:\n\n{1}\n\nこの操作は取り消せません。削除しますか？"
+    },
+    {
+      "key": "installs.dialog.removeConfirmTitle",
+      "value": "プロジェクトを削除"
+    },
+    {
+      "key": "installs.dialog.removeConfirmHeading",
+      "value": "{0} を削除しますか？"
     },
     {
       "key": "installs.dialog.deleteConfirmTitle",
@@ -1571,10 +1571,6 @@
       "value": "ライセンス"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "グリッド表示"
-    },
-    {
       "key": "packages.button.install",
       "value": "インストール"
     },
@@ -1591,28 +1587,12 @@
       "value": "ほか {0} 件が待機中"
     },
     {
-      "key": "packages.button.listView",
-      "value": "リスト表示"
-    },
-    {
-      "key": "packages.button.showInstalled",
-      "value": "インストール済みを表示"
-    },
-    {
-      "key": "packages.button.showAll",
-      "value": "すべて表示"
-    },
-    {
       "key": "packages.tooltip.showInstalled",
       "value": "レジストリのすべてのパッケージと、このプロジェクトのパッケージのみの表示を切り替えます。"
     },
     {
       "key": "packages.installed.empty",
       "value": "このプロジェクトにはまだパッケージがインストールされていません。"
-    },
-    {
-      "key": "packages.button.manage",
-      "value": "管理"
     },
     {
       "key": "packages.button.remove",
@@ -1945,10 +1925,6 @@
     {
       "key": "packages.tooltip.chooseVersion",
       "value": "このパッケージのリポジトリのリリース、タグ、またはデフォルトブランチを選んで切り替えます。プロジェクトの .basisdev フォルダーに既存のクローンがある場合はその場でそのバージョンに移動し、競合しない編集内容は保持されます。ない場合はそこにパッケージがクローンされます。Basis レジストリが確認していないバージョンは、Unity が読み込む前に確認用に表示されます。"
-    },
-    {
-      "key": "packages.tooltip.toggleLayout",
-      "value": "行のリスト表示とカードのグリッド表示を切り替えます。選択は記憶されます。"
     },
     {
       "key": "packages.tooltip.viewDetails",
@@ -2907,27 +2883,7 @@
       "value": "はい"
     },
     {
-      "key": "dialog.remove.title",
-      "value": "プロジェクトを削除"
-    },
-    {
-      "key": "dialog.remove.heading",
-      "value": "{0} を削除しますか？"
-    },
-    {
-      "key": "dialog.remove.body",
-      "value": "「一覧から削除」は、このアプリでのプロジェクトの登録を解除するだけで、ファイルはそのまま残ります。「ディスクから削除」は、下に表示されているプロジェクトフォルダー全体を完全に削除します。この操作は取り消せません。"
-    },
-    {
-      "key": "dialog.remove.cancel",
-      "value": "キャンセル"
-    },
-    {
-      "key": "dialog.remove.removeFromList",
-      "value": "一覧から削除"
-    },
-    {
-      "key": "dialog.remove.deleteFromDisk",
+      "key": "installs.button.delete",
       "value": "ディスクから削除"
     },
     {
@@ -3231,22 +3187,6 @@
       "value": "バージョンを選択"
     },
     {
-      "key": "community.hero.tagline",
-      "value": "コミュニティ"
-    },
-    {
-      "key": "community.hero.title",
-      "value": "ニュース、ドキュメント、支援"
-    },
-    {
-      "key": "community.hero.subtitle",
-      "value": "Basis の最新情報、学べる場所、そして開発を支える方法。"
-    },
-    {
-      "key": "community.button.openDocs",
-      "value": "ドキュメントを開く"
-    },
-    {
       "key": "community.button.joinDiscord",
       "value": "Discord に参加"
     },
@@ -3271,36 +3211,8 @@
       "value": "また後で確認してください。Basis チームからのお知らせがここに表示されます。"
     },
     {
-      "key": "community.docs.heading",
-      "value": "ドキュメント"
-    },
-    {
       "key": "community.docs.siteTitle",
       "value": "ドキュメントサイト"
-    },
-    {
-      "key": "community.docs.siteBody",
-      "value": "インストール、最初のステップ、アバター、ワールド、ネットワーキング、SDK を網羅した完全なドキュメントは docs.basisvr.org にあります。"
-    },
-    {
-      "key": "community.docs.openSite",
-      "value": "docs.basisvr.org を開く"
-    },
-    {
-      "key": "community.docs.askTitle",
-      "value": "コミュニティに聞く"
-    },
-    {
-      "key": "community.docs.askBody",
-      "value": "ドキュメントに載っていないことで行き詰まっていますか？Discord が、ほかのクリエイターやメンテナーから助けを得る最も早い方法です。"
-    },
-    {
-      "key": "community.docs.sourceTitle",
-      "value": "ソースと issue"
-    },
-    {
-      "key": "community.docs.sourceBody",
-      "value": "コードを読んだり、バグを報告したり、プルリクエストを開いたりできます。Basis は MIT ライセンスで、オープンに開発されています。"
     },
     {
       "key": "community.docs.basisRepo",
@@ -3311,52 +3223,8 @@
       "value": "GitHub の Package Manager"
     },
     {
-      "key": "community.support.heading",
-      "value": "Basis を支援する"
-    },
-    {
-      "key": "community.support.intro",
-      "value": "Basis は MIT ライセンスで、クリエイターを第一に考えています。コミュニティからの寄付と企業とのコラボレーションが、メンテナーのフルタイム稼働を支え、リリースを加速します。"
-    },
-    {
       "key": "community.support.openCollective",
       "value": "OpenCollective で支援する"
-    },
-    {
-      "key": "community.support.donationsTitle",
-      "value": "コミュニティからの寄付"
-    },
-    {
-      "key": "community.support.donationsBody",
-      "value": "個人の方は OpenCollective で Basis を支援できます（毎月または一度きり）。この資金は主にフルタイムのメンテナンスと開発者体験の向上に充てられます。"
-    },
-    {
-      "key": "community.support.backOpenCollective",
-      "value": "OpenCollective で支援する"
-    },
-    {
-      "key": "community.support.collabTitle",
-      "value": "企業とのコラボレーション"
-    },
-    {
-      "key": "community.support.collabBody",
-      "value": "企業はロードマップ項目のスポンサーになったり、ネットワーキング、アバターシステム、ツールなどの機能に共同出資したりできます。成果はアップストリームに反映され、既定で MIT ライセンスのまま維持されます。"
-    },
-    {
-      "key": "community.support.sponsorFeature",
-      "value": "機能をスポンサーする"
-    },
-    {
-      "key": "community.support.moneyTitle",
-      "value": "資金の使い道"
-    },
-    {
-      "key": "community.support.moneyBody",
-      "value": "資金はプールされ、ネットワーキング、身体性、ツールなど、皆に役立つ共通の課題に取り組むために使われます。OpenCollective に公開会計があり、スポンサー付きの作業はリリースノートに明記されます。スポンサーがプロジェクトを支配することはありません。"
-    },
-    {
-      "key": "community.support.fundingPage",
-      "value": "資金支援ページ全文を読む"
     },
     {
       "key": "packages.button.packageLists",
@@ -3647,16 +3515,8 @@
       "value": "選択したリストのパッケージをプロジェクトに追加します。次の手順でプロジェクトを選ぶと、パッケージがその Packages/manifest.json に書き込まれます。"
     },
     {
-      "key": "dialog.remove.tooltip.cancel",
-      "value": "このプロジェクトを一覧に残したまま閉じます。何も削除されません。"
-    },
-    {
-      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "key": "installs.tooltip.delete",
       "value": "上に表示されているプロジェクトフォルダー全体を、git 履歴や、プッシュもバックアップもされていない作業も含めて完全に削除します。もう一度確認を求められます。この操作は取り消せません。削除する前に Unity を閉じてください。"
-    },
-    {
-      "key": "dialog.remove.tooltip.removeFromList",
-      "value": "このプロジェクトを一覧から外します。フォルダーとファイルはディスクに残り、後で「既存を追加」から再び追加できます。"
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
@@ -3739,24 +3599,12 @@
       "value": "このプロジェクトが使用するバージョンの Unity エディターでプロジェクトを開きます。そのバージョンがまだインストールされていない場合は、追加できるよう Unity Hub が開きます。"
     },
     {
-      "key": "installs.tooltip.packages",
-      "value": "このプロジェクトをアクティブにし、「パッケージ」タブを開いてパッケージを管理します。"
-    },
-    {
       "key": "nav.tooltip.community",
-      "value": "「コミュニティ」タブに移動します。Basis のニュース、ドキュメントへのリンク、Discord でのヘルプ、プロジェクトを支援する方法があります。このボタンの数字は未読のお知らせの数です。「コミュニティ」を開くと既読になります。"
+      "value": "「ホーム」タブに移動します。Basis のニュース、ドキュメントへのリンク、Discord でのヘルプ、プロジェクトを支援する方法があります。このボタンの数字は未読のお知らせの数です。「ホーム」を開くと既読になります。"
     },
     {
       "key": "nav.tooltip.installs",
       "value": "Basis プロジェクトに移動します。プロジェクトの作成や追加、Unity で開く、Basis の更新、ブランチの切り替え、バックアップの作成ができます。このボタンの数字は、Basis の更新が利用可能、または完了待ちのプロジェクトの数です。"
-    },
-    {
-      "key": "nav.tooltip.packages",
-      "value": "パッケージブラウザーに移動します。レジストリでパッケージを探し、プロジェクトへのインストール、更新、削除ができます。パッケージリスト、GitHub リンクからのパッケージ、パッケージのソース編集もここで行えます。"
-    },
-    {
-      "key": "nav.tooltip.server",
-      "value": "選択したプロジェクトの Basis サーバーに移動します。サーバーのビルド、実行、停止や、設定、サーバーパッケージ、デフォルトコンテンツの編集ができます。ビルドには .NET 10 SDK が必要です。"
     },
     {
       "key": "nav.tooltip.settings",
@@ -3789,10 +3637,6 @@
     {
       "key": "packages.tooltip.installGit",
       "value": "Git のダウンロードページをブラウザーで開きます。Git は、編集用にパッケージをクローンしたり、プルリクエストを送信したりするのに必要です。インストール後、このページ上部の「再読み込み」を使用してください。"
-    },
-    {
-      "key": "packages.tooltip.manage",
-      "value": "このパッケージの更新、別のバージョンの選択、編集用のマウント、削除を行うメニューを開きます。項目は該当する場合にのみ表示されます。"
     },
     {
       "key": "packages.tooltip.openFolder",
@@ -5475,18 +5319,6 @@
       "value": "このプロジェクトは {0} のクローンです。プルリクエストは専用のブランチに作成されるため、チェックアウト中のブランチはプッシュも変更もされません。"
     },
     {
-      "key": "installs.button.gridView",
-      "value": "グリッド表示"
-    },
-    {
-      "key": "installs.button.listView",
-      "value": "リスト表示"
-    },
-    {
-      "key": "installs.tooltip.toggleLayout",
-      "value": "プロジェクトの表示をリストとカードのグリッドで切り替えます。選択はアプリに記憶されます。"
-    },
-    {
       "key": "installs.button.findProjects",
       "value": "プロジェクトを検索"
     },
@@ -6488,11 +6320,7 @@
     },
     {
       "key": "installs.tooltip.remove",
-      "value": "このプロジェクトを一覧から削除するか、フォルダーをディスクから削除します。どちらにするかは次の手順で選び、ディスクからの削除は取り消せません。"
-    },
-    {
-      "key": "installs.tooltip.activeBadge",
-      "value": "アクティブなプロジェクトです。「パッケージ」タブと「サーバー」タブはこのプロジェクトを対象にします。変更するには、別のプロジェクトの「パッケージ」を押すか、「パッケージ」タブで選択してください。"
+      "value": "このプロジェクトを一覧から外します。フォルダーとファイルはディスクに残り、後で「既存を追加」から再び追加できます。"
     },
     {
       "key": "installs.tooltip.unityVersion",
@@ -8045,6 +7873,46 @@
     {
       "key": "dialog.setup.toolsDirty",
       "value": "パーツ、バックアップ、ストレージを開く前に変更を保存してください。"
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Basis へようこそ"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Basis の最新情報、学べる場所、ヘルプの入手先。"
+    },
+    {
+      "key": "community.links.heading",
+      "value": "リソース"
+    },
+    {
+      "key": "community.tooltip.projects",
+      "value": "プロジェクトに移動します。Basis プロジェクトの作成、起動、更新とパッケージの管理ができます。"
+    },
+    {
+      "key": "installs.button.manageProject",
+      "value": "プロジェクトを管理"
+    },
+    {
+      "key": "installs.tooltip.manageProject",
+      "value": "このプロジェクトをアクティブにし、そのページをここに開きます。パッケージ、サーバー、プロジェクトのツール (Basis の更新、セットアップ、ブランチ、変更、フォルダー) があります。"
+    },
+    {
+      "key": "packages.button.uninstall",
+      "value": "アンインストール"
+    },
+    {
+      "key": "packages.toggle.installedOnly",
+      "value": "インストール済みのみ"
+    },
+    {
+      "key": "project.settings.title",
+      "value": "プロジェクト設定"
+    },
+    {
+      "key": "project.changes.button",
+      "value": "変更を確認"
     }
   ]
 }

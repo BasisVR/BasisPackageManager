@@ -17,13 +17,7 @@
                         <TextBlock Text="{loc:Tr settings.hero.title}" Classes="h1" TextWrapping="Wrap"/>
                         <TextBlock Text="{loc:Tr settings.hero.subtitle}" Classes="muted" FontSize="14" TextWrapping="Wrap"/>
                     </StackPanel>
-                    <ToggleButton Grid.Column="1" Name="AdvancedToggle" Classes="advanced" views:SectionState.Key="settings.advanced" VerticalAlignment="Top"
-                                  Margin="16,0,0,0" ToolTip.Tip="{loc:Tr settings.tooltip.advanced}">
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <PathIcon Classes="leadingIcon" Data="{StaticResource IconCode}" VerticalAlignment="Center"/>
-                            <TextBlock Text="{loc:Tr shell.button.advanced}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ToggleButton>
+                    <CheckBox Grid.Column="1" Name="AdvancedToggle" views:SectionState.Key="settings.advanced" VerticalAlignment="Top" Margin="16,0,0,0" ToolTip.Tip="{loc:Tr settings.tooltip.advanced}" Content="{loc:Tr shell.button.advanced}"/>
                 </Grid>
             </Border>
 

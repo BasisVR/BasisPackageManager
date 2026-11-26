@@ -52,7 +52,7 @@
     },
     {
       "key": "nav.community",
-      "value": "Community"
+      "value": "Start"
     },
     {
       "key": "nav.develop",
@@ -63,7 +63,7 @@
       "value": "Projecten"
     },
     {
-      "key": "nav.packages",
+      "key": "packages.window.title",
       "value": "Pakketten"
     },
     {
@@ -357,10 +357,6 @@
     {
       "key": "installs.action.updateCore",
       "value": "Core bijwerken voert 'git pull' uit, wat bestanden in je Basis-project kan wijzigen."
-    },
-    {
-      "key": "installs.badge.active",
-      "value": "ACTIEF"
     },
     {
       "key": "installs.button.changeBranch",
@@ -1279,10 +1275,6 @@
       "value": "Map openen"
     },
     {
-      "key": "installs.button.packages",
-      "value": "Pakketten"
-    },
-    {
       "key": "installs.button.updateCore",
       "value": "Core bijwerken"
     },
@@ -1293,6 +1285,14 @@
     {
       "key": "installs.dialog.deleteConfirmBody",
       "value": "Hiermee worden “{0}” en alles daarin permanent verwijderd:\n\n{1}\n\nDit kan niet ongedaan worden gemaakt. Verwijderen?"
+    },
+    {
+      "key": "installs.dialog.removeConfirmTitle",
+      "value": "Project verwijderen"
+    },
+    {
+      "key": "installs.dialog.removeConfirmHeading",
+      "value": "{0} verwijderen?"
     },
     {
       "key": "installs.dialog.deleteConfirmTitle",
@@ -1571,10 +1571,6 @@
       "value": "Licenties"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "Rasterweergave"
-    },
-    {
       "key": "packages.button.install",
       "value": "Installeren"
     },
@@ -1591,28 +1587,12 @@
       "value": "Nog {0} in de wachtrij"
     },
     {
-      "key": "packages.button.listView",
-      "value": "Lijstweergave"
-    },
-    {
-      "key": "packages.button.showInstalled",
-      "value": "Geïnstalleerde tonen"
-    },
-    {
-      "key": "packages.button.showAll",
-      "value": "Alles tonen"
-    },
-    {
       "key": "packages.tooltip.showInstalled",
       "value": "Wissel tussen alle pakketten in het register en alleen de pakketten in dit project."
     },
     {
       "key": "packages.installed.empty",
       "value": "Nog geen pakketten geïnstalleerd in dit project."
-    },
-    {
-      "key": "packages.button.manage",
-      "value": "Beheren"
     },
     {
       "key": "packages.button.remove",
@@ -1945,10 +1925,6 @@
     {
       "key": "packages.tooltip.chooseVersion",
       "value": "Kies een release, tag of de standaardbranch van de repository van dit pakket en wissel daarnaar. Een bestaande kloon in de .basisdev-map van het project wordt ter plekke naar die versie gezet, met behoud van je bewerkingen als ze niet botsen; anders wordt het pakket daar gekloond. Een versie die het Basis-register niet heeft gecontroleerd, wordt eerst ter controle getoond voordat Unity hem laadt."
-    },
-    {
-      "key": "packages.tooltip.toggleLayout",
-      "value": "Wissel tussen een lijst met rijen en een raster met kaarten. Je keuze wordt onthouden."
     },
     {
       "key": "packages.tooltip.viewDetails",
@@ -2907,27 +2883,7 @@
       "value": "Ja"
     },
     {
-      "key": "dialog.remove.title",
-      "value": "Project verwijderen"
-    },
-    {
-      "key": "dialog.remove.heading",
-      "value": "{0} verwijderen?"
-    },
-    {
-      "key": "dialog.remove.body",
-      "value": "“Uit lijst verwijderen” vergeet dit project hier alleen; je bestanden blijven precies waar ze zijn. “Van schijf verwijderen” verwijdert de hele projectmap hieronder permanent. Dit kan niet ongedaan worden gemaakt."
-    },
-    {
-      "key": "dialog.remove.cancel",
-      "value": "Annuleren"
-    },
-    {
-      "key": "dialog.remove.removeFromList",
-      "value": "Uit lijst verwijderen"
-    },
-    {
-      "key": "dialog.remove.deleteFromDisk",
+      "key": "installs.button.delete",
       "value": "Van schijf verwijderen"
     },
     {
@@ -3231,22 +3187,6 @@
       "value": "Kies een versie"
     },
     {
-      "key": "community.hero.tagline",
-      "value": "COMMUNITY"
-    },
-    {
-      "key": "community.hero.title",
-      "value": "Nieuws, documentatie en steun"
-    },
-    {
-      "key": "community.hero.subtitle",
-      "value": "Wat er nieuw is bij Basis, waar je het leert en hoe je helpt het draaiende te houden."
-    },
-    {
-      "key": "community.button.openDocs",
-      "value": "Documentatie openen"
-    },
-    {
       "key": "community.button.joinDiscord",
       "value": "Lid worden van de Discord"
     },
@@ -3271,36 +3211,8 @@
       "value": "Kom later terug: nieuws van het Basis-team verschijnt hier."
     },
     {
-      "key": "community.docs.heading",
-      "value": "Documentatie"
-    },
-    {
       "key": "community.docs.siteTitle",
       "value": "Documentatiesite"
-    },
-    {
-      "key": "community.docs.siteBody",
-      "value": "Installatie, eerste stappen, avatars, werelden, netwerken en de SDK: de volledige documentatie staat op docs.basisvr.org."
-    },
-    {
-      "key": "community.docs.openSite",
-      "value": "docs.basisvr.org openen"
-    },
-    {
-      "key": "community.docs.askTitle",
-      "value": "Vraag het de community"
-    },
-    {
-      "key": "community.docs.askBody",
-      "value": "Loop je vast op iets wat de documentatie niet behandelt? De Discord is de snelste manier om hulp te krijgen van andere makers en de beheerders."
-    },
-    {
-      "key": "community.docs.sourceTitle",
-      "value": "Broncode en issues"
-    },
-    {
-      "key": "community.docs.sourceBody",
-      "value": "Lees de code, meld een bug of open een pull request. Basis is MIT-gelicentieerd en wordt in de openbaarheid ontwikkeld."
     },
     {
       "key": "community.docs.basisRepo",
@@ -3311,52 +3223,8 @@
       "value": "Package Manager op GitHub"
     },
     {
-      "key": "community.support.heading",
-      "value": "Basis steunen"
-    },
-    {
-      "key": "community.support.intro",
-      "value": "Basis is MIT-gelicentieerd en zet makers voorop. Community-donaties en samenwerkingen met bedrijven houden een beheerder fulltime aan het werk en versnellen releases."
-    },
-    {
       "key": "community.support.openCollective",
       "value": "Steunen via OpenCollective"
-    },
-    {
-      "key": "community.support.donationsTitle",
-      "value": "Community-donaties"
-    },
-    {
-      "key": "community.support.donationsBody",
-      "value": "Individuen steunen Basis op OpenCollective, maandelijks of eenmalig. Deze middelen ondersteunen vooral fulltime onderhoud en werk aan de ontwikkelaarservaring."
-    },
-    {
-      "key": "community.support.backOpenCollective",
-      "value": "Steunen op OpenCollective"
-    },
-    {
-      "key": "community.support.collabTitle",
-      "value": "Samenwerkingen met bedrijven"
-    },
-    {
-      "key": "community.support.collabBody",
-      "value": "Bedrijven sponsoren roadmap-items of cofinancieren functies, zoals netwerken, avatarsystemen en tooling. Het werk komt upstream terecht en blijft standaard MIT-gelicentieerd."
-    },
-    {
-      "key": "community.support.sponsorFeature",
-      "value": "Een functie sponsoren"
-    },
-    {
-      "key": "community.support.moneyTitle",
-      "value": "Waar het geld naartoe gaat"
-    },
-    {
-      "key": "community.support.moneyBody",
-      "value": "Middelen worden samengevoegd om gedeelde problemen aan te pakken waar iedereen baat bij heeft, zoals netwerken, embodiment en tooling. Er is een openbaar grootboek op OpenCollective, en gesponsord werk wordt vermeld in de release-opmerkingen. Sponsors hebben geen zeggenschap over het project."
-    },
-    {
-      "key": "community.support.fundingPage",
-      "value": "Volledige financieringspagina lezen"
     },
     {
       "key": "packages.button.packageLists",
@@ -3647,16 +3515,8 @@
       "value": "Voeg de pakketten van de geselecteerde bundel toe aan een project. Daarna kies je welk project, en de pakketten worden in de Packages/manifest.json daarvan geschreven."
     },
     {
-      "key": "dialog.remove.tooltip.cancel",
-      "value": "Houd dit project in je lijst en sluit. Er wordt niets uit de lijst of van schijf verwijderd."
-    },
-    {
-      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "key": "installs.tooltip.delete",
       "value": "Verwijder de hele projectmap hierboven permanent, inclusief de git-geschiedenis en al het werk dat niet is gepusht of waarvan elders geen back-up bestaat. Je wordt nog een keer om bevestiging gevraagd. Dit kan niet ongedaan worden gemaakt. Sluit Unity voordat je verwijdert."
-    },
-    {
-      "key": "dialog.remove.tooltip.removeFromList",
-      "value": "Haal dit project van je lijst. De map en bestanden blijven op schijf staan, en je kunt het later weer toevoegen met Bestaande toevoegen."
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
@@ -3739,24 +3599,12 @@
       "value": "Open dit project in de Unity-editorversie die het gebruikt. Als die versie nog niet is geïnstalleerd, wordt Unity Hub geopend zodat je hem kunt toevoegen."
     },
     {
-      "key": "installs.tooltip.packages",
-      "value": "Maak dit het actieve project en open het tabblad Pakketten om de pakketten ervan te beheren."
-    },
-    {
       "key": "nav.tooltip.community",
-      "value": "Ga naar het tabblad Community voor Basis-nieuws, links naar documentatie, hulp op Discord en manieren om het project te steunen. Een getal op deze knop telt de aankondigingen die je nog niet hebt gezien. Als je Community opent, worden ze als gelezen gemarkeerd."
+      "value": "Ga naar het tabblad Start voor Basis-nieuws, links naar documentatie, hulp op Discord en manieren om het project te steunen. Een getal op deze knop telt de aankondigingen die je nog niet hebt gezien. Als je Start opent, worden ze als gelezen gemarkeerd."
     },
     {
       "key": "nav.tooltip.installs",
       "value": "Ga naar je Basis-projecten, waar je een project maakt of toevoegt, het opent in Unity, Basis bijwerkt, van branch wisselt en back-ups maakt. Een getal op deze knop telt de projecten met een Basis-update die beschikbaar is of wacht tot je hem voltooit."
-    },
-    {
-      "key": "nav.tooltip.packages",
-      "value": "Ga naar de pakketbrowser, waar je pakketten in het register vindt en ze in een project installeert, bijwerkt of verwijdert. Bundels, pakketten via GitHub-links en het bewerken van de broncode van een pakket vind je hier ook."
-    },
-    {
-      "key": "nav.tooltip.server",
-      "value": "Ga naar de Basis-server van het geselecteerde project, waar je hem bouwt, start en stopt en de configuratie, serverpakketten en standaardcontent bewerkt. Bouwen vereist de .NET 10 SDK."
     },
     {
       "key": "nav.tooltip.settings",
@@ -3789,10 +3637,6 @@
     {
       "key": "packages.tooltip.installGit",
       "value": "Open de downloadpagina van Git in je browser. Git is nodig om pakketten te klonen om te bewerken en om pull requests in te dienen. Gebruik na het installeren Vernieuwen bovenaan deze pagina."
-    },
-    {
-      "key": "packages.tooltip.manage",
-      "value": "Open een menu om dit pakket bij te werken, een andere versie te kiezen, het te koppelen om te bewerken of het te verwijderen. Opties verschijnen alleen als ze van toepassing zijn."
     },
     {
       "key": "packages.tooltip.openFolder",
@@ -5475,18 +5319,6 @@
       "value": "Dit project is een kloon van {0}. De pull request komt op een eigen branch, dus je uitgecheckte branch wordt niet gepusht of gewijzigd."
     },
     {
-      "key": "installs.button.gridView",
-      "value": "Rasterweergave"
-    },
-    {
-      "key": "installs.button.listView",
-      "value": "Lijstweergave"
-    },
-    {
-      "key": "installs.tooltip.toggleLayout",
-      "value": "Wissel tussen het tonen van je projecten als lijst of als raster met kaarten. De app onthoudt je keuze."
-    },
-    {
       "key": "installs.button.findProjects",
       "value": "Projecten zoeken"
     },
@@ -6488,11 +6320,7 @@
     },
     {
       "key": "installs.tooltip.remove",
-      "value": "Verwijder dit project uit je lijst, of verwijder de map ervan van schijf. Je kiest in de volgende stap, en verwijderen van schijf kan niet ongedaan worden gemaakt."
-    },
-    {
-      "key": "installs.tooltip.activeBadge",
-      "value": "Het actieve project, waarmee de tabbladen Pakketten en Server werken. Druk op Pakketten bij een ander project of kies er een op het tabblad Pakketten om het te wijzigen."
+      "value": "Haal dit project van je lijst. De map en bestanden blijven op schijf staan, en je kunt het later weer toevoegen met Bestaande toevoegen."
     },
     {
       "key": "installs.tooltip.unityVersion",
@@ -8045,6 +7873,46 @@
     {
       "key": "dialog.setup.toolsDirty",
       "value": "Sla je wijzigingen op voordat je Onderdelen, Back-up of Opslag opent."
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Welkom bij Basis"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Nieuws over Basis, waar je het leert en waar je hulp vindt."
+    },
+    {
+      "key": "community.links.heading",
+      "value": "Bronnen"
+    },
+    {
+      "key": "community.tooltip.projects",
+      "value": "Ga naar je projecten, waar je Basis-projecten maakt, opent en bijwerkt en hun pakketten beheert."
+    },
+    {
+      "key": "installs.button.manageProject",
+      "value": "Project beheren"
+    },
+    {
+      "key": "installs.tooltip.manageProject",
+      "value": "Maakt dit het actieve project en opent hier de pagina ervan met de pakketten, de server en de projecthulpmiddelen: Basis bijwerken, instellen, branch, wijzigingen en map."
+    },
+    {
+      "key": "packages.button.uninstall",
+      "value": "Verwijderen"
+    },
+    {
+      "key": "packages.toggle.installedOnly",
+      "value": "Alleen geïnstalleerd"
+    },
+    {
+      "key": "project.settings.title",
+      "value": "Projectinstellingen"
+    },
+    {
+      "key": "project.changes.button",
+      "value": "Wijzigingen bekijken"
     }
   ]
 }

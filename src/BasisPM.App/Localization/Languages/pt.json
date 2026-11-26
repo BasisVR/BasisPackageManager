@@ -52,7 +52,7 @@
     },
     {
       "key": "nav.community",
-      "value": "Comunidade"
+      "value": "Início"
     },
     {
       "key": "nav.develop",
@@ -63,7 +63,7 @@
       "value": "Projetos"
     },
     {
-      "key": "nav.packages",
+      "key": "packages.window.title",
       "value": "Pacotes"
     },
     {
@@ -357,10 +357,6 @@
     {
       "key": "installs.action.updateCore",
       "value": "Atualizar Core executa 'git pull', que pode alterar arquivos no seu projeto Basis."
-    },
-    {
-      "key": "installs.badge.active",
-      "value": "ATIVO"
     },
     {
       "key": "installs.button.changeBranch",
@@ -1279,10 +1275,6 @@
       "value": "Abrir pasta"
     },
     {
-      "key": "installs.button.packages",
-      "value": "Pacotes"
-    },
-    {
       "key": "installs.button.updateCore",
       "value": "Atualizar Core"
     },
@@ -1293,6 +1285,14 @@
     {
       "key": "installs.dialog.deleteConfirmBody",
       "value": "Isto exclui permanentemente “{0}” e tudo o que há dentro:\n\n{1}\n\nIsto não pode ser desfeito. Excluir?"
+    },
+    {
+      "key": "installs.dialog.removeConfirmTitle",
+      "value": "Remover projeto"
+    },
+    {
+      "key": "installs.dialog.removeConfirmHeading",
+      "value": "Remover {0}?"
     },
     {
       "key": "installs.dialog.deleteConfirmTitle",
@@ -1571,10 +1571,6 @@
       "value": "Licenças"
     },
     {
-      "key": "packages.button.gridView",
-      "value": "Exibição em grade"
-    },
-    {
       "key": "packages.button.install",
       "value": "Instalar"
     },
@@ -1591,28 +1587,12 @@
       "value": "mais {0} na fila"
     },
     {
-      "key": "packages.button.listView",
-      "value": "Exibição em lista"
-    },
-    {
-      "key": "packages.button.showInstalled",
-      "value": "Mostrar instalados"
-    },
-    {
-      "key": "packages.button.showAll",
-      "value": "Mostrar todos"
-    },
-    {
       "key": "packages.tooltip.showInstalled",
       "value": "Alterna entre todos os pacotes do registro e apenas os pacotes deste projeto."
     },
     {
       "key": "packages.installed.empty",
       "value": "Nenhum pacote instalado neste projeto ainda."
-    },
-    {
-      "key": "packages.button.manage",
-      "value": "Gerenciar"
     },
     {
       "key": "packages.button.remove",
@@ -1945,10 +1925,6 @@
     {
       "key": "packages.tooltip.chooseVersion",
       "value": "Permite escolher uma versão publicada, uma tag ou o branch padrão do repositório deste pacote e trocar para ela. Um clone existente na pasta .basisdev do projeto é movido para essa versão no próprio local, mantendo suas edições quando não entram em conflito; caso contrário, o pacote é clonado ali. Uma versão que o registro do Basis não verificou é mostrada para revisão antes que o Unity a carregue."
-    },
-    {
-      "key": "packages.tooltip.toggleLayout",
-      "value": "Alterna entre uma lista de linhas e uma grade de cartões. Sua escolha é lembrada."
     },
     {
       "key": "packages.tooltip.viewDetails",
@@ -2907,27 +2883,7 @@
       "value": "Sim"
     },
     {
-      "key": "dialog.remove.title",
-      "value": "Remover projeto"
-    },
-    {
-      "key": "dialog.remove.heading",
-      "value": "Remover {0}?"
-    },
-    {
-      "key": "dialog.remove.body",
-      "value": "“Remover da lista” apenas esquece este projeto aqui; seus arquivos ficam exatamente onde estão. “Excluir do disco” exclui permanentemente toda a pasta do projeto mostrada abaixo. Isto não pode ser desfeito."
-    },
-    {
-      "key": "dialog.remove.cancel",
-      "value": "Cancelar"
-    },
-    {
-      "key": "dialog.remove.removeFromList",
-      "value": "Remover da lista"
-    },
-    {
-      "key": "dialog.remove.deleteFromDisk",
+      "key": "installs.button.delete",
       "value": "Excluir do disco"
     },
     {
@@ -3231,22 +3187,6 @@
       "value": "Escolha uma versão"
     },
     {
-      "key": "community.hero.tagline",
-      "value": "COMUNIDADE"
-    },
-    {
-      "key": "community.hero.title",
-      "value": "Novidades, documentação e apoio"
-    },
-    {
-      "key": "community.hero.subtitle",
-      "value": "As novidades do Basis, onde aprendê-lo e como ajudar a mantê-lo funcionando."
-    },
-    {
-      "key": "community.button.openDocs",
-      "value": "Abrir a documentação"
-    },
-    {
       "key": "community.button.joinDiscord",
       "value": "Entrar no Discord"
     },
@@ -3271,36 +3211,8 @@
       "value": "Volte mais tarde: as novidades da equipe Basis aparecerão aqui."
     },
     {
-      "key": "community.docs.heading",
-      "value": "Documentação"
-    },
-    {
       "key": "community.docs.siteTitle",
       "value": "Site de documentação"
-    },
-    {
-      "key": "community.docs.siteBody",
-      "value": "Instalação, primeiros passos, avatares, mundos, rede e o SDK: a documentação completa está em docs.basisvr.org."
-    },
-    {
-      "key": "community.docs.openSite",
-      "value": "Abrir docs.basisvr.org"
-    },
-    {
-      "key": "community.docs.askTitle",
-      "value": "Pergunte à comunidade"
-    },
-    {
-      "key": "community.docs.askBody",
-      "value": "Travado em algo que a documentação não cobre? O Discord é a forma mais rápida de obter ajuda de outros criadores e dos mantenedores."
-    },
-    {
-      "key": "community.docs.sourceTitle",
-      "value": "Código e issues"
-    },
-    {
-      "key": "community.docs.sourceBody",
-      "value": "Leia o código, relate um bug ou abra um pull request. O Basis é licenciado sob MIT e desenvolvido de forma aberta."
     },
     {
       "key": "community.docs.basisRepo",
@@ -3311,52 +3223,8 @@
       "value": "Package Manager no GitHub"
     },
     {
-      "key": "community.support.heading",
-      "value": "Apoie o Basis"
-    },
-    {
-      "key": "community.support.intro",
-      "value": "O Basis é licenciado sob MIT e prioriza os criadores. Doações da comunidade e colaborações com empresas mantêm um mantenedor trabalhando em tempo integral e aceleram os lançamentos."
-    },
-    {
       "key": "community.support.openCollective",
       "value": "Apoiar via OpenCollective"
-    },
-    {
-      "key": "community.support.donationsTitle",
-      "value": "Doações da comunidade"
-    },
-    {
-      "key": "community.support.donationsBody",
-      "value": "Pessoas apoiam o Basis no OpenCollective, mensalmente ou uma única vez. Esses recursos financiam principalmente a manutenção em tempo integral e o trabalho de experiência do desenvolvedor."
-    },
-    {
-      "key": "community.support.backOpenCollective",
-      "value": "Apoiar no OpenCollective"
-    },
-    {
-      "key": "community.support.collabTitle",
-      "value": "Colaborações com empresas"
-    },
-    {
-      "key": "community.support.collabBody",
-      "value": "Empresas patrocinam itens do roadmap ou cofinanciam recursos, como rede, sistemas de avatar e ferramentas. O trabalho é integrado ao upstream e permanece licenciado sob MIT por padrão."
-    },
-    {
-      "key": "community.support.sponsorFeature",
-      "value": "Patrocinar um recurso"
-    },
-    {
-      "key": "community.support.moneyTitle",
-      "value": "Para onde vai o dinheiro"
-    },
-    {
-      "key": "community.support.moneyBody",
-      "value": "Os recursos são reunidos para resolver problemas comuns que beneficiam a todos, como rede, incorporação e ferramentas. Há um registro financeiro público no OpenCollective, e o trabalho patrocinado é creditado nas notas de lançamento. Os patrocinadores não controlam o projeto."
-    },
-    {
-      "key": "community.support.fundingPage",
-      "value": "Ler a página completa de financiamento"
     },
     {
       "key": "packages.button.packageLists",
@@ -3647,16 +3515,8 @@
       "value": "Adiciona os pacotes da lista selecionada a um projeto. Em seguida, você escolhe qual projeto, e os pacotes são gravados no Packages/manifest.json dele."
     },
     {
-      "key": "dialog.remove.tooltip.cancel",
-      "value": "Mantém este projeto na sua lista e fecha. Nada é removido nem excluído."
-    },
-    {
-      "key": "dialog.remove.tooltip.deleteFromDisk",
+      "key": "installs.tooltip.delete",
       "value": "Exclui permanentemente toda a pasta do projeto mostrada acima, incluindo o histórico git e qualquer trabalho não enviado ou sem backup em outro lugar. Você precisará confirmar mais uma vez. Isto não pode ser desfeito. Feche o Unity antes de excluir."
-    },
-    {
-      "key": "dialog.remove.tooltip.removeFromList",
-      "value": "Tira este projeto da sua lista. A pasta e os arquivos dele continuam no disco, e você pode adicioná-lo de volta depois com Adicionar existente."
     },
     {
       "key": "dialog.signIn.tooltip.cancel",
@@ -3739,24 +3599,12 @@
       "value": "Abre este projeto na versão do editor do Unity que ele usa. Se essa versão ainda não estiver instalada, o Unity Hub é aberto para você adicioná-la."
     },
     {
-      "key": "installs.tooltip.packages",
-      "value": "Torna este o projeto ativo e abre a aba Pacotes para gerenciar os pacotes dele."
-    },
-    {
       "key": "nav.tooltip.community",
-      "value": "Vai para a aba Comunidade, com novidades do Basis, links para a documentação, ajuda no Discord e formas de apoiar o projeto. Um número neste botão indica quantos anúncios você ainda não viu. Abrir Comunidade os marca como lidos."
+      "value": "Vai para a aba Início, com novidades do Basis, links para a documentação, ajuda no Discord e formas de apoiar o projeto. Um número neste botão indica quantos anúncios você ainda não viu. Abrir Início os marca como lidos."
     },
     {
       "key": "nav.tooltip.installs",
       "value": "Vai para seus projetos Basis, onde você cria ou adiciona um projeto, abre-o no Unity, atualiza o Basis, troca de branch e faz backups. Um número neste botão indica quantos projetos têm uma atualização do Basis disponível ou aguardando que você a conclua."
-    },
-    {
-      "key": "nav.tooltip.packages",
-      "value": "Vai para o navegador de pacotes, onde você encontra pacotes no registro e os instala, atualiza ou remove em um projeto. Listas de pacotes, pacotes de links do GitHub e a edição do código-fonte de um pacote também ficam aqui."
-    },
-    {
-      "key": "nav.tooltip.server",
-      "value": "Vai para o servidor Basis do projeto selecionado, onde você o compila, executa e para, e edita a configuração, os pacotes de servidor e o conteúdo padrão. A compilação requer o SDK do .NET 10."
     },
     {
       "key": "nav.tooltip.settings",
@@ -3789,10 +3637,6 @@
     {
       "key": "packages.tooltip.installGit",
       "value": "Abre no navegador a página de download do Git. O Git é necessário para clonar pacotes para edição e enviar pull requests. Depois de instalá-lo, use Atualizar no topo desta página."
-    },
-    {
-      "key": "packages.tooltip.manage",
-      "value": "Abre um menu para atualizar este pacote, escolher outra versão, montá-lo para edição ou removê-lo. As opções só aparecem quando se aplicam."
     },
     {
       "key": "packages.tooltip.openFolder",
@@ -5475,18 +5319,6 @@
       "value": "Este projeto é um clone de {0}. O pull request vai em um branch próprio, então seu branch atual não é enviado nem alterado."
     },
     {
-      "key": "installs.button.gridView",
-      "value": "Exibição em grade"
-    },
-    {
-      "key": "installs.button.listView",
-      "value": "Exibição em lista"
-    },
-    {
-      "key": "installs.tooltip.toggleLayout",
-      "value": "Alterna entre mostrar seus projetos em lista ou em uma grade de cartões. O aplicativo lembra sua escolha."
-    },
-    {
       "key": "installs.button.findProjects",
       "value": "Encontrar projetos"
     },
@@ -6488,11 +6320,7 @@
     },
     {
       "key": "installs.tooltip.remove",
-      "value": "Remove este projeto da sua lista ou exclui a pasta dele do disco. Você escolhe na próxima etapa, e a exclusão não pode ser desfeita."
-    },
-    {
-      "key": "installs.tooltip.activeBadge",
-      "value": "O projeto ativo, com o qual as abas Pacotes e Servidor trabalham. Para alterá-lo, clique em Pacotes em outro projeto ou escolha um na aba Pacotes."
+      "value": "Tira este projeto da sua lista. A pasta e os arquivos dele continuam no disco, e você pode adicioná-lo de volta depois com Adicionar existente."
     },
     {
       "key": "installs.tooltip.unityVersion",
@@ -8045,6 +7873,46 @@
     {
       "key": "dialog.setup.toolsDirty",
       "value": "Salve suas alterações antes de abrir Partes, Backup ou Armazenamento."
+    },
+    {
+      "key": "community.hero.title",
+      "value": "Boas-vindas ao Basis"
+    },
+    {
+      "key": "community.hero.subtitle",
+      "value": "Novidades do Basis, onde aprender e onde encontrar ajuda."
+    },
+    {
+      "key": "community.links.heading",
+      "value": "Recursos"
+    },
+    {
+      "key": "community.tooltip.projects",
+      "value": "Vai para seus projetos, onde você cria, abre e atualiza projetos Basis e gerencia os pacotes deles."
+    },
+    {
+      "key": "installs.button.manageProject",
+      "value": "Gerenciar projeto"
+    },
+    {
+      "key": "installs.tooltip.manageProject",
+      "value": "Torna este o projeto ativo e abre aqui a página dele com os pacotes, o servidor e as ferramentas do projeto: atualizar o Basis, configuração, branch, alterações e pasta."
+    },
+    {
+      "key": "packages.button.uninstall",
+      "value": "Desinstalar"
+    },
+    {
+      "key": "packages.toggle.installedOnly",
+      "value": "Somente instalados"
+    },
+    {
+      "key": "project.settings.title",
+      "value": "Configurações do projeto"
+    },
+    {
+      "key": "project.changes.button",
+      "value": "Revisar alterações"
     }
   ]
 }
