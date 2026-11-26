@@ -9,7 +9,7 @@ namespace BasisPM.App.ViewModels;
 public interface IBasisChangesHost
 {
     string Repository { get; }
-    Task<BasisContributeScan> ScanAsync(Action<string> progress, CancellationToken ct);
+    Task<BasisContributeScan> ScanAsync(BasisCompareTarget target, Action<string> progress, CancellationToken ct);
     Task<string?> GetProjectRemoteAsync(string repoRoot);
     Task<IReadOnlyList<BasisDiffLine>> GetDiffAsync(BasisContributeScan scan, BasisChange change, CancellationToken ct);
     Task<IReadOnlyList<string>> ListBasisBranchesAsync();
@@ -19,10 +19,13 @@ public interface IBasisChangesHost
     Task<BasisContributeResult> SubmitAsync(BasisContributeScan scan, IReadOnlyList<string> paths, BasisPullRequestDraft draft, string token, GitHubUser user, Action<string> progress, CancellationToken ct);
     void OpenUrl(string url);
     Guid BeginActivity(string title, string project);
+    (Guid Id, CancellationToken Token) BeginCancellableActivity(string title, string project);
     void ReportActivity(Guid id, string detail);
     void EndActivity(Guid id);
     void SetStatus(string message, StatusKind kind, string project);
 }
+
+public sealed record BasisCompareOption(BasisCompareTarget Target, string Label, string Tip);
 
 public sealed record DiffLineItem(string Text, BasisDiffLineKind Kind)
 {
@@ -158,6 +161,8 @@ public sealed class BasisChangesViewModel : ObservableObject
     private string _errorText = "";
     private string _messageText = "";
     private string _basedOnText = "";
+    private string _compareText = "";
+    private BasisCompareOption _compare;
     private string _remoteText = "";
     private string _resultText = "";
     private string _resultUrl = "";
@@ -177,6 +182,13 @@ public sealed class BasisChangesViewModel : ObservableObject
         ProjectName = projectName;
         _focusPackage = string.IsNullOrWhiteSpace(focusPackage) ? null : focusPackage;
         _diffHint = L.Tr("basisChanges.diff.pick");
+        CompareOptions = new[]
+        {
+            new BasisCompareOption(BasisCompareTarget.Base, L.Tr("basisChanges.compare.base"), L.Tr("basisChanges.compare.baseTip")),
+            new BasisCompareOption(BasisCompareTarget.Latest, L.Tr("basisChanges.compare.latest", host.Repository), L.Tr("basisChanges.compare.latestTip", host.Repository)),
+            new BasisCompareOption(BasisCompareTarget.ProjectUpstream, L.Tr("basisChanges.compare.upstream"), L.Tr("basisChanges.compare.upstreamTip")),
+        };
+        _compare = CompareOptions[0];
         RefreshCommand = new RelayCommand(LoadAsync, () => !IsBusy);
         SubmitCommand = new RelayCommand(SubmitAsync, () => CanSubmit);
         SelectAllCommand = new RelayCommand(() => SetAll(true), () => HasChanges && !IsBusy);
@@ -193,6 +205,20 @@ public sealed class BasisChangesViewModel : ObservableObject
     public ObservableCollection<BasisChangeGroupItem> Groups { get; } = new();
     public ObservableCollection<object> Rows { get; } = new();
     public ObservableCollection<string> TargetBranches { get; } = new();
+    public IReadOnlyList<BasisCompareOption> CompareOptions { get; }
+
+    public BasisCompareOption SelectedCompare
+    {
+        get => _compare;
+        set
+        {
+            if (value is null || IsBusy || !SetField(ref _compare, value))
+            {
+                return;
+            }
+            _ = LoadAsync();
+        }
+    }
 
     public RelayCommand RefreshCommand { get; }
     public RelayCommand SubmitCommand { get; }
@@ -210,6 +236,11 @@ public sealed class BasisChangesViewModel : ObservableObject
     public bool IsIdle => !IsBusy;
     public bool HasBase => _scan is { IsBlocked: false };
     public bool HasChanges => !_isLoading && _scan is { IsBlocked: false, ChangeCount: > 0 };
+    public bool CanContribute => _scan is { CanContribute: true };
+    public bool ShowContributeForm => HasChanges && CanContribute;
+    public bool ShowContributeNote => HasChanges && !CanContribute;
+    public string CompareText { get => _compareText; private set { if (SetField(ref _compareText, value)) OnPropertyChanged(nameof(HasCompareText)); } }
+    public bool HasCompareText => _compareText.Length > 0;
     public bool ShowMessage => !_isLoading && _messageText.Length > 0;
 
     public string StatusText { get => _statusText; private set => SetField(ref _statusText, value); }
@@ -258,7 +289,7 @@ public sealed class BasisChangesViewModel : ObservableObject
         _ => L.Tr("basisChanges.selected", _selectedCount),
     };
 
-    public bool CanSubmit => !IsBusy && HasChanges && _selectedCount > 0 && _title.Trim().Length > 0 && _branch.Trim().Length > 0 && !string.IsNullOrWhiteSpace(_targetBranch);
+    public bool CanSubmit => !IsBusy && HasChanges && CanContribute && _selectedCount > 0 && _title.Trim().Length > 0 && _branch.Trim().Length > 0 && !string.IsNullOrWhiteSpace(_targetBranch);
 
     public IReadOnlyList<string> SelectedPaths() =>
         _scan is null ? Array.Empty<string>() : BasisContributeService.ExpandSelection(_scan, Groups.SelectMany(g => g.Files).Where(f => f.IsChecked).SelectMany(f => f.Paths)).Select(c => c.Path).ToList();
@@ -272,12 +303,14 @@ public sealed class BasisChangesViewModel : ObservableObject
         SetCompareUrl("");
         MessageText = "";
         NoticeText = "";
+        CompareText = "";
         StatusText = L.Tr("basisChanges.loading", ProjectName);
         var focused = _selectedFile?.Change.Path;
-        var activity = _activity = _host.BeginActivity(StatusText, ProjectName);
+        var (activity, cancel) = _host.BeginCancellableActivity(StatusText, ProjectName);
+        _activity = activity;
         try
         {
-            var scan = await _host.ScanAsync(line => Progress(activity, line), CancellationToken.None);
+            var scan = await _host.ScanAsync(_compare.Target, line => Progress(activity, line), cancel);
             _scan = scan;
             BuildGroups(scan);
             if (scan.IsBlocked)
@@ -286,13 +319,19 @@ public sealed class BasisChangesViewModel : ObservableObject
                 return;
             }
             BasedOnText = DescribeBase(scan);
+            CompareText = DescribeCompare(scan);
             var remote = await _host.GetProjectRemoteAsync(scan.RepoRoot);
             RemoteText = remote is null ? L.Tr("basisChanges.remoteNone", Repository)
                 : BasisUpdateService.IsSameRepository(remote, $"https://github.com/{Repository}.git") ? L.Tr("basisChanges.remoteIsBasis", Repository)
                 : L.Tr("basisChanges.remote", remote, Repository);
             if (scan.ChangeCount == 0)
             {
-                MessageText = L.Tr("basisChanges.empty", Short(scan.Base!.Sha));
+                MessageText = scan.Target switch
+                {
+                    BasisCompareTarget.Latest => L.Tr("basisChanges.emptyLatest", scan.CompareLabel ?? "", Short(scan.CompareSha ?? "")),
+                    BasisCompareTarget.ProjectUpstream => L.Tr("basisChanges.emptyUpstream", scan.CompareLabel ?? ""),
+                    _ => L.Tr("basisChanges.empty", Short(scan.Base!.Sha)),
+                };
                 return;
             }
             if (_focusPackage is not null && scan.FindPackage(_focusPackage) is null)
@@ -300,6 +339,13 @@ public sealed class BasisChangesViewModel : ObservableObject
             if (_title.Length == 0) Title = _focusPackage is not null ? L.Tr("basisChanges.defaultTitlePackage", _focusPackage) : L.Tr("basisChanges.defaultTitle", ProjectName);
             if (_branch.Length == 0) Branch = BasisContributeService.SuggestBranch(_focusPackage ?? ProjectName, DateTimeOffset.Now);
             await LoadBranchesAsync(BasisContributeService.SuggestTarget(scan));
+        }
+        catch (OperationCanceledException) when (cancel.IsCancellationRequested)
+        {
+            _scan = null;
+            Groups.Clear();
+            Rows.Clear();
+            MessageText = L.Tr("basisChanges.cancelled");
         }
         catch (Exception ex)
         {
@@ -533,6 +579,9 @@ public sealed class BasisChangesViewModel : ObservableObject
         OnPropertyChanged(nameof(IsIdle));
         OnPropertyChanged(nameof(HasBase));
         OnPropertyChanged(nameof(HasChanges));
+        OnPropertyChanged(nameof(CanContribute));
+        OnPropertyChanged(nameof(ShowContributeForm));
+        OnPropertyChanged(nameof(ShowContributeNote));
         OnPropertyChanged(nameof(ShowMessage));
         OnPropertyChanged(nameof(CanSubmit));
         RefreshCommand.Raise();
@@ -555,8 +604,22 @@ public sealed class BasisChangesViewModel : ObservableObject
             : L.Tr("basisChanges.basedOn", Short(basis.Sha), basis.Branch, source);
     }
 
+    private static string DescribeCompare(BasisContributeScan scan)
+    {
+        if (scan.Target == BasisCompareTarget.Base || scan.CompareSha is null)
+        {
+            return "";
+        }
+        var key = scan.Target == BasisCompareTarget.Latest ? "basisChanges.comparingLatest" : "basisChanges.comparingUpstream";
+        return scan.CompareCommit is { } commit
+            ? L.Tr(key + "Commit", scan.CompareLabel ?? "", Short(scan.CompareSha), commit.Date.ToLocalTime().ToString("d"), commit.Subject)
+            : L.Tr(key, scan.CompareLabel ?? "", Short(scan.CompareSha));
+    }
+
     public static string DescribeBlock(BasisContributeScan scan) => scan.Block switch
     {
+        BasisContributeBlock.LatestMissing => L.Tr("basisChanges.block.latestMissing", scan.Detail ?? ""),
+        BasisContributeBlock.NoUpstream => scan.Detail is { Length: > 0 } branch ? L.Tr("basisChanges.block.noUpstreamBranch", branch) : L.Tr("basisChanges.block.noUpstream"),
         BasisContributeBlock.GitMissing => L.Tr("basisChanges.block.gitMissing"),
         BasisContributeBlock.GitTooOld => L.Tr("basisChanges.block.gitTooOld", scan.Detail ?? "", BasisUpdateService.MinimumGitVersion.ToString(3)),
         BasisContributeBlock.NotGitRepo => L.Tr("basisChanges.block.notGitRepo"),

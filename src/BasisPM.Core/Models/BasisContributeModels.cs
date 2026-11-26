@@ -4,6 +4,8 @@ public enum BasisChangeKind { Added, Modified, Deleted }
 
 public enum BasisChangeArea { Package, Project, Repository }
 
+public enum BasisCompareTarget { Base, Latest, ProjectUpstream }
+
 public enum BasisContributeBlock
 {
     None,
@@ -17,6 +19,8 @@ public enum BasisContributeBlock
     BaseMissing,
     BasisFolderMissing,
     ReadFailed,
+    LatestMissing,
+    NoUpstream,
 }
 
 public sealed record BasisChange(string Path, string ProjectPath, BasisChangeKind Kind, string? Mode, string? Sha)
@@ -37,13 +41,18 @@ public sealed record BasisContributeScan
     public string RepoRoot { get; init; } = "";
     public BasisBaseInfo? Base { get; init; }
     public GitCommitInfo? BaseCommit { get; init; }
+    public BasisCompareTarget Target { get; init; }
+    public string? CompareSha { get; init; }
+    public string? CompareLabel { get; init; }
+    public GitCommitInfo? CompareCommit { get; init; }
     public string? UnityFolder { get; init; }
-    public string? BaseTree { get; init; }
+    public string? CompareTree { get; init; }
     public string? ProjectTree { get; init; }
     public IReadOnlyList<BasisChangeGroup> Groups { get; init; } = Array.Empty<BasisChangeGroup>();
     public IReadOnlyList<string> Skipped { get; init; } = Array.Empty<string>();
 
     public bool IsBlocked => Block != BasisContributeBlock.None;
+    public bool CanContribute => !IsBlocked && Target == BasisCompareTarget.Base;
     public IEnumerable<BasisChange> Changes => Groups.SelectMany(g => g.Changes);
     public int ChangeCount => Groups.Sum(g => g.Changes.Count);
 

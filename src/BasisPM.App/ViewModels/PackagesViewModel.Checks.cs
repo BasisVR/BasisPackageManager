@@ -69,18 +69,26 @@ public sealed partial class PackagesViewModel
         if (_installedThisRun.Count == 0) return;
         var runs = _installedThisRun.Values.ToList();
         _installedThisRun.Clear();
+        if (!ValidateAfterInstall)
+        {
+            return;
+        }
         try
         {
-            foreach (var (target, ids) in runs) await VerifyAsync(target, ids.ToList(), "install", CompileAfterInstall);
+            foreach (var (target, ids) in runs) await VerifyAsync(target, ids.ToList(), "install", HeadlessValidation);
         }
         catch (Exception ex) { DiagnosticLog.Write("Checking freshly installed packages", ex); }
     }
 
     public async void VerifyAfterBasisChange(string repoRoot)
     {
+        if (!ValidateAfterInstall)
+        {
+            return;
+        }
         try
         {
-            if (InstallOptions.FirstOrDefault(i => Platform.PathsEqual(i.RepoRoot, repoRoot)) is { HasUnityProject: true } target) await VerifyAsync(target, null, "basis-update", CompileAfterInstall);
+            if (InstallOptions.FirstOrDefault(i => Platform.PathsEqual(i.RepoRoot, repoRoot)) is { HasUnityProject: true } target) await VerifyAsync(target, null, "basis-update", HeadlessValidation);
         }
         catch (Exception ex) { DiagnosticLog.Write($"Checking packages after a Basis update of {repoRoot}", ex); }
     }
@@ -90,7 +98,7 @@ public sealed partial class PackagesViewModel
         if (!target.HasUnityProject || !_verifyingProjects.Add(target.RepoRoot)) return;
         RaiseVerifying();
         var names = ids is { Count: > 0 } ? string.Join(", ", ids.Select(DisplayNameOf)) : null;
-        var activity = _shell.BeginActivity(names is null ? L.Tr("packages.verify.activityAll", target.DisplayName) : L.Tr("packages.verify.activity", names), target.DisplayName);
+        var (activity, cancel) = _shell.BeginCancellableActivity(names is null ? L.Tr("packages.verify.activityAll", target.DisplayName) : L.Tr("packages.verify.activity", names), target.DisplayName);
         var key = "verify|" + target.RepoRoot;
         try
         {
@@ -108,10 +116,18 @@ public sealed partial class PackagesViewModel
                 UpgradeApis = compile,
             };
             void Progress(string line) => Dispatcher.UIThread.Post(() => _shell.ReportActivity(activity, line));
-            Task<ProjectCheckReport> Run() => Checks.RunAsync(request, Progress);
+            Task<ProjectCheckReport> Run()
+            {
+                cancel.ThrowIfCancellationRequested();
+                return Checks.RunAsync(request, Progress, cancel);
+            }
             var report = open ? await Run() : await _shell.Work.RunAsync(target.RepoRoot, L.Tr("packages.verify.activityAll", target.DisplayName), Run,
                 running => _shell.ReportActivity(activity, L.Tr("shell.work.waiting", running)));
             ReportVerification(target, report, ids, reason, compile, key);
+        }
+        catch (OperationCanceledException) when (cancel.IsCancellationRequested)
+        {
+            SetStatus(L.Tr("packages.verify.cancelled", target.DisplayName), StatusKind.Info, target.DisplayName, key: key);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {

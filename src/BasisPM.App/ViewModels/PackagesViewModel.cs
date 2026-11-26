@@ -29,7 +29,8 @@ public sealed partial class PackagesViewModel : ObservableObject
     private readonly PackageListService _packageListService;
     private readonly BasisUpdateService _basisUpdates;
     private readonly MainWindowViewModel _shell;
-    private bool _compileAfterInstall = true;
+    private bool _validateAfterInstall;
+    private bool _headlessValidation;
 
     private Catalog _catalog = new();
     private BasisInstall? _install;
@@ -273,33 +274,53 @@ public sealed partial class PackagesViewModel : ObservableObject
         Refilter();
     }
 
-    // Advanced: whether the automatic check after installs and Basis updates also compiles with Unity. Persisted.
-    public bool CompileAfterInstall
+    public bool ValidateAfterInstall
     {
-        get => _compileAfterInstall;
+        get => _validateAfterInstall;
         set
         {
-            if (!SetField(ref _compileAfterInstall, value)) return;
-            _ = PersistCompileAfterInstallAsync(value);
+            if (!SetField(ref _validateAfterInstall, value))
+            {
+                return;
+            }
+            _ = PersistValidationAsync();
         }
     }
 
-    public void SetInitialCompileAfterInstall(bool compile)
+    public bool HeadlessValidation
     {
-        if (_compileAfterInstall == compile) return;
-        _compileAfterInstall = compile;
-        OnPropertyChanged(nameof(CompileAfterInstall));
+        get => _headlessValidation;
+        set
+        {
+            if (!SetField(ref _headlessValidation, value))
+            {
+                return;
+            }
+            _ = PersistValidationAsync();
+        }
     }
 
-    private async Task PersistCompileAfterInstallAsync(bool compile)
+    public void SetInitialValidation(bool validate, bool headless)
+    {
+        _validateAfterInstall = validate;
+        _headlessValidation = headless;
+        OnPropertyChanged(nameof(ValidateAfterInstall));
+        OnPropertyChanged(nameof(HeadlessValidation));
+    }
+
+    private async Task PersistValidationAsync()
     {
         try
         {
             var settings = await _settingsService.LoadAsync();
-            settings.CompileAfterInstall = compile;
+            settings.ValidateAfterInstall = _validateAfterInstall;
+            settings.HeadlessValidation = _headlessValidation;
             await _settingsService.SaveAsync(settings);
         }
-        catch (Exception ex) { DiagnosticLog.Write("Saving the compile-after-install preference", ex); }
+        catch (Exception ex)
+        {
+            DiagnosticLog.Write("Saving the validation preferences", ex);
+        }
     }
 
     public void SetActiveInstall(BasisInstall install)
@@ -869,6 +890,26 @@ public sealed partial class PackagesViewModel : ObservableObject
         ApplyInstallQueueState();
         SetStatus(L.Tr(_installWorkerRunning ? "packages.status.queuedForInstall" : "packages.status.installingNow", entry.DisplayName), StatusKind.Info, target.DisplayName);
         if (!_installWorkerRunning) _ = ProcessInstallQueueAsync();
+    }
+
+    private RelayCommand? _cancelQueuedInstallsCommand;
+    public RelayCommand CancelQueuedInstallsCommand => _cancelQueuedInstallsCommand ??= new RelayCommand(CancelQueuedInstalls);
+
+    private void CancelQueuedInstalls()
+    {
+        var dropped = _installQueue.Count;
+        if (dropped == 0)
+        {
+            return;
+        }
+        while (_installQueue.Count > 0)
+        {
+            var (entry, target) = _installQueue.Dequeue();
+            _queuedInstallIds.Remove(QueueKey(target, entry.Name));
+        }
+        InstallQueueRemaining = 0;
+        ApplyInstallQueueState();
+        SetStatus(L.Tr("packages.install.cancelledQueued", dropped), StatusKind.Info, InstallProject);
     }
 
     private Task RetryInstall(CatalogPackageVersion entry, BasisInstall target)

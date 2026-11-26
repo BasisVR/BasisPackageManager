@@ -7103,12 +7103,20 @@
       "value": "このパッケージの前回のチェック結果です。"
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "インストールと Basis の更新後に Unity でコンパイルする"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "インストールと Basis の更新後にパッケージを検証"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "インストールや Basis の更新後に、壊れたパッケージを見つけるためプロジェクトを Unity でもコンパイルします。数分かかることがあります。オフにしても簡易的な競合チェックは実行されます。"
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "インストールや Basis の更新後に、プロジェクトのスクリプトで競合（名前空間、型、アセンブリ名、重複した DLL や GUID）を確認します。既定ではオフです。「パッケージを確認」はいつでも使えます。"
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "ヘッドレス検証（Unity でコンパイル）"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "非表示の Unity エディター（バッチモード）でプロジェクトをコンパイルし、コンパイルできないパッケージを見つけます。可能な場合は古い Unity API 呼び出しも更新します。数分かかることがあります。検証をオンにする必要があります。"
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "変更を確認"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "{0} のパッケージ確認をキャンセルしました。何も保存されていません。"
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "待機中を取り消す"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "インストール待ちのパッケージを取り消します。現在インストール中のものは最後まで完了します。"
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "待機中のインストール {0} 件をキューから削除しました。"
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "キャンセル"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "この操作を停止し、途中まで残ったものを片付けます。"
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "キャンセル中…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "リモートの確認をキャンセルしました"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}: リモートの確認をキャンセルしました。"
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}: Basis の更新確認をキャンセルしました。何も変更されていません。"
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}: バックアップをキャンセルしました。未完成のバックアップファイルは削除されました。"
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "ダウンロードをキャンセルしました。{0} の途中までダウンロードされたファイルは削除されました。"
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "ダウンロードをキャンセルしましたが、{0} の一部のファイルを削除できませんでした。再試行する前にそのフォルダーを空にしてください。"
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}: Unity のバージョンを変更する前に中止しました。何も変更されていません。"
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "すべて更新をキャンセルしました。何も更新されていません。"
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "Unity が {0} から {1} に変わります。先にバックアップできるよう個別に更新してください"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Unity バージョンの変更"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "プロジェクトの Unity バージョンが変わります"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} は Unity {1} から Unity {2} に移行します。先にバックアップしますか？"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "バックアップしない場合のリスク"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "次にプロジェクトを開いたとき、Unity はアセット、シーン、プレハブ、設定を新しいバージョンに変換します。一部のパッケージはコンパイルできなくなる可能性があります。"
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity はプロジェクトを元に戻す変換ができません。後から古いバージョンに戻すとシーンやプレハブが壊れることがあり、バックアップがなければ元に戻せません。"
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "バックアップは Assets、Packages、ProjectSettings、UserSettings の zip です。Library などのキャッシュは Unity が再生成するため含みません。"
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "バックアップ先"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "バックアップの zip を保存するフォルダー。存在しない場合は作成されます。"
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "参照…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "バックアップ用に別のフォルダーを選びます。"
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "バックアップの保存先を選択"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "ここで中止します。何も変更されません。"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "バックアップせずに Unity のバージョンを変更します。"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "上のフォルダーにプロジェクトを zip で保存してから続行します。"
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "比較対象"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "元になった Basis のバージョン"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "このプロジェクトで行った変更だけを表示します。この表示から Basis にプルリクエストを送れます。"
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "最新の {0}（メインリポジトリ）"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "このプロジェクトが追従している {0} 上の Basis ブランチの最新コミットと比較します。あなたのバージョン以降に Basis が変更した内容も差分として表示されます。"
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "プロジェクトのアップストリーム"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "プロジェクトが自身のリモートで追跡しているブランチ（例: origin/main）と比較し、まだプッシュしていない内容を確認できます。"
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "プロジェクトの比較対象を選びます。"
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "プルリクエストは、このプロジェクトの元になった Basis バージョンから作られます。変更を選んで送るには、比較対象をそのバージョンに戻してください。"
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "最新の {0}（{1}）と比較しています。"
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "最新の {0}（{1}、{2}: {3}）と比較しています。"
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "プロジェクト自身のリモート {0}（{1}）と比較しています。"
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "プロジェクト自身のリモート {0}（{1}、{2}: {3}）と比較しています。"
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "最新の {0}（{1}）との違いはありません。"
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "ここにあるものはすべて {0} にあります。"
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "比較をキャンセルしました。"
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "最新の Basis {0} をダウンロードできませんでした。接続を確認してもう一度お試しください。"
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "このプロジェクトのブランチはリモートブランチを追跡していないため、比較するアップストリームがありません。"
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "ブランチ {0} はリモートブランチを追跡していないため、比較するアップストリームがありません。"
     }
   ]
 }

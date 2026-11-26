@@ -243,6 +243,16 @@ public sealed class MainWindowViewModel : ObservableObject
         return activity.Id;
     }
 
+    public (Guid Id, CancellationToken Token) BeginCancellableActivity(string title, string? project = null)
+    {
+        var cancel = new CancellationTokenSource();
+        var activity = new ActivityItem(title, project, cancel);
+        Activities.Add(activity);
+        RaiseActivities();
+        return (activity.Id, cancel.Token);
+    }
+
+
     public void ReportActivity(Guid id, string detail) => FindActivity(id)?.Report(detail);
 
     public void EndActivity(Guid id)
@@ -537,7 +547,7 @@ public sealed class MainWindowViewModel : ObservableObject
         _dismissedBasisUpdates.Clear();
         _dismissedBasisUpdates.UnionWith(settings.DismissedBasisUpdates);
         SettingsVM.Apply(settings);
-        PackagesVM.SetInitialCompileAfterInstall(settings.CompileAfterInstall);
+        PackagesVM.SetInitialValidation(settings.ValidateAfterInstall, settings.HeadlessValidation);
         await InstallsVM.LoadAsync(settings);
         await PackagesVM.LoadCatalogAsync(settings.CatalogUrl, settings.ExtraCatalogUrls);
     }

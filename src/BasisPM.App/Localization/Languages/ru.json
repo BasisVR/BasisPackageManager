@@ -7103,12 +7103,20 @@
       "value": "Результат последней проверки этого пакета."
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "Компилировать в Unity после установок и обновлений Basis"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "Проверять пакеты после установки и обновлений Basis"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "После установки или обновления Basis также компилирует проект в Unity, чтобы найти сломанные пакеты. Это может занять несколько минут. Быстрая проверка конфликтов выполняется и при выключенном параметре."
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "После установки или обновления Basis проверяет скрипты проекта на конфликты (пространства имён, типы, имена сборок, повторяющиеся DLL и GUID). По умолчанию выключено. «Проверить пакеты» можно запустить в любой момент."
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "Фоновая проверка (компиляция в Unity)"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "Дополнительно компилирует проект в скрытом редакторе Unity (пакетный режим), чтобы найти пакеты, которые не компилируются, и по возможности обновляет устаревшие вызовы API Unity. Это может занять несколько минут. Нужна включённая проверка."
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "Просмотреть изменения"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "Проверка пакетов для {0} отменена. Ничего не сохранено."
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "Отменить очередь"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "Убирает пакеты, которые ещё ждут установки. Текущий пакет сначала будет установлен."
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "Из очереди убрано ожидающих установок: {0}."
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "Отмена"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "Остановить операцию и убрать то, что осталось недоделанным."
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "Отмена…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "Проверка удалённого репозитория отменена"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}: проверка удалённого репозитория отменена."
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}: поиск обновлений Basis отменён. Ничего не изменилось."
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}: резервное копирование отменено. Незавершённый файл копии удалён."
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "Загрузка отменена. Частично загруженные файлы в {0} удалены."
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "Загрузка отменена, но некоторые файлы в {0} не удалось удалить. Очистите папку перед повторной попыткой."
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}: остановлено до смены версии Unity. Ничего не изменилось."
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "«Обновить всё» отменено. Ничего не обновлено."
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "меняет Unity с {0} на {1}; обновите отдельно, чтобы сначала сделать копию"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Смена версии Unity"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "Это меняет версию Unity проекта"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} перейдёт с Unity {1} на Unity {2}. Сделать резервную копию заранее?"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "Риски без резервной копии"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "При следующем открытии проекта Unity обновит ассеты, сцены, префабы и настройки до новой версии. Некоторые пакеты могут перестать компилироваться."
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity не умеет конвертировать проект обратно. Возврат к старой версии может сломать сцены и префабы, а без резервной копии это не отменить."
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "Резервная копия — это zip-архив Assets, Packages, ProjectSettings и UserSettings. Library и другие кэши не включаются, Unity создаёт их заново."
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "Куда сохранить копию"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "Папка, в которую сохраняется zip-архив копии. Создаётся, если её нет."
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "Обзор…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "Выбрать другую папку для копии."
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "Выберите, куда сохранить копию"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "Остановиться. Ничего не изменится."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "Сменить версию Unity без резервной копии."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "Упаковать проект в zip в папке выше и продолжить."
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "Сравнить с"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "Версия Basis, на которой он основан"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "Показывает только изменения, сделанные в этом проекте. Эти изменения можно отправить в Basis как pull request."
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "Последняя версия {0} (основной репозиторий)"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "Сравнивает с последним коммитом ветки Basis, за которой следит проект, на {0}. Всё, что Basis изменил после вашей версии, тоже показывается как различия."
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "Upstream вашего проекта"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "Сравнивает с веткой, которую проект отслеживает на своём удалённом репозитории (например, origin/main), чтобы видеть, что ещё не отправлено."
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "Выберите, с чем сравнивать проект."
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "Pull request строится от версии Basis, на которой основан проект. Верните «Сравнить с» к этой версии, чтобы выбрать и отправить изменения."
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "Сравнение с последней версией {0} на {1}."
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "Сравнение с последней версией {0} на {1} ({2}: {3})."
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "Сравнение с {0} на {1}, собственным удалённым репозиторием проекта."
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "Сравнение с {0} на {1} ({2}: {3}), собственным удалённым репозиторием проекта."
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "Нет отличий от последней версии {0} ({1})."
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "Всё это уже есть в {0}."
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "Сравнение отменено."
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "Не удалось загрузить последнюю версию Basis {0}. Проверьте подключение и повторите попытку."
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "Ветка проекта не отслеживает удалённую ветку, поэтому сравнивать не с чем."
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "Ветка {0} не отслеживает удалённую ветку, поэтому сравнивать не с чем."
     }
   ]
 }

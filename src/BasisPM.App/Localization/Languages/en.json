@@ -7103,12 +7103,20 @@
       "value": "The result of the last check of this package."
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "Compile with Unity after installs and Basis updates"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "Validate packages after installs and Basis updates"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "After an install or a Basis update, also compiles the project with Unity to catch broken packages. This can take several minutes. The quick conflict check still runs when this is off."
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "After an install or a Basis update, checks the project's scripts for conflicts (namespaces, types, assembly names, duplicate DLLs and GUIDs). Off by default. Check packages still works any time."
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "Headless validation (compile with Unity)"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "Also compiles the project in a hidden Unity editor (batch mode) to catch packages that don't compile, and upgrades obsolete Unity API calls where it can. This can take several minutes. Needs validation turned on."
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "Review changes"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "Package check for {0} cancelled. Nothing was saved."
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "Cancel queued"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "Drop the packages still waiting to install. The one installing now finishes first."
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "Removed {0} waiting installs from the queue."
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "Stop this operation and clean up anything it left half done."
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "Cancelling…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "Remote check cancelled"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}: checking the remote was cancelled."
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}: checking for Basis updates was cancelled. Nothing changed."
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}: backup cancelled. The unfinished backup file was deleted."
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "Download cancelled. The partly downloaded files in {0} were removed."
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "Download cancelled, but some files in {0} couldn't be removed. Empty that folder before trying again."
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}: stopped before changing the Unity version. Nothing changed."
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "Update all cancelled. Nothing was updated."
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "moves Unity from {0} to {1}, so update it on its own to back it up first"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Unity version change"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "This changes the project's Unity version"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} will move from Unity {1} to Unity {2}. Do you want to back it up first?"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "Risks of not backing up"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "The next time the project opens, Unity upgrades its assets, scenes, prefabs and settings to the new version. Some packages may stop compiling."
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity can't convert a project back. Going back to the old version afterwards can break scenes and prefabs, and without a backup there is no way to undo it."
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "The backup is a zip of Assets, Packages, ProjectSettings and UserSettings. Library and other caches are left out because Unity rebuilds them."
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "Back up to"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "The folder the backup zip is saved in. It's created if it doesn't exist."
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "Browse…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "Pick a different folder for the backup."
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "Choose where to save the backup"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "Stop here. Nothing changes."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "Change the Unity version without a backup."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "Zip the project into the folder above, then continue."
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "Compare with"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "The Basis version it's based on"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "Shows only the changes made in this project. This is the view you can send to Basis as a pull request."
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "Latest {0} (main repository)"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "Compares with the newest commit of the Basis branch this project follows on {0}. Anything Basis changed since your version also shows up as a difference."
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "Your project's upstream"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "Compares with the branch your project tracks on its own remote (for example origin/main), so you see what you haven't pushed yet."
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "Choose what to compare the project with."
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "Pull requests are built from the Basis version this project is based on. Set Compare with back to that version to pick changes and send them."
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "Comparing with the latest {0} at {1}."
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "Comparing with the latest {0} at {1} ({2}: {3})."
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "Comparing with {0} at {1}, your project's own remote."
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "Comparing with {0} at {1} ({2}: {3}), your project's own remote."
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "Nothing differs from the latest {0} ({1})."
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "Everything here is already on {0}."
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "Comparison cancelled."
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "Couldn't download the latest Basis {0}. Check your connection and try again."
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "This project's branch doesn't track a remote branch, so there's no upstream to compare with."
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "The branch {0} doesn't track a remote branch, so there's no upstream to compare with."
     }
   ]
 }

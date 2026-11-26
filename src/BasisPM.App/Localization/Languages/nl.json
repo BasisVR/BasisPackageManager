@@ -7103,12 +7103,20 @@
       "value": "Het resultaat van de laatste controle van dit pakket."
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "Compileren met Unity na installaties en Basis-updates"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "Pakketten valideren na installaties en Basis-updates"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "Compileert het project na een installatie of Basis-update ook met Unity om kapotte pakketten te vinden. Dit kan enkele minuten duren. De snelle conflictcontrole draait ook als dit uit staat."
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "Controleert na een installatie of Basis-update de scripts van het project op conflicten (namespaces, typen, assemblynamen, dubbele DLL's en GUID's). Standaard uit. Pakketten controleren werkt altijd."
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "Headless validatie (compileren met Unity)"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "Compileert het project ook in een verborgen Unity-editor (batchmodus) om pakketten te vinden die niet compileren, en werkt verouderde Unity API-aanroepen bij waar dat kan. Dit kan enkele minuten duren. Validatie moet aan staan."
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "Wijzigingen bekijken"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "Pakketcontrole voor {0} geannuleerd. Er is niets opgeslagen."
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "Wachtrij annuleren"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "Verwijdert de pakketten die nog wachten op installatie. Het pakket dat nu installeert, wordt eerst afgerond."
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "{0} wachtende installaties uit de wachtrij verwijderd."
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "Annuleren"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "Stopt deze bewerking en ruimt op wat half af is gebleven."
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "Bezig met annuleren…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "Externe controle geannuleerd"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}: de controle van de remote is geannuleerd."
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}: het zoeken naar Basis-updates is geannuleerd. Er is niets gewijzigd."
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}: back-up geannuleerd. Het onvolledige back-upbestand is verwijderd."
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "Download geannuleerd. De half gedownloade bestanden in {0} zijn verwijderd."
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "Download geannuleerd, maar sommige bestanden in {0} konden niet worden verwijderd. Maak die map leeg voordat je het opnieuw probeert."
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}: gestopt voordat de Unity-versie veranderde. Er is niets gewijzigd."
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "Alles bijwerken geannuleerd. Er is niets bijgewerkt."
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "zet Unity van {0} naar {1}; werk het apart bij om eerst een back-up te maken"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Wijziging van Unity-versie"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "Hiermee verandert de Unity-versie van het project"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} gaat van Unity {1} naar Unity {2}. Wil je eerst een back-up maken?"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "Risico's zonder back-up"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "De volgende keer dat het project opent, zet Unity assets, scènes, prefabs en instellingen om naar de nieuwe versie. Sommige pakketten compileren daarna misschien niet meer."
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity kan een project niet terug omzetten. Later teruggaan naar de oude versie kan scènes en prefabs breken, en zonder back-up is dat niet ongedaan te maken."
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "De back-up is een zip van Assets, Packages, ProjectSettings en UserSettings. Library en andere caches worden overgeslagen omdat Unity ze opnieuw opbouwt."
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "Back-up maken naar"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "De map waarin de back-upzip wordt opgeslagen. Die wordt aangemaakt als hij niet bestaat."
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "Bladeren…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "Kies een andere map voor de back-up."
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "Kies waar de back-up wordt opgeslagen"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "Hier stoppen. Er verandert niets."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "De Unity-versie wijzigen zonder back-up."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "Zipt het project in de map hierboven en gaat dan verder."
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "Vergelijken met"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "De Basis-versie waarop het is gebaseerd"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "Toont alleen de wijzigingen in dit project. Dit is de weergave die je als pull request naar Basis kunt sturen."
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "Nieuwste {0} (hoofdrepository)"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "Vergelijkt met de nieuwste commit van de Basis-branch die dit project volgt op {0}. Wat Basis sinds jouw versie heeft gewijzigd, verschijnt ook als verschil."
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "Upstream van je project"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "Vergelijkt met de branch die je project volgt op zijn eigen remote (bijvoorbeeld origin/main), zodat je ziet wat je nog niet hebt gepusht."
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "Kies waarmee het project wordt vergeleken."
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "Pull requests worden gebouwd vanaf de Basis-versie waarop dit project is gebaseerd. Zet Vergelijken met terug op die versie om wijzigingen te kiezen en te versturen."
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "Vergeleken met de nieuwste {0} op {1}."
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "Vergeleken met de nieuwste {0} op {1} ({2}: {3})."
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "Vergeleken met {0} op {1}, de eigen remote van je project."
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "Vergeleken met {0} op {1} ({2}: {3}), de eigen remote van je project."
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "Niets verschilt van de nieuwste {0} ({1})."
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "Alles hier staat al op {0}."
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "Vergelijking geannuleerd."
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "Kon de nieuwste Basis {0} niet downloaden. Controleer je verbinding en probeer het opnieuw."
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "De branch van dit project volgt geen remote branch, dus er is geen upstream om mee te vergelijken."
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "De branch {0} volgt geen remote branch, dus er is geen upstream om mee te vergelijken."
     }
   ]
 }

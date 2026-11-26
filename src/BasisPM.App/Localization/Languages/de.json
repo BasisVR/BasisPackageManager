@@ -7103,12 +7103,20 @@
       "value": "Das Ergebnis der letzten Prüfung dieses Pakets."
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "Nach Installationen und Basis-Updates mit Unity kompilieren"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "Pakete nach Installationen und Basis-Updates prüfen"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "Kompiliert das Projekt nach einer Installation oder einem Basis-Update zusätzlich mit Unity, um defekte Pakete zu finden. Das kann mehrere Minuten dauern. Die schnelle Konfliktprüfung läuft auch, wenn dies aus ist."
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "Prüft nach einer Installation oder einem Basis-Update die Skripte des Projekts auf Konflikte (Namespaces, Typen, Assembly-Namen, doppelte DLLs und GUIDs). Standardmäßig aus. „Pakete prüfen“ funktioniert jederzeit."
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "Headless-Prüfung (mit Unity kompilieren)"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "Kompiliert das Projekt zusätzlich in einem unsichtbaren Unity-Editor (Batch-Modus), um Pakete zu finden, die nicht kompilieren, und aktualisiert veraltete Unity-API-Aufrufe, wo möglich. Das kann mehrere Minuten dauern. Die Prüfung muss eingeschaltet sein."
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "Änderungen ansehen"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "Paketprüfung für {0} abgebrochen. Nichts wurde gespeichert."
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "Wartende abbrechen"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "Entfernt die Pakete, die noch auf die Installation warten. Das aktuelle Paket wird zuerst fertig installiert."
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "{0} wartende Installationen aus der Warteschlange entfernt."
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "Abbrechen"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "Diesen Vorgang stoppen und halb Erledigtes aufräumen."
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "Wird abgebrochen…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "Remote-Prüfung abgebrochen"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}: Die Remote-Prüfung wurde abgebrochen."
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}: Die Suche nach Basis-Updates wurde abgebrochen. Nichts wurde geändert."
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}: Sicherung abgebrochen. Die unvollständige Sicherungsdatei wurde gelöscht."
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "Download abgebrochen. Die teilweise heruntergeladenen Dateien in {0} wurden entfernt."
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "Download abgebrochen, aber einige Dateien in {0} konnten nicht entfernt werden. Leere den Ordner, bevor du es erneut versuchst."
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}: vor dem Wechsel der Unity-Version angehalten. Nichts wurde geändert."
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "„Alle aktualisieren“ abgebrochen. Nichts wurde aktualisiert."
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "wechselt Unity von {0} auf {1}; einzeln aktualisieren, um vorher zu sichern"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Wechsel der Unity-Version"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "Dadurch ändert sich die Unity-Version des Projekts"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} wechselt von Unity {1} auf Unity {2}. Möchtest du es vorher sichern?"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "Risiken ohne Sicherung"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "Beim nächsten Öffnen aktualisiert Unity Assets, Szenen, Prefabs und Einstellungen auf die neue Version. Manche Pakete kompilieren danach eventuell nicht mehr."
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity kann ein Projekt nicht zurückkonvertieren. Ein späterer Wechsel zurück kann Szenen und Prefabs beschädigen, und ohne Sicherung lässt sich das nicht rückgängig machen."
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "Die Sicherung ist ein ZIP von Assets, Packages, ProjectSettings und UserSettings. Library und andere Caches fehlen, weil Unity sie neu erstellt."
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "Sichern nach"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "Der Ordner, in dem das Sicherungs-ZIP gespeichert wird. Er wird angelegt, falls er fehlt."
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "Durchsuchen…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "Einen anderen Ordner für die Sicherung wählen."
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "Speicherort für die Sicherung wählen"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "Hier aufhören. Nichts wird geändert."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "Die Unity-Version ohne Sicherung wechseln."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "Das Projekt in den Ordner oben zippen und dann fortfahren."
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "Vergleichen mit"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "Die Basis-Version, auf der es basiert"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "Zeigt nur die Änderungen in diesem Projekt. Diese Ansicht kannst du als Pull Request an Basis senden."
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "Neuestes {0} (Hauptrepository)"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "Vergleicht mit dem neuesten Commit des Basis-Branches, dem dieses Projekt auf {0} folgt. Was Basis seit deiner Version geändert hat, erscheint ebenfalls als Unterschied."
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "Upstream deines Projekts"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "Vergleicht mit dem Branch, dem dein Projekt auf seinem eigenen Remote folgt (zum Beispiel origin/main). So siehst du, was du noch nicht gepusht hast."
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "Wähle, womit das Projekt verglichen wird."
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "Pull Requests werden auf der Basis-Version aufgebaut, auf der dieses Projekt basiert. Stelle „Vergleichen mit“ wieder auf diese Version, um Änderungen auszuwählen und zu senden."
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "Verglichen mit dem neuesten {0} bei {1}."
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "Verglichen mit dem neuesten {0} bei {1} ({2}: {3})."
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "Verglichen mit {0} bei {1}, dem eigenen Remote deines Projekts."
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "Verglichen mit {0} bei {1} ({2}: {3}), dem eigenen Remote deines Projekts."
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "Nichts unterscheidet sich vom neuesten {0} ({1})."
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "Alles hier ist bereits auf {0}."
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "Vergleich abgebrochen."
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "Das neueste Basis {0} konnte nicht heruntergeladen werden. Prüfe deine Verbindung und versuche es erneut."
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "Der Branch dieses Projekts folgt keinem Remote-Branch, daher gibt es kein Upstream zum Vergleichen."
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "Der Branch {0} folgt keinem Remote-Branch, daher gibt es kein Upstream zum Vergleichen."
     }
   ]
 }

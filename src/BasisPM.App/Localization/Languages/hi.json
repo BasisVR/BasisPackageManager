@@ -7103,12 +7103,20 @@
       "value": "इस पैकेज की पिछली जाँच का परिणाम।"
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "इंस्टॉल और Basis अपडेट के बाद Unity से कंपाइल करें"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "इंस्टॉल और Basis अपडेट के बाद पैकेज जाँचें"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "इंस्टॉल या Basis अपडेट के बाद, टूटे पैकेज पकड़ने के लिए प्रोजेक्ट को Unity से भी कंपाइल करता है। इसमें कई मिनट लग सकते हैं। इसे बंद रखने पर भी तेज़ कॉन्फ़्लिक्ट जाँच चलती है।"
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "इंस्टॉल या Basis अपडेट के बाद प्रोजेक्ट की स्क्रिप्ट में टकराव (नेमस्पेस, टाइप, असेंबली नाम, डुप्लिकेट DLL और GUID) जाँचता है। डिफ़ॉल्ट रूप से बंद। पैकेज जाँचें कभी भी काम करता है।"
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "हेडलेस जाँच (Unity से कंपाइल करें)"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "छिपे Unity एडिटर (बैच मोड) में प्रोजेक्ट को कंपाइल भी करता है ताकि कंपाइल न होने वाले पैकेज पकड़े जा सकें, और जहाँ संभव हो पुराने Unity API कॉल अपग्रेड करता है। इसमें कई मिनट लग सकते हैं। जाँच चालू होनी चाहिए।"
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "बदलाव देखें"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "{0} की पैकेज जाँच रद्द की गई। कुछ भी सहेजा नहीं गया।"
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "कतार रद्द करें"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "इंस्टॉल का इंतज़ार कर रहे पैकेज हटा देता है। अभी इंस्टॉल हो रहा पैकेज पहले पूरा होगा।"
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "कतार से {0} प्रतीक्षारत इंस्टॉल हटाए गए।"
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "रद्द करें"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "यह काम रोकें और अधूरा छूटा हिस्सा साफ़ करें।"
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "रद्द किया जा रहा है…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "रिमोट जाँच रद्द"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}: रिमोट जाँच रद्द की गई।"
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}: Basis अपडेट की जाँच रद्द की गई। कुछ नहीं बदला।"
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}: बैकअप रद्द। अधूरी बैकअप फ़ाइल हटा दी गई।"
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "डाउनलोड रद्द। {0} में आधी डाउनलोड हुई फ़ाइलें हटा दी गईं।"
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "डाउनलोड रद्द हुआ, पर {0} की कुछ फ़ाइलें हटाई नहीं जा सकीं। फिर से कोशिश करने से पहले वह फ़ोल्डर खाली करें।"
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}: Unity वर्ज़न बदलने से पहले रोका गया। कुछ नहीं बदला।"
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "सभी अपडेट करें रद्द। कुछ भी अपडेट नहीं हुआ।"
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "Unity को {0} से {1} पर ले जाता है; पहले बैकअप के लिए इसे अलग से अपडेट करें"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Unity वर्ज़न बदलाव"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "इससे प्रोजेक्ट का Unity वर्ज़न बदल जाएगा"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} Unity {1} से Unity {2} पर जाएगा। क्या पहले बैकअप लेना है?"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "बैकअप न लेने के जोखिम"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "अगली बार प्रोजेक्ट खुलने पर Unity उसके एसेट, सीन, प्रीफ़ैब और सेटिंग नए वर्ज़न में बदल देगा। कुछ पैकेज कंपाइल होना बंद कर सकते हैं।"
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity प्रोजेक्ट को वापस नहीं बदल सकता। बाद में पुराने वर्ज़न पर लौटने से सीन और प्रीफ़ैब टूट सकते हैं, और बैकअप के बिना इसे पलटा नहीं जा सकता।"
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "बैकअप Assets, Packages, ProjectSettings और UserSettings की zip फ़ाइल है। Library और दूसरे कैश छोड़ दिए जाते हैं क्योंकि Unity उन्हें फिर से बनाता है।"
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "बैकअप यहाँ लें"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "वह फ़ोल्डर जिसमें बैकअप zip सहेजी जाती है। न हो तो बना दिया जाता है।"
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "ब्राउज़ करें…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "बैकअप के लिए दूसरा फ़ोल्डर चुनें।"
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "चुनें कि बैकअप कहाँ सहेजना है"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "यहीं रुकें। कुछ नहीं बदलेगा।"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "बिना बैकअप Unity वर्ज़न बदलें।"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "प्रोजेक्ट को ऊपर वाले फ़ोल्डर में zip करें, फिर आगे बढ़ें।"
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "इससे तुलना करें"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "जिस Basis वर्ज़न पर यह आधारित है"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "सिर्फ़ इस प्रोजेक्ट में किए बदलाव दिखाता है। इसी व्यू से आप Basis को पुल रिक्वेस्ट भेज सकते हैं।"
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "नवीनतम {0} (मुख्य रिपॉज़िटरी)"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "{0} पर यह प्रोजेक्ट जिस Basis ब्रांच को फ़ॉलो करता है, उसके नवीनतम कमिट से तुलना करता है। आपके वर्ज़न के बाद Basis में हुए बदलाव भी अंतर के रूप में दिखते हैं।"
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "आपके प्रोजेक्ट का अपस्ट्रीम"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "आपका प्रोजेक्ट अपने रिमोट पर जिस ब्रांच को ट्रैक करता है (जैसे origin/main) उससे तुलना करता है, ताकि दिखे कि क्या अभी पुश नहीं हुआ।"
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "चुनें कि प्रोजेक्ट की तुलना किससे करनी है।"
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "पुल रिक्वेस्ट उस Basis वर्ज़न से बनती है जिस पर यह प्रोजेक्ट आधारित है। बदलाव चुनकर भेजने के लिए तुलना को वापस उसी वर्ज़न पर करें।"
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "नवीनतम {0} ({1}) से तुलना हो रही है।"
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "नवीनतम {0} ({1}, {2}: {3}) से तुलना हो रही है।"
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "आपके प्रोजेक्ट के अपने रिमोट {0} ({1}) से तुलना हो रही है।"
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "आपके प्रोजेक्ट के अपने रिमोट {0} ({1}, {2}: {3}) से तुलना हो रही है।"
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "नवीनतम {0} ({1}) से कोई अंतर नहीं।"
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "यहाँ का सब कुछ पहले से {0} पर है।"
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "तुलना रद्द की गई।"
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "नवीनतम Basis {0} डाउनलोड नहीं हो सका। कनेक्शन जाँचें और फिर कोशिश करें।"
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "इस प्रोजेक्ट की ब्रांच किसी रिमोट ब्रांच को ट्रैक नहीं करती, इसलिए तुलना के लिए कोई अपस्ट्रीम नहीं है।"
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "ब्रांच {0} किसी रिमोट ब्रांच को ट्रैक नहीं करती, इसलिए तुलना के लिए कोई अपस्ट्रीम नहीं है।"
     }
   ]
 }

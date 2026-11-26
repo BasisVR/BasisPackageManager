@@ -27,8 +27,8 @@ public sealed class BasisChangesHost : IBasisChangesHost
 
     public string Repository => $"{_contribute.Owner}/{_contribute.Repo}";
 
-    public Task<BasisContributeScan> ScanAsync(Action<string> progress, CancellationToken ct) =>
-        Task.Run(() => _contribute.ScanAsync(_install.RepoRoot, _install.UnityProjectPath, progress, ct), ct);
+    public Task<BasisContributeScan> ScanAsync(BasisCompareTarget target, Action<string> progress, CancellationToken ct) =>
+        Task.Run(() => _contribute.ScanAsync(_install.RepoRoot, _install.UnityProjectPath, progress, ct, target), ct);
 
     public async Task<string?> GetProjectRemoteAsync(string repoRoot)
     {
@@ -57,6 +57,8 @@ public sealed class BasisChangesHost : IBasisChangesHost
     public void OpenUrl(string url) => ExternalLink.Open(url);
 
     public Guid BeginActivity(string title, string project) => _shell.BeginActivity(title, project);
+
+    public (Guid Id, CancellationToken Token) BeginCancellableActivity(string title, string project) => _shell.BeginCancellableActivity(title, project);
 
     public void ReportActivity(Guid id, string detail) => _shell.ReportActivity(id, detail);
 

@@ -30,6 +30,30 @@ public sealed class ActivityProgressTests
     }
 
     [Fact]
+    public void Cancellable_activity_cancels_its_token_and_ignores_late_progress()
+    {
+        var vm = new MainWindowViewModel();
+        var plain = vm.BeginActivity("Plain");
+        var (id, token) = vm.BeginCancellableActivity("Backing up", "Game");
+
+        Assert.False(vm.Activities.Single(a => a.Id == plain).CanCancel);
+        var item = vm.CurrentActivity!;
+        Assert.True(item.CanCancel);
+        Assert.True(item.CancelCommand.CanExecute(null));
+
+        item.CancelCommand.Execute(null);
+        vm.ReportActivity(id, "Backing up Assets 50%");
+
+        Assert.True(token.IsCancellationRequested);
+        Assert.False(item.CanCancel);
+        Assert.Equal(L.Tr("shell.activity.cancelling"), item.Detail);
+        Assert.Equal(0, item.Progress);
+        vm.EndActivity(id);
+        vm.EndActivity(plain);
+        Assert.False(vm.IsActivityVisible);
+    }
+
+    [Fact]
     public void Older_activity_cannot_overwrite_or_hide_newer_activity()
     {
         var vm = new MainWindowViewModel();

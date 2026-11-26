@@ -7103,12 +7103,20 @@
       "value": "Le résultat de la dernière vérification de ce paquet."
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "Compiler avec Unity après les installations et les mises à jour de Basis"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "Valider les paquets après les installations et les mises à jour de Basis"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "Après une installation ou une mise à jour de Basis, compile aussi le projet avec Unity pour repérer les paquets cassés. Cela peut prendre plusieurs minutes. La vérification rapide des conflits s'exécute même si cette option est désactivée."
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "Après une installation ou une mise à jour de Basis, vérifie les scripts du projet à la recherche de conflits (espaces de noms, types, noms d'assembly, DLL et GUID en double). Désactivé par défaut. Vérifier les paquets reste disponible à tout moment."
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "Validation sans interface (compiler avec Unity)"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "Compile aussi le projet dans un éditeur Unity masqué (mode batch) pour repérer les paquets qui ne compilent pas, et met à jour les appels obsolètes à l'API Unity quand c'est possible. Cela peut prendre plusieurs minutes. Nécessite la validation activée."
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "Voir les modifications"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "Vérification des paquets de {0} annulée. Rien n'a été enregistré."
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "Annuler la file"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "Retire les paquets qui attendent encore leur installation. Celui en cours d'installation se termine d'abord."
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "{0} installations en attente retirées de la file."
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "Annuler"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "Arrête cette opération et nettoie ce qu'elle a laissé à moitié fait."
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "Annulation…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "Vérification distante annulée"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0} : la vérification du dépôt distant a été annulée."
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0} : la recherche de mises à jour de Basis a été annulée. Rien n'a changé."
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0} : sauvegarde annulée. Le fichier de sauvegarde incomplet a été supprimé."
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "Téléchargement annulé. Les fichiers partiellement téléchargés dans {0} ont été supprimés."
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "Téléchargement annulé, mais certains fichiers dans {0} n'ont pas pu être supprimés. Videz ce dossier avant de réessayer."
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0} : arrêté avant de changer de version d'Unity. Rien n'a changé."
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "Tout mettre à jour annulé. Rien n'a été mis à jour."
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "fait passer Unity de {0} à {1} ; mettez-le à jour seul pour le sauvegarder avant"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Changement de version d'Unity"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "Cela change la version d'Unity du projet"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} va passer d'Unity {1} à Unity {2}. Voulez-vous le sauvegarder avant ?"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "Risques sans sauvegarde"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "À la prochaine ouverture du projet, Unity met à niveau ses ressources, scènes, prefabs et réglages vers la nouvelle version. Certains paquets peuvent ne plus compiler."
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity ne peut pas reconvertir un projet. Revenir ensuite à l'ancienne version peut casser des scènes et des prefabs, et sans sauvegarde il est impossible d'annuler."
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "La sauvegarde est un zip d'Assets, Packages, ProjectSettings et UserSettings. Library et les autres caches sont exclus car Unity les reconstruit."
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "Sauvegarder dans"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "Le dossier où le zip de sauvegarde est enregistré. Il est créé s'il n'existe pas."
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "Parcourir…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "Choisir un autre dossier pour la sauvegarde."
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "Choisissez où enregistrer la sauvegarde"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "S'arrêter ici. Rien ne change."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "Changer de version d'Unity sans sauvegarde."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "Zippe le projet dans le dossier ci-dessus, puis continue."
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "Comparer avec"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "La version de Basis dont il part"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "Montre uniquement les modifications faites dans ce projet. C'est la vue que vous pouvez envoyer à Basis en pull request."
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "Dernière version de {0} (dépôt principal)"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "Compare avec le dernier commit de la branche Basis que suit ce projet sur {0}. Ce que Basis a changé depuis votre version apparaît aussi comme une différence."
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "L'upstream de votre projet"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "Compare avec la branche que votre projet suit sur son propre dépôt distant (par exemple origin/main), pour voir ce que vous n'avez pas encore poussé."
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "Choisissez avec quoi comparer le projet."
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "Les pull requests partent de la version de Basis dont ce projet est issu. Remettez Comparer avec sur cette version pour choisir des modifications et les envoyer."
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "Comparé avec la dernière version de {0} à {1}."
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "Comparé avec la dernière version de {0} à {1} ({2} : {3})."
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "Comparé avec {0} à {1}, le dépôt distant de votre projet."
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "Comparé avec {0} à {1} ({2} : {3}), le dépôt distant de votre projet."
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "Rien ne diffère de la dernière version de {0} ({1})."
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "Tout ceci est déjà sur {0}."
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "Comparaison annulée."
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "Impossible de télécharger la dernière version de Basis {0}. Vérifiez votre connexion et réessayez."
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "La branche de ce projet ne suit aucune branche distante, il n'y a donc pas d'upstream avec lequel comparer."
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "La branche {0} ne suit aucune branche distante, il n'y a donc pas d'upstream avec lequel comparer."
     }
   ]
 }

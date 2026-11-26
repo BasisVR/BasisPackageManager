@@ -32,7 +32,8 @@ public sealed class BasisContributeService
     public string Owner { get; }
     public string Repo { get; }
 
-    public async Task<BasisContributeScan> ScanAsync(string projectPath, string? unityProjectPath = null, Action<string>? progress = null, CancellationToken ct = default)
+    public async Task<BasisContributeScan> ScanAsync(string projectPath, string? unityProjectPath = null, Action<string>? progress = null, CancellationToken ct = default,
+        BasisCompareTarget target = BasisCompareTarget.Base)
     {
         if (!_git.IsAvailable) return Blocked(BasisContributeBlock.GitMissing);
         if (await _git.GetVersionAsync(ct).ConfigureAwait(false) is { } version && version < BasisUpdateService.MinimumGitVersion)
@@ -63,14 +64,16 @@ public sealed class BasisContributeService
         var layout = basis.Layout;
         var (snapshot, error) = await _git.SnapshotWorkingTreeAsync(root, layout.ProjectFolder.Length == 0 ? null : layout.ProjectFolder, ct).ConfigureAwait(false);
         if (snapshot is null) return Blocked(BasisContributeBlock.ReadFailed, error, root) with { Base = basis };
-        var basisTree = await _git.ResolveTreeAsync(root, basis.Sha, layout.BasisFolder, ct).ConfigureAwait(false);
-        if (basisTree is null) return Blocked(BasisContributeBlock.BasisFolderMissing, layout.BasisFolder, root) with { Base = basis };
+        var against = await CompareWithAsync(root, basis, target, progress, ct).ConfigureAwait(false);
+        if (against.Block != BasisContributeBlock.None) return Blocked(against.Block, against.Detail, root) with { Base = basis, Target = target };
+        var compareTree = await _git.ResolveTreeAsync(root, against.Sha!, against.Folder, ct).ConfigureAwait(false);
+        if (compareTree is null) return Blocked(BasisContributeBlock.BasisFolderMissing, against.Folder, root) with { Base = basis, Target = target };
         var projectTree = await _git.ResolveTreeAsync(root, snapshot, layout.ProjectFolder, ct).ConfigureAwait(false);
-        if (projectTree is null) return Blocked(BasisContributeBlock.ReadFailed, layout.ProjectFolder, root) with { Base = basis };
+        if (projectTree is null) return Blocked(BasisContributeBlock.ReadFailed, layout.ProjectFolder, root) with { Base = basis, Target = target };
 
-        progress?.Invoke("Comparing your project with Basis…");
-        var diff = await _git.DiffTreesAsync(root, basisTree, projectTree, ct).ConfigureAwait(false);
-        if (diff is null) return Blocked(BasisContributeBlock.ReadFailed, null, root) with { Base = basis };
+        progress?.Invoke(target == BasisCompareTarget.ProjectUpstream ? $"Comparing your project with {against.Label}…" : "Comparing your project with Basis…");
+        var diff = await _git.DiffTreesAsync(root, compareTree, projectTree, ct).ConfigureAwait(false);
+        if (diff is null) return Blocked(BasisContributeBlock.ReadFailed, null, root) with { Base = basis, Target = target };
         var changes = new List<BasisChange>();
         var skipped = new List<string>();
         foreach (var entry in diff)
@@ -102,8 +105,12 @@ public sealed class BasisContributeService
             RepoRoot = root,
             Base = basis,
             BaseCommit = (await _git.GetLogAsync(root, basis.Sha, 1, ct).ConfigureAwait(false)).FirstOrDefault(),
+            Target = target,
+            CompareSha = against.Sha,
+            CompareLabel = against.Label,
+            CompareCommit = against.Sha == basis.Sha ? null : (await _git.GetLogAsync(root, against.Sha!, 1, ct).ConfigureAwait(false)).FirstOrDefault(),
             UnityFolder = unity,
-            BaseTree = basisTree,
+            CompareTree = compareTree,
             ProjectTree = projectTree,
             Groups = groups,
             Skipped = skipped,
@@ -112,10 +119,10 @@ public sealed class BasisContributeService
 
     public async Task<IReadOnlyList<BasisDiffLine>> GetDiffAsync(BasisContributeScan scan, BasisChange change, int maxLines = 5000, CancellationToken ct = default)
     {
-        if (scan.Base is null || scan.BaseTree is null || scan.ProjectTree is null) return new[] { new BasisDiffLine(BasisDiffLineKind.Note, "This project hasn't been compared with Basis yet.") };
+        if (scan.Base is null || scan.CompareTree is null || scan.ProjectTree is null) return new[] { new BasisDiffLine(BasisDiffLineKind.Note, "This project hasn't been compared with Basis yet.") };
         var folder = scan.Base.Layout.BasisFolder;
         var path = folder.Length == 0 ? change.Path : change.Path.StartsWith(folder + "/", StringComparison.Ordinal) ? change.Path[(folder.Length + 1)..] : null;
-        var text = path is null ? null : await _git.DiffPathAsync(scan.RepoRoot, scan.BaseTree, scan.ProjectTree, path, ct).ConfigureAwait(false);
+        var text = path is null ? null : await _git.DiffPathAsync(scan.RepoRoot, scan.CompareTree, scan.ProjectTree, path, ct).ConfigureAwait(false);
         return text is null ? new[] { new BasisDiffLine(BasisDiffLineKind.Note, "Couldn't show the changes for this file.") } : ParseDiff(text, maxLines);
     }
 
@@ -217,6 +224,7 @@ public sealed class BasisContributeService
     public async Task<BasisContributeCommit> CreateCommitAsync(BasisContributeScan scan, IEnumerable<string> paths, string message, string authorName, string authorEmail, CancellationToken ct = default)
     {
         if (scan.IsBlocked || scan.Base is null) return BasisContributeCommit.Fail("This project couldn't be compared with Basis.");
+        if (!scan.CanContribute) return BasisContributeCommit.Fail("Compare with the Basis version this project is based on to send changes.");
         var selected = ExpandSelection(scan, paths);
         if (selected.Count == 0) return BasisContributeCommit.Fail("Pick at least one change to send.");
         var files = selected.Where(c => c.Kind != BasisChangeKind.Deleted && c.Mode is not null && c.Sha is not null).Select(c => (c.Mode!, c.Sha!, c.Path)).ToList();
@@ -234,6 +242,7 @@ public sealed class BasisContributeService
     public async Task<BasisContributeResult> SubmitAsync(BasisContributeScan scan, IEnumerable<string> paths, BasisPullRequestDraft draft, string token, GitHubUser user, Action<string>? progress = null, CancellationToken ct = default)
     {
         if (scan.IsBlocked || scan.Base is null) return BasisContributeResult.Fail("This project couldn't be compared with Basis.");
+        if (!scan.CanContribute) return BasisContributeResult.Fail("Compare with the Basis version this project is based on to send changes.");
         var root = scan.RepoRoot;
         var title = draft.Title.Trim();
         var branch = draft.Branch.Trim();
@@ -341,6 +350,37 @@ public sealed class BasisContributeService
             report("Waiting for the fork to be ready…");
             await Task.Delay(1500, ct).ConfigureAwait(false);
         }
+    }
+
+    private async Task<(string? Sha, string Folder, string Label, BasisContributeBlock Block, string? Detail)> CompareWithAsync(string root, BasisBaseInfo basis, BasisCompareTarget target,
+        Action<string>? progress, CancellationToken ct)
+    {
+        if (target == BasisCompareTarget.Latest)
+        {
+            var branch = basis.Branch.Length > 0 ? basis.Branch : BasisInstallService.DefaultBranch;
+            var localRef = BasisUpdateService.UpstreamRefPrefix + branch;
+            progress?.Invoke($"Downloading the latest Basis {branch}…");
+            await _git.FetchBranchAsync(root, _updates.UpstreamUrl, branch, localRef, progress, ct).ConfigureAwait(false);
+            var tip = await _git.ResolveCommitAsync(root, localRef, ct).ConfigureAwait(false);
+            return tip is null
+                ? (null, "", branch, BasisContributeBlock.LatestMissing, branch)
+                : (tip, basis.Layout.BasisFolder, branch, BasisContributeBlock.None, null);
+        }
+        if (target == BasisCompareTarget.ProjectUpstream)
+        {
+            var name = await _git.GetUpstreamNameAsync(root, ct).ConfigureAwait(false);
+            if (name is null)
+            {
+                return (null, "", "", BasisContributeBlock.NoUpstream, await _git.GetCurrentBranchAsync(root, ct).ConfigureAwait(false));
+            }
+            progress?.Invoke($"Downloading {name}…");
+            await _git.FetchAsync(root, progress, ct).ConfigureAwait(false);
+            var sha = await _git.ResolveCommitAsync(root, "@{upstream}", ct).ConfigureAwait(false);
+            return sha is null
+                ? (null, "", name, BasisContributeBlock.NoUpstream, name)
+                : (sha, basis.Layout.ProjectFolder, name, BasisContributeBlock.None, null);
+        }
+        return (basis.Sha, basis.Layout.BasisFolder, basis.Branch, BasisContributeBlock.None, null);
     }
 
     private static BasisBaseInfo? BaseOf(BasisUpdatePlan plan) =>

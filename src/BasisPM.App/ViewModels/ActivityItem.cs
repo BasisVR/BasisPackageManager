@@ -8,11 +8,34 @@ public sealed class ActivityItem : ObservableObject
     private string _detail = "";
     private double _progress;
     private bool _isIndeterminate = true;
+    private readonly CancellationTokenSource? _cancel;
+    private bool _isCancelling;
 
-    public ActivityItem(string title, string? project)
+    public ActivityItem(string title, string? project, CancellationTokenSource? cancel = null)
     {
         Title = title;
         Project = string.IsNullOrWhiteSpace(project) ? null : project.Trim();
+        _cancel = cancel;
+        CancelCommand = new RelayCommand(Cancel, () => CanCancel);
+    }
+
+    public RelayCommand CancelCommand { get; }
+    public bool CanCancel => _cancel is not null && !_isCancelling;
+    public bool IsCancelling => _isCancelling;
+    public bool IsCancellationRequested => _cancel?.IsCancellationRequested == true;
+
+    public void Cancel()
+    {
+        if (!CanCancel)
+        {
+            return;
+        }
+        _isCancelling = true;
+        Detail = L.Tr("shell.activity.cancelling");
+        OnPropertyChanged(nameof(CanCancel));
+        OnPropertyChanged(nameof(IsCancelling));
+        CancelCommand.Raise();
+        _cancel!.Cancel();
     }
 
     public Guid Id { get; } = Guid.NewGuid();
@@ -28,6 +51,10 @@ public sealed class ActivityItem : ObservableObject
 
     public void Report(string detail)
     {
+        if (_isCancelling)
+        {
+            return;
+        }
         Detail = detail;
         var match = Regex.Match(detail, @"(\d{1,3})%");
         if (match.Success && int.TryParse(match.Groups[1].Value, out var percentage) && percentage is >= 0 and <= 100)

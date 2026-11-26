@@ -7103,12 +7103,20 @@
       "value": "نتيجة آخر فحص لهذه الحزمة."
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "الترجمة البرمجية باستخدام Unity بعد التثبيت وتحديثات Basis"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "التحقق من الحزم بعد التثبيت وتحديثات Basis"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "بعد التثبيت أو تحديث Basis، يترجم المشروع أيضًا باستخدام Unity لاكتشاف الحزم المعطلة. قد يستغرق ذلك عدة دقائق. يظل الفحص السريع للتعارضات يعمل عند إيقاف هذا الخيار."
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "بعد التثبيت أو تحديث Basis، يفحص نصوص المشروع بحثًا عن تعارضات (مساحات الأسماء والأنواع وأسماء التجميعات وملفات DLL ومعرّفات GUID المكررة). متوقف افتراضيًا. يبقى «فحص الحزم» متاحًا في أي وقت."
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "تحقق بدون واجهة (الترجمة باستخدام Unity)"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "يترجم المشروع أيضًا في محرر Unity مخفي (وضع الدُفعات) لاكتشاف الحزم التي لا تُترجم، ويحدّث استدعاءات Unity API القديمة متى أمكن. قد يستغرق ذلك عدة دقائق. يتطلب تشغيل التحقق."
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "مراجعة التغييرات"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "أُلغي فحص الحزم لـ {0}. لم يُحفظ أي شيء."
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "إلغاء المنتظر"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "يزيل الحزم التي ما زالت تنتظر التثبيت. تكتمل الحزمة الجاري تثبيتها أولًا."
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "أُزيلت {0} عمليات تثبيت منتظرة من قائمة الانتظار."
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "إلغاء"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "إيقاف هذه العملية وتنظيف ما تركته غير مكتمل."
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "جارٍ الإلغاء…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "أُلغي فحص المستودع البعيد"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}: أُلغي فحص المستودع البعيد."
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}: أُلغي البحث عن تحديثات Basis. لم يتغير شيء."
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}: أُلغي النسخ الاحتياطي. حُذف ملف النسخة غير المكتمل."
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "أُلغي التنزيل. أُزيلت الملفات التي نُزّلت جزئيًا في {0}."
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "أُلغي التنزيل، لكن تعذّر إزالة بعض الملفات في {0}. أفرغ هذا المجلد قبل المحاولة مرة أخرى."
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}: توقف قبل تغيير إصدار Unity. لم يتغير شيء."
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "أُلغي تحديث الكل. لم يُحدَّث أي شيء."
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "ينقل Unity من {0} إلى {1}؛ حدّثه وحده لتنسخه احتياطيًا أولًا"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "تغيير إصدار Unity"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "سيغيّر هذا إصدار Unity الخاص بالمشروع"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "سينتقل {0} من Unity {1} إلى Unity {2}. هل تريد نسخه احتياطيًا أولًا؟"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "مخاطر عدم النسخ الاحتياطي"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "عند فتح المشروع في المرة القادمة، يرقّي Unity الأصول والمشاهد والـ prefabs والإعدادات إلى الإصدار الجديد. قد تتوقف بعض الحزم عن الترجمة."
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "لا يستطيع Unity إرجاع المشروع إلى ما كان عليه. قد تؤدي العودة إلى الإصدار القديم إلى إتلاف المشاهد والـ prefabs، ولا يمكن التراجع دون نسخة احتياطية."
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "النسخة الاحتياطية ملف zip يضم Assets وPackages وProjectSettings وUserSettings. تُستبعد Library والذاكرات المؤقتة الأخرى لأن Unity يعيد إنشاءها."
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "النسخ الاحتياطي إلى"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "المجلد الذي يُحفظ فيه ملف zip للنسخة. يُنشأ إن لم يكن موجودًا."
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "استعراض…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "اختر مجلدًا آخر للنسخة الاحتياطية."
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "اختر مكان حفظ النسخة الاحتياطية"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "توقف هنا. لن يتغير شيء."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "تغيير إصدار Unity دون نسخة احتياطية."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "اضغط المشروع في المجلد أعلاه ثم تابع."
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "المقارنة مع"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "إصدار Basis الذي يستند إليه"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "يعرض التغييرات التي أُجريت في هذا المشروع فقط. هذا هو العرض الذي يمكنك إرساله إلى Basis كطلب سحب."
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "أحدث {0} (المستودع الرئيسي)"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "يقارن مع أحدث commit في فرع Basis الذي يتبعه هذا المشروع على {0}. وتظهر أيضًا كاختلافات أي تغييرات أجراها Basis منذ إصدارك."
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "المستودع الأعلى لمشروعك"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "يقارن مع الفرع الذي يتتبعه مشروعك على مستودعه البعيد (مثل origin/main)، لترى ما لم تدفعه بعد."
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "اختر ما تريد مقارنة المشروع به."
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "تُبنى طلبات السحب من إصدار Basis الذي يستند إليه هذا المشروع. أعد «المقارنة مع» إلى ذلك الإصدار لاختيار التغييرات وإرسالها."
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "المقارنة مع أحدث {0} عند {1}."
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "المقارنة مع أحدث {0} عند {1} ({2}: {3})."
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "المقارنة مع {0} عند {1}، المستودع البعيد الخاص بمشروعك."
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "المقارنة مع {0} عند {1} ({2}: {3})، المستودع البعيد الخاص بمشروعك."
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "لا اختلاف عن أحدث {0} ({1})."
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "كل ما هنا موجود بالفعل على {0}."
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "أُلغيت المقارنة."
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "تعذّر تنزيل أحدث Basis {0}. تحقق من اتصالك وحاول مرة أخرى."
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "فرع هذا المشروع لا يتتبع فرعًا بعيدًا، لذا لا يوجد مستودع أعلى للمقارنة معه."
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "الفرع {0} لا يتتبع فرعًا بعيدًا، لذا لا يوجد مستودع أعلى للمقارنة معه."
     }
   ]
 }

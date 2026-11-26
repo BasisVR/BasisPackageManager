@@ -661,6 +661,34 @@ public sealed class BasisUpdateService
         return branches.OrderByDescending(b => b.IsCurrent).ThenBy(b => b.Remote is not null).ThenBy(b => b.Display, StringComparer.OrdinalIgnoreCase).ToList();
     }
 
+    public async Task<string?> IncomingUnityVersionAsync(string repoRoot, BasisUpdatePlan plan, CancellationToken ct = default)
+    {
+        if (!plan.CanApply || plan.UpstreamSha is not { Length: > 0 } sha)
+        {
+            return null;
+        }
+        var root = await ResolveRepositoryRootAsync(repoRoot, ct).ConfigureAwait(false) ?? repoRoot;
+        var text = await _git.ShowFileAsync(root, sha, BasisUnityFolder + "/" + UnityVersionFile, ct).ConfigureAwait(false);
+        return UnityProjectService.ParseEditorVersion(text);
+    }
+
+    public async Task<string?> IncomingUnityVersionAsync(string repoRoot, string unityProjectPath, BranchSwitchPlan plan, CancellationToken ct = default)
+    {
+        if (plan.TargetSha is not { Length: > 0 } sha)
+        {
+            return null;
+        }
+        var root = await ResolveRepositoryRootAsync(repoRoot, ct).ConfigureAwait(false) ?? repoRoot;
+        var folder = Path.GetRelativePath(root, unityProjectPath).Replace('\\', '/').Trim('/');
+        if (folder == ".." || folder.StartsWith("../", StringComparison.Ordinal) || Path.IsPathRooted(folder))
+        {
+            return null;
+        }
+        var path = folder is "." or "" ? UnityVersionFile : folder + "/" + UnityVersionFile;
+        var text = await _git.ShowFileAsync(root, sha, path, ct).ConfigureAwait(false);
+        return UnityProjectService.ParseEditorVersion(text);
+    }
+
     public async Task<BranchSwitchPlan> PlanBranchSwitchAsync(string repoRoot, ProjectBranch target, CancellationToken ct = default)
     {
         if (!_git.IsAvailable) return new BranchSwitchPlan { Target = target, Block = BasisUpdateBlock.GitMissing };

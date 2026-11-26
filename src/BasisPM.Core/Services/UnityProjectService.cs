@@ -171,6 +171,23 @@ public sealed class UnityProjectService
         }
     }
 
+    public static string? ParseEditorVersion(string? projectVersionText)
+    {
+        if (string.IsNullOrEmpty(projectVersionText))
+        {
+            return null;
+        }
+        foreach (var line in projectVersionText.Split('\n'))
+        {
+            if (line.StartsWith("m_EditorVersion:", StringComparison.Ordinal))
+            {
+                var version = line["m_EditorVersion:".Length..].Trim();
+                return version.Length == 0 ? null : version;
+            }
+        }
+        return null;
+    }
+
     public static string ReadUnityVersion(string unityProjectPath)
     {
         try

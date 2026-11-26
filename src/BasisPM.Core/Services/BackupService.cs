@@ -68,6 +68,21 @@ public sealed class BackupService
         return zipPath;
     }
 
+    public static void RemoveIfEmpty(string folder)
+    {
+        try
+        {
+            if (Directory.Exists(folder) && !Directory.EnumerateFileSystemEntries(folder).Any())
+            {
+                Directory.Delete(folder);
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            DiagnosticLog.Write($"Removing the empty backup folder {folder}", ex);
+        }
+    }
+
     private static IEnumerable<string> EnumerateFilesWithoutLinks(string root)
     {
         var pending = new Stack<string>();

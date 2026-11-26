@@ -247,14 +247,14 @@ public sealed partial class InstallsViewModel : ObservableObject
         if (row is null) return;
         if (!row.Install.IsGitRepo) { row.GitSummary = L.Tr("installs.git.notGitRepo"); return; }
         row.IsBusy = true;
-        var activity = fetch ? _shell.BeginActivity(L.Tr("installs.git.checkingRemote"), row.Name) : Guid.Empty;
+        var (activity, cancel) = fetch ? _shell.BeginCancellableActivity(L.Tr("installs.git.checkingRemote"), row.Name) : (Guid.Empty, CancellationToken.None);
         var fetchFailed = false;
         try
         {
             if (fetch)
             {
                 row.GitSummary = L.Tr("installs.git.checkingRemote");
-                var fetched = await _git.FetchAsync(row.RepoRoot, line => ReportActivity(activity, line));
+                var fetched = await _git.FetchAsync(row.RepoRoot, line => ReportActivity(activity, line), cancel);
                 if (fetchFailed = !fetched.Ok)
                     _shell.SetStatus(L.Tr("installs.status.fetchFailed", row.Name, Tail(fetched.Output)), StatusKind.Error, row.Name, () => CheckRemoteQueuedAsync(row), "fetch|" + row.RepoRoot);
                 else _shell.ClearFailure("fetch|" + row.RepoRoot);
@@ -268,6 +268,11 @@ public sealed partial class InstallsViewModel : ObservableObject
             row.LeftOutParts = await _parts.LeftOutAsync(row.RepoRoot, row.UnityProjectPath);
             if (fetch && !fetchFailed)
                 _shell.SetStatus(L.Tr("installs.status.rowSummary", row.Name, row.GitSummary), StatusKind.Info);
+        }
+        catch (OperationCanceledException) when (cancel.IsCancellationRequested)
+        {
+            row.GitSummary = L.Tr("installs.git.checkCancelled");
+            _shell.SetStatus(L.Tr("installs.status.fetchCancelled", row.Name), StatusKind.Info, row.Name);
         }
         catch (Exception ex)
         {
@@ -386,7 +391,13 @@ public sealed partial class InstallsViewModel : ObservableObject
         if (plan.CollidingPaths.Count > 0 && !await BasisPM.App.Services.Dialogs.ConfirmAsync(
                 L.Tr("installs.dialog.carryEditsTitle"), L.Tr("installs.dialog.carryEditsBody", plan.CollidingPaths.Count, target.Name)))
             return;
-        if (!await PromptBackupAsync(row, L.Tr("installs.action.changeBranch")))
+        var unityGate = await PromptUnityChangeBackupAsync(row, () => _updates.IncomingUnityVersionAsync(row.RepoRoot, row.UnityProjectPath, plan));
+        if (unityGate == false)
+        {
+            _shell.SetStatus(L.Tr("installs.status.unityChangeStopped", row.Name), StatusKind.Info, row.Name);
+            return;
+        }
+        if (unityGate is null && !await PromptBackupAsync(row, L.Tr("installs.action.changeBranch")))
             return;
 
         var info = new OperationInfo(BasisOperation.BranchSwitch, target.Name, plan.CurrentBranch);
@@ -567,19 +578,31 @@ public sealed partial class InstallsViewModel : ObservableObject
 
         var ready = new List<(InstallRow Row, BasisUpdatePlan Plan)>();
         var waiting = new List<(InstallRow Row, string Reason)>();
-        var checking = _shell.BeginActivity(L.Tr("installs.updateAll.checking"));
+        var (checking, cancel) = _shell.BeginCancellableActivity(L.Tr("installs.updateAll.checking"));
         try
         {
             foreach (var row in rows)
             {
+                if (cancel.IsCancellationRequested)
+                {
+                    break;
+                }
                 if (row.IsBusy || _shell.Work.IsBusy(row.RepoRoot)) { waiting.Add((row, L.Tr("installs.updateAll.reason.busy"))); continue; }
                 row.IsBusy = true;
                 try
                 {
-                    var plan = await _shell.Work.RunAsync(row.RepoRoot, L.Tr("installs.updateAll.checking"), () => _updates.PlanAsync(row.RepoRoot, null, line => ReportActivity(checking, line, row.Name)));
+                    var plan = await _shell.Work.RunAsync(row.RepoRoot, L.Tr("installs.updateAll.checking"), () => _updates.PlanAsync(row.RepoRoot, null, line => ReportActivity(checking, line, row.Name), cancel));
                     if (plan.Kind == BasisUpdateKind.UpToDate) continue;
                     if (WhyNotAutomatic(row, plan) is { } reason) waiting.Add((row, reason));
+                    else if (row.HasUnityProject && await _updates.IncomingUnityVersionAsync(row.RepoRoot, plan, cancel) is { } next && !string.Equals(next, row.UnityVersion, StringComparison.OrdinalIgnoreCase))
+                    {
+                        waiting.Add((row, L.Tr("installs.updateAll.reason.unityChange", row.UnityVersion, next)));
+                    }
                     else ready.Add((row, plan));
+                }
+                catch (OperationCanceledException) when (cancel.IsCancellationRequested)
+                {
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -590,6 +613,11 @@ public sealed partial class InstallsViewModel : ObservableObject
             }
         }
         finally { _shell.EndActivity(checking); }
+        if (cancel.IsCancellationRequested)
+        {
+            _shell.SetStatus(L.Tr("installs.updateAll.cancelled"), StatusKind.Info);
+            return;
+        }
 
         if (ready.Count == 0)
         {
@@ -767,10 +795,15 @@ public sealed partial class InstallsViewModel : ObservableObject
     private async Task<BasisUpdatePlan?> PlanBasisUpdateAsync(InstallRow row, string? basisBranch)
     {
         row.IsBusy = true;
-        var activity = _shell.BeginActivity(L.Tr("installs.status.planningUpdate", row.Name), row.Name);
+        var (activity, cancel) = _shell.BeginCancellableActivity(L.Tr("installs.status.planningUpdate", row.Name), row.Name);
         try
         {
-            return await _updates.PlanAsync(row.RepoRoot, basisBranch, line => ReportActivity(activity, line));
+            return await _updates.PlanAsync(row.RepoRoot, basisBranch, line => ReportActivity(activity, line), cancel);
+        }
+        catch (OperationCanceledException) when (cancel.IsCancellationRequested)
+        {
+            _shell.SetStatus(L.Tr("installs.status.planningCancelled", row.Name), StatusKind.Info, row.Name);
+            return null;
         }
         catch (Exception ex)
         {
@@ -793,7 +826,13 @@ public sealed partial class InstallsViewModel : ObservableObject
             _shell.SetStatus(L.Tr("installs.status.unityOpen", row.Name), StatusKind.Error, row.Name, () => UpdateBasisQueuedAsync(row, plan.BasisBranch), "basis|" + row.RepoRoot);
             return;
         }
-        if (review.Backup && await BackupAsync(row) is null) return;
+        var unityGate = await PromptUnityChangeBackupAsync(row, () => _updates.IncomingUnityVersionAsync(row.RepoRoot, plan));
+        if (unityGate == false)
+        {
+            _shell.SetStatus(L.Tr("installs.status.unityChangeStopped", row.Name), StatusKind.Info, row.Name);
+            return;
+        }
+        if (unityGate is null && review.Backup && await BackupAsync(row) is null) return;
 
         var unityBefore = row.UnityVersion;
         row.IsBusy = true;
@@ -937,7 +976,7 @@ public sealed partial class InstallsViewModel : ObservableObject
 
     private static string ShortSha(string? sha) => string.IsNullOrEmpty(sha) ? "" : sha.Length > 9 ? sha[..9] : sha;
 
-    private async Task<string?> BackupAsync(InstallRow? row)
+    private async Task<string?> BackupAsync(InstallRow? row, string? destDir = null)
     {
         if (row is null) return null;
         if (!BackupService.LooksLikeUnityProject(row.UnityProjectPath))
@@ -947,18 +986,33 @@ public sealed partial class InstallsViewModel : ObservableObject
         }
         row.IsBusy = true;
         _shell.SetStatus(L.Tr("installs.status.backingUp", row.Name));
-        var activity = _shell.BeginActivity(L.Tr("installs.status.backingUp", row.Name), row.Name);
+        var (activity, cancel) = _shell.BeginCancellableActivity(L.Tr("installs.status.backingUp", row.Name), row.Name);
+        var folder = destDir ?? DefaultBackupDir(row);
+        var created = !Directory.Exists(folder);
         try
         {
             var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
-            var zip = await BackupService.CreateBackupAsync(row.UnityProjectPath, DefaultBackupDir(row), stamp,
+            var zip = await BackupService.CreateBackupAsync(row.UnityProjectPath, folder, stamp,
                 msg => Dispatcher.UIThread.Post(() =>
                 {
+                    if (cancel.IsCancellationRequested)
+                    {
+                        return;
+                    }
                     _shell.SetStatus(msg, StatusKind.Info, row.Name);
                     _shell.ReportActivity(activity, msg);
-                }));
+                }), cancel);
             _shell.SetStatus(L.Tr("installs.status.backedUp", row.Name, zip), StatusKind.Success, row.Name, key: "backup|" + row.RepoRoot);
             return zip;
+        }
+        catch (OperationCanceledException) when (cancel.IsCancellationRequested)
+        {
+            if (created)
+            {
+                BackupService.RemoveIfEmpty(folder);
+            }
+            _shell.SetStatus(L.Tr("installs.status.backupCancelled", row.Name), StatusKind.Info, row.Name, key: "backup|" + row.RepoRoot);
+            return null;
         }
         catch (Exception ex)
         {
@@ -994,8 +1048,48 @@ public sealed partial class InstallsViewModel : ObservableObject
         var message = L.Tr("installs.dialog.backupPrompt", action, row.Name);
         var choice = await new BackupPromptDialog(message).ShowDialog<BackupChoice>(window);
         if (choice == BackupChoice.Cancel) return false;
-        if (choice == BackupChoice.Backup) await BackupAsync(row);
+        if (choice == BackupChoice.Backup && await BackupAsync(row) is null)
+        {
+            return false;
+        }
         return true;
+    }
+
+    private async Task<bool?> PromptUnityChangeBackupAsync(InstallRow row, Func<Task<string?>> incoming)
+    {
+        if (!row.HasUnityProject)
+        {
+            return null;
+        }
+        string? next;
+        try
+        {
+            next = await incoming();
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            DiagnosticLog.Write($"Reading the incoming Unity version for {row.RepoRoot}", ex);
+            return null;
+        }
+        if (next is null || string.Equals(next, row.UnityVersion, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+        var window = GetMainWindow();
+        if (window is null)
+        {
+            return null;
+        }
+        var result = await new UnityChangeBackupDialog(row.Name, row.UnityVersion, next, DefaultBackupDir(row)).ShowDialog<UnityChangeBackupResult?>(window);
+        if (result is null || result.Choice == BackupChoice.Cancel)
+        {
+            return false;
+        }
+        if (result.Choice == BackupChoice.Continue)
+        {
+            return true;
+        }
+        return await BackupAsync(row, result.Folder) is not null;
     }
 
     private static string DefaultBackupDir(InstallRow row) =>
@@ -1114,7 +1208,7 @@ public sealed partial class InstallsViewModel : ObservableObject
             }
             var cloningText = L.Tr("installs.status.cloningBasis");
             _shell.SetStatus(cloningText, StatusKind.Info, Path.GetFileName(picked));
-            var activity = _shell.BeginActivity(cloningText, Path.GetFileName(picked));
+            var (activity, cancel) = _shell.BeginCancellableActivity(cloningText, Path.GetFileName(picked));
             GitResult result;
             try
             {
@@ -1123,7 +1217,14 @@ public sealed partial class InstallsViewModel : ObservableObject
                     picked,
                     BasisInstallService.DefaultBranch,
                     line => ReportActivity(activity, line),
+                    cancel,
                     sparsePatterns: BasisPartsService.ClonePatterns(leaveOut));
+            }
+            catch (OperationCanceledException) when (cancel.IsCancellationRequested)
+            {
+                var cleaned = await Task.Run(() => EmptyFolder(picked));
+                _shell.SetStatus(L.Tr(cleaned ? "installs.status.cloneCancelled" : "installs.status.cloneCancelledLeftovers", picked), StatusKind.Info, Path.GetFileName(picked));
+                return;
             }
             finally
             {
@@ -1156,6 +1257,20 @@ public sealed partial class InstallsViewModel : ObservableObject
         {
             DiagnosticLog.Write("Cloning a Basis installation", ex);
             _shell.SetStatus(L.Tr("installs.status.cloneError", ex.Message), StatusKind.Error, Path.GetFileName(picked), Retry, key);
+        }
+    }
+
+    private static bool EmptyFolder(string folder)
+    {
+        try
+        {
+            FileRetry.DeleteDirectory(folder, keepFolder: true);
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            DiagnosticLog.Write($"Removing a cancelled clone from {folder}", ex);
+            return false;
         }
     }
 

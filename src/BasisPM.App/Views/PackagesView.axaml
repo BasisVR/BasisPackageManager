@@ -147,8 +147,10 @@
                                 <TextBlock Text="{loc:Tr packages.button.licenses}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <CheckBox Content="{loc:Tr packages.toggle.compileAfterInstall}" IsChecked="{Binding CompileAfterInstall}"
-                                  VerticalAlignment="Center" Margin="0,3,8,3" ToolTip.Tip="{loc:Tr packages.toggle.compileAfterInstall.tip}"/>
+                        <CheckBox Content="{loc:Tr packages.toggle.validateAfterInstall}" IsChecked="{Binding ValidateAfterInstall}"
+                                  VerticalAlignment="Center" Margin="0,3,8,3" ToolTip.Tip="{loc:Tr packages.toggle.validateAfterInstall.tip}"/>
+                        <CheckBox Content="{loc:Tr packages.toggle.headlessValidation}" IsChecked="{Binding HeadlessValidation}" IsEnabled="{Binding ValidateAfterInstall}"
+                                  VerticalAlignment="Center" Margin="0,3,8,3" ToolTip.Tip="{loc:Tr packages.toggle.headlessValidation.tip}"/>
                     </WrapPanel>
             </StackPanel>
 

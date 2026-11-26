@@ -20,7 +20,7 @@ public sealed class BasisChangesViewModelTests
         Base = new BasisBaseInfo(new string('a', 40), "developer", BasisBaseSource.History, true, BasisLayout.Whole),
         BaseCommit = new GitCommitInfo(new string('a', 40), "aaaaaaa", "Dev", new DateTimeOffset(2026, 10, 3, 0, 0, 0, TimeSpan.Zero), "Fix stuff"),
         UnityFolder = "Basis",
-        BaseTree = new string('b', 40),
+        CompareTree = new string('b', 40),
         ProjectTree = new string('d', 40),
         Groups = new[]
         {
@@ -250,6 +250,44 @@ public sealed class BasisChangesViewModelTests
         Assert.Equal("Basis/Packages/com.basis.a/Runtime/New/B.cs", vm.SelectedFile!.Change.Path);
     }
 
+    [AvaloniaFact]
+    public async Task Comparing_with_latest_basis_reloads_and_hides_the_pull_request_form()
+    {
+        var host = new FakeHost();
+        var vm = new BasisChangesViewModel(host, "Game");
+        await vm.LoadAsync();
+        Assert.True(vm.ShowContributeForm);
+
+        vm.SelectedCompare = vm.CompareOptions.Single(o => o.Target == BasisCompareTarget.Latest);
+        while (vm.IsBusy)
+        {
+            await Task.Delay(10);
+        }
+
+        Assert.Equal(new[] { BasisCompareTarget.Base, BasisCompareTarget.Latest }, host.Targets);
+        Assert.True(vm.HasChanges);
+        Assert.False(vm.ShowContributeForm);
+        Assert.True(vm.ShowContributeNote);
+        Assert.False(vm.CanSubmit);
+        Assert.True(vm.HasCompareText);
+    }
+
+    [AvaloniaFact]
+    public async Task Cancelling_the_scan_shows_a_message_and_ends_the_activity()
+    {
+        var host = new FakeHost { HoldScan = true };
+        var vm = new BasisChangesViewModel(host, "Game");
+
+        var load = vm.LoadAsync();
+        host.LastCancel!.Cancel();
+        await load;
+
+        Assert.False(vm.IsBusy);
+        Assert.False(vm.HasChanges);
+        Assert.Equal(L.Tr("basisChanges.cancelled"), vm.MessageText);
+        Assert.Equal(host.Begun.Select(b => b.Id), host.Ended);
+    }
+
     private sealed class FakeHost : IBasisChangesHost
     {
         public BasisContributeScan ScanResult { get; init; } = Scan();
@@ -266,11 +304,19 @@ public sealed class BasisChangesViewModelTests
         public List<(string Message, StatusKind Kind, string Project)> Statuses { get; } = new();
 
         public string Repository => "BasisVR/Basis";
-        public Task<BasisContributeScan> ScanAsync(Action<string> progress, CancellationToken ct)
+        public List<BasisCompareTarget> Targets { get; } = new();
+        public bool HoldScan { get; set; }
+        public CancellationTokenSource? LastCancel { get; private set; }
+        public async Task<BasisContributeScan> ScanAsync(BasisCompareTarget target, Action<string> progress, CancellationToken ct)
         {
+            Targets.Add(target);
             LastProgress = progress;
             foreach (var line in ScanProgress) progress(line);
-            return Task.FromResult(ScanResult);
+            if (HoldScan)
+            {
+                await Task.Delay(Timeout.Infinite, ct);
+            }
+            return target == BasisCompareTarget.Base ? ScanResult : ScanResult with { Target = target, CompareSha = new string('f', 40), CompareLabel = "developer" };
         }
         public string? Remote { get; init; } = "https://gitlab.com/studio/game.git";
         public Task<string?> GetProjectRemoteAsync(string repoRoot) => Task.FromResult(Remote);
@@ -292,6 +338,11 @@ public sealed class BasisChangesViewModelTests
             var id = Guid.NewGuid();
             Begun.Add((id, title, project));
             return id;
+        }
+        public (Guid Id, CancellationToken Token) BeginCancellableActivity(string title, string project)
+        {
+            LastCancel = new CancellationTokenSource();
+            return (BeginActivity(title, project), LastCancel.Token);
         }
         public void ReportActivity(Guid id, string detail) => Reported.Add((id, detail));
         public void EndActivity(Guid id) => Ended.Add(id);

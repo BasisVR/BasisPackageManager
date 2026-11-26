@@ -7103,12 +7103,20 @@
       "value": "এটি এই প্যাকেজের শেষ যাচাইয়ের ফলাফল।"
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "ইনস্টল ও Basis আপডেটের পরে Unity দিয়ে কম্পাইল করুন"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "ইনস্টল ও Basis আপডেটের পরে প্যাকেজ যাচাই করুন"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "ইনস্টল বা Basis আপডেটের পরে ভাঙা প্যাকেজ খুঁজতে প্রজেক্টটি Unity দিয়েও কম্পাইল করে। এতে কয়েক মিনিট লাগতে পারে। এটি বন্ধ থাকলেও দ্রুত কনফ্লিক্ট পরীক্ষা চলে।"
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "ইনস্টল বা Basis আপডেটের পরে প্রজেক্টের স্ক্রিপ্টে দ্বন্দ্ব (নেমস্পেস, টাইপ, অ্যাসেম্বলি নাম, ডুপ্লিকেট DLL ও GUID) পরীক্ষা করে। ডিফল্টভাবে বন্ধ। প্যাকেজ পরীক্ষা যেকোনো সময় কাজ করে।"
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "হেডলেস যাচাই (Unity দিয়ে কম্পাইল)"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "লুকানো Unity এডিটরে (ব্যাচ মোড) প্রজেক্ট কম্পাইলও করে, যাতে কম্পাইল না হওয়া প্যাকেজ ধরা পড়ে, আর সম্ভব হলে পুরনো Unity API কল আপগ্রেড করে। কয়েক মিনিট লাগতে পারে। যাচাই চালু থাকতে হবে।"
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "পরিবর্তন দেখুন"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "{0}-এর প্যাকেজ পরীক্ষা বাতিল হয়েছে। কিছুই সংরক্ষিত হয়নি।"
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "সারি বাতিল"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "ইনস্টলের অপেক্ষায় থাকা প্যাকেজগুলো সরিয়ে দেয়। এখন যেটি ইনস্টল হচ্ছে সেটি আগে শেষ হবে।"
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "সারি থেকে অপেক্ষমাণ {0}টি ইনস্টল সরানো হয়েছে।"
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "বাতিল"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "এই কাজটি থামান এবং অর্ধেক হওয়া অংশ পরিষ্কার করুন।"
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "বাতিল হচ্ছে…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "রিমোট পরীক্ষা বাতিল"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}: রিমোট পরীক্ষা বাতিল হয়েছে।"
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}: Basis আপডেট খোঁজা বাতিল হয়েছে। কিছুই বদলায়নি।"
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}: ব্যাকআপ বাতিল। অসম্পূর্ণ ব্যাকআপ ফাইল মুছে ফেলা হয়েছে।"
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "ডাউনলোড বাতিল। {0}-এ আংশিক ডাউনলোড হওয়া ফাইলগুলো সরানো হয়েছে।"
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "ডাউনলোড বাতিল হয়েছে, কিন্তু {0}-এর কিছু ফাইল সরানো যায়নি। আবার চেষ্টার আগে ফোল্ডারটি খালি করুন।"
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}: Unity সংস্করণ বদলানোর আগেই থামানো হয়েছে। কিছুই বদলায়নি।"
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "সব আপডেট বাতিল। কিছুই আপডেট হয়নি।"
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "Unity {0} থেকে {1}-এ যায়; আগে ব্যাকআপের জন্য আলাদাভাবে আপডেট করুন"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Unity সংস্করণ পরিবর্তন"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "এতে প্রজেক্টের Unity সংস্করণ বদলে যাবে"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} Unity {1} থেকে Unity {2}-এ যাবে। আগে ব্যাকআপ নেবেন?"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "ব্যাকআপ না নেওয়ার ঝুঁকি"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "পরের বার প্রজেক্ট খুললে Unity এর অ্যাসেট, সিন, প্রিফ্যাব ও সেটিংস নতুন সংস্করণে রূপান্তর করবে। কিছু প্যাকেজ কম্পাইল হওয়া বন্ধ হতে পারে।"
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity প্রজেক্টকে আগের অবস্থায় ফেরাতে পারে না। পরে পুরনো সংস্করণে ফিরলে সিন ও প্রিফ্যাব নষ্ট হতে পারে, আর ব্যাকআপ ছাড়া তা ফেরানো যায় না।"
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "ব্যাকআপ হলো Assets, Packages, ProjectSettings ও UserSettings-এর একটি zip। Library ও অন্যান্য ক্যাশ বাদ থাকে, কারণ Unity সেগুলো আবার তৈরি করে।"
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "ব্যাকআপের স্থান"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "যে ফোল্ডারে ব্যাকআপ zip রাখা হয়। না থাকলে তৈরি হয়।"
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "ব্রাউজ…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "ব্যাকআপের জন্য অন্য ফোল্ডার বেছে নিন।"
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "ব্যাকআপ কোথায় রাখবেন বেছে নিন"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "এখানেই থামুন। কিছুই বদলাবে না।"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "ব্যাকআপ ছাড়াই Unity সংস্করণ বদলান।"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "প্রজেক্টটি উপরের ফোল্ডারে zip করে তারপর এগিয়ে যান।"
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "তুলনা করুন"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "যে Basis সংস্করণের উপর ভিত্তি করে"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "শুধু এই প্রজেক্টে করা পরিবর্তন দেখায়। এই ভিউ থেকেই Basis-এ পুল রিকোয়েস্ট পাঠানো যায়।"
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "সর্বশেষ {0} (মূল রিপোজিটরি)"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "{0}-এ এই প্রজেক্ট যে Basis ব্রাঞ্চ অনুসরণ করে তার সর্বশেষ কমিটের সাথে তুলনা করে। আপনার সংস্করণের পরে Basis-এ যা বদলেছে তাও পার্থক্য হিসেবে দেখায়।"
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "আপনার প্রজেক্টের আপস্ট্রিম"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "আপনার প্রজেক্ট নিজের রিমোটে যে ব্রাঞ্চ ট্র্যাক করে (যেমন origin/main) তার সাথে তুলনা করে, যাতে দেখা যায় কী এখনো পুশ হয়নি।"
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "প্রজেক্টটি কার সাথে তুলনা করবেন বেছে নিন।"
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "পুল রিকোয়েস্ট তৈরি হয় এই প্রজেক্টের ভিত্তি Basis সংস্করণ থেকে। পরিবর্তন বেছে পাঠাতে তুলনাটি আবার সেই সংস্করণে ফেরান।"
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "সর্বশেষ {0} ({1})-এর সাথে তুলনা চলছে।"
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "সর্বশেষ {0} ({1}, {2}: {3})-এর সাথে তুলনা চলছে।"
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "আপনার প্রজেক্টের নিজস্ব রিমোট {0} ({1})-এর সাথে তুলনা চলছে।"
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "আপনার প্রজেক্টের নিজস্ব রিমোট {0} ({1}, {2}: {3})-এর সাথে তুলনা চলছে।"
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "সর্বশেষ {0} ({1})-এর সাথে কোনো পার্থক্য নেই।"
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "এখানকার সবকিছু ইতিমধ্যে {0}-এ আছে।"
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "তুলনা বাতিল হয়েছে।"
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "সর্বশেষ Basis {0} ডাউনলোড করা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।"
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "এই প্রজেক্টের ব্রাঞ্চ কোনো রিমোট ব্রাঞ্চ ট্র্যাক করে না, তাই তুলনার জন্য কোনো আপস্ট্রিম নেই।"
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "ব্রাঞ্চ {0} কোনো রিমোট ব্রাঞ্চ ট্র্যাক করে না, তাই তুলনার জন্য কোনো আপস্ট্রিম নেই।"
     }
   ]
 }

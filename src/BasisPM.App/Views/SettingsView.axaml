@@ -35,12 +35,16 @@
                             <DataTemplate x:DataType="vm:ActivityItem">
                                 <Border Classes="card" Padding="14,12" Margin="0,0,0,8">
                                     <StackPanel Spacing="7">
-                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto">
                                             <Border Classes="versionPill" Margin="0,0,10,0" VerticalAlignment="Center" IsVisible="{Binding HasProject}" ToolTip.Tip="{loc:Tr settings.tooltip.taskProject}">
                                                 <TextBlock Text="{Binding Project}" FontSize="11" FontWeight="SemiBold"/>
                                             </Border>
                                             <TextBlock Grid.Column="1" Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
                                             <TextBlock Grid.Column="2" Text="{Binding StartedLabel}" Classes="dim" FontSize="11" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                                            <Button Grid.Column="3" Classes="link" Padding="0" Margin="12,0,0,0" VerticalAlignment="Center"
+                                                    Command="{Binding CancelCommand}" IsVisible="{Binding CanCancel}" ToolTip.Tip="{loc:Tr shell.activity.cancelTip}">
+                                                <TextBlock Text="{loc:Tr shell.activity.cancel}" FontSize="12"/>
+                                            </Button>
                                         </Grid>
                                         <ProgressBar Minimum="0" Maximum="100" Value="{Binding Progress}" IsIndeterminate="{Binding IsIndeterminate}"
                                                      Height="6" CornerRadius="3"/>
@@ -63,8 +67,13 @@
                                          IsIndeterminate="{Binding Shell.PackagesVM.InstallProgressIndeterminate}" Height="6" CornerRadius="3"/>
                             <TextBlock Text="{Binding Shell.PackagesVM.InstallProgressDetail}" Classes="dim" FontSize="11" TextTrimming="CharacterEllipsis"
                                        IsVisible="{Binding Shell.PackagesVM.HasInstallProgressDetail}"/>
-                            <TextBlock Text="{Binding Shell.PackagesVM.InstallQueueLabel}" Classes="muted" FontSize="11"
-                                       IsVisible="{Binding Shell.PackagesVM.HasInstallQueue}"/>
+                            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding Shell.PackagesVM.HasInstallQueue}">
+                                <TextBlock Text="{Binding Shell.PackagesVM.InstallQueueLabel}" Classes="muted" FontSize="11" VerticalAlignment="Center"/>
+                                <Button Grid.Column="1" Classes="link" Padding="0" Margin="10,0,0,0" VerticalAlignment="Center"
+                                        Command="{Binding Shell.PackagesVM.CancelQueuedInstallsCommand}" ToolTip.Tip="{loc:Tr packages.install.cancelQueuedTip}">
+                                    <TextBlock Text="{loc:Tr packages.install.cancelQueued}" FontSize="12"/>
+                                </Button>
+                            </Grid>
                         </StackPanel>
                     </Border>
                     <TextBlock Text="{loc:Tr settings.activity.blockers}" FontWeight="SemiBold" Margin="0,6,0,0"/>

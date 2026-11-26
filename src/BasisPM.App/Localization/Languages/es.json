@@ -7103,12 +7103,20 @@
       "value": "El resultado de la última comprobación de este paquete."
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "Compilar con Unity tras instalaciones y actualizaciones de Basis"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "Validar paquetes después de instalaciones y actualizaciones de Basis"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "Tras una instalación o una actualización de Basis, también compila el proyecto con Unity para detectar paquetes rotos. Puede tardar varios minutos. La comprobación rápida de conflictos se sigue haciendo aunque esto esté desactivado."
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "Después de una instalación o una actualización de Basis, revisa los scripts del proyecto en busca de conflictos (espacios de nombres, tipos, nombres de ensamblado, DLL y GUID duplicados). Desactivado de forma predeterminada. Comprobar paquetes sigue funcionando en cualquier momento."
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "Validación sin interfaz (compilar con Unity)"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "También compila el proyecto en un editor de Unity oculto (modo por lotes) para detectar paquetes que no compilan y actualiza llamadas obsoletas a la API de Unity cuando puede. Puede tardar varios minutos. Requiere la validación activada."
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "Revisar cambios"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "Comprobación de paquetes de {0} cancelada. No se guardó nada."
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "Cancelar en cola"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "Quita los paquetes que siguen esperando para instalarse. El que se está instalando termina primero."
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "Se quitaron {0} instalaciones en espera de la cola."
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "Cancelar"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "Detiene esta operación y limpia lo que haya quedado a medias."
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "Cancelando…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "Comprobación remota cancelada"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}: se canceló la comprobación del remoto."
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}: se canceló la búsqueda de actualizaciones de Basis. No cambió nada."
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}: copia de seguridad cancelada. Se eliminó el archivo incompleto."
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "Descarga cancelada. Se quitaron los archivos descargados a medias en {0}."
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "Descarga cancelada, pero no se pudieron quitar algunos archivos en {0}. Vacía esa carpeta antes de volver a intentarlo."
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}: se detuvo antes de cambiar la versión de Unity. No cambió nada."
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "Actualizar todo cancelado. No se actualizó nada."
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "cambia Unity de {0} a {1}; actualízalo por separado para hacer una copia antes"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Cambio de versión de Unity"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "Esto cambia la versión de Unity del proyecto"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} pasará de Unity {1} a Unity {2}. ¿Quieres hacer una copia de seguridad antes?"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "Riesgos de no hacer una copia"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "La próxima vez que se abra el proyecto, Unity actualizará sus recursos, escenas, prefabs y ajustes a la nueva versión. Algunos paquetes podrían dejar de compilar."
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity no puede convertir un proyecto de vuelta. Volver luego a la versión anterior puede romper escenas y prefabs, y sin copia de seguridad no hay forma de deshacerlo."
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "La copia es un zip de Assets, Packages, ProjectSettings y UserSettings. Library y otras cachés se omiten porque Unity las vuelve a generar."
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "Guardar copia en"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "La carpeta donde se guarda el zip de la copia. Se crea si no existe."
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "Examinar…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "Elige otra carpeta para la copia de seguridad."
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "Elige dónde guardar la copia de seguridad"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "Detenerse aquí. No cambia nada."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "Cambiar la versión de Unity sin copia de seguridad."
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "Comprime el proyecto en la carpeta de arriba y luego continúa."
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "Comparar con"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "La versión de Basis en la que se basa"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "Muestra solo los cambios hechos en este proyecto. Es la vista que puedes enviar a Basis como pull request."
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "Lo último de {0} (repositorio principal)"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "Compara con el commit más reciente de la rama de Basis que sigue este proyecto en {0}. Lo que Basis cambió desde tu versión también aparece como diferencia."
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "El upstream de tu proyecto"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "Compara con la rama que tu proyecto sigue en su propio remoto (por ejemplo origin/main), para ver lo que aún no subiste."
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "Elige con qué comparar el proyecto."
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "Los pull requests se crean a partir de la versión de Basis en la que se basa este proyecto. Vuelve a poner Comparar con en esa versión para elegir cambios y enviarlos."
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "Comparado con lo último de {0} en {1}."
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "Comparado con lo último de {0} en {1} ({2}: {3})."
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "Comparado con {0} en {1}, el remoto propio de tu proyecto."
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "Comparado con {0} en {1} ({2}: {3}), el remoto propio de tu proyecto."
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "Nada difiere de lo último de {0} ({1})."
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "Todo esto ya está en {0}."
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "Comparación cancelada."
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "No se pudo descargar lo último de Basis {0}. Revisa tu conexión e inténtalo de nuevo."
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "La rama de este proyecto no sigue ninguna rama remota, así que no hay upstream con el que comparar."
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "La rama {0} no sigue ninguna rama remota, así que no hay upstream con el que comparar."
     }
   ]
 }

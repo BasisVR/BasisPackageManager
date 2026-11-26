@@ -7103,12 +7103,20 @@
       "value": "اس پیکج کی پچھلی جانچ کا نتیجہ۔"
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "انسٹال اور Basis اپڈیٹس کے بعد Unity سے کمپائل کریں"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "انسٹال اور Basis اپ ڈیٹس کے بعد پیکجز کی جانچ کریں"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "انسٹال یا Basis اپڈیٹ کے بعد، خراب پیکیجز پکڑنے کے لیے پروجیکٹ کو Unity سے بھی کمپائل کرتا ہے۔ اس میں کئی منٹ لگ سکتے ہیں۔ اسے بند رکھنے پر بھی تیز ٹکراؤ کی جانچ چلتی ہے۔"
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "انسٹال یا Basis اپ ڈیٹ کے بعد پروجیکٹ کی اسکرپٹس میں ٹکراؤ (نیم اسپیس، ٹائپس، اسمبلی نام، دہرائی گئی DLL اور GUID) چیک کرتا ہے۔ ڈیفالٹ طور پر بند۔ پیکجز چیک کریں کسی بھی وقت کام کرتا ہے۔"
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "ہیڈ لیس جانچ (Unity سے کمپائل کریں)"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "چھپے Unity ایڈیٹر (بیچ موڈ) میں پروجیکٹ کو کمپائل بھی کرتا ہے تاکہ کمپائل نہ ہونے والے پیکجز پکڑے جائیں، اور جہاں ممکن ہو پرانی Unity API کالز اپ گریڈ کرتا ہے۔ اس میں کئی منٹ لگ سکتے ہیں۔ جانچ آن ہونی چاہیے۔"
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "تبدیلیاں دیکھیں"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "{0} کی پیکج جانچ منسوخ ہو گئی۔ کچھ بھی محفوظ نہیں ہوا۔"
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "قطار منسوخ کریں"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "انسٹال کے انتظار میں موجود پیکجز ہٹا دیتا ہے۔ ابھی انسٹال ہونے والا پیکج پہلے مکمل ہو گا۔"
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "قطار سے {0} منتظر انسٹال ہٹا دیے گئے۔"
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "منسوخ کریں"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "یہ کام روکیں اور ادھورا رہ جانے والا حصہ صاف کریں۔"
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "منسوخ ہو رہا ہے…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "ریموٹ جانچ منسوخ"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}: ریموٹ جانچ منسوخ کر دی گئی۔"
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}: Basis اپ ڈیٹس کی جانچ منسوخ ہو گئی۔ کچھ نہیں بدلا۔"
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}: بیک اپ منسوخ۔ نامکمل بیک اپ فائل حذف کر دی گئی۔"
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "ڈاؤن لوڈ منسوخ۔ {0} میں آدھی ڈاؤن لوڈ شدہ فائلیں ہٹا دی گئیں۔"
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "ڈاؤن لوڈ منسوخ ہو گیا، لیکن {0} کی کچھ فائلیں ہٹائی نہ جا سکیں۔ دوبارہ کوشش سے پہلے وہ فولڈر خالی کریں۔"
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}: Unity ورژن بدلنے سے پہلے روک دیا گیا۔ کچھ نہیں بدلا۔"
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "سب اپ ڈیٹ کریں منسوخ۔ کچھ بھی اپ ڈیٹ نہیں ہوا۔"
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "Unity کو {0} سے {1} پر لے جاتا ہے؛ پہلے بیک اپ کے لیے اسے الگ سے اپ ڈیٹ کریں"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Unity ورژن کی تبدیلی"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "اس سے پروجیکٹ کا Unity ورژن بدل جائے گا"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} Unity {1} سے Unity {2} پر جائے گا۔ کیا پہلے بیک اپ لینا ہے؟"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "بیک اپ نہ لینے کے خطرات"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "اگلی بار پروجیکٹ کھلنے پر Unity اس کے ایسٹس، سینز، پری فیبز اور سیٹنگز نئے ورژن میں بدل دے گا۔ کچھ پیکجز کمپائل ہونا بند ہو سکتے ہیں۔"
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity پروجیکٹ کو واپس نہیں بدل سکتا۔ بعد میں پرانے ورژن پر لوٹنے سے سینز اور پری فیبز خراب ہو سکتے ہیں، اور بیک اپ کے بغیر اسے واپس نہیں کیا جا سکتا۔"
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "بیک اپ Assets، Packages، ProjectSettings اور UserSettings کی zip فائل ہے۔ Library اور دوسرے کیش شامل نہیں ہوتے کیونکہ Unity انہیں دوبارہ بناتا ہے۔"
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "بیک اپ کی جگہ"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "وہ فولڈر جس میں بیک اپ zip محفوظ ہوتی ہے۔ نہ ہو تو بنا دیا جاتا ہے۔"
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "براؤز کریں…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "بیک اپ کے لیے دوسرا فولڈر چنیں۔"
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "منتخب کریں کہ بیک اپ کہاں محفوظ ہو"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "یہیں رکیں۔ کچھ نہیں بدلے گا۔"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "بیک اپ کے بغیر Unity ورژن بدلیں۔"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "پروجیکٹ کو اوپر والے فولڈر میں zip کریں، پھر آگے بڑھیں۔"
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "اس سے موازنہ کریں"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "جس Basis ورژن پر یہ مبنی ہے"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "صرف اس پروجیکٹ میں کی گئی تبدیلیاں دکھاتا ہے۔ اسی ویو سے آپ Basis کو پل ریکویسٹ بھیج سکتے ہیں۔"
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "تازہ ترین {0} (مرکزی ریپوزٹری)"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "{0} پر یہ پروجیکٹ جس Basis برانچ کو فالو کرتا ہے اس کے تازہ ترین کمٹ سے موازنہ کرتا ہے۔ آپ کے ورژن کے بعد Basis میں ہونے والی تبدیلیاں بھی فرق کے طور پر دکھتی ہیں۔"
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "آپ کے پروجیکٹ کا اپ اسٹریم"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "آپ کا پروجیکٹ اپنے ریموٹ پر جس برانچ کو ٹریک کرتا ہے (جیسے origin/main) اس سے موازنہ کرتا ہے، تاکہ پتا چلے کیا ابھی پُش نہیں ہوا۔"
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "منتخب کریں کہ پروجیکٹ کا موازنہ کس سے کرنا ہے۔"
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "پل ریکویسٹ اس Basis ورژن سے بنتی ہے جس پر یہ پروجیکٹ مبنی ہے۔ تبدیلیاں چن کر بھیجنے کے لیے موازنہ واپس اسی ورژن پر کریں۔"
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "تازہ ترین {0} ({1}) سے موازنہ ہو رہا ہے۔"
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "تازہ ترین {0} ({1}، {2}: {3}) سے موازنہ ہو رہا ہے۔"
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "آپ کے پروجیکٹ کے اپنے ریموٹ {0} ({1}) سے موازنہ ہو رہا ہے۔"
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "آپ کے پروجیکٹ کے اپنے ریموٹ {0} ({1}، {2}: {3}) سے موازنہ ہو رہا ہے۔"
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "تازہ ترین {0} ({1}) سے کوئی فرق نہیں۔"
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "یہاں کی ہر چیز پہلے سے {0} پر ہے۔"
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "موازنہ منسوخ ہو گیا۔"
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "تازہ ترین Basis {0} ڈاؤن لوڈ نہیں ہو سکا۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔"
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "اس پروجیکٹ کی برانچ کسی ریموٹ برانچ کو ٹریک نہیں کرتی، اس لیے موازنے کے لیے کوئی اپ اسٹریم نہیں۔"
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "برانچ {0} کسی ریموٹ برانچ کو ٹریک نہیں کرتی، اس لیے موازنے کے لیے کوئی اپ اسٹریم نہیں۔"
     }
   ]
 }

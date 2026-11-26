@@ -7103,12 +7103,20 @@
       "value": "此软件包上次检查的结果。"
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "安装和 Basis 更新后用 Unity 编译"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "安装和 Basis 更新后验证软件包"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "安装或 Basis 更新后，还会用 Unity 编译项目以发现损坏的包。这可能需要几分钟。关闭此项时仍会进行快速冲突检查。"
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "安装或 Basis 更新后，检查项目脚本中的冲突（命名空间、类型、程序集名称、重复的 DLL 和 GUID）。默认关闭。“检查软件包”随时可用。"
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "无界面验证（用 Unity 编译）"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "还会在隐藏的 Unity 编辑器（批处理模式）中编译项目，找出无法编译的软件包，并在可能时升级过时的 Unity API 调用。可能需要几分钟。需要先开启验证。"
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "查看更改"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "已取消 {0} 的软件包检查。未保存任何内容。"
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "取消排队"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "移除仍在等待安装的软件包。当前正在安装的会先完成。"
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "已从队列中移除 {0} 个等待中的安装。"
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "取消"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "停止此操作，并清理未完成的部分。"
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "正在取消…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "已取消远程检查"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}：已取消远程检查。"
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}：已取消检查 Basis 更新。没有任何更改。"
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}：已取消备份。未完成的备份文件已删除。"
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "已取消下载。{0} 中下载了一部分的文件已删除。"
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "已取消下载，但 {0} 中的部分文件无法删除。请先清空该文件夹再重试。"
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}：已在更改 Unity 版本前停止。没有任何更改。"
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "已取消全部更新。没有更新任何内容。"
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "会将 Unity 从 {0} 改为 {1}；请单独更新，以便先备份"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Unity 版本变更"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "这会更改项目的 Unity 版本"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} 将从 Unity {1} 改为 Unity {2}。要先备份吗？"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "不备份的风险"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "下次打开项目时，Unity 会把资源、场景、预制件和设置升级到新版本。部分软件包可能无法再编译。"
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity 无法把项目转换回去。之后再改回旧版本可能会损坏场景和预制件，没有备份就无法撤销。"
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "备份是 Assets、Packages、ProjectSettings 和 UserSettings 的 zip 压缩包。Library 和其他缓存不包括在内，因为 Unity 会重新生成它们。"
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "备份到"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "保存备份 zip 的文件夹。如果不存在会自动创建。"
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "浏览…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "为备份选择其他文件夹。"
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "选择备份的保存位置"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "到此为止，不做任何更改。"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "不备份就更改 Unity 版本。"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "将项目压缩到上面的文件夹，然后继续。"
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "比较对象"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "它所基于的 Basis 版本"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "只显示本项目中的更改。可以从这个视图向 Basis 发送拉取请求。"
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "最新的 {0}（主仓库）"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "与本项目在 {0} 上跟随的 Basis 分支的最新提交比较。Basis 在你的版本之后的更改也会显示为差异。"
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "你项目的上游"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "与项目在自己远程上跟踪的分支（例如 origin/main）比较，查看尚未推送的内容。"
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "选择要与项目比较的对象。"
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "拉取请求基于本项目所依据的 Basis 版本创建。要选择并发送更改，请把比较对象改回该版本。"
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "正在与最新的 {0}（{1}）比较。"
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "正在与最新的 {0}（{1}，{2}：{3}）比较。"
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "正在与项目自己的远程 {0}（{1}）比较。"
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "正在与项目自己的远程 {0}（{1}，{2}：{3}）比较。"
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "与最新的 {0}（{1}）没有差异。"
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "这里的内容都已在 {0} 上。"
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "已取消比较。"
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "无法下载最新的 Basis {0}。请检查网络连接后重试。"
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "本项目的分支没有跟踪远程分支，因此没有可比较的上游。"
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "分支 {0} 没有跟踪远程分支，因此没有可比较的上游。"
     }
   ]
 }

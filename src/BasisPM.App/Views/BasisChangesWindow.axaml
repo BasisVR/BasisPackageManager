@@ -14,7 +14,19 @@
             <StackPanel Spacing="4">
                 <TextBlock Text="{loc:Tr basisChanges.title}" Classes="h2"/>
                 <TextBlock Text="{Binding ProjectName}" Classes="dim" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,6,0,2">
+                    <TextBlock Text="{loc:Tr basisChanges.compare.label}" Classes="muted" FontSize="12" VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding CompareOptions}" SelectedItem="{Binding SelectedCompare}" IsEnabled="{Binding IsIdle}" MinWidth="300"
+                              ToolTip.Tip="{loc:Tr basisChanges.tooltip.compare}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:BasisCompareOption">
+                                <TextBlock Text="{Binding Label}" ToolTip.Tip="{Binding Tip}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
                 <TextBlock Text="{Binding BasedOnText}" IsVisible="{Binding HasBase}" Classes="muted" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                <TextBlock Text="{Binding CompareText}" IsVisible="{Binding HasCompareText}" FontSize="12" TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding RemoteText}" IsVisible="{Binding HasBase}" Classes="dim" FontSize="12" TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding NoticeText}" IsVisible="{Binding HasNotice}" Foreground="{StaticResource BasisWarningBrush}" FontSize="12" TextWrapping="Wrap"/>
             </StackPanel>
@@ -133,7 +145,10 @@
                         </Grid>
                     </Border>
 
-                    <Border Grid.Row="2" Classes="glass" Padding="16,14" IsEnabled="{Binding IsIdle}">
+                    <Border Grid.Row="2" Classes="glass" Padding="16,14" IsVisible="{Binding ShowContributeNote}">
+                        <TextBlock Text="{loc:Tr basisChanges.compare.submitNote}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                    </Border>
+                    <Border Grid.Row="2" Classes="glass" Padding="16,14" IsEnabled="{Binding IsIdle}" IsVisible="{Binding ShowContributeForm}">
                         <Grid ColumnDefinitions="*,14,300" RowDefinitions="Auto,Auto,Auto">
                             <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Spacing="5">
                                 <TextBlock Text="{loc:Tr basisChanges.field.title}" Classes="muted" FontSize="11"/>
@@ -179,7 +194,7 @@
                 <Button Click="OnClose" ToolTip.Tip="{loc:Tr basisChanges.tooltip.close}">
                     <TextBlock Text="{loc:Tr basisChanges.close}"/>
                 </Button>
-                <Button Classes="cta" Command="{Binding SubmitCommand}" IsVisible="{Binding HasChanges}"
+                <Button Classes="cta" Command="{Binding SubmitCommand}" IsVisible="{Binding ShowContributeForm}"
                         ToolTip.Tip="{loc:Tr basisChanges.tooltip.openPr}">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <PathIcon Classes="leadingIcon" Data="{StaticResource IconBranch}" VerticalAlignment="Center"/>

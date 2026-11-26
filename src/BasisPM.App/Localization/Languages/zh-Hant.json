@@ -7103,12 +7103,20 @@
       "value": "此套件上次檢查的結果。"
     },
     {
-      "key": "packages.toggle.compileAfterInstall",
-      "value": "安裝和 Basis 更新後用 Unity 編譯"
+      "key": "packages.toggle.validateAfterInstall",
+      "value": "安裝和 Basis 更新後驗證套件"
     },
     {
-      "key": "packages.toggle.compileAfterInstall.tip",
-      "value": "安裝或 Basis 更新後，還會用 Unity 編譯專案以找出損壞的套件。這可能需要幾分鐘。關閉此項時仍會進行快速衝突檢查。"
+      "key": "packages.toggle.validateAfterInstall.tip",
+      "value": "安裝或 Basis 更新後，檢查專案腳本中的衝突（命名空間、型別、組件名稱、重複的 DLL 和 GUID）。預設關閉。「檢查套件」隨時可用。"
+    },
+    {
+      "key": "packages.toggle.headlessValidation",
+      "value": "無介面驗證（用 Unity 編譯）"
+    },
+    {
+      "key": "packages.toggle.headlessValidation.tip",
+      "value": "還會在隱藏的 Unity 編輯器（批次模式）中編譯專案，找出無法編譯的套件，並在可能時升級過時的 Unity API 呼叫。可能需要幾分鐘。需要先開啟驗證。"
     },
     {
       "key": "packages.apiUpgrade.applied",
@@ -8033,6 +8041,206 @@
     {
       "key": "project.changes.button",
       "value": "查看變更"
+    },
+    {
+      "key": "packages.verify.cancelled",
+      "value": "已取消 {0} 的套件檢查。未儲存任何內容。"
+    },
+    {
+      "key": "packages.install.cancelQueued",
+      "value": "取消排隊"
+    },
+    {
+      "key": "packages.install.cancelQueuedTip",
+      "value": "移除仍在等待安裝的套件。目前正在安裝的會先完成。"
+    },
+    {
+      "key": "packages.install.cancelledQueued",
+      "value": "已從佇列中移除 {0} 個等待中的安裝。"
+    },
+    {
+      "key": "shell.activity.cancel",
+      "value": "取消"
+    },
+    {
+      "key": "shell.activity.cancelTip",
+      "value": "停止此操作，並清理未完成的部分。"
+    },
+    {
+      "key": "shell.activity.cancelling",
+      "value": "正在取消…"
+    },
+    {
+      "key": "installs.git.checkCancelled",
+      "value": "已取消遠端檢查"
+    },
+    {
+      "key": "installs.status.fetchCancelled",
+      "value": "{0}：已取消遠端檢查。"
+    },
+    {
+      "key": "installs.status.planningCancelled",
+      "value": "{0}：已取消檢查 Basis 更新。沒有任何變更。"
+    },
+    {
+      "key": "installs.status.backupCancelled",
+      "value": "{0}：已取消備份。未完成的備份檔案已刪除。"
+    },
+    {
+      "key": "installs.status.cloneCancelled",
+      "value": "已取消下載。{0} 中下載了一部分的檔案已刪除。"
+    },
+    {
+      "key": "installs.status.cloneCancelledLeftovers",
+      "value": "已取消下載，但 {0} 中的部分檔案無法刪除。請先清空該資料夾再重試。"
+    },
+    {
+      "key": "installs.status.unityChangeStopped",
+      "value": "{0}：已在變更 Unity 版本前停止。沒有任何變更。"
+    },
+    {
+      "key": "installs.updateAll.cancelled",
+      "value": "已取消全部更新。沒有更新任何內容。"
+    },
+    {
+      "key": "installs.updateAll.reason.unityChange",
+      "value": "會將 Unity 從 {0} 改為 {1}；請單獨更新，以便先備份"
+    },
+    {
+      "key": "dialog.unityBackup.title",
+      "value": "Unity 版本變更"
+    },
+    {
+      "key": "dialog.unityBackup.heading",
+      "value": "這會變更專案的 Unity 版本"
+    },
+    {
+      "key": "dialog.unityBackup.body",
+      "value": "{0} 將從 Unity {1} 改為 Unity {2}。要先備份嗎？"
+    },
+    {
+      "key": "dialog.unityBackup.risksTitle",
+      "value": "不備份的風險"
+    },
+    {
+      "key": "dialog.unityBackup.riskUpgrade",
+      "value": "下次開啟專案時，Unity 會把資源、場景、預製物和設定升級到新版本。部分套件可能無法再編譯。"
+    },
+    {
+      "key": "dialog.unityBackup.riskNoUndo",
+      "value": "Unity 無法把專案轉換回去。之後再改回舊版本可能會損壞場景和預製物，沒有備份就無法復原。"
+    },
+    {
+      "key": "dialog.unityBackup.riskWhatsSaved",
+      "value": "備份是 Assets、Packages、ProjectSettings 和 UserSettings 的 zip 壓縮檔。Library 和其他快取不包括在內，因為 Unity 會重新產生它們。"
+    },
+    {
+      "key": "dialog.unityBackup.where",
+      "value": "備份到"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.folder",
+      "value": "儲存備份 zip 的資料夾。若不存在會自動建立。"
+    },
+    {
+      "key": "dialog.unityBackup.browse",
+      "value": "瀏覽…"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.browse",
+      "value": "為備份選擇其他資料夾。"
+    },
+    {
+      "key": "dialog.unityBackup.pickerTitle",
+      "value": "選擇備份的儲存位置"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.cancel",
+      "value": "到此為止，不做任何變更。"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.continueWithout",
+      "value": "不備份就變更 Unity 版本。"
+    },
+    {
+      "key": "dialog.unityBackup.tooltip.backup",
+      "value": "將專案壓縮到上面的資料夾，然後繼續。"
+    },
+    {
+      "key": "basisChanges.compare.label",
+      "value": "比較對象"
+    },
+    {
+      "key": "basisChanges.compare.base",
+      "value": "它所基於的 Basis 版本"
+    },
+    {
+      "key": "basisChanges.compare.baseTip",
+      "value": "只顯示本專案中的變更。可以從這個檢視向 Basis 傳送拉取請求。"
+    },
+    {
+      "key": "basisChanges.compare.latest",
+      "value": "最新的 {0}（主儲存庫）"
+    },
+    {
+      "key": "basisChanges.compare.latestTip",
+      "value": "與本專案在 {0} 上追蹤的 Basis 分支的最新提交比較。Basis 在你的版本之後的變更也會顯示為差異。"
+    },
+    {
+      "key": "basisChanges.compare.upstream",
+      "value": "你專案的上游"
+    },
+    {
+      "key": "basisChanges.compare.upstreamTip",
+      "value": "與專案在自己遠端上追蹤的分支（例如 origin/main）比較，查看尚未推送的內容。"
+    },
+    {
+      "key": "basisChanges.tooltip.compare",
+      "value": "選擇要與專案比較的對象。"
+    },
+    {
+      "key": "basisChanges.compare.submitNote",
+      "value": "拉取請求以本專案所依據的 Basis 版本建立。要選擇並傳送變更，請把比較對象改回該版本。"
+    },
+    {
+      "key": "basisChanges.comparingLatest",
+      "value": "正在與最新的 {0}（{1}）比較。"
+    },
+    {
+      "key": "basisChanges.comparingLatestCommit",
+      "value": "正在與最新的 {0}（{1}，{2}：{3}）比較。"
+    },
+    {
+      "key": "basisChanges.comparingUpstream",
+      "value": "正在與專案自己的遠端 {0}（{1}）比較。"
+    },
+    {
+      "key": "basisChanges.comparingUpstreamCommit",
+      "value": "正在與專案自己的遠端 {0}（{1}，{2}：{3}）比較。"
+    },
+    {
+      "key": "basisChanges.emptyLatest",
+      "value": "與最新的 {0}（{1}）沒有差異。"
+    },
+    {
+      "key": "basisChanges.emptyUpstream",
+      "value": "這裡的內容都已在 {0} 上。"
+    },
+    {
+      "key": "basisChanges.cancelled",
+      "value": "已取消比較。"
+    },
+    {
+      "key": "basisChanges.block.latestMissing",
+      "value": "無法下載最新的 Basis {0}。請檢查網路連線後重試。"
+    },
+    {
+      "key": "basisChanges.block.noUpstream",
+      "value": "本專案的分支沒有追蹤遠端分支，因此沒有可比較的上游。"
+    },
+    {
+      "key": "basisChanges.block.noUpstreamBranch",
+      "value": "分支 {0} 沒有追蹤遠端分支，因此沒有可比較的上游。"
     }
   ]
 }

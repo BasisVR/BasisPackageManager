@@ -77,6 +77,7 @@ public sealed class ProjectCheckService
                 (compile, upgrades) = await UpgradeApisAsync(compileRequest, compile, project, unity, progress, ct).ConfigureAwait(false);
             issues.AddRange(ToIssues(compile, focus));
         }
+        ct.ThrowIfCancellationRequested();
 
         var report = new ProjectCheckReport
         {
